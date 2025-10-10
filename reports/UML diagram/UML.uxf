@@ -1,0 +1,608 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="15.1">
+  <zoom_level>3</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>549</x>
+      <y>258</y>
+      <w>186</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Entity&gt;&gt;
+Team
+--
++ id: Integer {Mandatory, Column(unique = true)}
++ budget: Integer {Mandatory, Automapped}
++ createdAt: Date {Mandatory, ValidMoment(past = true), Temporal(TemporalType.TIMESTAMP)}
++ gameweekPoints: Integer {Optional, ValidNumber(min = 0)}
++ wildcardUsed: Boolean {Mandatory, Automapped}
++ captainId: Integer {Optional, ValidNumber(min = 0)} 
+
+bg=GREEN</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>300</x>
+      <y>258</y>
+      <w>213</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Role&gt;&gt;
+User
+--
++ id: Integer {Mandatory, Column(unique = true)}
++ username: String {Mandatory, Column(unique = true)}
++ email: String {Mandatory, ValidString(pattern = "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"), Column(unique = true)}
++ password: String {Mandatory, ValidString(min = 8, max = 100), Automapped}
++ displayName: String {Mandatory, ValidString(max = 40), Automapped}
++ createdAt: Date {Mandatory, ValidMoment(past = true), Temporal(TemporalType.TIMESTAMP)}
+
+
+bg=PINK</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>510</x>
+      <y>279</y>
+      <w>45</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1
+m2=*
+has &gt;</panel_attributes>
+    <additional_attributes>10.0;20.0;130.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>555</x>
+      <y>453</y>
+      <w>150</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Entity&gt;&gt;
+Player
+--
++ id: String {Mandatory, ValidString(max = 30), Column(unique = true)}
++ fullName: String {Mandatory, ValidString(max = 60)}
++ position: String {Mandatory, ValidString(pattern = "^(POR|DEF|MID|DEL)$")}
++ marketValue: Integer {Mandatory, ValidMoney}
++ active: boolean {Mandatory, Automapped}
++ totalPoints: Integer {Mandatory, Automapped}
+
+bg=GREEN</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>627</x>
+      <y>393</y>
+      <w>33</w>
+      <h>66</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1
+m2=*
+belongs to &gt;</panel_attributes>
+    <additional_attributes>10.0;200.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>894</x>
+      <y>240</y>
+      <w>186</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Entity&gt;&gt;
+League
+--
++ code: String {Mandatory, ValidString(pattern = "^[A-Z0-9]{6}$"), Column(unique = true)}
++ name: String {Mandatory, ValidString(max = 60)}
++ description: String {Optional, ValidString(max = 255)}
++ createdAt: Date {Mandatory, ValidMoment(past = true), Temporal(TemporalType.TIMESTAMP)}
++ maxTeams: Integer {Mandatory, ValidNumber(min = 2, max = 50)}
++ initialBudget: Integer {Mandatory, ValidMoney}
++ marketEndHour: Time {Mandatory, Automapped}
++ captainEnable: boolean {Mandatory, Automapped}
++ wildCardsEnable: boolean {Mandatory, Automapped}
++ ranking: Integer {Optional, ValidNumber(min = 1)}
+
+bg=GREEN</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>732</x>
+      <y>270</y>
+      <w>168</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+m1=*
+m2=1
+belongs to &gt;</panel_attributes>
+    <additional_attributes>10.0;20.0;540.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>285</x>
+      <y>441</y>
+      <w>198</w>
+      <h>75</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Entity&gt;&gt;
+PlayerStatistic
+--
++ minutesPlayed: Integer {Mandatory, ValidNumber(min = 0)}
++ goals: Integer {Mandatory, ValidNumber(min = 0)}
++ assists: Integer {Mandatory, ValidNumber(min = 0)}
++ shots: Integer {Optional, ValidNumber(min = 0)}
++ shotsOnTarget: Integer {Optional, ValidNumber(min = 0)}
++ foulsDrawn: Integer {Optional, ValidNumber(min = 0)}
++ foulsCommitted: Integer {Optional, ValidNumber(min = 0)}
++ ownGoals: Integer {Optional, ValidNumber(min = 0)}
++ yellowCards: Integer {Mandatory, ValidNumber(min = 0)}
++ redCards: Integer {Mandatory, ValidNumber(min = 0)}
++ ratingAvg: Double {Optional, ValidNumber(min = 0.0)}
++ totalFantasyPoints: Integer {Mandatory, ValidNumber(min = 0)}
+
+bg=GREEN</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>963</x>
+      <y>345</y>
+      <w>54</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Entity&gt;&gt;
+Chat
+--
+
+bg=GREEN</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>987</x>
+      <y>300</y>
+      <w>33</w>
+      <h>51</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+m1=*
+m2=1
+belongs to &gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;150.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>909</x>
+      <y>411</y>
+      <w>159</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Entity&gt;&gt;
+Message
+--
++ body: String {Mandatory, ValidString(max = 500)}
++ sentAt: Date {Mandatory, ValidMoment, Temporal(TemporalType.TIMESTAMP)}
+
+bg=GREEN</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>987</x>
+      <y>369</y>
+      <w>33</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+m1=*
+m2=1
+belongs to &gt;</panel_attributes>
+    <additional_attributes>10.0;140.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>915</x>
+      <y>117</y>
+      <w>159</w>
+      <h>33</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Entity&gt;&gt;
+Notification
+--
++ type: NotificationType {Mandatory, Automapped}
++ payload: String {Optional, ValidString(max = 500)}
++ createdAt: Date {Mandatory, ValidMoment, Temporal(TemporalType.TIMESTAMP)}
+
+
+bg=GREEN</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>984</x>
+      <y>147</y>
+      <w>33</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=0..1
+m2=*
+belongs to &gt;</panel_attributes>
+    <additional_attributes>10.0;130.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>645</x>
+      <y>159</y>
+      <w>48</w>
+      <h>33</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Enum&gt;&gt;
+Notification
+--
+CLAUSE
+SELL
+BUY
+CESSION
+
+bg=BLUE</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>480</x>
+      <y>480</y>
+      <w>81</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1
+m2=*
+belongs to &gt;</panel_attributes>
+    <additional_attributes>10.0;20.0;250.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>558</x>
+      <y>576</y>
+      <w>150</w>
+      <h>126</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Entity&gt;&gt;
+PlayerScore             
+--
++ minutesPlayed: Integer {Mandatory, ValidNumber(min = 0)}
++ goals: Integer {Mandatory, ValidNumber(min = 0)}
++ assists: Integer {Mandatory, ValidNumber(min = 0)}
++ shots: Integer {Optional, ValidNumber(min = 0)}
++ shotsOnTarget: Integer {Optional, ValidNumber(min = 0)}
++ keyPasses: Integer {Optional, ValidNumber(min = 0)}
++ dribblesCompleted: Integer {Optional, ValidNumber(min = 0)}
++ foulsDrawn: Integer {Optional, ValidNumber(min = 0)}
++ foulsCommitted: Integer {Optional, ValidNumber(min = 0)}
++ bigChancesCreated: Integer {Optional, ValidNumber(min = 0)}
++ duelsWon: Integer {Optional, ValidNumber(min = 0)}
++ tackles: Integer {Optional, ValidNumber(min = 0)}
++ interceptions: Integer {Optional, ValidNumber(min = 0)}
++ clearances: Integer {Optional, ValidNumber(min = 0)}
++ blocks: Integer {Optional, ValidNumber(min = 0)}
++ ownGoals: Integer {Optional, ValidNumber(min = 0)}
++ penaltiesSaved: Integer {Optional, ValidNumber(min = 0)}
++ saves: Integer {Optional, ValidNumber(min = 0)}
++ goalsConceded: Integer {Optional, ValidNumber(min = 0)}
++ cleanSheet: Integer {Mandatory, Automapped}
++ yellowCards: Integer {Mandatory, ValidNumber(min = 0)}
++ redCards: Integer {Mandatory, ValidNumber(min = 0)}
+
+bg=GREEN</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>630</x>
+      <y>498</y>
+      <w>33</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1
+m2=*
+belongs to &gt;</panel_attributes>
+    <additional_attributes>10.0;260.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>771</x>
+      <y>459</y>
+      <w>72</w>
+      <h>42</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Entity&gt;&gt;
+Matchday
+--
++ code: String {Mandatory, Unique}
++ startAt: Instant {Mandatory}
++ endAt: Instant {Mandatory}
+bg=GREEN</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>702</x>
+      <y>477</y>
+      <w>75</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=0..1
+m2=*
+belongs to &gt;</panel_attributes>
+    <additional_attributes>230.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>585</x>
+      <y>363</y>
+      <w>96</w>
+      <h>33</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Entity&gt;&gt;
+playerTeam
+--
++ isCaptain: Boolean {Mandatory, Automapped}
++ lined: Boolean {Mandatory, Automapped}
++ sellPrice: Integer {Mandatory, Automapped}
+bg=GREEN</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>627</x>
+      <y>303</y>
+      <w>33</w>
+      <h>66</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1
+m2=*
+belongs to &gt;</panel_attributes>
+    <additional_attributes>10.0;200.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>768</x>
+      <y>363</y>
+      <w>72</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Entity&gt;&gt;
+TeamScore
+--
++ totalPoints: Integer {Mandatory, Automapped}
++ rankInLeague: Integer {Mandatory, Automapped}
+bg=GREEN</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>687</x>
+      <y>303</y>
+      <w>126</w>
+      <h>66</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+m1=*
+m2=1
+belongs to &gt;</panel_attributes>
+    <additional_attributes>400.0;200.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>807</x>
+      <y>387</y>
+      <w>33</w>
+      <h>78</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+m1=*
+m2=1
+belongs to &gt;</panel_attributes>
+    <additional_attributes>10.0;240.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>54</x>
+      <y>354</y>
+      <w>117</w>
+      <h>39</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Entity&gt;&gt;
+PORStats
+--
++ penaltiesSaved: Integer {Optional, ValidNumber(min = 0)}
++ saves: Integer {Optional, ValidNumber(min = 0)}
++ goalsConceded: Integer {Optional, ValidNumber(min = 0)}
++ cleanSheet: Integer {Mandatory, Automapped}
++ penaltiesSaved: Integer {Optional, ValidNumber(min = 0)}
+bg=GREEN</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>54</x>
+      <y>423</y>
+      <w>117</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Entity&gt;&gt;
+DEFStats
+--
++ tackles: Integer {Optional, ValidNumber(min = 0)}
++ interceptions: Integer {Optional, ValidNumber(min = 0)}
++ clearances: Integer {Optional, ValidNumber(min = 0)}
++ blocks: Integer {Optional, ValidNumber(min = 0)}
++ duelsWon: Integer {Optional, ValidNumber(min = 0)}
++ duelsLost: Integer {Optional, ValidNumber(min = 0)}
+bg=GREEN</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>51</x>
+      <y>495</y>
+      <w>123</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Entity&gt;&gt;
+MIDStats
+--
++ keyPasses: Integer {Optional, ValidNumber(min = 0)}
++ dribblesCompleted: Integer {Optional, ValidNumber(min = 0)}
++ bigChancesCreated: Integer {Optional, ValidNumber(min = 0)}
++ bigChancesMissed: Integer {Optional, ValidNumber(min = 0)}
++ duelsWon: Integer {Optional, ValidNumber(min = 0)}
++ duelsLost: Integer {Optional, ValidNumber(min = 0)}
+bg=GREEN</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>51</x>
+      <y>564</y>
+      <w>126</w>
+      <h>33</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Entity&gt;&gt;
+DELStats
+--
++ dribblesCompleted: Integer {Optional, ValidNumber(min = 0)}
++ bigChancesCreated: Integer {Optional, ValidNumber(min = 0)}
++ bigChancesMissed: Integer {Optional, ValidNumber(min = 0)}
++ offsides: Integer {Optional, ValidNumber(min = 0)}
+
+bg=GREEN</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>168</x>
+      <y>372</y>
+      <w>123</w>
+      <h>108</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+m1=1
+m2=0..1
+belongs to &gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;390.0;340.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>168</x>
+      <y>447</y>
+      <w>123</w>
+      <h>39</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+m1=1
+m2=0..1
+belongs to &gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;390.0;110.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>171</x>
+      <y>483</y>
+      <w>120</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+m1=1
+m2=0..1
+belongs to &gt;</panel_attributes>
+    <additional_attributes>10.0;130.0;380.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>174</x>
+      <y>489</y>
+      <w>117</w>
+      <h>99</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+m1=1
+m2=0..1
+belongs to &gt;</panel_attributes>
+    <additional_attributes>10.0;310.0;370.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>957</x>
+      <y>186</y>
+      <w>60</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Entity&gt;&gt;
+notificationLeague
+--
+
+bg=GREEN</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>984</x>
+      <y>204</y>
+      <w>33</w>
+      <h>42</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+m1=*
+m2=0..1
+belongs to &gt;</panel_attributes>
+    <additional_attributes>10.0;120.0;10.0;10.0</additional_attributes>
+  </element>
+</diagram>

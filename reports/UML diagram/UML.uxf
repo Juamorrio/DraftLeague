@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <diagram program="umlet" version="15.1">
-  <zoom_level>3</zoom_level>
+  <zoom_level>2</zoom_level>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>549</x>
-      <y>258</y>
-      <w>186</w>
-      <h>48</h>
+      <x>820</x>
+      <y>460</y>
+      <w>124</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>&lt;&lt;Entity&gt;&gt;
 Team
@@ -25,10 +25,10 @@ bg=GREEN</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>300</x>
-      <y>258</y>
-      <w>213</w>
-      <h>45</h>
+      <x>654</x>
+      <y>460</y>
+      <w>142</w>
+      <h>30</h>
     </coordinates>
     <panel_attributes>&lt;&lt;Role&gt;&gt;
 User
@@ -47,10 +47,10 @@ bg=PINK</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>510</x>
-      <y>279</y>
-      <w>45</w>
-      <h>15</h>
+      <x>794</x>
+      <y>474</y>
+      <w>30</w>
+      <h>10</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 m1=1
@@ -61,17 +61,17 @@ has &gt;</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>555</x>
-      <y>453</y>
-      <w>150</w>
-      <h>48</h>
+      <x>824</x>
+      <y>590</y>
+      <w>100</w>
+      <h>32</h>
     </coordinates>
     <panel_attributes>&lt;&lt;Entity&gt;&gt;
 Player
 --
 + id: String {Mandatory, ValidString(max = 30), Column(unique = true)}
 + fullName: String {Mandatory, ValidString(max = 60)}
-+ position: String {Mandatory, ValidString(pattern = "^(POR|DEF|MID|DEL)$")}
++ position: Position {Mandatory, Automapped}
 + marketValue: Integer {Mandatory, ValidMoney}
 + active: boolean {Mandatory, Automapped}
 + totalPoints: Integer {Mandatory, Automapped}
@@ -82,10 +82,10 @@ bg=GREEN</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>627</x>
-      <y>393</y>
-      <w>33</w>
-      <h>66</h>
+      <x>872</x>
+      <y>550</y>
+      <w>22</w>
+      <h>44</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 m1=1
@@ -96,10 +96,10 @@ belongs to &gt;</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>894</x>
-      <y>240</y>
-      <w>186</w>
-      <h>63</h>
+      <x>816</x>
+      <y>316</y>
+      <w>124</w>
+      <h>42</h>
     </coordinates>
     <panel_attributes>&lt;&lt;Entity&gt;&gt;
 League
@@ -121,24 +121,24 @@ bg=GREEN</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>732</x>
-      <y>270</y>
-      <w>168</w>
-      <h>15</h>
+      <x>876</x>
+      <y>356</y>
+      <w>22</w>
+      <h>108</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 m1=*
 m2=1
 belongs to &gt;</panel_attributes>
-    <additional_attributes>10.0;20.0;540.0;20.0</additional_attributes>
+    <additional_attributes>20.0;520.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>285</x>
-      <y>441</y>
-      <w>198</w>
-      <h>75</h>
+      <x>644</x>
+      <y>582</y>
+      <w>132</w>
+      <h>50</h>
     </coordinates>
     <panel_attributes>&lt;&lt;Entity&gt;&gt;
 PlayerStatistic
@@ -162,10 +162,10 @@ bg=GREEN</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>963</x>
-      <y>345</y>
-      <w>54</w>
-      <h>27</h>
+      <x>858</x>
+      <y>250</y>
+      <w>36</w>
+      <h>18</h>
     </coordinates>
     <panel_attributes>&lt;&lt;Entity&gt;&gt;
 Chat
@@ -177,24 +177,24 @@ bg=GREEN</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>987</x>
-      <y>300</y>
-      <w>33</w>
-      <h>51</h>
+      <x>874</x>
+      <y>266</y>
+      <w>22</w>
+      <h>52</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 m1=*
 m2=1
 belongs to &gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;150.0</additional_attributes>
+    <additional_attributes>10.0;240.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>909</x>
-      <y>411</y>
-      <w>159</w>
-      <h>30</h>
+      <x>820</x>
+      <y>170</y>
+      <w>106</w>
+      <h>20</h>
     </coordinates>
     <panel_attributes>&lt;&lt;Entity&gt;&gt;
 Message
@@ -208,24 +208,24 @@ bg=GREEN</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>987</x>
-      <y>369</y>
-      <w>33</w>
-      <h>48</h>
+      <x>872</x>
+      <y>188</y>
+      <w>22</w>
+      <h>66</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 m1=*
 m2=1
 belongs to &gt;</panel_attributes>
-    <additional_attributes>10.0;140.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;20.0;310.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>915</x>
-      <y>117</y>
-      <w>159</w>
-      <h>33</h>
+      <x>578</x>
+      <y>324</y>
+      <w>106</w>
+      <h>22</h>
     </coordinates>
     <panel_attributes>&lt;&lt;Entity&gt;&gt;
 Notification
@@ -241,27 +241,27 @@ bg=GREEN</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>984</x>
-      <y>147</y>
-      <w>33</w>
-      <h>45</h>
+      <x>682</x>
+      <y>334</y>
+      <w>56</w>
+      <h>10</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 m1=0..1
 m2=*
 belongs to &gt;</panel_attributes>
-    <additional_attributes>10.0;130.0;10.0;10.0</additional_attributes>
+    <additional_attributes>260.0;20.0;10.0;20.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>645</x>
-      <y>159</y>
-      <w>48</w>
-      <h>33</h>
+      <x>584</x>
+      <y>256</y>
+      <w>32</w>
+      <h>22</h>
     </coordinates>
     <panel_attributes>&lt;&lt;Enum&gt;&gt;
-Notification
+NotificationType
 --
 CLAUSE
 SELL
@@ -274,10 +274,10 @@ bg=BLUE</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>480</x>
-      <y>480</y>
-      <w>81</w>
-      <h>15</h>
+      <x>774</x>
+      <y>608</y>
+      <w>54</w>
+      <h>10</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 m1=1
@@ -288,10 +288,10 @@ belongs to &gt;</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>558</x>
-      <y>576</y>
-      <w>150</w>
-      <h>126</h>
+      <x>826</x>
+      <y>672</y>
+      <w>100</w>
+      <h>84</h>
     </coordinates>
     <panel_attributes>&lt;&lt;Entity&gt;&gt;
 PlayerScore             
@@ -325,10 +325,10 @@ bg=GREEN</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>630</x>
-      <y>498</y>
-      <w>33</w>
-      <h>84</h>
+      <x>874</x>
+      <y>620</y>
+      <w>22</w>
+      <h>56</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 m1=1
@@ -339,41 +339,10 @@ belongs to &gt;</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>771</x>
-      <y>459</y>
-      <w>72</w>
-      <h>42</h>
-    </coordinates>
-    <panel_attributes>&lt;&lt;Entity&gt;&gt;
-Matchday
---
-+ code: String {Mandatory, Unique}
-+ startAt: Instant {Mandatory}
-+ endAt: Instant {Mandatory}
-bg=GREEN</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>702</x>
-      <y>477</y>
-      <w>75</w>
-      <h>15</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;-
-m1=0..1
-m2=*
-belongs to &gt;</panel_attributes>
-    <additional_attributes>230.0;20.0;10.0;20.0</additional_attributes>
-  </element>
-  <element>
-    <id>UMLClass</id>
-    <coordinates>
-      <x>585</x>
-      <y>363</y>
-      <w>96</w>
-      <h>33</h>
+      <x>844</x>
+      <y>530</y>
+      <w>64</w>
+      <h>22</h>
     </coordinates>
     <panel_attributes>&lt;&lt;Entity&gt;&gt;
 playerTeam
@@ -387,10 +356,10 @@ bg=GREEN</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>627</x>
-      <y>303</y>
-      <w>33</w>
-      <h>66</h>
+      <x>872</x>
+      <y>490</y>
+      <w>22</w>
+      <h>44</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 m1=1
@@ -401,54 +370,10 @@ belongs to &gt;</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>768</x>
-      <y>363</y>
-      <w>72</w>
-      <h>27</h>
-    </coordinates>
-    <panel_attributes>&lt;&lt;Entity&gt;&gt;
-TeamScore
---
-+ totalPoints: Integer {Mandatory, Automapped}
-+ rankInLeague: Integer {Mandatory, Automapped}
-bg=GREEN</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>687</x>
-      <y>303</y>
-      <w>126</w>
-      <h>66</h>
-    </coordinates>
-    <panel_attributes>lt=-&gt;
-m1=*
-m2=1
-belongs to &gt;</panel_attributes>
-    <additional_attributes>400.0;200.0;10.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>807</x>
-      <y>387</y>
-      <w>33</w>
-      <h>78</h>
-    </coordinates>
-    <panel_attributes>lt=-&gt;
-m1=*
-m2=1
-belongs to &gt;</panel_attributes>
-    <additional_attributes>10.0;240.0;10.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>UMLClass</id>
-    <coordinates>
-      <x>54</x>
-      <y>354</y>
-      <w>117</w>
-      <h>39</h>
+      <x>490</x>
+      <y>524</y>
+      <w>78</w>
+      <h>26</h>
     </coordinates>
     <panel_attributes>&lt;&lt;Entity&gt;&gt;
 PORStats
@@ -464,10 +389,10 @@ bg=GREEN</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>54</x>
-      <y>423</y>
-      <w>117</w>
-      <h>45</h>
+      <x>490</x>
+      <y>570</y>
+      <w>78</w>
+      <h>30</h>
     </coordinates>
     <panel_attributes>&lt;&lt;Entity&gt;&gt;
 DEFStats
@@ -484,10 +409,10 @@ bg=GREEN</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>51</x>
-      <y>495</y>
-      <w>123</w>
-      <h>45</h>
+      <x>488</x>
+      <y>618</y>
+      <w>82</w>
+      <h>30</h>
     </coordinates>
     <panel_attributes>&lt;&lt;Entity&gt;&gt;
 MIDStats
@@ -504,10 +429,10 @@ bg=GREEN</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>51</x>
-      <y>564</y>
-      <w>126</w>
-      <h>33</h>
+      <x>488</x>
+      <y>664</y>
+      <w>84</w>
+      <h>22</h>
     </coordinates>
     <panel_attributes>&lt;&lt;Entity&gt;&gt;
 DELStats
@@ -523,10 +448,10 @@ bg=GREEN</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>168</x>
-      <y>372</y>
-      <w>123</w>
-      <h>108</h>
+      <x>566</x>
+      <y>536</y>
+      <w>82</w>
+      <h>72</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 m1=1
@@ -537,10 +462,10 @@ belongs to &gt;</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>168</x>
-      <y>447</y>
-      <w>123</w>
-      <h>39</h>
+      <x>566</x>
+      <y>586</y>
+      <w>82</w>
+      <h>26</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 m1=1
@@ -551,10 +476,10 @@ belongs to &gt;</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>171</x>
-      <y>483</y>
-      <w>120</w>
-      <h>45</h>
+      <x>568</x>
+      <y>610</y>
+      <w>80</w>
+      <h>30</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 m1=1
@@ -565,10 +490,10 @@ belongs to &gt;</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>174</x>
-      <y>489</y>
-      <w>117</w>
-      <h>99</h>
+      <x>570</x>
+      <y>614</y>
+      <w>78</w>
+      <h>66</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 m1=1
@@ -579,10 +504,10 @@ belongs to &gt;</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>957</x>
-      <y>186</y>
-      <w>60</w>
-      <h>21</h>
+      <x>734</x>
+      <y>332</y>
+      <w>40</w>
+      <h>14</h>
     </coordinates>
     <panel_attributes>&lt;&lt;Entity&gt;&gt;
 notificationLeague
@@ -594,15 +519,62 @@ bg=GREEN</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>984</x>
-      <y>204</y>
-      <w>33</w>
-      <h>42</h>
+      <x>772</x>
+      <y>334</y>
+      <w>48</w>
+      <h>10</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 m1=*
 m2=0..1
 belongs to &gt;</panel_attributes>
-    <additional_attributes>10.0;120.0;10.0;10.0</additional_attributes>
+    <additional_attributes>220.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>628</x>
+      <y>344</y>
+      <w>100</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+m1=*
+m2=1
+belongs to &gt;</panel_attributes>
+    <additional_attributes>480.0;580.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>470</x>
+      <y>178</y>
+      <w>354</w>
+      <h>302</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+m1=*
+m2=1
+belongs to &gt;</panel_attributes>
+    <additional_attributes>920.0;1490.0;30.0;1050.0;10.0;40.0;1750.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>962</x>
+      <y>594</y>
+      <w>32</w>
+      <h>22</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Enum&gt;&gt;
+Position
+--
+POR
+DEF
+MID
+DEL
+
+bg=BLUE</panel_attributes>
+    <additional_attributes/>
   </element>
 </diagram>

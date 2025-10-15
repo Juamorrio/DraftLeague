@@ -1,22 +1,30 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import Layout from './components/layout';
+import React from 'react';
 
 export default function App() {
+  const [active, setActive] = React.useState('home');
+
   return (
-    <View style={styles.container}>
-      <Layout>
-        <Text>hola</Text>
-      </Layout>
-      <StatusBar style="auto" />
-    </View>
+    <Layout
+      activeKey={active}
+      onNavigate={(key) => {
+        setActive(key);
+      }}
+    >
+      <View style={styles.container}>
+          <StatusBar style="auto" />
+          <Text></Text>
+        </View>
+    </Layout>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#b02c2cff',
+    backgroundColor: '#ffffffff',
     alignItems: 'center',
     justifyContent: 'center',
   },

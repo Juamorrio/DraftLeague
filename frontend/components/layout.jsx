@@ -11,8 +11,7 @@ import cart2 from '../assets/layout/cart white.png'
 import robot2 from '../assets/layout/robot white.png'
 import home from '../assets/layout/home.png'
 import home2 from '../assets/layout/home white.png'
-import { Image } from 'expo-image';
-
+import { Image } from 'react-native';
 export default function Layout({ children, onNavigate, activeKey }) {
 	const navItems = [
 		{ key: 'home', label: 'Home', type: 'image', activeSrc: home2, inactiveSrc: home },
@@ -87,6 +86,7 @@ export default function Layout({ children, onNavigate, activeKey }) {
 
 const styles = StyleSheet.create({
 	container: {
+		marginBottom: 20,
 		flex: 1,
 		backgroundColor: '#fff',
 	},
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
 	},
 	footer: {
 		height: 72,
-		backgroundColor: '#074230ff',
+		backgroundColor: '#156215ff',
 		borderRadius: 18,
 		flexDirection: 'row',
 		alignItems: 'center',

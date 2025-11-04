@@ -2,7 +2,12 @@ package com.DraftLeague.models.League;
 
 import java.util.Date;
 
+import com.DraftLeague.models.Chat.Chat;
+import com.DraftLeague.models.Notification.NotificationLeague;
+import com.DraftLeague.models.Player.PlayerTeam;
+
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -65,4 +70,14 @@ public class League {
     @Min(1)
     @Column(name = "ranking")
     private Integer ranking; 
+
+    @ManyToOne(optional = false)
+    @NotNull
+    @Valid
+    private Chat chat;
+
+    @ManyToOne(optional = true)
+    @NotNull
+    @Valid
+    private NotificationLeague notificationLeague;
 }

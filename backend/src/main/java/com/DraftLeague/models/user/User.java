@@ -1,18 +1,22 @@
 package com.DraftLeague.models.user;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
-import org.springframework.format.annotation.DateTimeFormat;
+import com.DraftLeague.models.Chat.Message;
+import com.DraftLeague.models.Notification.Notification;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.JoinColumn;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -48,10 +52,12 @@ public class User  {
 	@Size(max = 40)
 	private String displayName;
 
-	@NotNull
-	@Past
-	@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-	private Date createdAt = new Date();
+	@ManyToOne
+	@JoinColumn(name = "notification_id", nullable = true)
+	private Notification notification; // Optional: a user can exist without an associated notification
+
+	@ManyToOne
+	@JoinColumn(name = "message_id", nullable = true)
+	private Message message; // Optional: a user can exist without an associated message
 
 }
-

@@ -16,8 +16,6 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/users")
-//@SecurityRequirement(name = "bearerAuth")
-//@Tag(name = "User", description = "Methods of User")
 public class UserRestController {
 
     private UserService userService;

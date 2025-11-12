@@ -1,6 +1,7 @@
 package com.DraftLeague.models.Statistics;
 
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,4 +31,8 @@ public class DELStats {
     @Min(0)
     @Column(name = "offsides")
     private Integer offsides;
+
+    @Valid
+    @OneToOne(optional = true)
+    private PlayerStatistic playerStatistic;
 }

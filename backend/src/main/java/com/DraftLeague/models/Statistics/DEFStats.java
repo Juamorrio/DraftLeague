@@ -1,6 +1,7 @@
 package com.DraftLeague.models.Statistics;
 
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,4 +40,8 @@ public class DEFStats {
     @Min(0)
     @Column(name = "duels_lost")
     private Integer duelsLost;
+
+    @Valid
+    @OneToOne(optional = true)
+    private PlayerStatistic playerStatistic;
 }

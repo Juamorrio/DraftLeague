@@ -29,4 +29,8 @@ public class PlayerTeam {
     @Column(name = "sell_price", nullable = false)
     private Integer sellPrice;
 
+    @ManyToOne
+    @NotNull
+    private Player player;
+
 }

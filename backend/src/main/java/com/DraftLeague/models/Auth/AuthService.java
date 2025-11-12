@@ -24,7 +24,6 @@ public class AuthService {
         Authentication auth = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
-        // If authentication succeeds, issue token for the user
         User user = userRepository.findUserByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         return AuthResponse.builder().token(jwtService.getToken(user)).build();

@@ -48,6 +48,22 @@ public class RefreshTokenService {
         repository.findByTokenHash(hash).ifPresent(rt -> { rt.setRevoked(true); repository.save(rt); });
     }
 
+    public RefreshToken validateActive(String raw) {
+        String hash = sha256Hex(raw);
+        RefreshToken rt = repository.findByTokenHash(hash)
+            .orElseThrow(() -> new RuntimeException("Refresh token inválido"));
+        if (rt.getRevoked()) throw new RuntimeException("Refresh token revocado");
+        if (rt.getExpiresAt().isBefore(Instant.now())) throw new RuntimeException("Refresh token expirado");
+        return rt;
+    }
+
+    public Pair rotate(String raw) {
+        RefreshToken current = validateActive(raw);
+        current.setRevoked(true);
+        repository.save(current);
+        return issue(current.getUser());
+    }
+
     static String generateRaw() {
         byte[] bytes = new byte[48];
         RANDOM.nextBytes(bytes);

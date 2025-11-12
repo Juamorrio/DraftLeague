@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import com.DraftLeague.models.Auth.dto.TokenView;
 import com.DraftLeague.models.Auth.RefreshTokenRepository;
+import com.DraftLeague.models.Auth.RefreshTokenService;
+import com.DraftLeague.models.Auth.JwtService;
 import com.DraftLeague.models.user.UserRepository;
 import com.DraftLeague.models.user.User;
 
@@ -20,6 +22,8 @@ public class AuthController {
     private final AuthService authService;
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
+    private final RefreshTokenService refreshTokenService;
+    private final JwtService jwtService;
     
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
@@ -29,6 +33,16 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.ok(authService.register(request));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse> refresh(@RequestBody RefreshRequest request) {
+        var pair = refreshTokenService.rotate(request.getRefreshToken());
+        var user = pair.entity.getUser();
+        return ResponseEntity.ok(AuthResponse.builder()
+            .token(jwtService.getToken(user))
+            .refreshToken(pair.raw)
+            .build());
     }
 
     @GetMapping("/tokens/{userId}")

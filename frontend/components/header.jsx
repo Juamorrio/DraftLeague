@@ -7,7 +7,7 @@ import logo from '../assets/header/Logo.png'
 import bell from '../assets/header/bell.png'
 import settings from '../assets/header/gear.png'
 
-const Header = ({ userIcon, logoIcon, notificationIcon, settingsIcon }) => {
+const Header = ({ userIcon, logoIcon, notificationIcon, settingsIcon, onLogout }) => {
   return (
     <LinearGradient
       colors={['#197319ff', '#013055']}
@@ -27,7 +27,7 @@ const Header = ({ userIcon, logoIcon, notificationIcon, settingsIcon }) => {
         <Image source={bell} style={{ width: 30, height: 32 }} />
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.iconContainer}>
+      <TouchableOpacity style={styles.iconContainer} onPress={onLogout}>
         <Image source={settings} style={{ width: 30, height: 30 }} />
       </TouchableOpacity>
     </LinearGradient>

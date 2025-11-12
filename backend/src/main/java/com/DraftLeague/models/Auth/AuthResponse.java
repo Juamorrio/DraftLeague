@@ -10,12 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthResponse {
-    private String token;
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken() {
-    }
+    private String token;        // access token (JWT)
+    private String refreshToken; // raw refresh token (only returned to client)
 }

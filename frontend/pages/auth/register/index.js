@@ -6,7 +6,7 @@ import { validateRegister } from '../../../services/validation/registerValidatio
 
 
 
-export default function Register({ onRegistered }) {
+export default function Register({ onRegistered, onSwitchToLogin }) {
 	const [username, setUsername] = useState('');
 	const [displayName, setDisplayName] = useState('');
 	const [email, setEmail] = useState('');
@@ -120,6 +120,10 @@ export default function Register({ onRegistered }) {
 						<Text style={styles.buttonText}>Registrar</Text>
 					)}
 				</TouchableOpacity>
+
+				<TouchableOpacity style={styles.linkButton} onPress={onSwitchToLogin}>
+					<Text style={styles.linkText}>¿Ya tienes cuenta? Inicia sesión</Text>
+				</TouchableOpacity>
 			</LinearGradient>
 		</View>
 	);
@@ -190,6 +194,14 @@ const styles = StyleSheet.create({
 		paddingVertical: 6,
 		marginTop: 8,
 		fontWeight: '600',
+	},
+	linkButton: {
+		marginTop: 12,
+		alignItems: 'center',
+	},
+	linkText: {
+		color: '#e2e8f0',
+		textDecorationLine: 'underline',
 	},
 });
 

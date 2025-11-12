@@ -4,18 +4,21 @@ import Layout from './components/layout';
 import React from 'react';
 import Header from './components/header';
 import Register from './pages/auth/register';
+import Login from './pages/auth/login';
 import authService from './services/authService';
 
 export default function App() {
   const [active, setActive] = React.useState('home');
   const [authed, setAuthed] = React.useState(false);
   const [checking, setChecking] = React.useState(true);
+  const [authMode, setAuthMode] = React.useState('login'); 
+  
 
   React.useEffect(() => {
     (async () => {
       try {
-        const token = await authService.getToken();
-        setAuthed(!!token);
+        const ok = await authService.tryRefreshOnLaunch();
+        setAuthed(ok);
       } finally {
         setChecking(false);
       }
@@ -35,14 +38,24 @@ export default function App() {
     return (
       <View style={styles.container}>
         <StatusBar style="auto" />
-        <Register onRegistered={() => setAuthed(true)} />
+        {authMode === 'login' ? (
+          <Login
+            onLoggedIn={() => setAuthed(true)}
+            onSwitchToRegister={() => setAuthMode('register')}
+          />
+        ) : (
+          <Register
+            onRegistered={() => setAuthed(true)}
+            onSwitchToLogin={() => setAuthMode('login')}
+          />
+        )}
       </View>
     );
   }
 
   return (
     <>
-      <Header />
+  <Header onLogout={async () => { await authService.logout(); setAuthed(false); }} />
       <Layout
         activeKey={active}
         onNavigate={(key) => {

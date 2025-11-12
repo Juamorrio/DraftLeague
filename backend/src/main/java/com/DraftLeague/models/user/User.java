@@ -1,7 +1,5 @@
 package com.DraftLeague.models.user;
 
-import java.time.LocalDateTime;
-
 import com.DraftLeague.models.Chat.Message;
 import com.DraftLeague.models.Notification.Notification;
 
@@ -10,8 +8,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.JoinColumn;
@@ -54,10 +50,10 @@ public class User  {
 
 	@ManyToOne
 	@JoinColumn(name = "notification_id", nullable = true)
-	private Notification notification; // Optional: a user can exist without an associated notification
+	private Notification notification;
 
 	@ManyToOne
 	@JoinColumn(name = "message_id", nullable = true)
-	private Message message; // Optional: a user can exist without an associated message
+	private Message message; 
 
 }

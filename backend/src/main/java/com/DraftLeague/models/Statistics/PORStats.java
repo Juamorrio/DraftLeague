@@ -2,6 +2,7 @@ package com.DraftLeague.models.Statistics;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,4 +33,7 @@ public class PORStats {
     @Column(name = "clean_sheet", nullable = false)
     private Boolean cleanSheet;
 
+    @Valid
+    @OneToOne(optional = true)
+    private PlayerStatistic playerStatistic;
 }

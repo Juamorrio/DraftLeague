@@ -2,7 +2,10 @@ package com.DraftLeague.models.Chat;
 
 import java.util.Date;
 
+import com.DraftLeague.models.Player.PlayerTeam;
+
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.PastOrPresent;
@@ -29,4 +32,9 @@ public class Message {
     @PastOrPresent
     @Column(name = "sent_at", nullable = false, updatable = false)
     private Date sentAt;
+
+    @ManyToOne(optional = false)
+    @NotNull
+    @Valid
+    private Chat chat;
 }

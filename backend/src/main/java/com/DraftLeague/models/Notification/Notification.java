@@ -2,6 +2,7 @@ package com.DraftLeague.models.Notification;
 import java.util.Date;
 
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
@@ -32,4 +33,9 @@ public class Notification {
     @PastOrPresent
     @Column(name = "created_at", nullable = false, updatable = false)
     private Date createdAt;
+
+    @ManyToOne(optional = false)
+    @NotNull
+    @Valid
+    private NotificationLeague notificationLeague;
 }

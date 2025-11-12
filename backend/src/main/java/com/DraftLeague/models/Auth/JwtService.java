@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Value;
 @Service
 public class JwtService {
 
-    // Prefer property or env var. Fallback is a stable dev-only secret.
     @Value("${jwt.secret:}")
     private String jwtSecretProperty;
 
@@ -50,17 +49,14 @@ public class JwtService {
         try {
             keyBytes = Base64.getDecoder().decode(secret);
         } catch (IllegalArgumentException ex) {
-            // Not valid Base64, treat as plaintext
             keyBytes = secret.getBytes(StandardCharsets.UTF_8);
         }
 
-        // Ensure at least 256 bits for HS256
         if (keyBytes.length < 32) {
             try {
                 MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
                 keyBytes = sha256.digest(keyBytes);
             } catch (NoSuchAlgorithmException e) {
-                // Fallback: zero-pad/truncate to 32 bytes
                 keyBytes = Arrays.copyOf(keyBytes, 32);
             }
         }
@@ -78,7 +74,6 @@ public class JwtService {
         return DEFAULT_DEV_SECRET;
     }
 
-    // --- Validation helpers ---
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }

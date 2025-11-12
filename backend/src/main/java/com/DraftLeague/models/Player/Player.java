@@ -1,6 +1,10 @@
 package com.DraftLeague.models.Player;
 
+import com.DraftLeague.models.Score.PlayerScore;
+import com.DraftLeague.models.Statistics.PlayerStatistic;
+
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -41,4 +45,14 @@ public class Player {
     @Min(0)
     @Column(name = "total_points", nullable = false)
     private Integer totalPoints;
+
+    @ManyToOne(optional = false)
+    @NotNull
+    @Valid
+    private PlayerScore playerScore;
+
+    @ManyToOne(optional = false)
+    @NotNull
+    @Valid
+    private PlayerStatistic playerStatistic;
 }

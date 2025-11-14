@@ -1,6 +1,34 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 
-const BASE_URL = 'http://192.168.1.103:8080';
+
+const API_OVERRIDE_KEY = 'auth.apiBaseOverride';
+
+function deriveHostFromExpo() {
+  const hostUri = Constants.expoConfig?.hostUri || Constants.manifest2?.extra?.expoClient?.hostUri;
+  if (!hostUri) return null;
+  const host = hostUri.split(':')[0];
+  if (!host) return null;
+  return `http://${host}:8080`;
+}
+
+async function getBaseUrl() {
+  const override = await AsyncStorage.getItem(API_OVERRIDE_KEY);
+  if (override) return override;
+  const envBase = Constants.expoConfig?.extra?.EXPO_PUBLIC_API_BASE || process.env.EXPO_PUBLIC_API_BASE;
+  if (envBase) return envBase;
+  const derived = deriveHostFromExpo();
+  if (derived) return derived;
+  return __DEV__ ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
+}
+
+export async function setApiBaseOverride(url) {
+  if (url) await AsyncStorage.setItem(API_OVERRIDE_KEY, url);
+}
+
+export async function clearApiBaseOverride() {
+  await AsyncStorage.removeItem(API_OVERRIDE_KEY);
+}
 const ACCESS_TOKEN_KEY = 'auth.accessToken';
 const REFRESH_TOKEN_KEY = 'auth.refreshToken';
 
@@ -43,7 +71,8 @@ async function handleAuthResponse(res) {
 }
 
 export async function register({ username, password, email, displayName }) {
-  const res = await fetch(`${BASE_URL}/auth/register`, {
+  const base = await getBaseUrl();
+  const res = await fetch(`${base}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, password, email, displayName })
@@ -52,7 +81,8 @@ export async function register({ username, password, email, displayName }) {
 }
 
 export async function login({ username, password }) {
-  const res = await fetch(`${BASE_URL}/auth/login`, {
+  const base = await getBaseUrl();
+  const res = await fetch(`${base}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, password })
@@ -63,7 +93,8 @@ export async function login({ username, password }) {
 export async function refresh() {
   const refreshToken = await getRefreshToken();
   if (!refreshToken) throw new AuthError('No hay refresh token', 'NO_REFRESH');
-  const res = await fetch(`${BASE_URL}/auth/refresh`, {
+  const base = await getBaseUrl();
+  const res = await fetch(`${base}/auth/refresh`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ refreshToken })
@@ -72,7 +103,6 @@ export async function refresh() {
     const data = await handleAuthResponse(res);
     return data;
   } catch (e) {
-    // If refresh fails, clear tokens
     await clearTokens();
     throw new AuthError(e?.message || 'Refresh failed', 'REFRESH_FAILED');
   }
@@ -92,20 +122,21 @@ export async function tryRefreshOnLaunch() {
 }
 
 export async function authenticatedFetch(input, init = {}) {
+  const base = await getBaseUrl();
+  const url = input.startsWith('http') ? input : `${base}${input.startsWith('/') ? '' : '/'}${input}`;
   const token = await getAccessToken();
   const headers = {
     ...(init.headers || {}),
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
-  const exec = async () => fetch(input, { ...init, headers });
+  const exec = async () => fetch(url, { ...init, headers });
   let res = await exec();
   if (res.status === 401) {
-    // try refresh once
     try {
       await refresh();
       const token2 = await getAccessToken();
       const headers2 = { ...(init.headers || {}), ...(token2 ? { Authorization: `Bearer ${token2}` } : {}) };
-      res = await fetch(input, { ...init, headers: headers2 });
+      res = await fetch(url, { ...init, headers: headers2 });
     } catch (e) {
       throw new AuthError('Sesión expirada. Inicia sesión de nuevo.', 'UNAUTHORIZED');
     }
@@ -127,4 +158,6 @@ export default {
   tryRefreshOnLaunch,
   logout,
   clearTokens,
+  setApiBaseOverride,
+  clearApiBaseOverride,
 };

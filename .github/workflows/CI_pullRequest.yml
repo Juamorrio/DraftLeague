@@ -28,16 +28,28 @@ jobs:
               core.setOutput('skip', 'false');
             }
 
+      - name: Extract commit title
+        id: commit_meta
+        run: |
+          RAW_MSG="${{ github.event.head_commit.message }}"
+          FIRST_LINE=$(echo "$RAW_MSG" | head -n1 | tr -d '\r')
+          # Limitar a 120 chars por seguridad
+          TITLE_TRUNC=$(echo "$FIRST_LINE" | cut -c1-120)
+          echo "title=$TITLE_TRUNC" >> $GITHUB_OUTPUT
+          echo "Commit title usado para PR: $TITLE_TRUNC"
+
       - name: Create pull request
         if: steps.pr_check.outputs.skip == 'false'
         uses: repo-sync/pull-request@v2
         with:
           source_branch: develop
           destination_branch: main
-          pr_title: "Sync develop -> main"
+          pr_title: ${{ steps.commit_meta.outputs.title }}
           pr_body: |
             Pull request automático generado por push a `develop`.
-            Revisa los cambios y aprueba para integrar en `main`.
+            Título = primera línea del último commit.
+            Último commit completo:
+            ${{ github.event.head_commit.message }}
           pr_label: auto-pr
           github_token: ${{ secrets.GITHUB_TOKEN }}
 

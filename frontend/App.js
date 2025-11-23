@@ -6,6 +6,7 @@ import Header from './components/header';
 import Register from './pages/auth/register';
 import Login from './pages/auth/login';
 import authService from './services/authService';
+import Leagues from './pages/Leagues/leagues';
 
 export default function App() {
   const [active, setActive] = React.useState('home');
@@ -62,10 +63,14 @@ export default function App() {
           setActive(key);
         }}
       >
-        <View style={styles.container}>
-          <StatusBar style="auto" />
-          <Text>Contenido de la app</Text>
-        </View>
+        {active === 'league' ? (
+          <Leagues />
+        ) : (
+          <View style={styles.container}>
+            <StatusBar style="auto" />
+            <Text>Contenido de la app</Text>
+          </View>
+        )}
       </Layout>
     </>
   );

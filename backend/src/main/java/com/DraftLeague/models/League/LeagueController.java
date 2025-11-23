@@ -1,5 +1,7 @@
 package com.DraftLeague.models.League;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,9 +11,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import com.DraftLeague.models.League.dto.CreateLeagueRequest;
 
 @RestController
-@RequestMapping("/api/v1/leagues")
+@RequestMapping({"/api/v1/leagues","/api/v1"})
 public class LeagueController {
 
     private final LeagueService leagueService;
@@ -21,8 +25,8 @@ public class LeagueController {
     }
 
     @PostMapping
-    public ResponseEntity<League> createLeague(@RequestBody League league) {
-        League createdLeague = leagueService.createLeague(league);
+    public ResponseEntity<League> createLeague(@Valid @RequestBody CreateLeagueRequest request) {
+        League createdLeague = leagueService.createLeague(request);
         return ResponseEntity.ok(createdLeague);
     }
 
@@ -30,6 +34,18 @@ public class LeagueController {
     public ResponseEntity<League> getLeagueById(@PathVariable Long id) {
         League league = leagueService.getLeagueById(id);
         return ResponseEntity.ok(league);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<League>> getAllLeagues() {
+        List<League> leagues = leagueService.getAllLeagues();
+        return ResponseEntity.ok(leagues);
+    }
+
+    @GetMapping("/users/{userId}/leagues")
+    public ResponseEntity<List<League>> getLeaguesByUserId(@PathVariable Integer userId) {
+        List<League> leagues = leagueService.getLeaguesByUserId(userId);
+        return ResponseEntity.ok(leagues);
     }
 
     @PutMapping("/{id}")

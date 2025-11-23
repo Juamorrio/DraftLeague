@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons, MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import footballPidge from '../assets/layout/football-field.png'
@@ -12,38 +12,25 @@ import robot2 from '../assets/layout/robot white.png'
 import home from '../assets/layout/home.png'
 import home2 from '../assets/layout/home white.png'
 import { Image } from 'react-native';
+import { useLeague } from '../context/LeagueContext';
 export default function Layout({ children, onNavigate, activeKey }) {
-	const navItems = [
+	const { selectedLeague } = useLeague();
+	const baseItems = [
 		{ key: 'home', label: 'Home', type: 'image', activeSrc: home2, inactiveSrc: home },
-		{
-			key: 'team',
-			label: 'Equipo',
-			type: 'image',
-			activeSrc: footballPidge2,
-			inactiveSrc: footballPidge,
-		},
-		{
-			key: 'league',
-			label: 'Ligas',
-			type: 'image',
-			activeSrc: trophy2,
-			inactiveSrc: trophy,
-		},
-		{
-			key: 'market',
-			label: 'Mercado',
-			type: 'image',
-			activeSrc: cart2,
-			inactiveSrc: cart,
-		},
-		{
-			key: 'robot',
-			label: 'IA',
-			type: 'image',
-			activeSrc: robot2,
-			inactiveSrc: robot,
-		},
+		{ key: 'league', label: 'Ligas', type: 'image', activeSrc: trophy2, inactiveSrc: trophy },
 	];
+	const extraItems = [
+		{ key: 'team', label: 'Equipo', type: 'image', activeSrc: footballPidge2, inactiveSrc: footballPidge },
+		{ key: 'market', label: 'Mercado', type: 'image', activeSrc: cart2, inactiveSrc: cart },
+		{ key: 'robot', label: 'IA', type: 'image', activeSrc: robot2, inactiveSrc: robot },
+	];
+	const navItems = selectedLeague ? [...baseItems.slice(0,1), ...extraItems, baseItems[1]] : baseItems; 
+
+	useEffect(() => {
+		if (!selectedLeague && !['home', 'league'].includes(activeKey)) {
+			onNavigate && onNavigate('home');
+		}
+	}, [selectedLeague, activeKey, onNavigate]);
 
 	return (
 		<View style={styles.container}>

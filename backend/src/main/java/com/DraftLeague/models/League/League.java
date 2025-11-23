@@ -2,12 +2,7 @@ package com.DraftLeague.models.League;
 
 import java.util.Date;
 
-import com.DraftLeague.models.Chat.Chat;
-import com.DraftLeague.models.Notification.NotificationLeague;
-import com.DraftLeague.models.Player.PlayerTeam;
-
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -55,9 +50,8 @@ public class League {
     private Integer initialBudget;
 
     @NotNull
-    @Temporal(TemporalType.TIME)
     @Column(name = "market_end_hour", nullable = false)
-    private Date marketEndHour;
+    private String marketEndHour;
 
     @NotNull
     @Column(name = "captain_enable", nullable = false)
@@ -71,13 +65,11 @@ public class League {
     @Column(name = "ranking")
     private Integer ranking; 
 
-    @ManyToOne(optional = false)
-    @NotNull
-    @Valid
-    private Chat chat;
+    //@ManyToOne(optional = true)
+    //@Valid
+    //private Chat chat;
 
-    @ManyToOne(optional = true)
-    @NotNull
-    @Valid
-    private NotificationLeague notificationLeague;
+    //@ManyToOne(optional = true)
+    //@Valid
+    //private NotificationLeague notificationLeague;
 }

@@ -29,7 +29,12 @@ public class JwtService {
     private static final String DEFAULT_DEV_SECRET = "dev-secret-key-change-me-32-bytes-minimum-2025";
 
     public String getToken(User user) {
-        return getToken(new HashMap<>(), user);
+        HashMap<String,Object> claims = new HashMap<>();
+        // Claims básicos para lectura rápida en frontend
+        claims.put("uid", user.getId());
+        claims.put("displayName", user.getDisplayName());
+        claims.put("email", user.getEmail());
+        return getToken(claims, user);
     }
 
     public String getToken(HashMap<String, Object> claims, User user) {
@@ -103,4 +108,6 @@ public class JwtService {
                 .parseClaimsJws(token)
                 .getBody();
     }
+
+    
 }

@@ -11,6 +11,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.DraftLeague.models.Auth.JwtService;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -34,17 +36,23 @@ public class jwtAuthenticationFilter extends OncePerRequestFilter {
         final String token = getTokenFromRequest(request);
 
         if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            final String username = jwtService.extractUsername(token);
-            if (username != null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                if (jwtService.isTokenValid(token, userDetails)) {
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
-                            userDetails.getAuthorities());
-                    authToken.setDetails(new org.springframework.security.web.authentication.WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
+            try {
+                final String username = jwtService.extractUsername(token);
+                if (username != null) {
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                    if (jwtService.isTokenValid(token, userDetails)) {
+                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities());
+                        authToken.setDetails(new org.springframework.security.web.authentication.WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authToken);
+                    }
                 }
+            } catch (ExpiredJwtException ex) {
+                // Token expirado: no autenticamos, permitimos que fluya para que se devuelva 401 y el frontend refresque.
+            } catch (JwtException ex) {
+                // Cualquier otro problema con el token: ignorar autenticación.
             }
         }
 

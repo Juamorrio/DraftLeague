@@ -56,4 +56,6 @@ public class User  {
 	@JoinColumn(name = "message_id", nullable = true)
 	private Message message; 
 
+	
+
 }

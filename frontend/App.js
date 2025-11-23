@@ -1,12 +1,33 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import Layout from './components/layout';
+import { LeagueProvider, useLeague } from './context/LeagueContext';
 import React from 'react';
 import Header from './components/header';
 import Register from './pages/auth/register';
 import Login from './pages/auth/login';
 import authService from './services/authService';
 import Leagues from './pages/Leagues/leagues';
+
+
+function TeamPlaceholder() {
+  const { selectedLeague } = useLeague();
+  return (
+    <View style={styles.container}><Text>Equipo de {selectedLeague?.name}</Text></View>
+  );
+}
+function MarketPlaceholder() {
+  const { selectedLeague } = useLeague();
+  return (
+    <View style={styles.container}><Text>Mercado de {selectedLeague?.name}</Text></View>
+  );
+}
+function RobotPlaceholder() {
+  const { selectedLeague } = useLeague();
+  return (
+    <View style={styles.container}><Text>IA de {selectedLeague?.name}</Text></View>
+  );
+}
 
 export default function App() {
   const [active, setActive] = React.useState('home');
@@ -55,24 +76,29 @@ export default function App() {
   }
 
   return (
-    <>
-  <Header onLogout={async () => { await authService.logout(); setAuthed(false); }} />
+    <LeagueProvider>
+      <Header onLogout={async () => { await authService.logout(); setAuthed(false); }} />
       <Layout
         activeKey={active}
         onNavigate={(key) => {
           setActive(key);
         }}
       >
-        {active === 'league' ? (
-          <Leagues />
-        ) : (
+        {active === 'league' && <Leagues />}
+        {active === 'home' && (
           <View style={styles.container}>
             <StatusBar style="auto" />
-            <Text>Contenido de la app</Text>
+            <Text>Bienvenido</Text>
           </View>
         )}
+        {active === 'team' && <TeamPlaceholder />}
+        {active === 'market' && <MarketPlaceholder />}
+        {active === 'robot' && <RobotPlaceholder />}
+        {!['home','league','team','market','robot'].includes(active) && (
+          <View style={styles.container}><Text>Pantalla no definida</Text></View>
+        )}
       </Layout>
-    </>
+    </LeagueProvider>
   );
 }
 

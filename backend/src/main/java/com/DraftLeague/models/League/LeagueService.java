@@ -2,6 +2,7 @@ package com.DraftLeague.models.League;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.springframework.stereotype.Service;
@@ -38,7 +39,6 @@ public class LeagueService {
         league.setCode(generateUniqueCode());
         League saved = leagueRepository.save(league);
 
-        // Crear equipo para el usuario autenticado
         try {
             var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
             if (auth != null && auth.isAuthenticated()) {
@@ -110,5 +110,50 @@ public class LeagueService {
                                     .distinct()
                                     .toList();
         return leagues;
+    }
+
+    public List<Map<String,Object>> getRanking(Long leagueId) {
+        League league = getLeagueById(leagueId);
+        List<Team> teams = teamRepository.findByLeagueOrderByTotalPointsDesc(league);
+        final int[] pos = {1};
+        java.util.List<Map<String,Object>> list = new java.util.ArrayList<>();
+        for (Team t : teams) {
+            java.util.Map<String,Object> row = new java.util.HashMap<>();
+            row.put("teamId", t.getId());
+            row.put("userId", t.getUser().getId());
+            row.put("userDisplayName", t.getUser().getDisplayName());
+            row.put("totalPoints", t.getTotalPoints() == null ? 0 : t.getTotalPoints());
+            row.put("position", pos[0]++);
+            list.add(row);
+        }
+        return list;
+    }
+
+    public League joinLeagueByCode(String code) {
+        if (code == null || code.trim().isEmpty()) throw new RuntimeException("Código inválido");
+        League league = leagueRepository.findByCode(code.trim().toUpperCase())
+            .orElseThrow(() -> new RuntimeException("Liga no encontrada"));
+        var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) throw new RuntimeException("No autenticado");
+        String username = auth.getName();
+        User user = userRepository.findUserByUsername(username).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        if (!teamRepository.findByLeagueAndUser(league, user).isEmpty()) {
+            throw new RuntimeException("Ya estás en esta liga");
+        }
+        long count = teamRepository.countByLeague(league);
+        if (league.getMaxTeams() != null && count >= league.getMaxTeams()) {
+            throw new RuntimeException("La liga está completa");
+        }
+        Team team = new Team();
+        team.setLeague(league);
+        team.setUser(user);
+        team.setBudget(league.getInitialBudget());
+        team.setCreatedAt(new Date());
+        team.setGameweekPoints(0);
+        team.setTotalPoints(0);
+        team.setWildcardUsed(false);
+        team.setCaptainId(null);
+        teamRepository.save(team);
+        return league;
     }
 }

@@ -16,6 +16,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import authService, { refresh } from '../../services/authService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FormLeague from './formLeague';
+import RankingLeague from './rankingLeague';
+import { useLeague } from '../../context/LeagueContext';
+import JoinLeagueModal from './joinLeagueModal';
 
 const DRAFT_KEY = 'leagues.createDraft';
 
@@ -33,6 +36,13 @@ export default function Leagues() {
 	const [captainEnable, setCaptainEnable] = useState(true);
 	const [wildCardsEnable, setWildCardsEnable] = useState(false);
 	const [leagues, setLeagues] = useState([]);
+
+	const [joinVisible, setJoinVisible] = useState(false);
+	const [joinCode, setJoinCode] = useState('');
+	const [joinError, setJoinError] = useState('');
+	const [joinLoading, setJoinLoading] = useState(false);
+
+	const { selectedLeague, setSelectedLeague } = useLeague();
 
 	useEffect(() => {
 		(async () => {
@@ -160,30 +170,69 @@ export default function Leagues() {
 		}
 	};
 
+	const handleJoin = async () => {
+		setJoinError('');
+		if (!joinCode.trim()) {
+			setJoinError('Introduce un código.');
+			return;
+		}
+		setJoinLoading(true);
+		try {
+			const res = await authService.authenticatedFetch('/api/v1/leagues/join', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ code: joinCode.trim() })
+			});
+			if (!res.ok) {
+				const txt = await res.text();
+				throw new Error(txt || 'Error al unirse');
+			}
+			Alert.alert('Unión correcta', 'Te has unido a la liga.');
+			setJoinVisible(false);
+			setJoinCode('');
+			await getLeagues();
+		} catch (e) {
+			setJoinError((e?.message || 'Error').replace(/\s+/g, ' '));
+		} finally {
+			setJoinLoading(false);
+		}
+	};
+
 	const LeagueCard = ({ league }) => {
 		const pts = league.points ?? league.pts ?? '-';
 		const pos = league.position ?? league.ranking ?? '-';
 		const participants = league.participants ?? league.currentTeams ?? league.maxTeams ?? '-';
+		const showCode = () => {
+			Alert.alert('Código de la liga', league.code ? String(league.code) : 'Sin código');
+		};
+		const openRanking = () => setSelectedLeague(league);
 		return (
 			<View style={styles.leagueCard}>
 				<View style={styles.leagueFlagWrapper}>
 					<Text style={styles.star}>★</Text>
 					<Text style={styles.flagEmoji}>🇪🇸</Text>
 				</View>
-				<View style={styles.leagueInfo}>
+				<TouchableOpacity style={styles.leagueInfo} onPress={openRanking} activeOpacity={0.8}>
 					<Text style={styles.leagueName}>{league.name}</Text>
 					<Text style={styles.leagueMeta}>Pts: {pts}   Posición: {pos}   Participantes: {participants}</Text>
-				</View>
-				<Image source={require('../../assets/header/gear.png')} style={styles.gearIcon} />
+				</TouchableOpacity>
+				<TouchableOpacity onPress={showCode} style={styles.gearBtn} hitSlop={{top:8,bottom:8,left:8,right:8}}>
+					<Image source={require('../../assets/header/gear.png')} style={styles.gearIcon} />
+				</TouchableOpacity>
 			</View>
 		);
 	};
 
 	return (
 		<View style={styles.screen}>
-			<TouchableOpacity style={styles.createBtn} onPress={() => setCreating(true)}>
-				<Text style={styles.createBtnText}>Crear liga</Text>
-			</TouchableOpacity>
+			<View style={styles.topButtons}>
+				<TouchableOpacity style={styles.primaryBtn} onPress={() => setCreating(true)} activeOpacity={0.85}>
+					<Text style={styles.primaryBtnText}>Crear liga</Text>
+				</TouchableOpacity>
+				<TouchableOpacity style={styles.secondaryBtn} onPress={() => setJoinVisible(true)} activeOpacity={0.85}>
+					<Text style={styles.secondaryBtnText}>Unirse a liga</Text>
+				</TouchableOpacity>
+			</View>
 			<FormLeague
 				visible={creating}
 				onClose={closeModal}
@@ -206,22 +255,41 @@ export default function Leagues() {
 				error={error}
 				onCreate={handleCreate}
 			/>
-			<ScrollView style={styles.list} contentContainerStyle={styles.listContent}>
-				{leagues.map(l => (
-					<LeagueCard key={l.id || l.code || l.name} league={l} />
-				))}
-				{leagues.length === 0 && user && (
-					<Text style={styles.empty}>No tienes ligas todavía.</Text>
-				)}
-			</ScrollView>
+			{!selectedLeague && (
+				<ScrollView style={styles.list} contentContainerStyle={styles.listContent}>
+					{leagues.map(l => (
+						<LeagueCard key={l.id || l.code || l.name} league={l} />
+					))}
+					{leagues.length === 0 && user && (
+						<Text style={styles.empty}>No tienes ligas todavía.</Text>
+					)}
+				</ScrollView>
+			)}
+			{selectedLeague && (
+				<RankingLeague league={selectedLeague} onBack={() => setSelectedLeague(null)} />
+			)}
+			<JoinLeagueModal
+				visible={joinVisible}
+				onClose={() => { setJoinVisible(false); setJoinCode(''); setJoinError(''); }}
+				code={joinCode}
+				setCode={setJoinCode}
+				onJoin={handleJoin}
+				loading={joinLoading}
+				error={joinError}
+			/>
 		</View>
 	);
 }
 
 const styles = StyleSheet.create({
-    screen: { flex: 1, alignItems: 'flex-end', justifyContent: 'flex-start', paddingTop: 16, paddingRight: 16 },
-    createBtn: { backgroundColor: '#1d4ed8', paddingHorizontal: 20, paddingVertical: 12, borderRadius: 10 },
-    createBtnText: { color: '#fff', fontWeight: '700' },
+	    screen: { flex: 1, alignItems: 'stretch', justifyContent: 'flex-start', paddingTop: 12 },
+		topButtons: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, marginBottom: 8 },
+	primaryBtn: { backgroundColor: '#1d4ed8', paddingHorizontal: 20, paddingVertical: 12, borderRadius: 10 },
+	primaryBtnText: { color: '#fff', fontWeight: '700' },
+	secondaryBtn: { backgroundColor: '#111827', paddingHorizontal: 20, paddingVertical: 12, borderRadius: 10 },
+	secondaryBtnText: { color:'#fff', fontWeight:'700' },
+	    backBtn: { backgroundColor: '#6b7280', paddingHorizontal: 16, paddingVertical: 12, borderRadius: 10 },
+	    backBtnText: { color: '#fff', fontWeight: '700' },
 
     modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.35)', alignItems: 'center', justifyContent: 'center', padding: 16 },
 	modalCard: { width: '94%', maxWidth: 520, maxHeight: '90%', borderRadius: 18, paddingVertical: 20, paddingHorizontal: 20 },
@@ -248,7 +316,7 @@ const styles = StyleSheet.create({
         marginTop: 8,
         fontWeight: '600',
     },
-	list: { marginTop: 16, alignSelf: 'stretch' },
+	list: { marginTop: 8, alignSelf: 'stretch', paddingHorizontal: 8 },
 	listContent: { paddingBottom: 40, paddingLeft: 8, paddingRight: 8, gap: 12 },
 	leagueCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#e1e1e1', borderRadius: 22, paddingVertical: 10, paddingHorizontal: 14, gap: 14, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 4, shadowOffset: { width: 0, height: 2 } },
 	leagueFlagWrapper: { alignItems: 'center', justifyContent: 'center', width: 50 },
@@ -257,7 +325,9 @@ const styles = StyleSheet.create({
 	leagueInfo: { flex: 1 },
 	leagueName: { fontSize: 18, fontWeight: '700', color: '#111827' },
 	leagueMeta: { marginTop: 4, fontSize: 12, color: '#374151', fontWeight: '500' },
-	gearIcon: { width: 24, height: 24, tintColor: '#111827', marginLeft: 6 },
-	empty: { textAlign: 'center', color: '#6b7280', marginTop: 30, fontSize: 14 }
+	gearIcon: { width: 24, height: 24, tintColor: '#111827' },
+	gearBtn: { paddingLeft: 6, justifyContent: 'center', alignItems: 'center' },
+	empty: { textAlign: 'center', color: '#6b7280', marginTop: 30, fontSize: 14 },
+
 });
 

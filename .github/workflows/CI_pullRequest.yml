@@ -1,4 +1,4 @@
-name: Auto PR from develop to main
+name: Auto pull request from develop to main
 
 on:
   push:

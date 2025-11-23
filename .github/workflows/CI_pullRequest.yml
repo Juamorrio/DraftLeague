@@ -1,0 +1,47 @@
+name: Auto PR from develop to main
+
+on:
+  push:
+    branches: [ develop ]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Ensure no existing open PR (develop -> main)
+        id: pr_check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: pulls } = await github.rest.pulls.list({ owner: context.repo.owner, repo: context.repo.repo, state: 'open', base: 'main', head: `${context.repo.owner}:develop` });
+            if (pulls.length > 0) {
+              core.setOutput('skip', 'true');
+              core.notice(`PR ya existe (#${pulls[0].number}). No se creará otro.`);
+            } else {
+              core.setOutput('skip', 'false');
+            }
+
+      - name: Create pull request
+        if: steps.pr_check.outputs.skip == 'false'
+        uses: repo-sync/pull-request@v2
+        with:
+          source_branch: develop
+          destination_branch: main
+          pr_title: "Sync develop -> main"
+          pr_body: |
+            Pull request automático generado por push a `develop`.
+            Revisa los cambios y aprueba para integrar en `main`.
+          pr_label: auto-pr
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Output result
+        run: |
+          if [ "${{ steps.pr_check.outputs.skip }}" = "true" ]; then echo "PR existente. Nada que hacer."; else echo "PR creado o actualizado."; fi
+  

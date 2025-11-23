@@ -65,8 +65,7 @@ public class Team {
     @Valid
     private League league;
 
-    @ManyToOne(optional = false)
-    @NotNull
+    @ManyToOne(optional = true)
     @Valid
-    private PlayerTeam playerTeam;
+    private PlayerTeam playerTeam; // ahora opcional para permitir crear equipo sin plantilla inicial
 }

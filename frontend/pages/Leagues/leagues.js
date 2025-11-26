@@ -116,7 +116,6 @@ export default function Leagues() {
 	const handleCreate = async () => {
 		setError('');
 		setFieldErrors({});
-		// Validación por campo
 		const errs = {};
 		if (name.trim().length < 3) errs.name = 'El nombre es obligatorio (mín. 3)';
 		const mt = parseInt(maxTeams || '0', 10);

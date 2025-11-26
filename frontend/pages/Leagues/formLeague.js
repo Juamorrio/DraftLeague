@@ -22,6 +22,7 @@ export default function FormLeague({
 	canSubmit,
 	loading,
 	error,
+	fieldErrors = {},
 	onCreate,
 }) {
 	return (
@@ -32,7 +33,8 @@ export default function FormLeague({
 
 					<View style={styles.row}>
 						<Text style={styles.label}>Nombre:</Text>
-						<TextInput value={name} onChangeText={setName} style={styles.input} />
+						<TextInput value={name} onChangeText={setName} style={[styles.input, fieldErrors.name ? styles.inputError : null]} />
+						{fieldErrors.name ? <Text style={styles.errorText}>{fieldErrors.name}</Text> : null}
 					</View>
 
 					<View style={styles.row}>
@@ -42,17 +44,20 @@ export default function FormLeague({
 
 					<View style={styles.row}>
 						<Text style={styles.label}>Equipos máx.:</Text>
-						<TextInput value={maxTeams} onChangeText={setMaxTeams} keyboardType="number-pad" style={styles.input} />
+						<TextInput value={maxTeams} onChangeText={setMaxTeams} keyboardType="number-pad" style={[styles.input, fieldErrors.maxTeams ? styles.inputError : null]} />
+						{fieldErrors.maxTeams ? <Text style={styles.errorText}>{fieldErrors.maxTeams}</Text> : null}
 					</View>
 
 					<View style={styles.row}>
 						<Text style={styles.label}>Presupuesto inicial:</Text>
-						<TextInput value={initialBudget} onChangeText={setInitialBudget} keyboardType="number-pad" style={styles.input} />
+						<TextInput value={initialBudget} onChangeText={setInitialBudget} keyboardType="number-pad" style={[styles.input, fieldErrors.initialBudget ? styles.inputError : null]} />
+						{fieldErrors.initialBudget ? <Text style={styles.errorText}>{fieldErrors.initialBudget}</Text> : null}
 					</View>
 
 					<View style={styles.row}>
 						<Text style={styles.label}>Cierre mercado (HH:mm):</Text>
-						<TextInput value={marketEndHour} onChangeText={setMarketEndHour} style={styles.input} />
+						<TextInput value={marketEndHour} onChangeText={setMarketEndHour} style={[styles.input, fieldErrors.marketEndHour ? styles.inputError : null]} />
+						{fieldErrors.marketEndHour ? <Text style={styles.errorText}>{fieldErrors.marketEndHour}</Text> : null}
 					</View>
 
 					<View style={styles.rowSwitch}>
@@ -93,6 +98,7 @@ const styles = StyleSheet.create({
 	rowSwitch: { marginTop: 8, paddingHorizontal: 6, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
 	label: { color: '#e2e8f0', marginBottom: 6, fontWeight: '600' },
 	input: { backgroundColor: '#ffffff', borderRadius: 12, paddingHorizontal: 12, height: 42, color: '#0f172a' },
+	inputError: { borderWidth: 1, borderColor: '#ef4444' },
 	actions: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: 12, gap: 10 },
 	actionBtn: { paddingHorizontal: 18, paddingVertical: 10, borderRadius: 10 },
 	cancel: { backgroundColor: '#6b7280' },
@@ -107,5 +113,6 @@ const styles = StyleSheet.create({
 		marginTop: 8,
 		fontWeight: '600',
 	},
+		errorText: { color: '#fecaca', marginTop: 6, fontSize: 12, fontWeight: '600' },
 	actionText: { color: '#fff', fontWeight: '700' },
 });

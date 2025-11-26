@@ -14,12 +14,14 @@ export default function Register({ onRegistered, onSwitchToLogin }) {
 	const [confirmPassword, setConfirmPassword] = useState('');
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState('');
+	const [errors, setErrors] = useState({ username: '', displayName: '', email: '', password: '', confirmPassword: '' });
 
 	const handleSubmit = async () => {
 		setError('');
+		setErrors({ username: '', displayName: '', email: '', password: '', confirmPassword: '' });
 		const errs = validateRegister({ username, displayName, email, password, confirmPassword });
 		if (Object.keys(errs).length) {
-			setError(Object.values(errs)[0]);
+			setErrors(prev => ({ ...prev, ...errs }));
 			return;
 		}
 		setLoading(true);
@@ -35,7 +37,14 @@ export default function Register({ onRegistered, onSwitchToLogin }) {
 			setPassword('');
 			setConfirmPassword('');
 		} catch (e) {
-			setError((e?.message || 'Error').replace(/\s+/g, ' '));
+			let msg = (e?.message || 'Error').trim();
+			try {
+				const parsed = JSON.parse(msg);
+				msg = parsed?.message || msg;
+			} catch {}
+			if (/user(name)?\s*exists|duplic/i.test(msg)) setErrors(prev => ({ ...prev, username: 'El nombre de usuario ya existe' }));
+			else if (/email\s*exists|duplic/i.test(msg)) setErrors(prev => ({ ...prev, email: 'El email ya está registrado' }));
+			else setError(msg.replace(/\s+/g, ' '));
 		} finally {
 			setLoading(false);
 		}
@@ -58,9 +67,10 @@ export default function Register({ onRegistered, onSwitchToLogin }) {
 						placeholderTextColor="#94a3b8"
 						value={username}
 						onChangeText={setUsername}
-						style={styles.input}
+						style={[styles.input, errors.username ? styles.inputError : null]}
 						autoCapitalize="none"
 					/>
+					{errors.username ? <Text style={styles.errorText}>{errors.username}</Text> : null}
 				</View>
 
 				<View style={styles.field}>
@@ -70,8 +80,9 @@ export default function Register({ onRegistered, onSwitchToLogin }) {
 						placeholderTextColor="#94a3b8"
 						value={displayName}
 						onChangeText={setDisplayName}
-						style={styles.input}
+						style={[styles.input, errors.displayName ? styles.inputError : null]}
 					/>
+					{errors.displayName ? <Text style={styles.errorText}>{errors.displayName}</Text> : null}
 				</View>
 
 				<View style={styles.field}>
@@ -81,9 +92,10 @@ export default function Register({ onRegistered, onSwitchToLogin }) {
 						placeholderTextColor="#94a3b8"
 						value={password}
 						onChangeText={setPassword}
-						style={styles.input}
+						style={[styles.input, errors.password ? styles.inputError : null]}
 						secureTextEntry
 					/>
+					{errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
 				</View>
 
 				<View style={styles.field}>
@@ -93,9 +105,10 @@ export default function Register({ onRegistered, onSwitchToLogin }) {
 						placeholderTextColor="#94a3b8"
 						value={confirmPassword}
 						onChangeText={setConfirmPassword}
-						style={styles.input}
+						style={[styles.input, errors.confirmPassword ? styles.inputError : null]}
 						secureTextEntry
 					/>
+					{errors.confirmPassword ? <Text style={styles.errorText}>{errors.confirmPassword}</Text> : null}
 				</View>
 
 				<View style={styles.field}>
@@ -105,10 +118,11 @@ export default function Register({ onRegistered, onSwitchToLogin }) {
 						placeholderTextColor="#94a3b8"
 						value={email}
 						onChangeText={setEmail}
-						style={styles.input}
+						style={[styles.input, errors.email ? styles.inputError : null]}
 						autoCapitalize="none"
 						keyboardType="email-address"
 					/>
+					{errors.email ? <Text style={styles.errorText}>{errors.email}</Text> : null}
 				</View>
 
 				{error ? <Text style={styles.error}>{error}</Text> : null}
@@ -174,6 +188,10 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		color: '#0f172a',
 	},
+    inputError: {
+      borderWidth: 1,
+      borderColor: '#ef4444',
+    },
 	button: {
 		marginTop: 16,
 		backgroundColor: '#1d4ed8',
@@ -195,6 +213,12 @@ const styles = StyleSheet.create({
 		marginTop: 8,
 		fontWeight: '600',
 	},
+    errorText: {
+      color: '#fecaca',
+      marginTop: 6,
+      fontSize: 12,
+      fontWeight: '600',
+    },
 	linkButton: {
 		marginTop: 12,
 		alignItems: 'center',

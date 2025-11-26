@@ -1,0 +1,29 @@
+name: Conventiional Commits Validation
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  validate-commits:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Validate Commit 
+        run: |
+          git log --oneline FETCH_HEAD | while read -r commit; do
+            message=$(echo "$commit" | sed 's/^[a-f0-9]* //')
+
+            if [[ "$message" =~ ^Merge ]]; then
+              continue  # Saltar la validación si es un commit de fusión
+            fi
+
+            if [[ ! "$message" =~ ^(feat|fix|test|config|docs|migrations):[[:space:]]+ ]]; then
+              echo "Invalid commit message: $message"
+              echo "Expected format: 'Type: Title' where Type is one of [feat, fix, test, config, docs, migrations]."
+              exit 1
+            fi
+          done

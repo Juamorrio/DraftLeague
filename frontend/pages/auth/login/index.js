@@ -8,11 +8,16 @@ export default function Login({ onLoggedIn, onSwitchToRegister }) {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [errors, setErrors] = useState({ username: '', password: '' });
 
   const handleSubmit = async () => {
     setError('');
-    if (!username || !password) {
-      setError('Usuario y contraseña son obligatorios');
+    setErrors({ username: '', password: '' });
+    const localErrors = {};
+    if (!username) localErrors.username = 'El usuario es obligatorio';
+    if (!password) localErrors.password = 'La contraseña es obligatoria';
+    if (Object.keys(localErrors).length) {
+      setErrors(prev => ({ ...prev, ...localErrors }));
       return;
     }
     setLoading(true);
@@ -22,7 +27,16 @@ export default function Login({ onLoggedIn, onSwitchToRegister }) {
       setUsername('');
       setPassword('');
     } catch (e) {
-      setError((e?.message || 'Error').replace(/\s+/g, ' '));
+      let msg = (e?.message || 'Error').trim();
+      try {
+        const parsed = JSON.parse(msg);
+        msg = parsed?.message || msg;
+      } catch {}
+      if (/bad credentials/i.test(msg)) {
+        setErrors(prev => ({ ...prev, password: 'Usuario o contraseña incorrectos' }));
+      } else {
+        setError(msg.replace(/\s+/g, ' '));
+      }
     } finally {
       setLoading(false);
     }
@@ -43,9 +57,10 @@ export default function Login({ onLoggedIn, onSwitchToRegister }) {
           <TextInput
             value={username}
             onChangeText={setUsername}
-            style={styles.input}
+            style={[styles.input, errors.username ? styles.inputError : null]}
             autoCapitalize="none"
           />
+          {errors.username ? <Text style={styles.errorText}>{errors.username}</Text> : null}
         </View>
 
         <View style={styles.field}>
@@ -53,9 +68,10 @@ export default function Login({ onLoggedIn, onSwitchToRegister }) {
           <TextInput
             value={password}
             onChangeText={setPassword}
-            style={styles.input}
+            style={[styles.input, errors.password ? styles.inputError : null]}
             secureTextEntry
           />
+          {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
         </View>
 
         {error ? <Text style={styles.error}>{error}</Text> : null}
@@ -121,6 +137,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#0f172a',
   },
+  inputError: {
+    borderWidth: 1,
+    borderColor: '#ef4444',
+  },
   button: {
     marginTop: 16,
     backgroundColor: '#1d4ed8',
@@ -140,6 +160,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     marginTop: 8,
+    fontWeight: '600',
+  },
+  errorText: {
+    color: '#fecaca',
+    marginTop: 6,
+    fontSize: 12,
     fontWeight: '600',
   },
   linkButton: {

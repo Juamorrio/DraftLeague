@@ -36,6 +36,7 @@ export default function Leagues() {
 	const [captainEnable, setCaptainEnable] = useState(true);
 	const [wildCardsEnable, setWildCardsEnable] = useState(false);
 	const [leagues, setLeagues] = useState([]);
+	const [fieldErrors, setFieldErrors] = useState({});
 
 	const [joinVisible, setJoinVisible] = useState(false);
 	const [joinCode, setJoinCode] = useState('');
@@ -92,7 +93,7 @@ export default function Leagues() {
 	}, []);
 
 	const canSubmit = useMemo(() => {
-		return name.trim().length > 0;
+		return name.trim().length > 0; // el resto se valida al guardar para mostrar mensajes por campo
 	}, [name]);
 
 	const resetForm = () => {
@@ -114,10 +115,16 @@ export default function Leagues() {
 
 	const handleCreate = async () => {
 		setError('');
-		if (!canSubmit) {
-			setError('Revisa el nombre.');
-			return;
-		}
+		setFieldErrors({});
+		// Validación por campo
+		const errs = {};
+		if (name.trim().length < 3) errs.name = 'El nombre es obligatorio (mín. 3)';
+		const mt = parseInt(maxTeams || '0', 10);
+		if (!Number.isFinite(mt) || mt < 2) errs.maxTeams = 'Mínimo 2 equipos';
+		const ib = parseInt(initialBudget || 'NaN', 10);
+		if (!Number.isFinite(ib) || ib < 0) errs.initialBudget = 'Presupuesto inválido';
+		if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(marketEndHour || '')) errs.marketEndHour = 'Formato HH:mm (00-23)';
+		if (Object.keys(errs).length) { setFieldErrors(errs); return; }
 		setLoading(true);
 		try {
 			const payload = {
@@ -146,7 +153,9 @@ export default function Leagues() {
 			resetForm();
 			try { await AsyncStorage.removeItem(DRAFT_KEY); } catch {}
 		} catch (e) {
-			setError((e?.message || 'Error').replace(/\s+/g, ' '));
+			let msg = (e?.message || 'Error').trim();
+			try { const parsed = JSON.parse(msg); msg = parsed?.message || msg; } catch {}
+			setError(msg.replace(/\s+/g, ' '));
 		} finally {
 			setLoading(false);
 		}
@@ -253,6 +262,7 @@ export default function Leagues() {
 				canSubmit={canSubmit}
 				loading={loading}
 				error={error}
+				fieldErrors={fieldErrors}
 				onCreate={handleCreate}
 			/>
 			{!selectedLeague && (

@@ -8,14 +8,9 @@ import Register from './pages/auth/register';
 import Login from './pages/auth/login';
 import authService from './services/authService';
 import Leagues from './pages/Leagues/leagues';
+import Team from './pages/Teams/team';
 
 
-function TeamPlaceholder() {
-  const { selectedLeague } = useLeague();
-  return (
-    <View style={styles.container}><Text>Equipo de {selectedLeague?.name}</Text></View>
-  );
-}
 function MarketPlaceholder() {
   const { selectedLeague } = useLeague();
   return (
@@ -91,7 +86,7 @@ export default function App() {
             <Text>Bienvenido</Text>
           </View>
         )}
-        {active === 'team' && <TeamPlaceholder />}
+        {active === 'team' && <Team />}
         {active === 'market' && <MarketPlaceholder />}
         {active === 'robot' && <RobotPlaceholder />}
         {!['home','league','team','market','robot'].includes(active) && (

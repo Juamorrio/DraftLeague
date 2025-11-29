@@ -21,6 +21,11 @@ public class PlayerController {
         this.playerService = playerService;
     }
 
+    @GetMapping
+    public ResponseEntity<java.util.List<Player>> getAllPlayers() {
+        return ResponseEntity.ok(playerService.getAllPlayers());
+    }
+
     @PostMapping
     public ResponseEntity<Player> createPlayer(@RequestBody Player player) {
         Player createdPlayer = playerService.createPlayer(player);

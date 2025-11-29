@@ -17,7 +17,6 @@ public class AuthService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-    private final RefreshTokenService refreshTokenService;
     private final PasswordEncoder passwordEncoder;
 
     public AuthResponse login(LoginRequest request) {
@@ -26,10 +25,8 @@ public class AuthService {
         );
         User user = userRepository.findUserByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        RefreshTokenService.Pair pair = refreshTokenService.issue(user);
         return AuthResponse.builder()
             .token(jwtService.getToken(user))
-            .refreshToken(pair.raw)
             .build();
     }
 
@@ -41,10 +38,8 @@ public class AuthService {
         user.setDisplayName(request.getDisplayName());
         
         userRepository.save(user);
-        RefreshTokenService.Pair pair = refreshTokenService.issue(user);
         return AuthResponse.builder()
             .token(jwtService.getToken(user))
-            .refreshToken(pair.raw)
             .build();
     }
 

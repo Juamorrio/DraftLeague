@@ -49,7 +49,6 @@ export async function clearApiBaseOverride() {
   await AsyncStorage.removeItem(API_OVERRIDE_KEY);
 }
 const ACCESS_TOKEN_KEY = 'auth.accessToken';
-const REFRESH_TOKEN_KEY = 'auth.refreshToken';
 
 class AuthError extends Error {
   constructor(message, code = 'AUTH') {
@@ -59,9 +58,8 @@ class AuthError extends Error {
   }
 }
 
-async function saveTokens(token, refreshToken) {
+async function saveTokens(token) {
   if (token) await AsyncStorage.setItem(ACCESS_TOKEN_KEY, token);
-  if (refreshToken) await AsyncStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
 }
 
 export async function getAccessToken() {
@@ -105,12 +103,10 @@ export async function getCurrentUser() {
   }
 }
 
-export async function getRefreshToken() {
-  return AsyncStorage.getItem(REFRESH_TOKEN_KEY);
-}
+// No refresh token used
 
 export async function clearTokens() {
-  await AsyncStorage.multiRemove([ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY]);
+  await AsyncStorage.removeItem(ACCESS_TOKEN_KEY);
 }
 
 async function handleAuthResponse(res) {
@@ -119,9 +115,9 @@ async function handleAuthResponse(res) {
     throw new Error(text || `Error ${res.status}`);
   }
   const data = await res.json();
-  // Expecting { token, refreshToken }
-  if (data?.token || data?.refreshToken) {
-    await saveTokens(data.token, data.refreshToken);
+  // Expecting { token }
+  if (data?.token) {
+    await saveTokens(data.token);
   }
   return data;
 }
@@ -146,23 +142,7 @@ export async function login({ username, password }) {
   return handleAuthResponse(res);
 }
 
-export async function refresh() {
-  const refreshToken = await getRefreshToken();
-  if (!refreshToken) throw new AuthError('No hay refresh token', 'NO_REFRESH');
-  const base = await getBaseUrl();
-  const res = await fetch(`${base}/auth/refresh`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ refreshToken })
-  });
-  try {
-    const data = await handleAuthResponse(res);
-    return data;
-  } catch (e) {
-    await clearTokens();
-    throw new AuthError(e?.message || 'Refresh failed', 'REFRESH_FAILED');
-  }
-}
+// No refresh endpoint; user must re-login when JWT expires
 
 function isExpiredPayload(payload) {
   if (!payload || typeof payload.exp !== 'number') return true; // si no hay exp lo tratamos como expirado para forzar login
@@ -178,22 +158,9 @@ function isNearExpiry(payload, seconds = 300) { // 5 min
 
 export async function tryRefreshOnLaunch() {
   const token = await getAccessToken();
-  if (!token) {
-    // no access token: intentar refresh si hay refresh token
-    const r = await getRefreshToken();
-    if (!r) return false;
-    try { await refresh(); return true; } catch { return false; }
-  }
-  // tenemos token: inspeccionar expiración
+  if (!token) return false;
   const payload = await decodeAccessToken();
-  if (isExpiredPayload(payload)) {
-    // expirado: intentar refresh con refresh token
-    try { await refresh(); return true; } catch { await clearTokens(); return false; }
-  }
-  // si está por expirar pronto, refrescar preventivamente
-  if (isNearExpiry(payload)) {
-    try { await refresh(); } catch {/* si falla, seguirá válido unos minutos o se forzará login al siguiente 401 */}
-  }
+  if (isExpiredPayload(payload)) { await clearTokens(); return false; }
   return true;
 }
 
@@ -206,20 +173,10 @@ export async function authenticatedFetch(input, init = {}) {
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
   const exec = async () => fetch(url, { ...init, headers });
-  let res = await exec();
+  const res = await exec();
   if (res.status === 401) {
-    // Antes de refrescar, verificar si el token está expirado
-    const payload = await decodeAccessToken();
-    const expired = isExpiredPayload(payload);
-    try {
-      await refresh();
-      const token2 = await getAccessToken();
-      const headers2 = { ...(init.headers || {}), ...(token2 ? { Authorization: `Bearer ${token2}` } : {}) };
-      res = await fetch(url, { ...init, headers: headers2 });
-    } catch (e) {
-      await clearTokens();
-      throw new AuthError(expired ? 'Sesión expirada. Inicia sesión.' : 'No autorizado.', 'UNAUTHORIZED');
-    }
+    await clearTokens();
+    throw new AuthError('No autorizado. Inicia sesión.', 'UNAUTHORIZED');
   }
   return res;
 }
@@ -231,12 +188,10 @@ export async function logout() {
 export default {
   register,
   login,
-  refresh,
   authenticatedFetch,
   getAccessToken,
   decodeAccessToken,
   getCurrentUser,
-  getRefreshToken,
   tryRefreshOnLaunch,
   logout,
   clearTokens,

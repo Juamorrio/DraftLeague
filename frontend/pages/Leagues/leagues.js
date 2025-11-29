@@ -22,7 +22,7 @@ import JoinLeagueModal from './joinLeagueModal';
 
 const DRAFT_KEY = 'leagues.createDraft';
 
-export default function Leagues() {
+function Leagues() {
 	const [creating, setCreating] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState('');
@@ -93,7 +93,7 @@ export default function Leagues() {
 	}, []);
 
 	const canSubmit = useMemo(() => {
-		return name.trim().length > 0; // el resto se valida al guardar para mostrar mensajes por campo
+		return name.trim().length > 0; 
 	}, [name]);
 
 	const resetForm = () => {
@@ -146,11 +146,19 @@ export default function Leagues() {
 				const txt = await res.text();
 				throw new Error(txt || `Error ${res.status}`);
 			}
-			
+			const created = await res.json();
 			Alert.alert('Liga creada', 'Se ha creado la liga correctamente.');
+			// Cerrar modal y limpiar borrador
 			setCreating(false);
 			resetForm();
 			try { await AsyncStorage.removeItem(DRAFT_KEY); } catch {}
+			// Recargar listado y mostrar la liga creada
+			try {
+				await getLeagues();
+			} catch {}
+			if (created && typeof created === 'object') {
+				setSelectedLeague(created);
+			}
 		} catch (e) {
 			let msg = (e?.message || 'Error').trim();
 			try { const parsed = JSON.parse(msg); msg = parsed?.message || msg; } catch {}
@@ -289,6 +297,9 @@ export default function Leagues() {
 		</View>
 	);
 }
+
+import withAuth from '../../components/withAuth';
+export default withAuth(Leagues);
 
 const styles = StyleSheet.create({
 	    screen: { flex: 1, alignItems: 'stretch', justifyContent: 'flex-start', paddingTop: 12 },

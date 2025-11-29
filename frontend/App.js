@@ -36,6 +36,8 @@ export default function App() {
       try {
         const ok = await authService.tryRefreshOnLaunch();
         setAuthed(ok);
+        const onlyRegister = await authService.shouldShowRegisterOnly();
+        if (onlyRegister) setAuthMode('register');
       } finally {
         setChecking(false);
       }
@@ -55,15 +57,14 @@ export default function App() {
     return (
       <View style={styles.container}>
         <StatusBar style="auto" />
-        {authMode === 'login' ? (
+        {authMode === 'register' ? (
+          <Register
+            onRegistered={() => setAuthed(true)}
+          />
+        ) : (
           <Login
             onLoggedIn={() => setAuthed(true)}
             onSwitchToRegister={() => setAuthMode('register')}
-          />
-        ) : (
-          <Register
-            onRegistered={() => setAuthed(true)}
-            onSwitchToLogin={() => setAuthMode('login')}
           />
         )}
       </View>

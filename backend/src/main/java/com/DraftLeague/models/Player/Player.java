@@ -46,6 +46,9 @@ public class Player {
     @Column(name = "total_points", nullable = false)
     private Integer totalPoints;
 
+    @Column(name = "avatar_url", nullable = true)
+    private String avatarUrl;
+
     @ManyToOne(optional = false)
     @NotNull
     @Valid

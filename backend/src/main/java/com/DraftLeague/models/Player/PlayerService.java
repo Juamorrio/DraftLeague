@@ -19,6 +19,10 @@ public class PlayerService {
         return playerRepository.findById(id).orElseThrow(() -> new RuntimeException("Player not found"));
     }
 
+    public java.util.List<Player> getAllPlayers() {
+        return playerRepository.findAll();
+    }
+
     //public PlayerTeam updatePlayer(Long id, PlayerTeam player) {
         
     //}

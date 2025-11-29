@@ -148,11 +148,9 @@ function Leagues() {
 			}
 			const created = await res.json();
 			Alert.alert('Liga creada', 'Se ha creado la liga correctamente.');
-			// Cerrar modal y limpiar borrador
 			setCreating(false);
 			resetForm();
 			try { await AsyncStorage.removeItem(DRAFT_KEY); } catch {}
-			// Recargar listado y mostrar la liga creada
 			try {
 				await getLeagues();
 			} catch {}

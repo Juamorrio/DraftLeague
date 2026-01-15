@@ -43,7 +43,7 @@ jobs:
         uses: repo-sync/pull-request@v2
         with:
           source_branch: develop
-          destination_branch: main
+          destination_branch: trunk
           pr_title: ${{ steps.commit_meta.outputs.title }}
           pr_body: |
             Pull request automático generado por push a `develop`.

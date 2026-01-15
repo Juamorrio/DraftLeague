@@ -1,0 +1,4714 @@
+[
+  {
+    "id": "131509",
+    "fullName": "Hans-Dieter Flick",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/131509.png",
+    "teamId": "8634",
+    "marketValue": null
+  },
+  {
+    "id": "184554",
+    "fullName": "Marc-Andre ter Stegen",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/184554.png",
+    "teamId": "8634",
+    "marketValue": "€5.3M"
+  },
+  {
+    "id": "1167220",
+    "fullName": "Joan Garcia",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1167220.png",
+    "teamId": "8634",
+    "marketValue": "€25.7M"
+  },
+  {
+    "id": "169718",
+    "fullName": "Wojciech Szczesny",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/169718.png",
+    "teamId": "8634",
+    "marketValue": "€1.2M"
+  },
+  {
+    "id": "1818299",
+    "fullName": "Eder Aller",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1818299.png",
+    "teamId": "8634",
+    "marketValue": "€20K"
+  },
+  {
+    "id": "361757",
+    "fullName": "Joao Cancelo",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/361757.png",
+    "teamId": "8634",
+    "marketValue": "€10.8M"
+  },
+  {
+    "id": "1254166",
+    "fullName": "Alejandro Balde",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1254166.png",
+    "teamId": "8634",
+    "marketValue": "€63M"
+  },
+  {
+    "id": "921253",
+    "fullName": "Ronald Araujo",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/921253.png",
+    "teamId": "8634",
+    "marketValue": "€37.3M"
+  },
+  {
+    "id": "1532137",
+    "fullName": "Pau Cubarsi",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1532137.png",
+    "teamId": "8634",
+    "marketValue": "€132.8M"
+  },
+  {
+    "id": "449232",
+    "fullName": "Andreas Christensen",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/449232.png",
+    "teamId": "8634",
+    "marketValue": "€22.9M"
+  },
+  {
+    "id": "1598982",
+    "fullName": "Gerard Martin",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1598982.png",
+    "teamId": "8634",
+    "marketValue": "€15.7M"
+  },
+  {
+    "id": "705450",
+    "fullName": "Jules Koundé",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/705450.png",
+    "teamId": "8634",
+    "marketValue": "€55.3M"
+  },
+  {
+    "id": "940573",
+    "fullName": "Eric Garcia",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/940573.png",
+    "teamId": "8634",
+    "marketValue": "€19.1M"
+  },
+  {
+    "id": "1789791",
+    "fullName": "Jofre Torrents",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1789791.png",
+    "teamId": "8634",
+    "marketValue": "€1.7M"
+  },
+  {
+    "id": "1279040",
+    "fullName": "Gavi",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1279040.png",
+    "teamId": "8634",
+    "marketValue": "€49.6M"
+  },
+  {
+    "id": "1083323",
+    "fullName": "Pedri",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1083323.png",
+    "teamId": "8634",
+    "marketValue": "€102.9M"
+  },
+  {
+    "id": "1404415",
+    "fullName": "Fermin Lopez",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1404415.png",
+    "teamId": "8634",
+    "marketValue": "€63.5M"
+  },
+  {
+    "id": "1384883",
+    "fullName": "Marc Casado",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1384883.png",
+    "teamId": "8634",
+    "marketValue": "€34.7M"
+  },
+  {
+    "id": "614834",
+    "fullName": "Dani Olmo",
+    "position": "CM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/614834.png",
+    "teamId": "8634",
+    "marketValue": "€55M"
+  },
+  {
+    "id": "638622",
+    "fullName": "Frenkie de Jong",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/638622.png",
+    "teamId": "8634",
+    "marketValue": "€44.9M"
+  },
+  {
+    "id": "1573126",
+    "fullName": "Marc Bernal",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1573126.png",
+    "teamId": "8634",
+    "marketValue": "€13.9M"
+  },
+  {
+    "id": "1682313",
+    "fullName": "Dro Fernandez",
+    "position": "AM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1682313.png",
+    "teamId": "8634",
+    "marketValue": "€6.5M"
+  },
+  {
+    "id": "1777474",
+    "fullName": "Tomás Marqués",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1777474.png",
+    "teamId": "8634",
+    "marketValue": "€950K"
+  },
+  {
+    "id": "881771",
+    "fullName": "Ferran Torres",
+    "position": "LW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/881771.png",
+    "teamId": "8634",
+    "marketValue": "€47.4M"
+  },
+  {
+    "id": "93447",
+    "fullName": "Robert Lewandowski",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/93447.png",
+    "teamId": "8634",
+    "marketValue": "€9.3M"
+  },
+  {
+    "id": "1467236",
+    "fullName": "Lamine Yamal",
+    "position": "RW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1467236.png",
+    "teamId": "8634",
+    "marketValue": "€166.4M"
+  },
+  {
+    "id": "696679",
+    "fullName": "Raphinha",
+    "position": "LM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/696679.png",
+    "teamId": "8634",
+    "marketValue": "€92.6M"
+  },
+  {
+    "id": "696365",
+    "fullName": "Marcus Rashford",
+    "position": "RW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/696365.png",
+    "teamId": "8634",
+    "marketValue": "€52.2M"
+  },
+  {
+    "id": "1315475",
+    "fullName": "Roony Bardghji",
+    "position": "RW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1315475.png",
+    "teamId": "8634",
+    "marketValue": "€15.1M"
+  },
+  {
+    "id": "1665438",
+    "fullName": "Toni Fernandez",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1665438.png",
+    "teamId": "8634",
+    "marketValue": "€25K"
+  },
+  {
+    "id": "37442",
+    "fullName": "Alvaro Arbeloa",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/37442.png",
+    "teamId": "8633",
+    "marketValue": null
+  },
+  {
+    "id": "170323",
+    "fullName": "Thibaut Courtois",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/170323.png",
+    "teamId": "8633",
+    "marketValue": "€13M"
+  },
+  {
+    "id": "800882",
+    "fullName": "Andriy Lunin",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/800882.png",
+    "teamId": "8633",
+    "marketValue": "€19.4M"
+  },
+  {
+    "id": "1484851",
+    "fullName": "Fran González",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1484851.png",
+    "teamId": "8633",
+    "marketValue": "€450K"
+  },
+  {
+    "id": "282674",
+    "fullName": "Daniel Carvajal",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/282674.png",
+    "teamId": "8633",
+    "marketValue": "€3M"
+  },
+  {
+    "id": "844415",
+    "fullName": "Éder Militao",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/844415.png",
+    "teamId": "8633",
+    "marketValue": "€32.4M"
+  },
+  {
+    "id": "121633",
+    "fullName": "David Alaba",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/121633.png",
+    "teamId": "8633",
+    "marketValue": "€1.9M"
+  },
+  {
+    "id": "760712",
+    "fullName": "Trent Alexander-Arnold",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/760712.png",
+    "teamId": "8633",
+    "marketValue": "€67.6M"
+  },
+  {
+    "id": "1580528",
+    "fullName": "Raul Asencio",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1580528.png",
+    "teamId": "8633",
+    "marketValue": "€35.8M"
+  },
+  {
+    "id": "1190025",
+    "fullName": "Alvaro Carreras",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1190025.png",
+    "teamId": "8633",
+    "marketValue": "€58.2M"
+  },
+  {
+    "id": "750028",
+    "fullName": "Francisco Garcia",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/750028.png",
+    "teamId": "8633",
+    "marketValue": "€15.7M"
+  },
+  {
+    "id": "276738",
+    "fullName": "Antonio Rüdiger",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/276738.png",
+    "teamId": "8633",
+    "marketValue": "€10M"
+  },
+  {
+    "id": "623537",
+    "fullName": "Ferland Mendy",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/623537.png",
+    "teamId": "8633",
+    "marketValue": "€10.6M"
+  },
+  {
+    "id": "1367619",
+    "fullName": "Dean Huijsen",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1367619.png",
+    "teamId": "8633",
+    "marketValue": "€75.1M"
+  },
+  {
+    "id": "1413780",
+    "fullName": "David Jimenez",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1413780.png",
+    "teamId": "8633",
+    "marketValue": "€350K"
+  },
+  {
+    "id": "1077894",
+    "fullName": "Jude Bellingham",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1077894.png",
+    "teamId": "8633",
+    "marketValue": "€124.5M"
+  },
+  {
+    "id": "1015185",
+    "fullName": "Eduardo Camavinga",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1015185.png",
+    "teamId": "8633",
+    "marketValue": "€59M"
+  },
+  {
+    "id": "743533",
+    "fullName": "Federico Valverde",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/743533.png",
+    "teamId": "8633",
+    "marketValue": "€114.5M"
+  },
+  {
+    "id": "914458",
+    "fullName": "Aurélien Tchouaméni",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/914458.png",
+    "teamId": "8633",
+    "marketValue": "€72.9M"
+  },
+  {
+    "id": "1253890",
+    "fullName": "Arda Güler",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1253890.png",
+    "teamId": "8633",
+    "marketValue": "€68.5M"
+  },
+  {
+    "id": "531629",
+    "fullName": "Dani Ceballos",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/531629.png",
+    "teamId": "8633",
+    "marketValue": "€6.4M"
+  },
+  {
+    "id": "1807277",
+    "fullName": "Jorge Cestero",
+    "position": "CM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1807277.png",
+    "teamId": "8633",
+    "marketValue": "€3M"
+  },
+  {
+    "id": "846033",
+    "fullName": "Vinicius Junior",
+    "position": "LM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/846033.png",
+    "teamId": "8633",
+    "marketValue": "€98.8M"
+  },
+  {
+    "id": "701154",
+    "fullName": "Kylian Mbappé",
+    "position": "LW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/701154.png",
+    "teamId": "8633",
+    "marketValue": "€110M"
+  },
+  {
+    "id": "895362",
+    "fullName": "Rodrygo",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/895362.png",
+    "teamId": "8633",
+    "marketValue": "€75.4M"
+  },
+  {
+    "id": "1413847",
+    "fullName": "Gonzalo Garcia",
+    "position": "AM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1413847.png",
+    "teamId": "8633",
+    "marketValue": "€18.3M"
+  },
+  {
+    "id": "750027",
+    "fullName": "Brahim Díaz",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/750027.png",
+    "teamId": "8633",
+    "marketValue": "€35.6M"
+  },
+  {
+    "id": "1607566",
+    "fullName": "Franco Mastantuono",
+    "position": "RWB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1607566.png",
+    "teamId": "8633",
+    "marketValue": "€68.5M"
+  },
+  {
+    "id": "2642",
+    "fullName": "Diego Simeone",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/2642.png",
+    "teamId": "9906",
+    "marketValue": null
+  },
+  {
+    "id": "389050",
+    "fullName": "Juan Musso",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/389050.png",
+    "teamId": "9906",
+    "marketValue": "€2.4M"
+  },
+  {
+    "id": "177126",
+    "fullName": "Jan Oblak",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/177126.png",
+    "teamId": "9906",
+    "marketValue": "€17M"
+  },
+  {
+    "id": "474589",
+    "fullName": "José Giménez",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/474589.png",
+    "teamId": "9906",
+    "marketValue": "€14.1M"
+  },
+  {
+    "id": "1051097",
+    "fullName": "Matteo Ruggeri",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1051097.png",
+    "teamId": "9906",
+    "marketValue": "€19.5M"
+  },
+  {
+    "id": "602563",
+    "fullName": "Marcos Llorente",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/602563.png",
+    "teamId": "9906",
+    "marketValue": "€19.6M"
+  },
+  {
+    "id": "488412",
+    "fullName": "Clément Lenglet",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/488412.png",
+    "teamId": "9906",
+    "marketValue": "€4.1M"
+  },
+  {
+    "id": "726345",
+    "fullName": "Nahuel Molina",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/726345.png",
+    "teamId": "9906",
+    "marketValue": "€17.2M"
+  },
+  {
+    "id": "727897",
+    "fullName": "David Hancko",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/727897.png",
+    "teamId": "9906",
+    "marketValue": "€36.4M"
+  },
+  {
+    "id": "1323897",
+    "fullName": "Marc Pubill",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1323897.png",
+    "teamId": "9906",
+    "marketValue": "€18.4M"
+  },
+  {
+    "id": "609516",
+    "fullName": "Robin Le Normand",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/609516.png",
+    "teamId": "9906",
+    "marketValue": "€38.5M"
+  },
+  {
+    "id": "1527038",
+    "fullName": "Aleksa Puric",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1527038.png",
+    "teamId": "9906",
+    "marketValue": null
+  },
+  {
+    "id": "1173678",
+    "fullName": "Johnny Cardoso",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1173678.png",
+    "teamId": "9906",
+    "marketValue": "€25.5M"
+  },
+  {
+    "id": "184533",
+    "fullName": "Koke",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/184533.png",
+    "teamId": "9906",
+    "marketValue": "€3.7M"
+  },
+  {
+    "id": "1338192",
+    "fullName": "Pablo Barrios",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1338192.png",
+    "teamId": "9906",
+    "marketValue": "€60.3M"
+  },
+  {
+    "id": "942372",
+    "fullName": "Álex Baena",
+    "position": "CM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/942372.png",
+    "teamId": "9906",
+    "marketValue": "€56M"
+  },
+  {
+    "id": "955271",
+    "fullName": "Thiago Almada",
+    "position": "CM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/955271.png",
+    "teamId": "9906",
+    "marketValue": "€25M"
+  },
+  {
+    "id": "1226147",
+    "fullName": "Giuliano Simeone",
+    "position": "RWB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1226147.png",
+    "teamId": "9906",
+    "marketValue": "€44.4M"
+  },
+  {
+    "id": "841672",
+    "fullName": "Nicolás González",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/841672.png",
+    "teamId": "9906",
+    "marketValue": "€22.7M"
+  },
+  {
+    "id": "1825670",
+    "fullName": "Jorge Rajado",
+    "position": "LW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1825670.png",
+    "teamId": "9906",
+    "marketValue": null
+  },
+  {
+    "id": "184138",
+    "fullName": "Antoine Griezmann",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/184138.png",
+    "teamId": "9906",
+    "marketValue": "€7.6M"
+  },
+  {
+    "id": "440330",
+    "fullName": "Alexander Sørloth",
+    "position": "RW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/440330.png",
+    "teamId": "9906",
+    "marketValue": "€23.4M"
+  },
+  {
+    "id": "974753",
+    "fullName": "Julián Álvarez",
+    "position": "LW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/974753.png",
+    "teamId": "9906",
+    "marketValue": "€120M"
+  },
+  {
+    "id": "951743",
+    "fullName": "Giacomo Raspadori",
+    "position": "LM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/951743.png",
+    "teamId": "9906",
+    "marketValue": "€25.1M"
+  },
+  {
+    "id": "1825673",
+    "fullName": "Juan Alegre",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1825673.png",
+    "teamId": "9906",
+    "marketValue": null
+  },
+  {
+    "id": "245498",
+    "fullName": "Marcelino Garcia",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/245498.png",
+    "teamId": "10205",
+    "marketValue": null
+  },
+  {
+    "id": "1187044",
+    "fullName": "Luiz Junior",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1187044.png",
+    "teamId": "10205",
+    "marketValue": "€12.5M"
+  },
+  {
+    "id": "1022354",
+    "fullName": "Diego Conde",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1022354.png",
+    "teamId": "10205",
+    "marketValue": "€5.1M"
+  },
+  {
+    "id": "942375",
+    "fullName": "Arnau Tenas",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/942375.png",
+    "teamId": "10205",
+    "marketValue": "€4.4M"
+  },
+  {
+    "id": "922877",
+    "fullName": "Logan Costa",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/922877.png",
+    "teamId": "10205",
+    "marketValue": "€20.1M"
+  },
+  {
+    "id": "1313884",
+    "fullName": "Rafa Marin",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1313884.png",
+    "teamId": "10205",
+    "marketValue": "€12.9M"
+  },
+  {
+    "id": "1344550",
+    "fullName": "Willy Kambwala",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1344550.png",
+    "teamId": "10205",
+    "marketValue": "€6.6M"
+  },
+  {
+    "id": "833219",
+    "fullName": "Juan Foyth",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/833219.png",
+    "teamId": "10205",
+    "marketValue": "€15.9M"
+  },
+  {
+    "id": "1343750",
+    "fullName": "Renato Veiga",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1343750.png",
+    "teamId": "10205",
+    "marketValue": "€26.2M"
+  },
+  {
+    "id": "1407468",
+    "fullName": "Santiago Mourino",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1407468.png",
+    "teamId": "10205",
+    "marketValue": "€14.3M"
+  },
+  {
+    "id": "1059657",
+    "fullName": "Sergi Cardona",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1059657.png",
+    "teamId": "10205",
+    "marketValue": "€11.6M"
+  },
+  {
+    "id": "629594",
+    "fullName": "Alfonso Pedraza",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/629594.png",
+    "teamId": "10205",
+    "marketValue": "€1.6M"
+  },
+  {
+    "id": "1531887",
+    "fullName": "Pau Navarro",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1531887.png",
+    "teamId": "10205",
+    "marketValue": "€7.1M"
+  },
+  {
+    "id": "1433007",
+    "fullName": "Ismael Sierra",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1433007.png",
+    "teamId": "10205",
+    "marketValue": "€180K"
+  },
+  {
+    "id": "75307",
+    "fullName": "Daniel Parejo",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/75307.png",
+    "teamId": "10205",
+    "marketValue": "€1.1M"
+  },
+  {
+    "id": "1311915",
+    "fullName": "Ilias Akhomach",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1311915.png",
+    "teamId": "10205",
+    "marketValue": "€15.5M"
+  },
+  {
+    "id": "671865",
+    "fullName": "Santi Comesana",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/671865.png",
+    "teamId": "10205",
+    "marketValue": "€7M"
+  },
+  {
+    "id": "434325",
+    "fullName": "Thomas Partey",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/434325.png",
+    "teamId": "10205",
+    "marketValue": "€3.9M"
+  },
+  {
+    "id": "1026135",
+    "fullName": "Tajon Buchanan",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1026135.png",
+    "teamId": "10205",
+    "marketValue": "€10.2M"
+  },
+  {
+    "id": "844544",
+    "fullName": "Pape Gueye",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/844544.png",
+    "teamId": "10205",
+    "marketValue": "€25.1M"
+  },
+  {
+    "id": "1184694",
+    "fullName": "Alberto Moleiro",
+    "position": "LM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1184694.png",
+    "teamId": "10205",
+    "marketValue": "€26.3M"
+  },
+  {
+    "id": "1581706",
+    "fullName": "Mahamoud Barry",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1581706.png",
+    "teamId": "10205",
+    "marketValue": "€20K"
+  },
+  {
+    "id": "1841906",
+    "fullName": "Carlos Macia",
+    "position": "CM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1841906.png",
+    "teamId": "10205",
+    "marketValue": "€90K"
+  },
+  {
+    "id": "1460063",
+    "fullName": "Thiago Fernandez",
+    "position": "LW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1460063.png",
+    "teamId": "10205",
+    "marketValue": "€7.6M"
+  },
+  {
+    "id": "246438",
+    "fullName": "Gerard Moreno",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/246438.png",
+    "teamId": "10205",
+    "marketValue": "€2.3M"
+  },
+  {
+    "id": "1117069",
+    "fullName": "Georges Mikautadze",
+    "position": "LW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1117069.png",
+    "teamId": "10205",
+    "marketValue": "€31.2M"
+  },
+  {
+    "id": "575735",
+    "fullName": "Nicolas Pépé",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/575735.png",
+    "teamId": "10205",
+    "marketValue": "€6.8M"
+  },
+  {
+    "id": "1338740",
+    "fullName": "Tani Oluwaseyi",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1338740.png",
+    "teamId": "10205",
+    "marketValue": "€6.4M"
+  },
+  {
+    "id": "479020",
+    "fullName": "Ayoze Pérez",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/479020.png",
+    "teamId": "10205",
+    "marketValue": "€6.5M"
+  },
+  {
+    "id": "1646375",
+    "fullName": "Pau Cabanes",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1646375.png",
+    "teamId": "10205",
+    "marketValue": "€1.6M"
+  },
+  {
+    "id": "1622868",
+    "fullName": "Manolo Gonzalez",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1622868.png",
+    "teamId": "8558",
+    "marketValue": null
+  },
+  {
+    "id": "1184772",
+    "fullName": "Ángel Fortuno",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1184772.png",
+    "teamId": "8558",
+    "marketValue": "€607.9K"
+  },
+  {
+    "id": "280818",
+    "fullName": "Marko Dmitrovic",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/280818.png",
+    "teamId": "8558",
+    "marketValue": "€1.2M"
+  },
+  {
+    "id": "1559812",
+    "fullName": "Pol Tristan",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1559812.png",
+    "teamId": "8558",
+    "marketValue": "€150K"
+  },
+  {
+    "id": "1330035",
+    "fullName": "Rubén Sánchez",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1330035.png",
+    "teamId": "8558",
+    "marketValue": "€743.3K"
+  },
+  {
+    "id": "839232",
+    "fullName": "Fernando Calero",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/839232.png",
+    "teamId": "8558",
+    "marketValue": "€1.2M"
+  },
+  {
+    "id": "169586",
+    "fullName": "Leandro Cabrera",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/169586.png",
+    "teamId": "8558",
+    "marketValue": "€1.1M"
+  },
+  {
+    "id": "1187478",
+    "fullName": "José Salinas",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1187478.png",
+    "teamId": "8558",
+    "marketValue": "€2.2M"
+  },
+  {
+    "id": "938564",
+    "fullName": "Miguel Rubio",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/938564.png",
+    "teamId": "8558",
+    "marketValue": "€1.5M"
+  },
+  {
+    "id": "1395964",
+    "fullName": "Carlos Romero",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1395964.png",
+    "teamId": "8558",
+    "marketValue": "€13.2M"
+  },
+  {
+    "id": "1208708",
+    "fullName": "Omar El Hilali",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1208708.png",
+    "teamId": "8558",
+    "marketValue": "€17.1M"
+  },
+  {
+    "id": "1279557",
+    "fullName": "Clemens Riedel",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1279557.png",
+    "teamId": "8558",
+    "marketValue": "€5.6M"
+  },
+  {
+    "id": "1187767",
+    "fullName": "Urko González",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1187767.png",
+    "teamId": "8558",
+    "marketValue": "€6.1M"
+  },
+  {
+    "id": "837089",
+    "fullName": "Edu Exposito",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/837089.png",
+    "teamId": "8558",
+    "marketValue": "€2.4M"
+  },
+  {
+    "id": "750031",
+    "fullName": "Pol Lozano",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/750031.png",
+    "teamId": "8558",
+    "marketValue": "€5.5M"
+  },
+  {
+    "id": "1202587",
+    "fullName": "Ramon Terrats",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1202587.png",
+    "teamId": "8558",
+    "marketValue": "€2.9M"
+  },
+  {
+    "id": "1184777",
+    "fullName": "Jofre Carreras",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1184777.png",
+    "teamId": "8558",
+    "marketValue": "€4.2M"
+  },
+  {
+    "id": "743720",
+    "fullName": "Charles Pickel",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/743720.png",
+    "teamId": "8558",
+    "marketValue": "€1.7M"
+  },
+  {
+    "id": "846966",
+    "fullName": "Javier Puado",
+    "position": "LM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/846966.png",
+    "teamId": "8558",
+    "marketValue": "€10.1M"
+  },
+  {
+    "id": "1252373",
+    "fullName": "Roberto Fernández",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1252373.png",
+    "teamId": "8558",
+    "marketValue": "€9.7M"
+  },
+  {
+    "id": "593129",
+    "fullName": "Pere Milla",
+    "position": "LM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/593129.png",
+    "teamId": "8558",
+    "marketValue": "€968.5K"
+  },
+  {
+    "id": "183353",
+    "fullName": "Kike Garcia",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/183353.png",
+    "teamId": "8558",
+    "marketValue": "€1.1M"
+  },
+  {
+    "id": "1323403",
+    "fullName": "Antoniu Roca",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1323403.png",
+    "teamId": "8558",
+    "marketValue": "€120K"
+  },
+  {
+    "id": "1181101",
+    "fullName": "Tyrhys Dolan",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1181101.png",
+    "teamId": "8558",
+    "marketValue": "€11.5M"
+  },
+  {
+    "id": "78591",
+    "fullName": "Manuel Pellegrini",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/78591.png",
+    "teamId": "8603",
+    "marketValue": null
+  },
+  {
+    "id": "999171",
+    "fullName": "Álvaro Vallés",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/999171.png",
+    "teamId": "8603",
+    "marketValue": "€1.9M"
+  },
+  {
+    "id": "169756",
+    "fullName": "Adrian",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/169756.png",
+    "teamId": "8603",
+    "marketValue": "€478.5K"
+  },
+  {
+    "id": "532942",
+    "fullName": "Pau Lopez",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/532942.png",
+    "teamId": "8603",
+    "marketValue": "€1.7M"
+  },
+  {
+    "id": "427438",
+    "fullName": "Hector Bellerin",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/427438.png",
+    "teamId": "8603",
+    "marketValue": "€2M"
+  },
+  {
+    "id": "420568",
+    "fullName": "Diego Llorente",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/420568.png",
+    "teamId": "8603",
+    "marketValue": "€3.8M"
+  },
+  {
+    "id": "1188375",
+    "fullName": "Natan",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1188375.png",
+    "teamId": "8603",
+    "marketValue": "€21.9M"
+  },
+  {
+    "id": "195305",
+    "fullName": "Marc Bartra",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/195305.png",
+    "teamId": "8603",
+    "marketValue": "€1.4M"
+  },
+  {
+    "id": "115591",
+    "fullName": "Ricardo Rodriguez",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/115591.png",
+    "teamId": "8603",
+    "marketValue": "€1.7M"
+  },
+  {
+    "id": "1338016",
+    "fullName": "Valentin Gomez",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1338016.png",
+    "teamId": "8603",
+    "marketValue": "€12.9M"
+  },
+  {
+    "id": "743192",
+    "fullName": "Junior Firpo",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/743192.png",
+    "teamId": "8603",
+    "marketValue": "€7.2M"
+  },
+  {
+    "id": "676533",
+    "fullName": "Aitor Ruibal",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/676533.png",
+    "teamId": "8603",
+    "marketValue": "€2.6M"
+  },
+  {
+    "id": "1841015",
+    "fullName": "Carlos de Roa",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1841015.png",
+    "teamId": "8603",
+    "marketValue": "€50K"
+  },
+  {
+    "id": "1417277",
+    "fullName": "Félix Garreta",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1417277.png",
+    "teamId": "8603",
+    "marketValue": "€550K"
+  },
+  {
+    "id": "1580522",
+    "fullName": "Angel Ortiz",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1580522.png",
+    "teamId": "8603",
+    "marketValue": "€4.6M"
+  },
+  {
+    "id": "1310480",
+    "fullName": "Sergi Altimira",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1310480.png",
+    "teamId": "8603",
+    "marketValue": "€23.4M"
+  },
+  {
+    "id": "683450",
+    "fullName": "Pablo Fornals",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/683450.png",
+    "teamId": "8603",
+    "marketValue": "€15.5M"
+  },
+  {
+    "id": "361724",
+    "fullName": "Ezequiel Ávila",
+    "position": "AM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/361724.png",
+    "teamId": "8603",
+    "marketValue": "€1.5M"
+  },
+  {
+    "id": "593116",
+    "fullName": "Sofyan Amrabat",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/593116.png",
+    "teamId": "8603",
+    "marketValue": "€12.7M"
+  },
+  {
+    "id": "1315711",
+    "fullName": "Nelson Deossa",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1315711.png",
+    "teamId": "8603",
+    "marketValue": "€11.1M"
+  },
+  {
+    "id": "604126",
+    "fullName": "Giovani Lo Celso",
+    "position": "RWB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/604126.png",
+    "teamId": "8603",
+    "marketValue": "€15.4M"
+  },
+  {
+    "id": "640220",
+    "fullName": "Marc Roca",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/640220.png",
+    "teamId": "8603",
+    "marketValue": "€2.6M"
+  },
+  {
+    "id": "191315",
+    "fullName": "Isco",
+    "position": "CM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/191315.png",
+    "teamId": "8603",
+    "marketValue": "€3.7M"
+  },
+  {
+    "id": "1595975",
+    "fullName": "Darling Bladi",
+    "position": "CM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1595975.png",
+    "teamId": "8603",
+    "marketValue": "€400K"
+  },
+  {
+    "id": "1418942",
+    "fullName": "Dani Pérez",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1418942.png",
+    "teamId": "8603",
+    "marketValue": "€110K"
+  },
+  {
+    "id": "1580220",
+    "fullName": "Yanis Senhadji",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1580220.png",
+    "teamId": "8603",
+    "marketValue": "€250K"
+  },
+  {
+    "id": "967622",
+    "fullName": "Antony",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/967622.png",
+    "teamId": "8603",
+    "marketValue": "€33.2M"
+  },
+  {
+    "id": "1209399",
+    "fullName": "Abde Ezzalzouli",
+    "position": "LW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1209399.png",
+    "teamId": "8603",
+    "marketValue": "€15.1M"
+  },
+  {
+    "id": "201939",
+    "fullName": "Cédric Bakambu",
+    "position": "RW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/201939.png",
+    "teamId": "8603",
+    "marketValue": "€1.1M"
+  },
+  {
+    "id": "1072200",
+    "fullName": "Rodrigo Riquelme",
+    "position": "LWB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1072200.png",
+    "teamId": "8603",
+    "marketValue": "€13.5M"
+  },
+  {
+    "id": "852071",
+    "fullName": "Juan Hernández",
+    "position": "LW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/852071.png",
+    "teamId": "8603",
+    "marketValue": "€19.5M"
+  },
+  {
+    "id": "1662379",
+    "fullName": "Pablo Garcia",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1662379.png",
+    "teamId": "8603",
+    "marketValue": "€9.5M"
+  },
+  {
+    "id": "1622886",
+    "fullName": "Claudio Giráldez",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1622886.png",
+    "teamId": "9910",
+    "marketValue": null
+  },
+  {
+    "id": "786630",
+    "fullName": "Iván Villar",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/786630.png",
+    "teamId": "9910",
+    "marketValue": "€828.8K"
+  },
+  {
+    "id": "681213",
+    "fullName": "Ionut Andrei Radu",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/681213.png",
+    "teamId": "9910",
+    "marketValue": "€4.1M"
+  },
+  {
+    "id": "1383526",
+    "fullName": "Marc Vidal",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1383526.png",
+    "teamId": "9910",
+    "marketValue": "€611.8K"
+  },
+  {
+    "id": "1843631",
+    "fullName": "Marcos Gonzalez",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1843631.png",
+    "teamId": "9910",
+    "marketValue": "€100K"
+  },
+  {
+    "id": "497662",
+    "fullName": "Carl Starfelt",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/497662.png",
+    "teamId": "9910",
+    "marketValue": "€4.5M"
+  },
+  {
+    "id": "643998",
+    "fullName": "Joseph Aidoo",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/643998.png",
+    "teamId": "9910",
+    "marketValue": "€427.3K"
+  },
+  {
+    "id": "1675505",
+    "fullName": "Manu Fernandez",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1675505.png",
+    "teamId": "9910",
+    "marketValue": "€1.7M"
+  },
+  {
+    "id": "1310440",
+    "fullName": "Javi Rueda",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1310440.png",
+    "teamId": "9910",
+    "marketValue": "€2.4M"
+  },
+  {
+    "id": "196169",
+    "fullName": "Marcos Alonso",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/196169.png",
+    "teamId": "9910",
+    "marketValue": "€1.2M"
+  },
+  {
+    "id": "588562",
+    "fullName": "Mihailo Ristic",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/588562.png",
+    "teamId": "9910",
+    "marketValue": "€439.1K"
+  },
+  {
+    "id": "1254217",
+    "fullName": "Carlos Dominguez",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1254217.png",
+    "teamId": "9910",
+    "marketValue": "€3.8M"
+  },
+  {
+    "id": "1578176",
+    "fullName": "Yoel Lago",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1578176.png",
+    "teamId": "9910",
+    "marketValue": "€90K"
+  },
+  {
+    "id": "1435439",
+    "fullName": "Javi Rodriguez",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1435439.png",
+    "teamId": "9910",
+    "marketValue": "€110K"
+  },
+  {
+    "id": "1330616",
+    "fullName": "Tadeo Allende",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1330616.png",
+    "teamId": "9910",
+    "marketValue": "€2.1M"
+  },
+  {
+    "id": "952095",
+    "fullName": "Oscar Mingueza",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/952095.png",
+    "teamId": "9910",
+    "marketValue": "€14.4M"
+  },
+  {
+    "id": "1106742",
+    "fullName": "Sergio Carreira",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1106742.png",
+    "teamId": "9910",
+    "marketValue": "€1.4M"
+  },
+  {
+    "id": "1109046",
+    "fullName": "Ilaix Moriba",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1109046.png",
+    "teamId": "9910",
+    "marketValue": "€10.5M"
+  },
+  {
+    "id": "785511",
+    "fullName": "Fran Beltrán",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/785511.png",
+    "teamId": "9910",
+    "marketValue": "€3.6M"
+  },
+  {
+    "id": "541588",
+    "fullName": "Franco Cervi",
+    "position": "LWB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/541588.png",
+    "teamId": "9910",
+    "marketValue": "€182.4K"
+  },
+  {
+    "id": "1359911",
+    "fullName": "Miguel Román",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1359911.png",
+    "teamId": "9910",
+    "marketValue": "€1.1M"
+  },
+  {
+    "id": "1254218",
+    "fullName": "Hugo Sotelo",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1254218.png",
+    "teamId": "9910",
+    "marketValue": "€15.2M"
+  },
+  {
+    "id": "1308414",
+    "fullName": "Hugo Álvarez",
+    "position": "LWB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1308414.png",
+    "teamId": "9910",
+    "marketValue": "€9.7M"
+  },
+  {
+    "id": "1379196",
+    "fullName": "Jones El-Abdellaoui",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1379196.png",
+    "teamId": "9910",
+    "marketValue": "€6.7M"
+  },
+  {
+    "id": "1700562",
+    "fullName": "Angel Arcos",
+    "position": "LM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1700562.png",
+    "teamId": "9910",
+    "marketValue": "€300K"
+  },
+  {
+    "id": "609505",
+    "fullName": "Borja Iglesias",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/609505.png",
+    "teamId": "9910",
+    "marketValue": "€2.5M"
+  },
+  {
+    "id": "1102732",
+    "fullName": "Ferrán Jutglà",
+    "position": "LM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1102732.png",
+    "teamId": "9910",
+    "marketValue": "€9.1M"
+  },
+  {
+    "id": "174472",
+    "fullName": "Iago Aspas",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/174472.png",
+    "teamId": "9910",
+    "marketValue": "€1.5M"
+  },
+  {
+    "id": "1202525",
+    "fullName": "Bryan Zaragoza",
+    "position": "AM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1202525.png",
+    "teamId": "9910",
+    "marketValue": "€14.5M"
+  },
+  {
+    "id": "1322858",
+    "fullName": "Pablo Durán",
+    "position": "RW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1322858.png",
+    "teamId": "9910",
+    "marketValue": "€4.8M"
+  },
+  {
+    "id": "1272740",
+    "fullName": "Williot Swedberg",
+    "position": "CM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1272740.png",
+    "teamId": "9910",
+    "marketValue": "€2.1M"
+  },
+  {
+    "id": "1226783",
+    "fullName": "Hugo González",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1226783.png",
+    "teamId": "9910",
+    "marketValue": "€323K"
+  },
+  {
+    "id": "78701",
+    "fullName": "Ernesto Valverde",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/78701.png",
+    "teamId": "8315",
+    "marketValue": null
+  },
+  {
+    "id": "660625",
+    "fullName": "Unai Simon",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/660625.png",
+    "teamId": "8315",
+    "marketValue": "€30.2M"
+  },
+  {
+    "id": "1401997",
+    "fullName": "Álex Padilla",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1401997.png",
+    "teamId": "8315",
+    "marketValue": "€150K"
+  },
+  {
+    "id": "839893",
+    "fullName": "Andoni Gorosabel",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/839893.png",
+    "teamId": "8315",
+    "marketValue": "€4.6M"
+  },
+  {
+    "id": "940743",
+    "fullName": "Daniel Vivian",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/940743.png",
+    "teamId": "8315",
+    "marketValue": "€41.5M"
+  },
+  {
+    "id": "1191407",
+    "fullName": "Aitor Paredes",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1191407.png",
+    "teamId": "8315",
+    "marketValue": "€22.9M"
+  },
+  {
+    "id": "639450",
+    "fullName": "Yeray Álvarez",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/639450.png",
+    "teamId": "8315",
+    "marketValue": "€3.8M"
+  },
+  {
+    "id": "1037537",
+    "fullName": "Jesus Areso",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1037537.png",
+    "teamId": "8315",
+    "marketValue": "€14M"
+  },
+  {
+    "id": "411617",
+    "fullName": "Aymeric Laporte",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/411617.png",
+    "teamId": "8315",
+    "marketValue": "€7M"
+  },
+  {
+    "id": "616544",
+    "fullName": "Inigo Lekue",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/616544.png",
+    "teamId": "8315",
+    "marketValue": "€943.2K"
+  },
+  {
+    "id": "80295",
+    "fullName": "Yuri Berchiche",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/80295.png",
+    "teamId": "8315",
+    "marketValue": "€1.3M"
+  },
+  {
+    "id": "1331249",
+    "fullName": "Adama Boiro",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1331249.png",
+    "teamId": "8315",
+    "marketValue": "€3.4M"
+  },
+  {
+    "id": "1425770",
+    "fullName": "Unai Eguiluz",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1425770.png",
+    "teamId": "8315",
+    "marketValue": "€718.7K"
+  },
+  {
+    "id": "1596411",
+    "fullName": "Jon De Luis",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1596411.png",
+    "teamId": "8315",
+    "marketValue": "€230K"
+  },
+  {
+    "id": "616545",
+    "fullName": "Mikel Vesga",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/616545.png",
+    "teamId": "8315",
+    "marketValue": "€1.9M"
+  },
+  {
+    "id": "950545",
+    "fullName": "Oihan Sancet",
+    "position": "AM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/950545.png",
+    "teamId": "8315",
+    "marketValue": "€57.6M"
+  },
+  {
+    "id": "282462",
+    "fullName": "Inigo Ruiz de Galarreta",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/282462.png",
+    "teamId": "8315",
+    "marketValue": "€2.3M"
+  },
+  {
+    "id": "1553099",
+    "fullName": "Mikel Jauregizar",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1553099.png",
+    "teamId": "8315",
+    "marketValue": "€38.2M"
+  },
+  {
+    "id": "1436270",
+    "fullName": "Unai Gomez",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1436270.png",
+    "teamId": "8315",
+    "marketValue": "€8.1M"
+  },
+  {
+    "id": "1229176",
+    "fullName": "Benat Prados",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1229176.png",
+    "teamId": "8315",
+    "marketValue": "€19.3M"
+  },
+  {
+    "id": "1425769",
+    "fullName": "Alejandro Rego",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1425769.png",
+    "teamId": "8315",
+    "marketValue": "€1.6M"
+  },
+  {
+    "id": "1820601",
+    "fullName": "Selton Sánchez",
+    "position": "CM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1820601.png",
+    "teamId": "8315",
+    "marketValue": "€3.3M"
+  },
+  {
+    "id": "574629",
+    "fullName": "Alex Berenguer",
+    "position": "LM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/574629.png",
+    "teamId": "8315",
+    "marketValue": "€8.7M"
+  },
+  {
+    "id": "604105",
+    "fullName": "Inaki Williams",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/604105.png",
+    "teamId": "8315",
+    "marketValue": "€21.6M"
+  },
+  {
+    "id": "1202110",
+    "fullName": "Nico Williams",
+    "position": "LW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1202110.png",
+    "teamId": "8315",
+    "marketValue": "€72.4M"
+  },
+  {
+    "id": "711231",
+    "fullName": "Gorka Guruzeta",
+    "position": "RW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/711231.png",
+    "teamId": "8315",
+    "marketValue": "€6.8M"
+  },
+  {
+    "id": "1425206",
+    "fullName": "Maroan Sannadi",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1425206.png",
+    "teamId": "8315",
+    "marketValue": "€10.2M"
+  },
+  {
+    "id": "1203614",
+    "fullName": "Nico Serrano",
+    "position": "LM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1203614.png",
+    "teamId": "8315",
+    "marketValue": "€1.3M"
+  },
+  {
+    "id": "1011117",
+    "fullName": "Robert Navarro",
+    "position": "LM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1011117.png",
+    "teamId": "8315",
+    "marketValue": "€7.5M"
+  },
+  {
+    "id": "988197",
+    "fullName": "Urko Izeta",
+    "position": "LM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/988197.png",
+    "teamId": "8315",
+    "marketValue": "€1.6M"
+  },
+  {
+    "id": "1381560",
+    "fullName": "Eder Sarabia",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1381560.png",
+    "teamId": "10268",
+    "marketValue": null
+  },
+  {
+    "id": "592412",
+    "fullName": "Matias Dituro",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/592412.png",
+    "teamId": "10268",
+    "marketValue": "€405.2K"
+  },
+  {
+    "id": "990996",
+    "fullName": "Inaki Pena",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/990996.png",
+    "teamId": "10268",
+    "marketValue": "€4.6M"
+  },
+  {
+    "id": "1311126",
+    "fullName": "Alejandro Iturbe",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1311126.png",
+    "teamId": "10268",
+    "marketValue": "€2.1M"
+  },
+  {
+    "id": "927646",
+    "fullName": "Adrià Pedrosa",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/927646.png",
+    "teamId": "10268",
+    "marketValue": "€3.7M"
+  },
+  {
+    "id": "884383",
+    "fullName": "Bambo Diaby",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/884383.png",
+    "teamId": "10268",
+    "marketValue": "€743K"
+  },
+  {
+    "id": "291635",
+    "fullName": "Pedro Bigas",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/291635.png",
+    "teamId": "10268",
+    "marketValue": "€547.6K"
+  },
+  {
+    "id": "1132355",
+    "fullName": "Alvaro Nunez",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1132355.png",
+    "teamId": "10268",
+    "marketValue": "€1.3M"
+  },
+  {
+    "id": "1217644",
+    "fullName": "John Donald",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1217644.png",
+    "teamId": "10268",
+    "marketValue": "€1.1M"
+  },
+  {
+    "id": "708457",
+    "fullName": "Léo Pétrot",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/708457.png",
+    "teamId": "10268",
+    "marketValue": "€771.4K"
+  },
+  {
+    "id": "1073980",
+    "fullName": "David Affengruber",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1073980.png",
+    "teamId": "10268",
+    "marketValue": "€8.9M"
+  },
+  {
+    "id": "1192393",
+    "fullName": "Victor Chust",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1192393.png",
+    "teamId": "10268",
+    "marketValue": "€2.1M"
+  },
+  {
+    "id": "1882218",
+    "fullName": "Nico Salvador",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1882218.png",
+    "teamId": "10268",
+    "marketValue": null
+  },
+  {
+    "id": "1490110",
+    "fullName": "Héctor Fort",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1490110.png",
+    "teamId": "10268",
+    "marketValue": "€14.2M"
+  },
+  {
+    "id": "282471",
+    "fullName": "Carlos Clerc",
+    "position": "RWB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/282471.png",
+    "teamId": "10268",
+    "marketValue": "€500K"
+  },
+  {
+    "id": "1277343",
+    "fullName": "Federico Redondo",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1277343.png",
+    "teamId": "10268",
+    "marketValue": "€6.5M"
+  },
+  {
+    "id": "1392232",
+    "fullName": "Marc Aguado",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1392232.png",
+    "teamId": "10268",
+    "marketValue": "€1.7M"
+  },
+  {
+    "id": "1102708",
+    "fullName": "Germán Valera",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1102708.png",
+    "teamId": "10268",
+    "marketValue": "€2M"
+  },
+  {
+    "id": "671686",
+    "fullName": "Aleix Febas",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/671686.png",
+    "teamId": "10268",
+    "marketValue": "€1.9M"
+  },
+  {
+    "id": "1226189",
+    "fullName": "Martim Neto",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1226189.png",
+    "teamId": "10268",
+    "marketValue": "€3.5M"
+  },
+  {
+    "id": "1419969",
+    "fullName": "Rodrigo Mendoza",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1419969.png",
+    "teamId": "10268",
+    "marketValue": "€12.1M"
+  },
+  {
+    "id": "1577912",
+    "fullName": "Adam Boayar",
+    "position": "CM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1577912.png",
+    "teamId": "10268",
+    "marketValue": "€737.7K"
+  },
+  {
+    "id": "1670281",
+    "fullName": "Ali Houary",
+    "position": "CM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1670281.png",
+    "teamId": "10268",
+    "marketValue": "€736.4K"
+  },
+  {
+    "id": "1137497",
+    "fullName": "Yago Santiago",
+    "position": "LM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1137497.png",
+    "teamId": "10268",
+    "marketValue": "€1.1M"
+  },
+  {
+    "id": "388523",
+    "fullName": "André Silva",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/388523.png",
+    "teamId": "10268",
+    "marketValue": "€1.9M"
+  },
+  {
+    "id": "640492",
+    "fullName": "Rafa Mir",
+    "position": "LW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/640492.png",
+    "teamId": "10268",
+    "marketValue": "€1.5M"
+  },
+  {
+    "id": "623982",
+    "fullName": "Josan",
+    "position": "RWB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/623982.png",
+    "teamId": "10268",
+    "marketValue": "€309K"
+  },
+  {
+    "id": "654091",
+    "fullName": "Grady Diangana",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/654091.png",
+    "teamId": "10268",
+    "marketValue": "€2.3M"
+  },
+  {
+    "id": "1327406",
+    "fullName": "Álvaro Rodriguez",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1327406.png",
+    "teamId": "10268",
+    "marketValue": "€6.7M"
+  },
+  {
+    "id": "1692188",
+    "fullName": "Albert Niculaesei",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1692188.png",
+    "teamId": "10268",
+    "marketValue": "€15K"
+  },
+  {
+    "id": "1437544",
+    "fullName": "Piri",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1437544.png",
+    "teamId": "10268",
+    "marketValue": "€30K"
+  },
+  {
+    "id": "188060",
+    "fullName": "Inigo Pérez",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/188060.png",
+    "teamId": "8370",
+    "marketValue": null
+  },
+  {
+    "id": "1041445",
+    "fullName": "Dani Cárdenas",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1041445.png",
+    "teamId": "8370",
+    "marketValue": "€1.2M"
+  },
+  {
+    "id": "621415",
+    "fullName": "Augusto Batalla",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/621415.png",
+    "teamId": "8370",
+    "marketValue": "€5.8M"
+  },
+  {
+    "id": "1803292",
+    "fullName": "Adrian Molina",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1803292.png",
+    "teamId": "8370",
+    "marketValue": null
+  },
+  {
+    "id": "970578",
+    "fullName": "Andrei Ratiu",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/970578.png",
+    "teamId": "8370",
+    "marketValue": "€14.6M"
+  },
+  {
+    "id": "988805",
+    "fullName": "Pep Chavarria",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/988805.png",
+    "teamId": "8370",
+    "marketValue": "€8.6M"
+  },
+  {
+    "id": "672840",
+    "fullName": "Luiz Felipe",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/672840.png",
+    "teamId": "8370",
+    "marketValue": "€2.1M"
+  },
+  {
+    "id": "776591",
+    "fullName": "Abdul Mumin",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/776591.png",
+    "teamId": "8370",
+    "marketValue": "€2.4M"
+  },
+  {
+    "id": "264885",
+    "fullName": "Iván Balliu",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/264885.png",
+    "teamId": "8370",
+    "marketValue": "€1.3M"
+  },
+  {
+    "id": "526968",
+    "fullName": "Alfonso Espino",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/526968.png",
+    "teamId": "8370",
+    "marketValue": "€714.9K"
+  },
+  {
+    "id": "184521",
+    "fullName": "Florian Lejeune",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/184521.png",
+    "teamId": "8370",
+    "marketValue": "€2.6M"
+  },
+  {
+    "id": "1428427",
+    "fullName": "Nobel Mendy",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1428427.png",
+    "teamId": "8370",
+    "marketValue": "€4.3M"
+  },
+  {
+    "id": "1255090",
+    "fullName": "Jozhua Vertrouwd",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1255090.png",
+    "teamId": "8370",
+    "marketValue": "€1.4M"
+  },
+  {
+    "id": "715069",
+    "fullName": "Pedro Diaz",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/715069.png",
+    "teamId": "8370",
+    "marketValue": "€2.1M"
+  },
+  {
+    "id": "872396",
+    "fullName": "Pathé Ciss",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/872396.png",
+    "teamId": "8370",
+    "marketValue": "€1.8M"
+  },
+  {
+    "id": "638010",
+    "fullName": "Isi Palazon",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/638010.png",
+    "teamId": "8370",
+    "marketValue": "€3.7M"
+  },
+  {
+    "id": "21414",
+    "fullName": "Oscar Trejo",
+    "position": "CM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/21414.png",
+    "teamId": "8370",
+    "marketValue": "€278.9K"
+  },
+  {
+    "id": "522234",
+    "fullName": "Gerard Gumbau",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/522234.png",
+    "teamId": "8370",
+    "marketValue": "€1.2M"
+  },
+  {
+    "id": "571615",
+    "fullName": "Unai Lopez",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/571615.png",
+    "teamId": "8370",
+    "marketValue": "€1.8M"
+  },
+  {
+    "id": "956622",
+    "fullName": "Oscar Valentin",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/956622.png",
+    "teamId": "8370",
+    "marketValue": "€1.9M"
+  },
+  {
+    "id": "1662963",
+    "fullName": "Marco de las Sias",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1662963.png",
+    "teamId": "8370",
+    "marketValue": "€20K"
+  },
+  {
+    "id": "1797872",
+    "fullName": "Samuel Becerra",
+    "position": "RW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1797872.png",
+    "teamId": "8370",
+    "marketValue": "€40K"
+  },
+  {
+    "id": "924300",
+    "fullName": "Alexandre Zurawski",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/924300.png",
+    "teamId": "8370",
+    "marketValue": "€4M"
+  },
+  {
+    "id": "980422",
+    "fullName": "Sergio Camello",
+    "position": "RW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/980422.png",
+    "teamId": "8370",
+    "marketValue": "€3.7M"
+  },
+  {
+    "id": "915264",
+    "fullName": "Randy Nteka",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/915264.png",
+    "teamId": "8370",
+    "marketValue": "€1.2M"
+  },
+  {
+    "id": "1282015",
+    "fullName": "Carlos Martin",
+    "position": "RWB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1282015.png",
+    "teamId": "8370",
+    "marketValue": "€1.1M"
+  },
+  {
+    "id": "474658",
+    "fullName": "Álvaro Garcia",
+    "position": "LM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/474658.png",
+    "teamId": "8370",
+    "marketValue": "€1.7M"
+  },
+  {
+    "id": "797901",
+    "fullName": "Jorge de Frutos",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/797901.png",
+    "teamId": "8370",
+    "marketValue": "€12.9M"
+  },
+  {
+    "id": "1284430",
+    "fullName": "Fran Pérez",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1284430.png",
+    "teamId": "8370",
+    "marketValue": "€4.7M"
+  },
+  {
+    "id": "27204",
+    "fullName": "Pellegrino Matarazzo",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/27204.png",
+    "teamId": "8560",
+    "marketValue": null
+  },
+  {
+    "id": "616539",
+    "fullName": "Alex Remiro",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/616539.png",
+    "teamId": "8560",
+    "marketValue": "€13.4M"
+  },
+  {
+    "id": "1217043",
+    "fullName": "Unai Marrero",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1217043.png",
+    "teamId": "8560",
+    "marketValue": "€670.9K"
+  },
+  {
+    "id": "1529105",
+    "fullName": "Aitor Fraga",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1529105.png",
+    "teamId": "8560",
+    "marketValue": "€300K"
+  },
+  {
+    "id": "1323828",
+    "fullName": "Alberto Dadie",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1323828.png",
+    "teamId": "8560",
+    "marketValue": "€300K"
+  },
+  {
+    "id": "1249284",
+    "fullName": "Jon Aramburu",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1249284.png",
+    "teamId": "8560",
+    "marketValue": "€18.6M"
+  },
+  {
+    "id": "999159",
+    "fullName": "Aihen Munoz",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/999159.png",
+    "teamId": "8560",
+    "marketValue": "€2.6M"
+  },
+  {
+    "id": "698653",
+    "fullName": "Igor Zubeldia",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/698653.png",
+    "teamId": "8560",
+    "marketValue": "€10M"
+  },
+  {
+    "id": "607148",
+    "fullName": "Aritz Elustondo",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/607148.png",
+    "teamId": "8560",
+    "marketValue": "€1M"
+  },
+  {
+    "id": "557799",
+    "fullName": "Duje Caleta-Car",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/557799.png",
+    "teamId": "8560",
+    "marketValue": "€2.6M"
+  },
+  {
+    "id": "844477",
+    "fullName": "Sergio Gomez",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/844477.png",
+    "teamId": "8560",
+    "marketValue": "€9.9M"
+  },
+  {
+    "id": "636570",
+    "fullName": "Álvaro Odriozola",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/636570.png",
+    "teamId": "8560",
+    "marketValue": "€719.9K"
+  },
+  {
+    "id": "1523234",
+    "fullName": "Jon Martin",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1523234.png",
+    "teamId": "8560",
+    "marketValue": "€9.6M"
+  },
+  {
+    "id": "1323827",
+    "fullName": "Jon Gorrotxategi",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1323827.png",
+    "teamId": "8560",
+    "marketValue": "€4.4M"
+  },
+  {
+    "id": "1210647",
+    "fullName": "Benat Turrientes",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1210647.png",
+    "teamId": "8560",
+    "marketValue": "€11.4M"
+  },
+  {
+    "id": "730901",
+    "fullName": "Yangel Herrera",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/730901.png",
+    "teamId": "8560",
+    "marketValue": "€9.8M"
+  },
+  {
+    "id": "708890",
+    "fullName": "Carlos Soler",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/708890.png",
+    "teamId": "8560",
+    "marketValue": "€11.4M"
+  },
+  {
+    "id": "1175610",
+    "fullName": "Arsen Zakharyan",
+    "position": "LM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1175610.png",
+    "teamId": "8560",
+    "marketValue": "€12.6M"
+  },
+  {
+    "id": "1340594",
+    "fullName": "Mikel Goti",
+    "position": "AM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1340594.png",
+    "teamId": "8560",
+    "marketValue": "€1.2M"
+  },
+  {
+    "id": "640122",
+    "fullName": "Brais Méndez",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/640122.png",
+    "teamId": "8560",
+    "marketValue": "€16.5M"
+  },
+  {
+    "id": "959597",
+    "fullName": "Luka Sucic",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/959597.png",
+    "teamId": "8560",
+    "marketValue": "€14.3M"
+  },
+  {
+    "id": "1293912",
+    "fullName": "Pablo Marin",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1293912.png",
+    "teamId": "8560",
+    "marketValue": "€10.6M"
+  },
+  {
+    "id": "1002618",
+    "fullName": "Ander Barrenetxea",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1002618.png",
+    "teamId": "8560",
+    "marketValue": "€20.9M"
+  },
+  {
+    "id": "1097229",
+    "fullName": "Orri Oskarsson",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1097229.png",
+    "teamId": "8560",
+    "marketValue": "€19.2M"
+  },
+  {
+    "id": "678234",
+    "fullName": "Mikel Oyarzabal",
+    "position": "LW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/678234.png",
+    "teamId": "8560",
+    "marketValue": "€41.7M"
+  },
+  {
+    "id": "536455",
+    "fullName": "Goncalo Guedes",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/536455.png",
+    "teamId": "8560",
+    "marketValue": "€7.2M"
+  },
+  {
+    "id": "848289",
+    "fullName": "Takefusa Kubo",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/848289.png",
+    "teamId": "8560",
+    "marketValue": "€33M"
+  },
+  {
+    "id": "1242132",
+    "fullName": "Jon Karrikaburu",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1242132.png",
+    "teamId": "8560",
+    "marketValue": "€1.9M"
+  },
+  {
+    "id": "1436231",
+    "fullName": "Arkaitz Mariezkurrena",
+    "position": "AM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1436231.png",
+    "teamId": "8560",
+    "marketValue": "€550K"
+  },
+  {
+    "id": "862633",
+    "fullName": "Pepe Bordalas",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/862633.png",
+    "teamId": "8305",
+    "marketValue": null
+  },
+  {
+    "id": "1178641",
+    "fullName": "Jiri Letacek",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1178641.png",
+    "teamId": "8305",
+    "marketValue": "€1.5M"
+  },
+  {
+    "id": "581919",
+    "fullName": "David Soria",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/581919.png",
+    "teamId": "8305",
+    "marketValue": "€2.1M"
+  },
+  {
+    "id": "1526855",
+    "fullName": "Jorge Benito",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1526855.png",
+    "teamId": "8305",
+    "marketValue": "€40K"
+  },
+  {
+    "id": "1705349",
+    "fullName": "Luca Lohr",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1705349.png",
+    "teamId": "8305",
+    "marketValue": "€90K"
+  },
+  {
+    "id": "421365",
+    "fullName": "Djené",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/421365.png",
+    "teamId": "8305",
+    "marketValue": "€1.7M"
+  },
+  {
+    "id": "956921",
+    "fullName": "Abdelkabir Abqar",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/956921.png",
+    "teamId": "8305",
+    "marketValue": "€7.6M"
+  },
+  {
+    "id": "213809",
+    "fullName": "Allan Nyom",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/213809.png",
+    "teamId": "8305",
+    "marketValue": "€125.3K"
+  },
+  {
+    "id": "488718",
+    "fullName": "Diego Rico",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/488718.png",
+    "teamId": "8305",
+    "marketValue": "€1.1M"
+  },
+  {
+    "id": "175311",
+    "fullName": "Kiko",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/175311.png",
+    "teamId": "8305",
+    "marketValue": "€1M"
+  },
+  {
+    "id": "1102289",
+    "fullName": "Juan Iglesias",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1102289.png",
+    "teamId": "8305",
+    "marketValue": "€2.4M"
+  },
+  {
+    "id": "566425",
+    "fullName": "Domingos Duarte",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/566425.png",
+    "teamId": "8305",
+    "marketValue": "€761.6K"
+  },
+  {
+    "id": "1676086",
+    "fullName": "Davinchi",
+    "position": "LWB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1676086.png",
+    "teamId": "8305",
+    "marketValue": "€110K"
+  },
+  {
+    "id": "1705340",
+    "fullName": "Ismael Bekhoucha",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1705340.png",
+    "teamId": "8305",
+    "marketValue": "€760.6K"
+  },
+  {
+    "id": "1396368",
+    "fullName": "Lucas Laso",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1396368.png",
+    "teamId": "8305",
+    "marketValue": "€80K"
+  },
+  {
+    "id": "1553700",
+    "fullName": "Marc Vilaplana",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1553700.png",
+    "teamId": "8305",
+    "marketValue": "€160K"
+  },
+  {
+    "id": "1858597",
+    "fullName": "Jorge Montes",
+    "position": "LM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1858597.png",
+    "teamId": "8305",
+    "marketValue": null
+  },
+  {
+    "id": "815187",
+    "fullName": "Yvan Neyou Noupa",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/815187.png",
+    "teamId": "8305",
+    "marketValue": "€2M"
+  },
+  {
+    "id": "638090",
+    "fullName": "Luis Milla",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/638090.png",
+    "teamId": "8305",
+    "marketValue": "€2.6M"
+  },
+  {
+    "id": "1321605",
+    "fullName": "Mario Martin",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1321605.png",
+    "teamId": "8305",
+    "marketValue": "€5.1M"
+  },
+  {
+    "id": "625340",
+    "fullName": "Mauro Arambarri",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/625340.png",
+    "teamId": "8305",
+    "marketValue": "€12.7M"
+  },
+  {
+    "id": "616531",
+    "fullName": "Javier Munoz",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/616531.png",
+    "teamId": "8305",
+    "marketValue": "€1.3M"
+  },
+  {
+    "id": "1637438",
+    "fullName": "Alberto Risco",
+    "position": "AM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1637438.png",
+    "teamId": "8305",
+    "marketValue": "€150K"
+  },
+  {
+    "id": "1477850",
+    "fullName": "Alejandro Mestanza",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1477850.png",
+    "teamId": "8305",
+    "marketValue": "€100K"
+  },
+  {
+    "id": "191873",
+    "fullName": "Juanmi",
+    "position": "LW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/191873.png",
+    "teamId": "8305",
+    "marketValue": "€1.2M"
+  },
+  {
+    "id": "635772",
+    "fullName": "Borja Mayoral",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/635772.png",
+    "teamId": "8305",
+    "marketValue": "€7.9M"
+  },
+  {
+    "id": "1136450",
+    "fullName": "Abu Kamara",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1136450.png",
+    "teamId": "8305",
+    "marketValue": "€5.5M"
+  },
+  {
+    "id": "1323207",
+    "fullName": "Alex Sancris",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1323207.png",
+    "teamId": "8305",
+    "marketValue": "€1.6M"
+  },
+  {
+    "id": "1676905",
+    "fullName": "Coba da Costa",
+    "position": "LM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1676905.png",
+    "teamId": "8305",
+    "marketValue": "€3.6M"
+  },
+  {
+    "id": "1541825",
+    "fullName": "Adrián Liso",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1541825.png",
+    "teamId": "8305",
+    "marketValue": "€6.6M"
+  },
+  {
+    "id": "1817835",
+    "fullName": "Mykyta Aleksandrov",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1817835.png",
+    "teamId": "8305",
+    "marketValue": "€25K"
+  },
+  {
+    "id": "1559834",
+    "fullName": "Joselu Perez",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1559834.png",
+    "teamId": "8305",
+    "marketValue": "€150K"
+  },
+  {
+    "id": "2763",
+    "fullName": "Michel",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/2763.png",
+    "teamId": "7732",
+    "marketValue": null
+  },
+  {
+    "id": "246422",
+    "fullName": "Juan Carlos",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/246422.png",
+    "teamId": "7732",
+    "marketValue": "€326.7K"
+  },
+  {
+    "id": "383971",
+    "fullName": "Dominik Livakovic",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/383971.png",
+    "teamId": "7732",
+    "marketValue": "€7.8M"
+  },
+  {
+    "id": "278285",
+    "fullName": "Paulo Gazzaniga",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/278285.png",
+    "teamId": "7732",
+    "marketValue": "€1.9M"
+  },
+  {
+    "id": "1526728",
+    "fullName": "Vladyslav Krapyvtsov",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1526728.png",
+    "teamId": "7732",
+    "marketValue": "€817.8K"
+  },
+  {
+    "id": "1427819",
+    "fullName": "Hugo Rincon",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1427819.png",
+    "teamId": "7732",
+    "marketValue": "€1.7M"
+  },
+  {
+    "id": "1194892",
+    "fullName": "Arnau Martinez",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1194892.png",
+    "teamId": "7732",
+    "marketValue": "€13.3M"
+  },
+  {
+    "id": "215584",
+    "fullName": "David Lopez",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/215584.png",
+    "teamId": "7732",
+    "marketValue": "€456.1K"
+  },
+  {
+    "id": "1580952",
+    "fullName": "Vitor Reis",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1580952.png",
+    "teamId": "7732",
+    "marketValue": "€32.8M"
+  },
+  {
+    "id": "1112511",
+    "fullName": "Alejandro Francés",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1112511.png",
+    "teamId": "7732",
+    "marketValue": "€4.8M"
+  },
+  {
+    "id": "161012",
+    "fullName": "Daley Blind",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/161012.png",
+    "teamId": "7732",
+    "marketValue": "€1M"
+  },
+  {
+    "id": "477588",
+    "fullName": "Álex Moreno",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/477588.png",
+    "teamId": "7732",
+    "marketValue": "€2.5M"
+  },
+  {
+    "id": "1794403",
+    "fullName": "Gibert Jordana",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1794403.png",
+    "teamId": "7732",
+    "marketValue": "€15K"
+  },
+  {
+    "id": "1690793",
+    "fullName": "Papa Ba",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1690793.png",
+    "teamId": "7732",
+    "marketValue": "€611.7K"
+  },
+  {
+    "id": "612836",
+    "fullName": "Donny van de Beek",
+    "position": "CM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/612836.png",
+    "teamId": "7732",
+    "marketValue": "€2.2M"
+  },
+  {
+    "id": "468931",
+    "fullName": "Thomas Lemar",
+    "position": "AM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/468931.png",
+    "teamId": "7732",
+    "marketValue": "€1.6M"
+  },
+  {
+    "id": "1073143",
+    "fullName": "Azzedine Ounahi",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1073143.png",
+    "teamId": "7732",
+    "marketValue": "€11.1M"
+  },
+  {
+    "id": "39591",
+    "fullName": "Axel Witsel",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/39591.png",
+    "teamId": "7732",
+    "marketValue": "€1M"
+  },
+  {
+    "id": "1433032",
+    "fullName": "Jhon Solis",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1433032.png",
+    "teamId": "7732",
+    "marketValue": "€4.2M"
+  },
+  {
+    "id": "967871",
+    "fullName": "Iván Martin",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/967871.png",
+    "teamId": "7732",
+    "marketValue": "€7M"
+  },
+  {
+    "id": "1643963",
+    "fullName": "Lass Kourouma",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1643963.png",
+    "teamId": "7732",
+    "marketValue": "€293.1K"
+  },
+  {
+    "id": "1287821",
+    "fullName": "Ricard Artero",
+    "position": "AM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1287821.png",
+    "teamId": "7732",
+    "marketValue": "€670K"
+  },
+  {
+    "id": "1326043",
+    "fullName": "Joel Roca",
+    "position": "CM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1326043.png",
+    "teamId": "7732",
+    "marketValue": "€8.1M"
+  },
+  {
+    "id": "58294",
+    "fullName": "Cristhian Stuani",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/58294.png",
+    "teamId": "7732",
+    "marketValue": "€743.4K"
+  },
+  {
+    "id": "282692",
+    "fullName": "Cristian Portu",
+    "position": "AM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/282692.png",
+    "teamId": "7732",
+    "marketValue": "€1.3M"
+  },
+  {
+    "id": "748380",
+    "fullName": "Abel Ruiz",
+    "position": "LW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/748380.png",
+    "teamId": "7732",
+    "marketValue": "€4.5M"
+  },
+  {
+    "id": "1277380",
+    "fullName": "Yaser Asprilla",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1277380.png",
+    "teamId": "7732",
+    "marketValue": "€18.1M"
+  },
+  {
+    "id": "564847",
+    "fullName": "Viktor Tsigankov",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/564847.png",
+    "teamId": "7732",
+    "marketValue": "€13.6M"
+  },
+  {
+    "id": "1231648",
+    "fullName": "Vladyslav Vanat",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1231648.png",
+    "teamId": "7732",
+    "marketValue": "€18.2M"
+  },
+  {
+    "id": "970692",
+    "fullName": "Bryan Gil",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/970692.png",
+    "teamId": "7732",
+    "marketValue": "€16.6M"
+  },
+  {
+    "id": "30538",
+    "fullName": "Matias Almeyda",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/30538.png",
+    "teamId": "8302",
+    "marketValue": null
+  },
+  {
+    "id": "304355",
+    "fullName": "Odysseas Vlachodimos",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/304355.png",
+    "teamId": "8302",
+    "marketValue": "€1.9M"
+  },
+  {
+    "id": "73409",
+    "fullName": "Ørjan Håskjold Nyland",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/73409.png",
+    "teamId": "8302",
+    "marketValue": "€703.1K"
+  },
+  {
+    "id": "1329320",
+    "fullName": "Alberto Flores",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1329320.png",
+    "teamId": "8302",
+    "marketValue": "€400K"
+  },
+  {
+    "id": "1417831",
+    "fullName": "Matias Árbol",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1417831.png",
+    "teamId": "8302",
+    "marketValue": null
+  },
+  {
+    "id": "956291",
+    "fullName": "Federico Gattoni",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/956291.png",
+    "teamId": "8302",
+    "marketValue": "€1.2M"
+  },
+  {
+    "id": "1281461",
+    "fullName": "José Ángel Carmona",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1281461.png",
+    "teamId": "8302",
+    "marketValue": "€15.7M"
+  },
+  {
+    "id": "72541",
+    "fullName": "César Azpilicueta",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/72541.png",
+    "teamId": "8302",
+    "marketValue": "€1M"
+  },
+  {
+    "id": "1327489",
+    "fullName": "Kike Salas",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1327489.png",
+    "teamId": "8302",
+    "marketValue": "€10.2M"
+  },
+  {
+    "id": "1070617",
+    "fullName": "Tanguy Nianzou",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1070617.png",
+    "teamId": "8302",
+    "marketValue": "€1.6M"
+  },
+  {
+    "id": "361751",
+    "fullName": "Fabio Cardoso",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/361751.png",
+    "teamId": "8302",
+    "marketValue": "€2.1M"
+  },
+  {
+    "id": "1158512",
+    "fullName": "Juanlu Sánchez",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1158512.png",
+    "teamId": "8302",
+    "marketValue": "€18.4M"
+  },
+  {
+    "id": "753593",
+    "fullName": "Marcao",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/753593.png",
+    "teamId": "8302",
+    "marketValue": "€1.5M"
+  },
+  {
+    "id": "1334767",
+    "fullName": "Andrés Lopez",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1334767.png",
+    "teamId": "8302",
+    "marketValue": "€1.5M"
+  },
+  {
+    "id": "1575945",
+    "fullName": "Oso",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1575945.png",
+    "teamId": "8302",
+    "marketValue": "€200K"
+  },
+  {
+    "id": "178753",
+    "fullName": "Nemanja Gudelj",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/178753.png",
+    "teamId": "8302",
+    "marketValue": "€1.5M"
+  },
+  {
+    "id": "574662",
+    "fullName": "Joan Jordán",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/574662.png",
+    "teamId": "8302",
+    "marketValue": "€1.7M"
+  },
+  {
+    "id": "659490",
+    "fullName": "Gabriel Suazo",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/659490.png",
+    "teamId": "8302",
+    "marketValue": "€4M"
+  },
+  {
+    "id": "1132607",
+    "fullName": "Gerard Fernandez",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1132607.png",
+    "teamId": "8302",
+    "marketValue": "€5.6M"
+  },
+  {
+    "id": "971790",
+    "fullName": "Lucien Agoume",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/971790.png",
+    "teamId": "8302",
+    "marketValue": "€10.4M"
+  },
+  {
+    "id": "1078729",
+    "fullName": "Batista Mendy",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1078729.png",
+    "teamId": "8302",
+    "marketValue": "€10.5M"
+  },
+  {
+    "id": "707970",
+    "fullName": "Djibril Sow",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/707970.png",
+    "teamId": "8302",
+    "marketValue": "€7.3M"
+  },
+  {
+    "id": "1428849",
+    "fullName": "Manu Bueno",
+    "position": "CM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1428849.png",
+    "teamId": "8302",
+    "marketValue": "€740K"
+  },
+  {
+    "id": "1130991",
+    "fullName": "Isaac Romero",
+    "position": "RW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1130991.png",
+    "teamId": "8302",
+    "marketValue": "€7.6M"
+  },
+  {
+    "id": "958640",
+    "fullName": "Akor Adams",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/958640.png",
+    "teamId": "8302",
+    "marketValue": "€6.1M"
+  },
+  {
+    "id": "50047",
+    "fullName": "Alexis Sánchez",
+    "position": "RW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/50047.png",
+    "teamId": "8302",
+    "marketValue": "€1.1M"
+  },
+  {
+    "id": "860752",
+    "fullName": "Ruben Vargas",
+    "position": "LM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/860752.png",
+    "teamId": "8302",
+    "marketValue": "€11.1M"
+  },
+  {
+    "id": "926643",
+    "fullName": "Alfon González",
+    "position": "LWB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/926643.png",
+    "teamId": "8302",
+    "marketValue": "€5.3M"
+  },
+  {
+    "id": "837270",
+    "fullName": "Chidera Ejuke",
+    "position": "RW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/837270.png",
+    "teamId": "8302",
+    "marketValue": "€2.4M"
+  },
+  {
+    "id": "449241",
+    "fullName": "Adnan Januzaj",
+    "position": "CM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/449241.png",
+    "teamId": "8302",
+    "marketValue": "€649.2K"
+  },
+  {
+    "id": "1797904",
+    "fullName": "Miguel Angel Sierra",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1797904.png",
+    "teamId": "8302",
+    "marketValue": "€150K"
+  },
+  {
+    "id": "1318836",
+    "fullName": "Alessio Lisci",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1318836.png",
+    "teamId": "8371",
+    "marketValue": null
+  },
+  {
+    "id": "683762",
+    "fullName": "Sergio Herrera",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/683762.png",
+    "teamId": "8371",
+    "marketValue": "€2.4M"
+  },
+  {
+    "id": "213471",
+    "fullName": "Aitor Fernández",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/213471.png",
+    "teamId": "8371",
+    "marketValue": "€581.9K"
+  },
+  {
+    "id": "1762938",
+    "fullName": "Rafael Fernandez",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1762938.png",
+    "teamId": "8371",
+    "marketValue": "€25K"
+  },
+  {
+    "id": "1323022",
+    "fullName": "Iker Benito",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1323022.png",
+    "teamId": "8371",
+    "marketValue": "€1.5M"
+  },
+  {
+    "id": "243419",
+    "fullName": "Juan Cruz",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/243419.png",
+    "teamId": "8371",
+    "marketValue": "€1.1M"
+  },
+  {
+    "id": "1098365",
+    "fullName": "Jorge Herrando",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1098365.png",
+    "teamId": "8371",
+    "marketValue": "€2.9M"
+  },
+  {
+    "id": "763970",
+    "fullName": "Valentin Rosier",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/763970.png",
+    "teamId": "8371",
+    "marketValue": "€2.4M"
+  },
+  {
+    "id": "695062",
+    "fullName": "Javi Galán",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/695062.png",
+    "teamId": "8371",
+    "marketValue": "€2.2M"
+  },
+  {
+    "id": "1187734",
+    "fullName": "Flavien Boyomo",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1187734.png",
+    "teamId": "8371",
+    "marketValue": "€24.7M"
+  },
+  {
+    "id": "1323398",
+    "fullName": "Abel Bretones",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1323398.png",
+    "teamId": "8371",
+    "marketValue": "€5M"
+  },
+  {
+    "id": "814663",
+    "fullName": "Alejandro Catena",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/814663.png",
+    "teamId": "8371",
+    "marketValue": "€2.4M"
+  },
+  {
+    "id": "1431121",
+    "fullName": "Asier Osambela",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1431121.png",
+    "teamId": "8371",
+    "marketValue": "€170K"
+  },
+  {
+    "id": "1614872",
+    "fullName": "Inigo Arguibide",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1614872.png",
+    "teamId": "8371",
+    "marketValue": "€486.3K"
+  },
+  {
+    "id": "303879",
+    "fullName": "Lucas Torro",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/303879.png",
+    "teamId": "8371",
+    "marketValue": "€2.2M"
+  },
+  {
+    "id": "921825",
+    "fullName": "Jon Moncayola",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/921825.png",
+    "teamId": "8371",
+    "marketValue": "€7.2M"
+  },
+  {
+    "id": "1323863",
+    "fullName": "Iker Munoz",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1323863.png",
+    "teamId": "8371",
+    "marketValue": "€3.6M"
+  },
+  {
+    "id": "1054786",
+    "fullName": "Aimar Oroz",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1054786.png",
+    "teamId": "8371",
+    "marketValue": "€15.8M"
+  },
+  {
+    "id": "262592",
+    "fullName": "Moi Gomez",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/262592.png",
+    "teamId": "8371",
+    "marketValue": "€1.6M"
+  },
+  {
+    "id": "1205430",
+    "fullName": "Ander Yoldi",
+    "position": "LWB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1205430.png",
+    "teamId": "8371",
+    "marketValue": "€180.9K"
+  },
+  {
+    "id": "1094778",
+    "fullName": "Raul Garcia",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1094778.png",
+    "teamId": "8371",
+    "marketValue": "€3.6M"
+  },
+  {
+    "id": "574624",
+    "fullName": "Enrique Barja",
+    "position": "LM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/574624.png",
+    "teamId": "8371",
+    "marketValue": "€911K"
+  },
+  {
+    "id": "384413",
+    "fullName": "Rubén Garcia",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/384413.png",
+    "teamId": "8371",
+    "marketValue": "€1.5M"
+  },
+  {
+    "id": "251269",
+    "fullName": "Ante Budimir",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/251269.png",
+    "teamId": "8371",
+    "marketValue": "€4.4M"
+  },
+  {
+    "id": "495222",
+    "fullName": "Sheraldo Becker",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/495222.png",
+    "teamId": "8371",
+    "marketValue": "€1.5M"
+  },
+  {
+    "id": "1553105",
+    "fullName": "Victor Munoz",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1553105.png",
+    "teamId": "8371",
+    "marketValue": "€80K"
+  },
+  {
+    "id": "18738",
+    "fullName": "Eduardo Coudet",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/18738.png",
+    "teamId": "9866",
+    "marketValue": null
+  },
+  {
+    "id": "530468",
+    "fullName": "Antonio Sivera",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/530468.png",
+    "teamId": "9866",
+    "marketValue": "€5.1M"
+  },
+  {
+    "id": "96618",
+    "fullName": "Raul Fernández",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/96618.png",
+    "teamId": "9866",
+    "marketValue": "€339.5K"
+  },
+  {
+    "id": "1467806",
+    "fullName": "Gregoire Swiderski",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1467806.png",
+    "teamId": "9866",
+    "marketValue": "€130K"
+  },
+  {
+    "id": "16412",
+    "fullName": "Nikola Maras",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/16412.png",
+    "teamId": "9866",
+    "marketValue": "€724.2K"
+  },
+  {
+    "id": "845067",
+    "fullName": "Facundo Garces",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/845067.png",
+    "teamId": "9866",
+    "marketValue": "€1.7M"
+  },
+  {
+    "id": "1403692",
+    "fullName": "Youssef Enriquez",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1403692.png",
+    "teamId": "9866",
+    "marketValue": "€110K"
+  },
+  {
+    "id": "1112072",
+    "fullName": "Jon Pacheco",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1112072.png",
+    "teamId": "9866",
+    "marketValue": "€4.2M"
+  },
+  {
+    "id": "860314",
+    "fullName": "Nahuel Tenaglia",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/860314.png",
+    "teamId": "9866",
+    "marketValue": "€2.4M"
+  },
+  {
+    "id": "360918",
+    "fullName": "Jonny Otto",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/360918.png",
+    "teamId": "9866",
+    "marketValue": "€2M"
+  },
+  {
+    "id": "1054522",
+    "fullName": "Moussa Diarra",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1054522.png",
+    "teamId": "9866",
+    "marketValue": "€1.5M"
+  },
+  {
+    "id": "1056071",
+    "fullName": "Victor Parada",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1056071.png",
+    "teamId": "9866",
+    "marketValue": "€1.3M"
+  },
+  {
+    "id": "1821709",
+    "fullName": "Carlos Ballestero",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1821709.png",
+    "teamId": "9866",
+    "marketValue": null
+  },
+  {
+    "id": "1721181",
+    "fullName": "Xanet Olaiz",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1721181.png",
+    "teamId": "9866",
+    "marketValue": "€100K"
+  },
+  {
+    "id": "282281",
+    "fullName": "Denis Suárez",
+    "position": "CM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/282281.png",
+    "teamId": "9866",
+    "marketValue": "€1M"
+  },
+  {
+    "id": "873827",
+    "fullName": "Ander Guevara",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/873827.png",
+    "teamId": "9866",
+    "marketValue": "€2.5M"
+  },
+  {
+    "id": "845998",
+    "fullName": "Antonio Blanco",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/845998.png",
+    "teamId": "9866",
+    "marketValue": "€10.8M"
+  },
+  {
+    "id": "637756",
+    "fullName": "Carles Alena",
+    "position": "LM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/637756.png",
+    "teamId": "9866",
+    "marketValue": "€3.5M"
+  },
+  {
+    "id": "678192",
+    "fullName": "Jon Guridi",
+    "position": "CM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/678192.png",
+    "teamId": "9866",
+    "marketValue": "€2M"
+  },
+  {
+    "id": "1238154",
+    "fullName": "Pablo Ibánez",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1238154.png",
+    "teamId": "9866",
+    "marketValue": "€2.9M"
+  },
+  {
+    "id": "1174300",
+    "fullName": "Calebe",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1174300.png",
+    "teamId": "9866",
+    "marketValue": "€1.3M"
+  },
+  {
+    "id": "799914",
+    "fullName": "Carlos Protesoni",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/799914.png",
+    "teamId": "9866",
+    "marketValue": "€683.6K"
+  },
+  {
+    "id": "1229177",
+    "fullName": "Carlos Vicente",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1229177.png",
+    "teamId": "9866",
+    "marketValue": "€10.7M"
+  },
+  {
+    "id": "518525",
+    "fullName": "Mariano Diaz",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/518525.png",
+    "teamId": "9866",
+    "marketValue": "€459K"
+  },
+  {
+    "id": "640123",
+    "fullName": "Antonio Martinez",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/640123.png",
+    "teamId": "9866",
+    "marketValue": "€3.5M"
+  },
+  {
+    "id": "561164",
+    "fullName": "Lucas Boye",
+    "position": "AM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/561164.png",
+    "teamId": "9866",
+    "marketValue": "€4.8M"
+  },
+  {
+    "id": "1200941",
+    "fullName": "Abderrahman Rebbach",
+    "position": "CM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1200941.png",
+    "teamId": "9866",
+    "marketValue": "€908.3K"
+  },
+  {
+    "id": "1678688",
+    "fullName": "Lander Pinillos",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1678688.png",
+    "teamId": "9866",
+    "marketValue": "€130K"
+  },
+  {
+    "id": "1418118",
+    "fullName": "Diego Morcillo",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1418118.png",
+    "teamId": "9866",
+    "marketValue": "€250K"
+  },
+  {
+    "id": "1859185",
+    "fullName": "Izei Hernandez",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1859185.png",
+    "teamId": "9866",
+    "marketValue": null
+  },
+  {
+    "id": "1553663",
+    "fullName": "Aitor Manas",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1553663.png",
+    "teamId": "9866",
+    "marketValue": "€200K"
+  },
+  {
+    "id": "477367",
+    "fullName": "Jagoba Arrasate",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/477367.png",
+    "teamId": "8661",
+    "marketValue": null
+  },
+  {
+    "id": "1169369",
+    "fullName": "Pere Garcia",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1169369.png",
+    "teamId": "8661",
+    "marketValue": "€80K"
+  },
+  {
+    "id": "1187702",
+    "fullName": "Leo Román",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1187702.png",
+    "teamId": "8661",
+    "marketValue": "€5.2M"
+  },
+  {
+    "id": "1096396",
+    "fullName": "Lucas Bergström",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1096396.png",
+    "teamId": "8661",
+    "marketValue": "€881.2K"
+  },
+  {
+    "id": "33630",
+    "fullName": "Iván Cuéllar",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/33630.png",
+    "teamId": "8661",
+    "marketValue": "€308.8K"
+  },
+  {
+    "id": "1646223",
+    "fullName": "Nil Torreguitart",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1646223.png",
+    "teamId": "8661",
+    "marketValue": "€180K"
+  },
+  {
+    "id": "844478",
+    "fullName": "Mateu Morey",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/844478.png",
+    "teamId": "8661",
+    "marketValue": "€1.3M"
+  },
+  {
+    "id": "674518",
+    "fullName": "Toni Lato",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/674518.png",
+    "teamId": "8661",
+    "marketValue": "€1.3M"
+  },
+  {
+    "id": "872362",
+    "fullName": "Marash Kumbulla",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/872362.png",
+    "teamId": "8661",
+    "marketValue": "€7.5M"
+  },
+  {
+    "id": "640231",
+    "fullName": "Antonio Raillo",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/640231.png",
+    "teamId": "8661",
+    "marketValue": "€1.3M"
+  },
+  {
+    "id": "474673",
+    "fullName": "Johan Mojica",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/474673.png",
+    "teamId": "8661",
+    "marketValue": "€1.8M"
+  },
+  {
+    "id": "673356",
+    "fullName": "Pablo Maffeo",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/673356.png",
+    "teamId": "8661",
+    "marketValue": "€4.7M"
+  },
+  {
+    "id": "521846",
+    "fullName": "Martin Valjent",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/521846.png",
+    "teamId": "8661",
+    "marketValue": "€3.9M"
+  },
+  {
+    "id": "1552991",
+    "fullName": "David Lopez",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1552991.png",
+    "teamId": "8661",
+    "marketValue": "€450K"
+  },
+  {
+    "id": "1817861",
+    "fullName": "Javier Olaizola",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1817861.png",
+    "teamId": "8661",
+    "marketValue": "€15K"
+  },
+  {
+    "id": "359191",
+    "fullName": "Omar Mascarell",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/359191.png",
+    "teamId": "8661",
+    "marketValue": "€652.8K"
+  },
+  {
+    "id": "1055327",
+    "fullName": "Antonio Sánchez",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1055327.png",
+    "teamId": "8661",
+    "marketValue": "€1.9M"
+  },
+  {
+    "id": "784241",
+    "fullName": "Manu Morlanes",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/784241.png",
+    "teamId": "8661",
+    "marketValue": "€2M"
+  },
+  {
+    "id": "282472",
+    "fullName": "Sergi Darder",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/282472.png",
+    "teamId": "8661",
+    "marketValue": "€4.6M"
+  },
+  {
+    "id": "1130583",
+    "fullName": "Samu",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1130583.png",
+    "teamId": "8661",
+    "marketValue": "€16.7M"
+  },
+  {
+    "id": "1233404",
+    "fullName": "Pablo Torre",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1233404.png",
+    "teamId": "8661",
+    "marketValue": "€7.8M"
+  },
+  {
+    "id": "517052",
+    "fullName": "Vedat Muriqi",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/517052.png",
+    "teamId": "8661",
+    "marketValue": "€4.9M"
+  },
+  {
+    "id": "245311",
+    "fullName": "Abdon Prats",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/245311.png",
+    "teamId": "8661",
+    "marketValue": "€1M"
+  },
+  {
+    "id": "430856",
+    "fullName": "Takuma Asano",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/430856.png",
+    "teamId": "8661",
+    "marketValue": "€1.2M"
+  },
+  {
+    "id": "1690093",
+    "fullName": "Jan Virgili",
+    "position": "LW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1690093.png",
+    "teamId": "8661",
+    "marketValue": "€13.8M"
+  },
+  {
+    "id": "1344677",
+    "fullName": "Mateo Joseph",
+    "position": "RW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1344677.png",
+    "teamId": "8661",
+    "marketValue": "€6.2M"
+  },
+  {
+    "id": "1315828",
+    "fullName": "Javi Llabrés",
+    "position": "LM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1315828.png",
+    "teamId": "8661",
+    "marketValue": "€646.6K"
+  },
+  {
+    "id": "819528",
+    "fullName": "Carlos Corberan",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/819528.png",
+    "teamId": "10267",
+    "marketValue": null
+  },
+  {
+    "id": "254241",
+    "fullName": "Stole Dimitrievski",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/254241.png",
+    "teamId": "10267",
+    "marketValue": "€1.5M"
+  },
+  {
+    "id": "913464",
+    "fullName": "Cristian Rivero",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/913464.png",
+    "teamId": "10267",
+    "marketValue": "€362.4K"
+  },
+  {
+    "id": "1280020",
+    "fullName": "Julen Agirrezabala",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1280020.png",
+    "teamId": "10267",
+    "marketValue": "€13.5M"
+  },
+  {
+    "id": "896402",
+    "fullName": "José Copete",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/896402.png",
+    "teamId": "10267",
+    "marketValue": "€4.3M"
+  },
+  {
+    "id": "561198",
+    "fullName": "Mouctar Diakhaby",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/561198.png",
+    "teamId": "10267",
+    "marketValue": "€2.1M"
+  },
+  {
+    "id": "1311985",
+    "fullName": "César Tárrega",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1311985.png",
+    "teamId": "10267",
+    "marketValue": "€19.1M"
+  },
+  {
+    "id": "992052",
+    "fullName": "Thierry Correia",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/992052.png",
+    "teamId": "10267",
+    "marketValue": "€2M"
+  },
+  {
+    "id": "391058",
+    "fullName": "José Gayà",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/391058.png",
+    "teamId": "10267",
+    "marketValue": "€4.6M"
+  },
+  {
+    "id": "261609",
+    "fullName": "Dimitri Foulquier",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/261609.png",
+    "teamId": "10267",
+    "marketValue": "€1.3M"
+  },
+  {
+    "id": "1220187",
+    "fullName": "Jesus Vázquez",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1220187.png",
+    "teamId": "10267",
+    "marketValue": "€4.4M"
+  },
+  {
+    "id": "705484",
+    "fullName": "Eray Cömert",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/705484.png",
+    "teamId": "10267",
+    "marketValue": "€1.2M"
+  },
+  {
+    "id": "1284429",
+    "fullName": "Javier Guerra",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1284429.png",
+    "teamId": "10267",
+    "marketValue": "€26.3M"
+  },
+  {
+    "id": "777028",
+    "fullName": "André Almeida",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/777028.png",
+    "teamId": "10267",
+    "marketValue": "€11.3M"
+  },
+  {
+    "id": "673689",
+    "fullName": "Pepelu",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/673689.png",
+    "teamId": "10267",
+    "marketValue": "€8.7M"
+  },
+  {
+    "id": "478105",
+    "fullName": "Baptiste Santamaria",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/478105.png",
+    "teamId": "10267",
+    "marketValue": "€4.9M"
+  },
+  {
+    "id": "800615",
+    "fullName": "Filip Ugrinic",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/800615.png",
+    "teamId": "10267",
+    "marketValue": "€6.7M"
+  },
+  {
+    "id": "1757894",
+    "fullName": "Lucas Nunez",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1757894.png",
+    "teamId": "10267",
+    "marketValue": "€30K"
+  },
+  {
+    "id": "590494",
+    "fullName": "Umar Sadiq",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/590494.png",
+    "teamId": "10267",
+    "marketValue": "€5M"
+  },
+  {
+    "id": "704151",
+    "fullName": "Arnaut Danjuma",
+    "position": "LM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/704151.png",
+    "teamId": "10267",
+    "marketValue": "€2.5M"
+  },
+  {
+    "id": "929838",
+    "fullName": "Hugo Duro",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/929838.png",
+    "teamId": "10267",
+    "marketValue": "€16.7M"
+  },
+  {
+    "id": "638070",
+    "fullName": "Luis Rioja",
+    "position": "RWB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/638070.png",
+    "teamId": "10267",
+    "marketValue": "€1.4M"
+  },
+  {
+    "id": "974755",
+    "fullName": "Lucas Beltran",
+    "position": "LM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/974755.png",
+    "teamId": "10267",
+    "marketValue": "€19.3M"
+  },
+  {
+    "id": "1284434",
+    "fullName": "Diego Lopez",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1284434.png",
+    "teamId": "10267",
+    "marketValue": "€19M"
+  },
+  {
+    "id": "1077915",
+    "fullName": "Largie Ramazani",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1077915.png",
+    "teamId": "10267",
+    "marketValue": "€7.4M"
+  },
+  {
+    "id": "784246",
+    "fullName": "Daniel Raba",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/784246.png",
+    "teamId": "10267",
+    "marketValue": "€1.9M"
+  },
+  {
+    "id": "1085380",
+    "fullName": "Luis Castro",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1085380.png",
+    "teamId": "8581",
+    "marketValue": null
+  },
+  {
+    "id": "1237455",
+    "fullName": "Pablo Cunat",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1237455.png",
+    "teamId": "8581",
+    "marketValue": "€1.4M"
+  },
+  {
+    "id": "185644",
+    "fullName": "Mathew Ryan",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/185644.png",
+    "teamId": "8581",
+    "marketValue": "€1.6M"
+  },
+  {
+    "id": "1366374",
+    "fullName": "Alejandro Primo",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1366374.png",
+    "teamId": "8581",
+    "marketValue": "€230K"
+  },
+  {
+    "id": "1800609",
+    "fullName": "Cayetano Romero",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1800609.png",
+    "teamId": "8581",
+    "marketValue": "€50K"
+  },
+  {
+    "id": "1605748",
+    "fullName": "Matias Moreno",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1605748.png",
+    "teamId": "8581",
+    "marketValue": "€3.8M"
+  },
+  {
+    "id": "1412942",
+    "fullName": "Alan Matturro",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1412942.png",
+    "teamId": "8581",
+    "marketValue": "€7.1M"
+  },
+  {
+    "id": "952528",
+    "fullName": "Adrián De La Fuente",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/952528.png",
+    "teamId": "8581",
+    "marketValue": "€1.2M"
+  },
+  {
+    "id": "693736",
+    "fullName": "Unai Elgezabal",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/693736.png",
+    "teamId": "8581",
+    "marketValue": "€669.8K"
+  },
+  {
+    "id": "881124",
+    "fullName": "Diego Pampin",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/881124.png",
+    "teamId": "8581",
+    "marketValue": "€799.5K"
+  },
+  {
+    "id": "443966",
+    "fullName": "Jeremy Toljan",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/443966.png",
+    "teamId": "8581",
+    "marketValue": "€1.8M"
+  },
+  {
+    "id": "1052330",
+    "fullName": "Manuel Sánchez",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1052330.png",
+    "teamId": "8581",
+    "marketValue": "€9.6M"
+  },
+  {
+    "id": "1648656",
+    "fullName": "Martin Krug",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1648656.png",
+    "teamId": "8581",
+    "marketValue": "€60K"
+  },
+  {
+    "id": "1800611",
+    "fullName": "Nacho Perez",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1800611.png",
+    "teamId": "8581",
+    "marketValue": "€20K"
+  },
+  {
+    "id": "1859295",
+    "fullName": "Huseini Nakoha",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1859295.png",
+    "teamId": "8581",
+    "marketValue": null
+  },
+  {
+    "id": "1335102",
+    "fullName": "Ugo Raghouber",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1335102.png",
+    "teamId": "8581",
+    "marketValue": "€4.5M"
+  },
+  {
+    "id": "1131957",
+    "fullName": "Jon Olasagasti",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1131957.png",
+    "teamId": "8581",
+    "marketValue": "€1.7M"
+  },
+  {
+    "id": "923298",
+    "fullName": "Pablo Martinez",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/923298.png",
+    "teamId": "8581",
+    "marketValue": "€1.2M"
+  },
+  {
+    "id": "1007717",
+    "fullName": "Unai Vencedor",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1007717.png",
+    "teamId": "8581",
+    "marketValue": "€1.9M"
+  },
+  {
+    "id": "839750",
+    "fullName": "Kervin Arriaga",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/839750.png",
+    "teamId": "8581",
+    "marketValue": "€1.3M"
+  },
+  {
+    "id": "977618",
+    "fullName": "Victor Garcia",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/977618.png",
+    "teamId": "8581",
+    "marketValue": "€812.3K"
+  },
+  {
+    "id": "1082930",
+    "fullName": "Iker Losada",
+    "position": "LM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1082930.png",
+    "teamId": "8581",
+    "marketValue": "€1.5M"
+  },
+  {
+    "id": "914401",
+    "fullName": "Oriol Rey",
+    "position": "CM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/914401.png",
+    "teamId": "8581",
+    "marketValue": "€1.6M"
+  },
+  {
+    "id": "1209980",
+    "fullName": "Carlos Álvarez",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1209980.png",
+    "teamId": "8581",
+    "marketValue": "€16.1M"
+  },
+  {
+    "id": "1649293",
+    "fullName": "Paco Cortes",
+    "position": "LM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1649293.png",
+    "teamId": "8581",
+    "marketValue": "€220K"
+  },
+  {
+    "id": "1800613",
+    "fullName": "Joan Ruiz",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1800613.png",
+    "teamId": "8581",
+    "marketValue": "€50K"
+  },
+  {
+    "id": "1286471",
+    "fullName": "Roger Brugué",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1286471.png",
+    "teamId": "8581",
+    "marketValue": "€1.7M"
+  },
+  {
+    "id": "1209441",
+    "fullName": "Ivan Romero",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1209441.png",
+    "teamId": "8581",
+    "marketValue": "€8.8M"
+  },
+  {
+    "id": "477472",
+    "fullName": "José Luis Morales",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/477472.png",
+    "teamId": "8581",
+    "marketValue": "€569.8K"
+  },
+  {
+    "id": "864154",
+    "fullName": "Goduine Koyalipou",
+    "position": "RW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/864154.png",
+    "teamId": "8581",
+    "marketValue": "€2.2M"
+  },
+  {
+    "id": "1610744",
+    "fullName": "Carlos Espi",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1610744.png",
+    "teamId": "8581",
+    "marketValue": "€2.2M"
+  },
+  {
+    "id": "1392779",
+    "fullName": "Etta Eyong",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1392779.png",
+    "teamId": "8581",
+    "marketValue": "€23.9M"
+  },
+  {
+    "id": "430002",
+    "fullName": "Guillermo Almada",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/430002.png",
+    "teamId": "8670",
+    "marketValue": null
+  },
+  {
+    "id": "1017745",
+    "fullName": "Horatiu Moldovan",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1017745.png",
+    "teamId": "8670",
+    "marketValue": "€1.5M"
+  },
+  {
+    "id": "534955",
+    "fullName": "Aaron Escandell",
+    "position": "GK",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/534955.png",
+    "teamId": "8670",
+    "marketValue": "€1.6M"
+  },
+  {
+    "id": "1688651",
+    "fullName": "Miguel Narvaez",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1688651.png",
+    "teamId": "8670",
+    "marketValue": "€130K"
+  },
+  {
+    "id": "671595",
+    "fullName": "Álvaro Lemos",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/671595.png",
+    "teamId": "8670",
+    "marketValue": "€298.1K"
+  },
+  {
+    "id": "1580741",
+    "fullName": "Jaime Vazquez",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1580741.png",
+    "teamId": "8670",
+    "marketValue": "€200K"
+  },
+  {
+    "id": "574200",
+    "fullName": "Eric Bailly",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/574200.png",
+    "teamId": "8670",
+    "marketValue": "€1.4M"
+  },
+  {
+    "id": "1333066",
+    "fullName": "Rahim Alhassane",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1333066.png",
+    "teamId": "8670",
+    "marketValue": "€1.2M"
+  },
+  {
+    "id": "479217",
+    "fullName": "David Costas",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/479217.png",
+    "teamId": "8670",
+    "marketValue": "€951.8K"
+  },
+  {
+    "id": "545905",
+    "fullName": "Dani Calvo",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/545905.png",
+    "teamId": "8670",
+    "marketValue": "€759.8K"
+  },
+  {
+    "id": "884262",
+    "fullName": "Oier Luengo",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/884262.png",
+    "teamId": "8670",
+    "marketValue": "€930.8K"
+  },
+  {
+    "id": "954962",
+    "fullName": "David Carmo",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/954962.png",
+    "teamId": "8670",
+    "marketValue": "€11.3M"
+  },
+  {
+    "id": "640238",
+    "fullName": "Nacho Vidal",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/640238.png",
+    "teamId": "8670",
+    "marketValue": "€1.3M"
+  },
+  {
+    "id": "687568",
+    "fullName": "Lucas Ahijado",
+    "position": "RB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/687568.png",
+    "teamId": "8670",
+    "marketValue": "€388.2K"
+  },
+  {
+    "id": "1159181",
+    "fullName": "Javi Lopez",
+    "position": "LB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1159181.png",
+    "teamId": "8670",
+    "marketValue": "€6.9M"
+  },
+  {
+    "id": "1557032",
+    "fullName": "Marco Esteban",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1557032.png",
+    "teamId": "8670",
+    "marketValue": "€250K"
+  },
+  {
+    "id": "1693553",
+    "fullName": "Chukwuma Eze",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1693553.png",
+    "teamId": "8670",
+    "marketValue": "€20K"
+  },
+  {
+    "id": "1323510",
+    "fullName": "Alberto Reina",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1323510.png",
+    "teamId": "8670",
+    "marketValue": "€1.3M"
+  },
+  {
+    "id": "948745",
+    "fullName": "Kwasi Sibo",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/948745.png",
+    "teamId": "8670",
+    "marketValue": "€876.9K"
+  },
+  {
+    "id": "37436",
+    "fullName": "Santi Cazorla",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/37436.png",
+    "teamId": "8670",
+    "marketValue": "€290.3K"
+  },
+  {
+    "id": "686460",
+    "fullName": "Santiago Colombatto",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/686460.png",
+    "teamId": "8670",
+    "marketValue": "€2M"
+  },
+  {
+    "id": "760715",
+    "fullName": "Ovie Ejaria",
+    "position": "CM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/760715.png",
+    "teamId": "8670",
+    "marketValue": "€339.3K"
+  },
+  {
+    "id": "1188087",
+    "fullName": "Brandon Domingues",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1188087.png",
+    "teamId": "8670",
+    "marketValue": "€712.1K"
+  },
+  {
+    "id": "424129",
+    "fullName": "Leander Dendoncker",
+    "position": "CB",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/424129.png",
+    "teamId": "8670",
+    "marketValue": "€2.2M"
+  },
+  {
+    "id": "950599",
+    "fullName": "Nicolas Fonseca",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/950599.png",
+    "teamId": "8670",
+    "marketValue": "€3.7M"
+  },
+  {
+    "id": "1712069",
+    "fullName": "Diego Tejon",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1712069.png",
+    "teamId": "8670",
+    "marketValue": "€100K"
+  },
+  {
+    "id": "1169595",
+    "fullName": "Ilyas Chaira",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1169595.png",
+    "teamId": "8670",
+    "marketValue": "€2.1M"
+  },
+  {
+    "id": "1032811",
+    "fullName": "Federico Vinas",
+    "position": "RW",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1032811.png",
+    "teamId": "8670",
+    "marketValue": "€1.7M"
+  },
+  {
+    "id": "971787",
+    "fullName": "Haissem Hassan",
+    "position": "RM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/971787.png",
+    "teamId": "8670",
+    "marketValue": "€5.5M"
+  },
+  {
+    "id": "1132940",
+    "fullName": "Thiago Borbas",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1132940.png",
+    "teamId": "8670",
+    "marketValue": "€6.4M"
+  },
+  {
+    "id": "688668",
+    "fullName": "Josip Brekalo",
+    "position": "LM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/688668.png",
+    "teamId": "8670",
+    "marketValue": "€1.7M"
+  },
+  {
+    "id": "1304120",
+    "fullName": "Alex Forés",
+    "position": "ST",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1304120.png",
+    "teamId": "8670",
+    "marketValue": "€569.6K"
+  },
+  {
+    "id": "859764",
+    "fullName": "Luka Ilic",
+    "position": "DM",
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/859764.png",
+    "teamId": "8670",
+    "marketValue": "€1.6M"
+  },
+  {
+    "id": "1427152",
+    "fullName": "Omar Falah",
+    "position": null,
+    "avatarUrl": "https://images.fotmob.com/image_resources/playerimages/1427152.png",
+    "teamId": "8670",
+    "marketValue": "€60K"
+  }
+]

@@ -1,18 +1,40 @@
 package com.DraftLeague.models.Team;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
 
+import com.DraftLeague.models.Player.Player;
+import com.DraftLeague.models.Player.PlayerRepository;
+import com.DraftLeague.models.Player.PlayerService;
+import com.DraftLeague.models.Player.PlayerTeam;
+import com.DraftLeague.models.Player.PlayerTeamRepository;
+import com.DraftLeague.models.Team.dto.UpdateTeamPlayersRequest;
+import com.DraftLeague.models.League.League;
+import com.DraftLeague.models.user.User;
+import com.DraftLeague.models.user.UserRepository;
+
+@Service
 public class TeamService {
 
-    private TeamRepository teamRepository;
+    private final TeamRepository teamRepository;
+    private final PlayerRepository playerRepository;
+    private final PlayerTeamRepository playerTeamRepository;
+    private final UserRepository userRepository;
+    private final PlayerService playerService;
 
     @Autowired
-    public TeamService(TeamRepository teamRepository) {
+    public TeamService(TeamRepository teamRepository, PlayerRepository playerRepository, 
+                      PlayerTeamRepository playerTeamRepository, UserRepository userRepository, PlayerService playerService) {
         this.teamRepository = teamRepository;
+        this.playerRepository = playerRepository;
+        this.playerTeamRepository = playerTeamRepository;
+        this.userRepository = userRepository;
+        this.playerService = playerService;
     }
 
     @Transactional
@@ -30,6 +52,7 @@ public class TeamService {
         existingTeam.setGameweekPoints(team.getGameweekPoints());
         existingTeam.setTotalPoints(team.getTotalPoints());
         existingTeam.setCaptainId(team.getCaptainId());
+        existingTeam.setPlayerTeams(team.getPlayerTeams());
         return this.teamRepository.save(existingTeam);
     }
 
@@ -68,5 +91,53 @@ public class TeamService {
         teamRepository.saveAll(teams);
     }
 
-    
+    @Transactional(readOnly = true)
+    public Team getTeamByUserAndLeague(Integer leagueId) {
+        var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new RuntimeException("No autenticado");
+        }
+        String username = auth.getName();
+        User user = userRepository.findUserByUsername(username)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        
+        List<Team> teams = teamRepository.findByUser(user);
+        return teams.stream()
+            .filter(t -> t.getLeague().getId().equals(leagueId))
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException("No tienes un equipo en esta liga"));
+    }
+
+    @Transactional
+    public Team updateTeamPlayers(Integer leagueId, UpdateTeamPlayersRequest request) {
+        Team team = getTeamByUserAndLeague(leagueId);
+        
+        // Limpiar jugadores actuales
+        team.getPlayerTeams().clear();
+        
+        // Calcular presupuesto gastado y validar
+        int totalCost = 0;
+        List<PlayerTeam> newPlayerTeams = new ArrayList<>();
+        
+        for (UpdateTeamPlayersRequest.PlayerSelection selection : request.getPlayers()) {
+            Player player = playerService.getPlayerById(Integer.parseInt(selection.getPlayerId()));
+            
+            totalCost += player.getMarketValue();
+            
+            PlayerTeam playerTeam = new PlayerTeam();
+            playerTeam.setPlayer(player);
+            playerTeam.setTeam(team);
+            playerTeam.setLined(selection.getLined());
+            playerTeam.setIsCaptain(selection.getIsCaptain() != null ? selection.getIsCaptain() : false);
+            playerTeam.setSellPrice(player.getMarketValue());
+            
+            newPlayerTeams.add(playerTeam);
+        }
+        
+        
+        // Añadir nuevos jugadores
+        team.getPlayerTeams().addAll(newPlayerTeams);
+        
+        return teamRepository.save(team);
+    }
 }

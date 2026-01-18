@@ -1,6 +1,8 @@
 package com.DraftLeague.models.Team;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.DraftLeague.models.League.League;
 import com.DraftLeague.models.Player.PlayerTeam;
@@ -65,7 +67,6 @@ public class Team {
     @Valid
     private League league;
 
-    @ManyToOne(optional = true)
-    @Valid
-    private PlayerTeam playerTeam; // ahora opcional para permitir crear equipo sin plantilla inicial
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PlayerTeam> playerTeams = new ArrayList<>();
 }

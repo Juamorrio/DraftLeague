@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PlayerService {
-    
+
     private final PlayerRepository playerRepository;
 
     public PlayerService(PlayerRepository playerRepository) {
@@ -15,7 +15,7 @@ public class PlayerService {
         return playerRepository.save(player);
     }
 
-    public Player getPlayerById(Long id) {
+    public Player getPlayerById(int id) {
         return playerRepository.findById(id).orElseThrow(() -> new RuntimeException("Player not found"));
     }
 
@@ -27,8 +27,9 @@ public class PlayerService {
         
     //}
 
-    public void deletePlayer(Long id) {
+    public void deletePlayer(int id) {
         Player player = getPlayerById(id);
         playerRepository.delete(player);
     }
+
 }

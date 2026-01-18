@@ -2,6 +2,7 @@
 ALTER TABLE `leagues` MODIFY COLUMN `chat_id` INT NULL;
 ALTER TABLE `leagues` MODIFY COLUMN `notification_league_id` INT NULL;
 ALTER TABLE `team` MODIFY COLUMN `player_team_id` INT NULL;
+ALTER TABLE player_team DROP COLUMN IF EXISTS player_league_id;
 
 UPDATE player SET position='POR' WHERE position IN ('GK');
 UPDATE player SET position='DEF' WHERE position IN ('LB','RB','CB');
@@ -26,3 +27,6 @@ INSERT INTO player (id, full_name, position, market_value, active, total_points,
  (9, 'David Navas', 'MID', 5100000, true, 0, null, 1, 1),
  (10, 'Raúl Vega', 'DEL', 4900000, true, 0, null, 1, 1),
  (11, 'Antony', 'DEL', 6000000, true, 0, 'frontend\assets\Player\antony.png', 1, 1);
+
+
+ALTER TABLE player MODIFY COLUMN player_score_id INT NULL;

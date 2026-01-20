@@ -1,6 +1,7 @@
 package com.DraftLeague.models.Player;
 
-import com.DraftLeague.models.Score.PlayerScore;
+import org.checkerframework.checker.units.qual.C;
+
 import com.DraftLeague.models.Statistics.PlayerStatistic;
 
 import jakarta.persistence.*;
@@ -17,10 +18,9 @@ import lombok.Setter;
 public class Player {
 
     @Id
-    @Column(name = "id", nullable = false, unique = true, length = 30)
+    @Column(name = "id", nullable = false, unique = true)
     @NotNull
-    @Size(max = 30)
-    private String id;
+    private Integer id;
 
     @NotNull
     @Size(max = 60)
@@ -49,13 +49,11 @@ public class Player {
     @Column(name = "avatar_url", nullable = true)
     private String avatarUrl;
 
-    @ManyToOne(optional = false)
     @NotNull
-    @Valid
-    private PlayerScore playerScore;
+    @Column(name = "team_id", nullable = false)
+    private Integer teamId;
 
     @ManyToOne(optional = false)
-    @NotNull
     @Valid
     private PlayerStatistic playerStatistic;
 }

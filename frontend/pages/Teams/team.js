@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Modal, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Modal, FlatList, Alert } from 'react-native';
 import { useLeague } from '../../context/LeagueContext';
 import pitch from '../../assets/Team/pitch.png';
 import Player from '../../components/player';
@@ -15,20 +15,34 @@ function Team() {
 	const [pickerVisible, setPickerVisible] = useState(false);
 	const [currentKey, setCurrentKey] = useState(null);
 	const [error, setError] = useState(null);
+	const [saving, setSaving] = useState(false);
+	const [formation, setFormation] = useState('4-3-3'); 
 
-	const positions = [
-		{ key: 'GK', x: 48, y: 90 },
-		{ key: 'LB', x: 15, y: 75 },
-		{ key: 'CB1', x: 38, y: 75 },
-		{ key: 'CB2', x: 60, y: 75 },
-		{ key: 'RB', x: 85, y: 75 },
-		{ key: 'CM1', x: 32, y: 55 },
-		{ key: 'CM2', x: 65, y: 55 },
-		{ key: 'LW', x: 18, y: 35 },
-		{ key: 'CAM', x: 48, y: 35 },
-		{ key: 'RW', x: 78, y: 35 },
-		{ key: 'ST', x: 48, y: 18 },
-	];
+	
+	const FIELD_WIDTH = '100%';
+	const FIELD_HEIGHT = '100%';
+
+	const formations = {
+		'4-3-3': {
+			name: '4-3-3',
+			positions: [
+				{ key: 'GK', x: '50%', y: '90%', role: 'POR' },
+				{ key: 'LB', x: '15%', y: '70%', role: 'DEF' },
+				{ key: 'CB1', x: '35%', y: '70%', role: 'DEF' },
+				{ key: 'CB2', x: '65%', y: '70%', role: 'DEF' },
+				{ key: 'RB', x: '85%', y: '70%', role: 'DEF' },
+				{ key: 'CM1', x: '30%', y: '45%', role: 'MID' },
+				{ key: 'CM2', x: '70%', y: '45%', role: 'MID' },
+				{ key: 'CAM', x: '50%', y: '35%', role: 'MID' },
+				{ key: 'LW', x: '20%', y: '15%', role: 'DEL' },
+				{ key: 'RW', x: '80%', y: '15%', role: 'DEL' },
+				{ key: 'ST', x: '50%', y: '5%', role: 'DEL' },
+			]
+		},
+	};
+
+	const currentFormation = formations[formation];
+	const positions = currentFormation.positions;
 
 	useEffect(() => {
 		let mounted = true;
@@ -37,16 +51,77 @@ function Team() {
 			try {
 				const res = await authenticatedFetch('/api/v1/players');
 				const json = await res.json();
-				if (mounted) setPlayers(Array.isArray(json) ? json : (json?.content ?? [])); setLoading(false);
+				if (mounted) {
+					setPlayers(Array.isArray(json) ? json : (json?.content ?? []));
+				}
 			} catch (e) {
 				if (mounted) setError('No se pudieron cargar jugadores');
-			} 
+			} finally {
+				if (mounted) setLoading(false);
+			}
 		})();
 		return () => { mounted = false; };
 		
-	}, []);	
+	}, []);
+
+	const loadTeam = async () => {
+		if (!selectedLeague?.id) return;
+		let mounted = true;
+		try {
+			const res = await authenticatedFetch(`/api/v1/teams/league/${selectedLeague.id}`);
+			if (res.ok) {
+				const team = await res.json();
+				if (mounted && team?.playerTeams) {
+					const newAssigned = {};						
+					const playersByRole = {
+						POR: [],
+						DEF: [],
+						MID: [],
+						DEL: []
+					};	
+					team.playerTeams.forEach(pt => {
+						const role = pt.player.position;
+						if (playersByRole[role]) {
+							playersByRole[role].push(pt.player);
+						}
+					});
+					
+					const slotsByRole = {
+						POR: [],
+						DEF: [],
+						MID: [],
+						DEL: []
+					};
+					
+					currentFormation.positions.forEach(pos => {
+						if (slotsByRole[pos.role]) {
+							slotsByRole[pos.role].push(pos.key);
+						}
+					});
+					
+					Object.entries(playersByRole).forEach(([role, players]) => {
+						const slots = slotsByRole[role] || [];
+						players.forEach((player, index) => {
+							if (index < slots.length) {
+								newAssigned[slots[index]] = player;
+							}
+						});
+					});
+					
+					setAssigned(newAssigned);
+				}
+			}
+		} catch (e) {
+			console.error('Error cargando equipo:', e);
+		}
+	};
+
+	useEffect(() => {
+		loadTeam();
+	}, [selectedLeague?.id, formation]);
 
 	const openPicker = (key) => { setCurrentKey(key); setPickerVisible(true); };
+	
 	const assignPlayer = (player) => {
 		if (!currentKey) return;
 		setAssigned(prev => ({ ...prev, [currentKey]: player }));
@@ -54,37 +129,76 @@ function Team() {
 		setCurrentKey(null);
 	};
 
-	function matchesSpot(playerPos, key) {
-	if (!playerPos || !key) return true;
-	const groupBySpot = {
-		GK: 'POR',
-		LB: 'DEF',
-		RB: 'DEF',
-		CB1: 'DEF',
-		CB2: 'DEF',
-		CM1: 'MID',
-		CM2: 'MID',
-		CAM: 'MID',
-		LW: 'DEL',
-		RW: 'DEL',
-		ST: 'DEL',
+	const saveTeam = async () => {
+		if (!selectedLeague?.id) {
+			Alert.alert('Error', 'Selecciona una liga primero');
+			return;
+		}
+
+		const playersList = Object.entries(assigned).map(([position, player]) => ({
+			playerId: player.id,
+			position: position,
+			lined: true,
+			isCaptain: false
+		}));
+
+		if (playersList.length === 0) {
+			Alert.alert('Error', 'Debes seleccionar al menos un jugador');
+			return;
+		}
+
+		setSaving(true);
+		try {
+			const res = await authenticatedFetch(`/api/v1/teams/league/${selectedLeague.id}/players`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ players: playersList })
+			});
+
+			if (res.ok) {
+				Alert.alert('Éxito', 'Equipo guardado correctamente');
+			} else {
+				const data = await res.json();
+				Alert.alert('Error', data?.error || 'No se pudo guardar el equipo');
+			}
+		} catch (e) {
+			Alert.alert('Error', 'Error al guardar: ' + (e?.message || 'Desconocido'));
+		} finally {
+			setSaving(false);
+		}
 	};
-	const expected = groupBySpot[key] || key;
-	return String(playerPos) === expected;
-}
+
+	function matchesSpot(playerPos, key) {
+		if (!playerPos || !key) return true;
+				const positionInfo = currentFormation.positions.find(p => p.key === key);
+		if (!positionInfo) return false;
+				return playerPos === positionInfo.role;
+	}
 
 	return (
 		<View style={styles.container}>
-			<Text style={styles.header}>{selectedLeague ? `Equipo · ${selectedLeague.name}` : 'Equipo'}</Text>
-			<Image source={pitch} style={{ width: 400, height: 600 }} />
-			{positions.map(p => (
-				<View key={p.key} style={[styles.spot, { left: `${p.x}%`, top: `${p.y}%` }]}> 
+			<View style={styles.topBar}>
+				<Text style={styles.header}>{selectedLeague ? `Equipo · ${selectedLeague.name}` : 'Equipo'}</Text>
+				
+				<TouchableOpacity 
+					style={[styles.saveBtn, saving && styles.saveBtnDisabled]} 
+					onPress={saveTeam}
+					disabled={saving}
+				>
+					<Text style={styles.saveBtnText}>{saving ? 'Guardando...' : 'Guardar'}</Text>
+				</TouchableOpacity>
+			</View>
+
+			<View style={styles.fieldContainer}>
+				<Image source={pitch} style={styles.fieldImage} />
+				{positions.map(p => (
+					<View key={p.key} style={[styles.spot, { left: p.x, top: p.y }]}> 
 					{assigned[p.key] ? (
 						(() => {
 							return (
 								<Player
 									name={assigned[p.key].fullName ?? assigned[p.key].name}
-									avatar={null}
+									avatar={assigned[p.key].avatarUrl ? { uri: assigned[p.key].avatarUrl } : null}
 									size={50}
 									onPress={() => openPicker(p.key)}
 								/>
@@ -98,6 +212,7 @@ function Team() {
 					{!assigned[p.key] && <Text style={styles.spotLabel}>{p.key}</Text>}
 				</View>
 			))}
+			</View>
 
 			<Modal visible={pickerVisible} transparent animationType="fade" onRequestClose={() => setPickerVisible(false)}>
 				<View style={styles.modalBackdrop}>
@@ -130,9 +245,15 @@ function Team() {
 export default withAuth(Team);
 
 const styles = StyleSheet.create({
-	container: { flex: 1, backgroundColor: '#ffffffff', alignItems: 'center', paddingTop: 12 },
-	header: { color: '#fff', fontWeight: '800', fontSize: 18, marginBottom: 8 },
-	spot: { position: 'absolute', transform: [{ translateX: -18 }, { translateY: -18 }], alignItems: 'center' },
+	container: { flex: 1, backgroundColor: '#ffffffff' },
+	topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, backgroundColor: '#1a5c3a' },
+	header: { color: '#fff', fontWeight: '800', fontSize: 18 },
+	saveBtn: { backgroundColor: '#4CAF50', paddingVertical: 8, paddingHorizontal: 16, borderRadius: 8 },
+	saveBtnDisabled: { backgroundColor: '#ccc' },
+	saveBtnText: { color: '#fff', fontWeight: '700', fontSize: 14 },
+	fieldContainer: { flex: 1, position: 'relative' },
+	fieldImage: { width: '100%', height: '100%' },
+	spot: { position: 'absolute', transform: [{ translateX: -25 }, { translateY: -25 }], alignItems: 'center' },
 	spotBtn: { width: 50, height: 50, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.2)', borderWidth: 2, borderColor: '#000000ff', alignItems: 'center', justifyContent: 'center' },
 	plus: { color: '#000000ff', fontWeight: '800', fontSize: 20, lineHeight: 22 },
 	spotLabel: { marginTop: 4, color: '#000000ff', fontSize: 10, fontWeight: '700' },

@@ -6,7 +6,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.5.6</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/>
 	</parent>
 	<groupId>com.DraftLeague</groupId>
 	<artifactId>backend</artifactId>
@@ -39,7 +39,6 @@
 			<artifactId>jjwt-api</artifactId>
 			<version>0.11.5</version>
 		</dependency>
-		<!-- JJWT runtime implementations for signing/parsing -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-impl</artifactId>
@@ -64,6 +63,10 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -71,13 +74,11 @@
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
-		<!-- MariaDB JDBC driver -->
 		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
 			<artifactId>mariadb-java-client</artifactId>
 			<version>3.3.3</version>
 		</dependency>
-		<!-- Embedded H2 for local development (si lo necesitas) -->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
@@ -111,6 +112,13 @@
 		<resources>
 			<resource>
 				<directory>backend/src/main/resources</directory>
+			</resource>
+			<resource>
+				<directory>backend/src/main/java/com/DraftLeague/scrapping</directory>
+				<includes>
+					<include>**/*.json</include>
+				</includes>
+				<targetPath>scrapping</targetPath>
 			</resource>
 		</resources>
 		<testResources>

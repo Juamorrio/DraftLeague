@@ -27,9 +27,10 @@ export default function Player({
 						<Text style={styles.fallbackText}>{initials || '?'}</Text>
 					</View>
 				)}
-				<View style={styles.badge}>
-					<Text style={styles.badgeText}>{points}</Text>
-				</View>
+				
+			</View>
+			<View style={styles.badge}>
+				<Text style={styles.badgeText}>{points}</Text>
 			</View>
 		</TouchableOpacity>
 	);
@@ -68,12 +69,12 @@ const styles = StyleSheet.create({
 	},
 	badge: {
 		position: 'absolute',
-		bottom: 4,
-		right: 4,
+		bottom: 2,
+		right: 2,
 		backgroundColor: '#065f46', 
 		borderRadius: 16,
-		minWidth: 32,
-		height: 32,
+		minWidth: 28,
+		height: 28,
 		paddingHorizontal: 8,
 		justifyContent: 'center',
 		alignItems: 'center',

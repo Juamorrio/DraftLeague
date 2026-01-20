@@ -1,5 +1,8 @@
 package com.DraftLeague.models.Player;
 
+import com.DraftLeague.models.Team.Team;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -32,5 +35,10 @@ public class PlayerTeam {
     @ManyToOne
     @NotNull
     private Player player;
+
+    @ManyToOne
+    @NotNull
+    @JsonIgnore
+    private Team team;
 
 }

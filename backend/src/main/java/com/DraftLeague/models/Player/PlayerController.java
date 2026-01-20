@@ -1,12 +1,11 @@
 package com.DraftLeague.models.Player;
 
+import java.util.List;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,7 +21,7 @@ public class PlayerController {
     }
 
     @GetMapping
-    public ResponseEntity<java.util.List<Player>> getAllPlayers() {
+    public ResponseEntity<List<Player>> getAllPlayers() {
         return ResponseEntity.ok(playerService.getAllPlayers());
     }
 
@@ -33,7 +32,7 @@ public class PlayerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Player> getPlayerById(@PathVariable Long id) {
+    public ResponseEntity<Player> getPlayerById(@PathVariable int id) {
         Player player = playerService.getPlayerById(id);
         return ResponseEntity.ok(player);
     }
@@ -45,9 +44,8 @@ public class PlayerController {
     //}
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePlayer(@PathVariable Long id) {
+    public ResponseEntity<Void> deletePlayer(@PathVariable int id) {
         playerService.deletePlayer(id);
         return ResponseEntity.noContent().build();
     }
-
 }

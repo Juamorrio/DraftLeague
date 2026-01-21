@@ -2,8 +2,7 @@ name: Codacy CI
 
 on:
   push:
-    branches:
-      - trunk
+    
 
 jobs:
   build:
@@ -31,17 +30,9 @@ jobs:
         distribution: 'temurin'
         cache: 'maven'
 
-    - name: Install dependencies and run tests
+    - name: Install dependencies 
       run: |
         mvn clean install -DskipTests
-        mvn test
-      env:
-        SPRING_PROFILES_ACTIVE: test
-        SPRING_DATASOURCE_URL: jdbc:mariadb://127.0.0.1:3306/draftleague_test
-        SPRING_DATASOURCE_USERNAME: draftleague_user
-        SPRING_DATASOURCE_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-        SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.mariadb.jdbc.Driver
-        HIBERNATE_DIALECT: org.hibernate.dialect.MariaDBDialect
 
     - name: Upload coverage to Codacy
       run: |

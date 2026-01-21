@@ -37,6 +37,6 @@ jobs:
     - name: Upload coverage to Codacy
       run: |
         mvn jacoco:report
-        bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r target/site/jacoco/jacoco.xml
+        bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r target/jacoco/jacoco.xml
       env:
         CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}

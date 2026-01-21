@@ -2,7 +2,8 @@ name: Codacy CI
 
 on:
   push:
-    
+    branches:
+      - trunk
 
 jobs:
   build:
@@ -31,7 +32,6 @@ jobs:
         cache: 'maven'
 
     - name: Install dependencies and run tests
-      working-directory: ./backend
       run: |
         mvn clean install -DskipTests
         mvn test
@@ -44,7 +44,6 @@ jobs:
         HIBERNATE_DIALECT: org.hibernate.dialect.MariaDBDialect
 
     - name: Upload coverage to Codacy
-      working-directory: ./backend
       run: |
         mvn jacoco:report
         bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r target/site/jacoco/jacoco.xml

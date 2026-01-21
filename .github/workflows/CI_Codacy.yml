@@ -12,8 +12,8 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-          MYSQL_DATABASE: draftleague
-          MYSQL_USER: root
+          MYSQL_DATABASE: draftleague_test
+          MYSQL_USER: draftleague_user
           MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
         ports:
           - 3306:3306

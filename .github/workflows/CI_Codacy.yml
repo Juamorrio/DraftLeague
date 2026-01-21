@@ -2,6 +2,8 @@ name: Codacy CI
 
 on:
   push:
+    branches:
+      - trunk
     
 
 jobs:

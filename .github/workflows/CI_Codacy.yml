@@ -2,8 +2,7 @@ name: Codacy CI
 
 on:
   push:
-    branches:
-      - trunk
+    
 
 jobs:
   build:
@@ -43,6 +42,7 @@ jobs:
         SPRING_DATASOURCE_USERNAME: draftleague_user
         SPRING_DATASOURCE_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
         SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.mariadb.jdbc.Driver
+        HIBERNATE_DIALECT: org.hibernate.dialect.MariaDBDialect
 
     - name: Upload coverage to Codacy
       uses: codacy/codacy-coverage-reporter-action@89d6c85cfafaec52c72b6c5e8b2878d33104c699 

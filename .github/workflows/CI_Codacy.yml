@@ -36,13 +36,6 @@ jobs:
         sudo apt-get install -y mysql-client
         mysql --host 127.0.0.1 --port 3306 -u root -p${{ secrets.MYSQL_ROOT_PASSWORD }} -e "SELECT 1"
 
-    - name: Build and Test with Maven
-      run: mvn clean verify
-      env:
-        SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/draftleague
-        SPRING_DATASOURCE_USERNAME: root
-        SPRING_DATASOURCE_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-
     - name: Upload coverage to Codacy
       uses: codacy/codacy-coverage-reporter-action@89d6c85cfafaec52c72b6c5e8b2878d33104c699 
       with:

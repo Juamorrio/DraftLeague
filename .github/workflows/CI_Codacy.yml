@@ -30,13 +30,10 @@ jobs:
         distribution: 'temurin'
         cache: 'maven'
 
-    - name: Install dependencies 
-      run: |
-        mvn clean install -DskipTests
+    - name: Build and Test
+      run: mvn clean verify
 
     - name: Upload coverage to Codacy
-      run: |
-        mvn jacoco:report
-        bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r target/jacoco/jacoco.xml
+      run: mvn jacoco:report
       env:
         CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}

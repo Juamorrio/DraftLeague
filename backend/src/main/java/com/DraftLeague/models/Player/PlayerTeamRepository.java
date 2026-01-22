@@ -13,4 +13,6 @@ public interface PlayerTeamRepository extends JpaRepository<PlayerTeam, Integer>
     List<PlayerTeam> findByTeam(Team team);
     
     void deleteByTeam(Team team);
+    
+    boolean existsByTeamAndPlayer(Team team, Player player);
 }

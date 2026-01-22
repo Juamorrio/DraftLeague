@@ -1,5 +1,7 @@
 package com.DraftLeague.models.Player;
 
+import java.util.Optional;
+
 import com.DraftLeague.models.Team.Team;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -40,5 +42,8 @@ public class PlayerTeam {
     @NotNull
     @JsonIgnore
     private Team team;
+
+    @Column(name = "buy_price")
+    private Integer buyPrice; 
 
 }

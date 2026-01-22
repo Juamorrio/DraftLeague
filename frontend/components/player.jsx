@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import placeholder from '../assets/Player/placeholder.png'; 
+import placeholder from '../assets/Player/placeholder.png';
+import { authenticatedFetch } from '../services/authService'; 
 
 export default function Player({
 	name,
@@ -8,7 +9,9 @@ export default function Player({
 	avatar,
 	onPress,
 	style,
+	teamId
 }) {
+	const [teamImage, setTeamImage] = useState(null);
 	const source = avatar || placeholder;
 	const initials = (name || '')
 		.split(' ')
@@ -17,20 +20,49 @@ export default function Player({
 		.slice(0, 2)
 		.toUpperCase();
 
+	const loadTeamImage = async (teamId) => {
+		try {
+			const res = await authenticatedFetch(`/api/v1/players/load-image-team-player?teamId=${teamId}`);
+			if (res.ok) {
+				const data = await res.json();
+				if (data.imageBytes) {
+					return `data:image/png;base64,${data.imageBytes}`;
+				}
+			}
+		} catch (e) {
+			console.error('Error cargando imagen del equipo:', e);
+		}
+		return null;
+	};
+
+	useEffect(() => {
+		if (teamId) {
+			loadTeamImage(teamId).then(url => {
+				if (url) setTeamImage(url);
+			});
+		}
+	}, [teamId]);
+
 	return (
 		<TouchableOpacity onPress={onPress} style={[styles.wrapper, style]} activeOpacity={0.8}>
-			<View style={styles.avatarContainer}>
-				{source ? (
-					<Image source={source} style={styles.avatarImage} />
-				) : (
-					<View style={styles.avatarFallback}>
-						<Text style={styles.fallbackText}>{initials || '?'}</Text>
+			<View style={styles.playerContainer}>
+				<View style={styles.avatarContainer}>
+					{source ? (
+						<Image source={source} style={styles.avatarImage} />
+					) : (
+						<View style={styles.avatarFallback}>
+							<Text style={styles.fallbackText}>{initials || '?'}</Text>
+						</View>
+					)}
+				</View>
+				{teamImage && (
+					<View style={styles.teamBadge}>
+						<Image source={{ uri: teamImage }} style={styles.teamImage} />
 					</View>
 				)}
-				
-			</View>
-			<View style={styles.badge}>
-				<Text style={styles.badgeText}>{points}</Text>
+				<View style={styles.badge}>
+					<Text style={styles.badgeText}>{points}</Text>
+				</View>
 			</View>
 		</TouchableOpacity>
 	);
@@ -39,6 +71,11 @@ export default function Player({
 const styles = StyleSheet.create({
 	wrapper: {
 		padding: 4,
+	},
+	playerContainer: {
+		position: 'relative',
+		width: 72,
+		height: 72,
 	},
 	avatarContainer: {
 		width: 72,
@@ -85,5 +122,23 @@ const styles = StyleSheet.create({
 		color: '#ffffff',
 		fontWeight: '700',
 		fontSize: 14,
+	},
+	teamBadge: {
+		position: 'absolute',
+		top: -4,
+		right: -4,
+		backgroundColor: '#ffffff',
+		borderRadius: 12,
+		width: 24,
+		height: 24,
+		justifyContent: 'center',
+		alignItems: 'center',
+		borderWidth: 2,
+		borderColor: '#e5e7eb',
+	},
+	teamImage: {
+		width: 20,
+		height: 20,
+		resizeMode: 'contain',
 	},
 });

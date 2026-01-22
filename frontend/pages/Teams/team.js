@@ -47,9 +47,13 @@ function Team() {
 	useEffect(() => {
 		let mounted = true;
 		(async () => {
+			if (!selectedLeague?.id) {
+				if (mounted) setPlayers([]);
+				return;
+			}
 			setLoading(true); setError(null);
 			try {
-				const res = await authenticatedFetch('/api/v1/players');
+				const res = await authenticatedFetch(`/api/v1/players?leagueId=${selectedLeague.id}&onlyOwned=true`);
 				const json = await res.json();
 				if (mounted) {
 					setPlayers(Array.isArray(json) ? json : (json?.content ?? []));
@@ -62,7 +66,7 @@ function Team() {
 		})();
 		return () => { mounted = false; };
 		
-	}, []);
+	}, [selectedLeague?.id]);
 
 	const loadTeam = async () => {
 		if (!selectedLeague?.id) return;
@@ -200,6 +204,7 @@ function Team() {
 									name={assigned[p.key].fullName ?? assigned[p.key].name}
 									avatar={assigned[p.key].avatarUrl ? { uri: assigned[p.key].avatarUrl } : null}
 									size={50}
+									teamId={assigned[p.key].teamId}
 									onPress={() => openPicker(p.key)}
 								/>
 							);

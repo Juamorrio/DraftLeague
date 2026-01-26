@@ -21,9 +21,9 @@ jobs:
               continue  # Saltar la validación si es un commit de fusión
             fi
 
-            if [[ ! "$message" =~ ^(feat|fix|test|config|docs|migrations):[[:space:]]+ ]]; then
+            if [[ ! "$message" =~ ^(feat|fix|refactor|test|config|docs|migrations):[[:space:]]+ ]]; then
               echo "Invalid commit message: $message"
-              echo "Expected format: 'Type: Title' where Type is one of [feat, fix, test, config, docs, migrations]."
+              echo "Expected format: 'Type: Title' where Type is one of [feat, fix, refactor, test, config, docs, migrations]."
               exit 1
             fi
           done

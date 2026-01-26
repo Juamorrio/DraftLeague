@@ -2,11 +2,9 @@ package com.DraftLeague.models.user;
 
 import com.DraftLeague.models.League.League;
 import com.DraftLeague.models.League.LeagueRepository;
-import com.DraftLeague.models.Player.Player;
 import com.DraftLeague.models.Player.PlayerRepository;
 import com.DraftLeague.models.Market.MarketService;
 
-import org.springframework.context.support.BeanDefinitionDsl.Role;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -87,7 +85,7 @@ public class AdminController {
             return ResponseEntity.badRequest().body(Map.of("error", "Rol inválido"));
         }
 
-        user.setRole(RoleUser.valueOf(newRole));
+        user.setRole(newRole);
         userRepository.save(user);
 
         return ResponseEntity.ok(Map.of("message", "Rol actualizado", "user", user));

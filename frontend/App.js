@@ -10,6 +10,7 @@ import authService from './services/authService';
 import Leagues from './pages/Leagues/leagues';
 import Team from './pages/Teams/team';
 import Market from './pages/Market/market';
+import Admin from './pages/Admin/admin';
 
 
 function RobotPlaceholder() {
@@ -23,7 +24,8 @@ export default function App() {
   const [active, setActive] = React.useState('home');
   const [authed, setAuthed] = React.useState(false);
   const [checking, setChecking] = React.useState(true);
-  const [authMode, setAuthMode] = React.useState('login'); 
+  const [authMode, setAuthMode] = React.useState('login');
+  const [user, setUser] = React.useState(null); 
   
 
   React.useEffect(() => {
@@ -31,6 +33,10 @@ export default function App() {
       try {
         const ok = await authService.tryRefreshOnLaunch();
         setAuthed(ok);
+        if (ok) {
+          const currentUser = await authService.getCurrentUser();
+          setUser(currentUser);
+        }
         const onlyRegister = await authService.shouldShowRegisterOnly();
         if (onlyRegister) setAuthMode('register');
       } finally {
@@ -54,11 +60,19 @@ export default function App() {
         <StatusBar style="auto" />
         {authMode === 'register' ? (
           <Register
-            onRegistered={() => setAuthed(true)}
+            onRegistered={async () => {
+              setAuthed(true);
+              const currentUser = await authService.getCurrentUser();
+              setUser(currentUser);
+            }}
           />
         ) : (
           <Login
-            onLoggedIn={() => setAuthed(true)}
+            onLoggedIn={async () => {
+              setAuthed(true);
+              const currentUser = await authService.getCurrentUser();
+              setUser(currentUser);
+            }}
             onSwitchToRegister={() => setAuthMode('register')}
           />
         )}
@@ -74,6 +88,7 @@ export default function App() {
         onNavigate={(key) => {
           setActive(key);
         }}
+        isAdmin={user?.role === 'ADMIN'}
       >
         {active === 'league' && <Leagues />}
         {active === 'home' && (
@@ -85,7 +100,8 @@ export default function App() {
         {active === 'team' && <Team />}
         {active === 'market' && <Market />}
         {active === 'robot' && <RobotPlaceholder />}
-        {!['home','league','team','market','robot'].includes(active) && (
+        {active === 'admin' && <Admin />}
+        {!['home','league','team','market','robot','admin'].includes(active) && (
           <View style={styles.container}><Text>Pantalla no definida</Text></View>
         )}
       </Layout>

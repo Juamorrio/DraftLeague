@@ -89,6 +89,7 @@ export async function getCurrentUser() {
       username: payload.sub,
       displayName: payload.displayName,
       email: payload.email,
+      role: payload.role || 'USER',
       source: 'token'
     };
   }

@@ -12,4 +12,7 @@ import java.util.List;
 public interface MarketPlayerRepository extends JpaRepository<MarketPlayer, Integer> {
     List<MarketPlayer> findByLeagueAndStatus(League league, StatusMarketPlayer status);
     List<MarketPlayer> findByStatusAndAuctionEndTimeBefore(StatusMarketPlayer status, LocalDateTime dateTime);
+    List<MarketPlayer> findByLeagueAndStatusAndAuctionEndTimeBefore(League league, StatusMarketPlayer available,
+            LocalDateTime now);
+    List<MarketPlayer> findByLeague(League league);
 }

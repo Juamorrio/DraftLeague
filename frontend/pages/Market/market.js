@@ -92,7 +92,7 @@ function Market() {
 						<View style={styles.playerInfo}>
 							<Text style={styles.playerName}>{item.player.fullName ?? item.player.name}</Text>
 							<Text style={styles.playerMeta}>
-								{item.player.position} · Puja actual: €{item.currentBid.toLocaleString()}
+								{item.player.position} · Valor: €{item.player.marketValue.toLocaleString('es-ES')}
 							</Text>
 							<Text style={styles.timeText}>
 								Expira: {new Date(item.auctionEndTime).toLocaleString()}

@@ -67,4 +67,24 @@ public class MarketController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshMarket(@RequestParam Integer leagueId) {
+        try {
+            marketService.refreshMarket(leagueId);
+            return ResponseEntity.ok(Map.of("message", "Mercado refrescado exitosamente"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/finalize-expired")
+    public ResponseEntity<?> finalizeExpiredAuctions() {
+        try {
+            marketService.finalizeExpiredAuctions();
+            return ResponseEntity.ok(Map.of("message", "Subastas expiradas finalizadas"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
 }

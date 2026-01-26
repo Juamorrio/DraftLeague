@@ -18,25 +18,21 @@ function Team() {
 	const [saving, setSaving] = useState(false);
 	const [formation, setFormation] = useState('4-3-3'); 
 
-	
-	const FIELD_WIDTH = '100%';
-	const FIELD_HEIGHT = '100%';
-
 	const formations = {
 		'4-3-3': {
 			name: '4-3-3',
 			positions: [
-				{ key: 'GK', x: '50%', y: '90%', role: 'POR' },
-				{ key: 'LB', x: '15%', y: '70%', role: 'DEF' },
-				{ key: 'CB1', x: '35%', y: '70%', role: 'DEF' },
-				{ key: 'CB2', x: '65%', y: '70%', role: 'DEF' },
-				{ key: 'RB', x: '85%', y: '70%', role: 'DEF' },
-				{ key: 'CM1', x: '30%', y: '45%', role: 'MID' },
-				{ key: 'CM2', x: '70%', y: '45%', role: 'MID' },
-				{ key: 'CAM', x: '50%', y: '35%', role: 'MID' },
-				{ key: 'LW', x: '20%', y: '15%', role: 'DEL' },
-				{ key: 'RW', x: '80%', y: '15%', role: 'DEL' },
-				{ key: 'ST', x: '50%', y: '5%', role: 'DEL' },
+				{ key: 'GK', x: '45%', y: '88%', role: 'POR' },
+				{ key: 'LB', x: '8%', y: '68%', role: 'DEF' },
+				{ key: 'CB1', x: '32%', y: '68%', role: 'DEF' },
+				{ key: 'CB2', x: '58%', y: '68%', role: 'DEF' },
+				{ key: 'RB', x: '82%', y: '68%', role: 'DEF' },
+				{ key: 'CM1', x: '23%', y: '48%', role: 'MID' },
+				{ key: 'CM2', x: '67%', y: '48%', role: 'MID' },
+				{ key: 'CAM', x: '45%', y: '35%', role: 'MID' },
+				{ key: 'LW', x: '13%', y: '18%', role: 'DEL' },
+				{ key: 'RW', x: '77%', y: '18%', role: 'DEL' },
+				{ key: 'ST', x: '45%', y: '8%', role: 'DEL' },
 			]
 		},
 	};

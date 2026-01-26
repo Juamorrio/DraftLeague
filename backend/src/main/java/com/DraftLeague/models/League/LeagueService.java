@@ -137,7 +137,7 @@ public class LeagueService {
         if (auth == null || !auth.isAuthenticated()) throw new RuntimeException("No autenticado");
         String username = auth.getName();
         User user = userRepository.findUserByUsername(username).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        if (!teamRepository.findByLeagueAndUser(league, user).isEmpty()) {
+        if (!teamRepository.findByLeagueAndUser(league, user).equals(null)) {
             throw new RuntimeException("Ya estás en esta liga");
         }
         long count = teamRepository.countByLeague(league);

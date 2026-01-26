@@ -13,7 +13,7 @@ import home from '../assets/layout/home.png'
 import home2 from '../assets/layout/home white.png'
 import { Image } from 'react-native';
 import { useLeague } from '../context/LeagueContext';
-export default function Layout({ children, onNavigate, activeKey }) {
+export default function Layout({ children, onNavigate, activeKey, isAdmin }) {
 	const { selectedLeague } = useLeague();
 	const baseItems = [
 		{ key: 'home', label: 'Home', type: 'image', activeSrc: home2, inactiveSrc: home },
@@ -24,13 +24,22 @@ export default function Layout({ children, onNavigate, activeKey }) {
 		{ key: 'market', label: 'Mercado', type: 'image', activeSrc: cart2, inactiveSrc: cart },
 		{ key: 'robot', label: 'IA', type: 'image', activeSrc: robot2, inactiveSrc: robot },
 	];
-	const navItems = selectedLeague ? [...baseItems.slice(0,1), ...extraItems, baseItems[1]] : baseItems; 
+	
+	const adminItem = { key: 'admin', label: 'Admin', type: 'icon', icon: 'shield-checkmark' };
+	
+	let navItems = selectedLeague ? [...baseItems.slice(0,1), ...extraItems, baseItems[1]] : baseItems;
+	if (isAdmin) {
+		navItems = [...navItems, adminItem];
+	} 
 
 	useEffect(() => {
-		if (!selectedLeague && !['home', 'league'].includes(activeKey)) {
+		if (!selectedLeague && !['home', 'league', 'admin'].includes(activeKey)) {
 			onNavigate && onNavigate('home');
 		}
-	}, [selectedLeague, activeKey, onNavigate]);
+		if (!isAdmin && activeKey === 'admin') {
+			onNavigate && onNavigate('home');
+		}
+	}, [selectedLeague, activeKey, onNavigate, isAdmin]);
 
 	return (
 		<View style={styles.container}>
@@ -49,7 +58,13 @@ export default function Layout({ children, onNavigate, activeKey }) {
 								accessibilityRole="button"
 								accessibilityState={{ selected: active }}
 							>
-								{item.type === 'vector' ? (
+								{item.type === 'icon' ? (
+									<Ionicons 
+										name={item.icon} 
+										size={28} 
+										color={active ? '#0ea5a4' : '#cbd5e1'} 
+									/>
+								) : item.type === 'vector' ? (
 									(() => {
 										const Icon = item.lib;
 										const color = item.key === 'home' ? '#000' : (active ? '#0ea5a4' : '#cbd5e1');

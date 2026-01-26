@@ -48,6 +48,10 @@ public class User  {
 	@Size(max = 40)
 	private String displayName;
 
+	@NotNull
+	@Column(name = "role", nullable = false)
+	private RoleUser role = RoleUser.USER;
+
 	@ManyToOne
 	@JoinColumn(name = "notification_id", nullable = true)
 	private Notification notification;

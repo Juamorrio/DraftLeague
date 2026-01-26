@@ -34,6 +34,7 @@ public class JwtService {
         claims.put("uid", user.getId());
         claims.put("displayName", user.getDisplayName());
         claims.put("email", user.getEmail());
+        claims.put("role", user.getRole());
         return getToken(claims, user);
     }
 

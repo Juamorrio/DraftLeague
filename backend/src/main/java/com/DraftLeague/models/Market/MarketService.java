@@ -67,7 +67,7 @@ public class MarketService {
             MarketPlayer marketPlayer = new MarketPlayer();
             marketPlayer.setPlayer(player);
             marketPlayer.setLeague(league);
-            marketPlayer.setCurrentBid(0L);
+            marketPlayer.setCurrentBid(player.getMarketValue().longValue());
             marketPlayer.setStatus(StatusMarketPlayer.AVAILABLE);
             marketPlayer.setAuctionEndTime(LocalDateTime.now().plusHours(24));
             marketPlayerRepository.save(marketPlayer);
@@ -103,12 +103,9 @@ public class MarketService {
         User user = userRepository.findUserByUsername(username)
                 .orElseThrow(() -> new IllegalStateException("Usuario no encontrado"));
 
-        if (bidAmount <= marketPlayer.getCurrentBid()) {
-            throw new IllegalStateException("La puja debe ser mayor a la actual");
-        }
-
-        if (LocalDateTime.now().isAfter(marketPlayer.getAuctionEndTime())) {
-            throw new IllegalStateException("La subasta ha expirado");
+        Long playerMarketValue = marketPlayer.getPlayer().getMarketValue().longValue();
+        if (bidAmount < playerMarketValue) {
+            throw new IllegalStateException("La puja no puede ser inferior al valor de mercado del jugador");
         }
 
         marketPlayer.setCurrentBid(bidAmount);
@@ -128,21 +125,9 @@ public class MarketService {
         User winner = marketPlayer.getHighestBidder();
         League league = marketPlayer.getLeague();
 
-        List<Team> teams = teamRepository.findByLeagueAndUser(league, winner);
-        Team team;
-        if (teams.isEmpty()) {
-            team = new Team();
-            team.setUser(winner);
-            team.setLeague(league);
-            team.setBudget(league.getInitialBudget());
-            team.setCreatedAt(new Date());
-            team.setGameweekPoints(0);
-            team.setTotalPoints(0);
-            team.setWildcardUsed(false);
-            team = teamRepository.save(team);
-        } else {
-            team = teams.get(0);
-        }
+        Team team = teamRepository.findByLeagueAndUser(league, winner);
+        
+        
 
         PlayerTeam playerTeam = new PlayerTeam();
         playerTeam.setTeam(team);
@@ -160,10 +145,41 @@ public class MarketService {
     @Transactional
     public void finalizeExpiredAuctions() {
         List<MarketPlayer> expiredAuctions = marketPlayerRepository
-                .findByStatusAndAuctionEndTimeBefore(StatusMarketPlayer.AVAILABLE, LocalDateTime.now());
+                .findAll().stream().filter(p -> p.getHighestBidder() != null).toList();
         
         for (MarketPlayer marketPlayer : expiredAuctions) {
             finalizeAuction(marketPlayer.getId());
         }
+    }
+
+    @Transactional
+    public void refreshMarket(Integer leagueId) {
+        
+        League league = leagueRepository.findById(Long.valueOf(leagueId))
+                .orElseThrow(() -> new IllegalStateException("Liga no encontrada"));
+
+        List<MarketPlayer> expiredAuctions = marketPlayerRepository
+                .findByLeagueAndStatusAndAuctionEndTimeBefore(league, StatusMarketPlayer.AVAILABLE, LocalDateTime.now());
+        for (MarketPlayer expiredAuction : expiredAuctions) {
+            finalizeAuction(expiredAuction.getId());
+        }
+
+        List<MarketPlayer> oldMarketPlayers = marketPlayerRepository.findByLeague(league);
+        marketPlayerRepository.deleteAll(oldMarketPlayers);
+
+        List<Player> allPlayers = playerRepository.findAll();
+        Collections.shuffle(allPlayers);
+        List<Player> selectedPlayers = allPlayers.subList(0, Math.min(10, allPlayers.size()));
+
+        for (Player player : selectedPlayers) {
+            MarketPlayer marketPlayer = new MarketPlayer();
+            marketPlayer.setPlayer(player);
+            marketPlayer.setLeague(league);
+            marketPlayer.setCurrentBid(0L);
+            marketPlayer.setStatus(StatusMarketPlayer.AVAILABLE);
+            marketPlayer.setAuctionEndTime(LocalDateTime.now().plusHours(24));
+            marketPlayerRepository.save(marketPlayer);
+        }
+        
     }
 }

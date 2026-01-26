@@ -47,12 +47,10 @@ public class PlayerService {
         League league = leagueRepository.findById(Long.valueOf(leagueId))
                 .orElseThrow(() -> new RuntimeException("League not found"));
         
-        List<Team> teams = teamRepository.findByLeagueAndUser(league, user);
-        if (teams.isEmpty()) {
+        Team team = teamRepository.findByLeagueAndUser(league, user);
+        if (team == null) {
             return List.of();
         }
-        
-        Team team = teams.get(0);
         
         List<PlayerTeam> playerTeams = playerTeamRepository.findByTeam(team);
         return playerTeams.stream()
@@ -84,13 +82,11 @@ public class PlayerService {
         League league = leagueRepository.findById(Long.valueOf(leagueId))
                 .orElseThrow(() -> new IllegalStateException("Liga no encontrada"));
         
-        List<Team> teams = teamRepository.findByLeagueAndUser(league, user);
-        if (teams.isEmpty()) {
+        Team team = teamRepository.findByLeagueAndUser(league, user);
+        if (team == null) {
             throw new IllegalStateException("No tienes un equipo en esta liga");
         }
-        
-        Team team = teams.get(0);
-        
+                
         boolean alreadyOwned = playerTeamRepository.existsByTeamAndPlayer(team, player);
         if (alreadyOwned) {
             throw new IllegalStateException("Ya posees este jugador en esta liga");

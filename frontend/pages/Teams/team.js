@@ -7,12 +7,15 @@ import authService, { authenticatedFetch } from '../../services/authService';
 import withAuth from '../../components/withAuth';
 
 
-function Team() {
-	const { selectedLeague } = useLeague();
+function Team({ userId: viewUserId = null, readOnly = false }) {
+	const { selectedLeague, viewUser, setViewUser, setNavTarget } = useLeague();
 	const [players, setPlayers] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [assigned, setAssigned] = useState({});
 	const [pickerVisible, setPickerVisible] = useState(false);
+	const [optionsVisible, setOptionsVisible] = useState(false);
+	const [selectedPT, setSelectedPT] = useState(null);
+	const [myBudget, setMyBudget] = useState(null);
 	const [currentKey, setCurrentKey] = useState(null);
 	const [error, setError] = useState(null);
 	const [saving, setSaving] = useState(false);
@@ -41,6 +44,11 @@ function Team() {
 	const currentFormation = formations[formation];
 	const positions = currentFormation.positions;
 
+	if (!viewUserId && viewUser?.id) {
+		viewUserId = viewUser.id;
+		readOnly = true;
+	}
+
 	useEffect(() => {
 		let mounted = true;
 		(async () => {
@@ -50,10 +58,14 @@ function Team() {
 			}
 			setLoading(true); setError(null);
 			try {
-				const res = await authenticatedFetch(`/api/v1/players?leagueId=${selectedLeague.id}&onlyOwned=true`);
+				if (readOnly) {
+					if (mounted) setPlayers([]);
+				} else {
+					const res = await authenticatedFetch(`/api/v1/players?leagueId=${selectedLeague.id}&onlyOwned=true`);
 				const json = await res.json();
 				if (mounted) {
 					setPlayers(Array.isArray(json) ? json : (json?.content ?? []));
+				}
 				}
 			} catch (e) {
 				if (mounted) setError('No se pudieron cargar jugadores');
@@ -69,9 +81,13 @@ function Team() {
 		if (!selectedLeague?.id) return;
 		let mounted = true;
 		try {
-			const user = await authService.getCurrentUser();
-			if (!user?.id) return;
-			const res = await authenticatedFetch(`/api/v1/teams/league/${selectedLeague.id}/${user.id}`);
+			let userIdToUse = viewUserId;
+			if (!userIdToUse) {
+				const user = await authService.getCurrentUser();
+				if (!user?.id) return;
+				userIdToUse = user.id;
+			}
+			const res = await authenticatedFetch(`/api/v1/teams/league/${selectedLeague.id}/${userIdToUse}`);
 			if (res.ok) {
 				const team = await res.json();
 				if (mounted && team?.playerTeams) {
@@ -86,7 +102,7 @@ function Team() {
 					team.playerTeams.forEach(pt => {
 						const role = pt.player.position;
 						if (playersByRole[role]) {
-							playersByRole[role].push(pt.player);
+							playersByRole[role].push(pt);
 						}
 					});
 					
@@ -106,9 +122,9 @@ function Team() {
 					
 					Object.entries(playersByRole).forEach(([role, players]) => {
 						const slots = slotsByRole[role] || [];
-						players.forEach((player, index) => {
+						players.forEach((pt, index) => {
 							if (index < slots.length) {
-								newAssigned[slots[index]] = player;
+								newAssigned[slots[index]] = pt;
 							}
 						});
 					});
@@ -125,11 +141,59 @@ function Team() {
 		loadTeam();
 	}, [selectedLeague?.id, formation]);
 
-	const openPicker = (key) => { setCurrentKey(key); setPickerVisible(true); };
+	const loadMyBudget = async () => {
+		if (!selectedLeague?.id) return;
+		try {
+			const user = await authService.getCurrentUser();
+			if (!user?.id) return;
+			const res = await authenticatedFetch(`/api/v1/teams/league/${selectedLeague.id}/${user.id}`);
+			if (res.ok) {
+				const team = await res.json();
+				setMyBudget(team?.budget ?? null);
+			}
+		} catch {}
+	};
+
+	useEffect(() => { loadMyBudget(); }, [selectedLeague?.id]);
+
+	const openPicker = (key) => { if (readOnly) return; setCurrentKey(key); setPickerVisible(true); };
+
+	const getAssignedPlayer = (slotValue) => {
+		if (!slotValue) return null;
+		return slotValue.player ?? slotValue;
+	};
+
+	const openOptions = (pt) => {
+		if (!readOnly || !pt) return;
+		setSelectedPT(pt);
+		setOptionsVisible(true);
+	};
+
+	const buyout = async (pt) => {
+		if (!selectedLeague?.id || !viewUser?.id || !pt?.player?.id) return;
+		try {
+			const res = await authenticatedFetch(`/api/v1/teams/league/${selectedLeague.id}/buyout`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ sellerUserId: viewUser.id, playerId: pt.player.id })
+			});
+			if (res.ok) {
+				let data = null; try { data = await res.json(); } catch {}
+				if (data && typeof data.budget === 'number') setMyBudget(data.budget);
+				Alert.alert('Clausulazo realizado', 'El jugador ha sido transferido a tu equipo.');
+				await loadTeam();
+			} else {
+				const data = await res.json().catch(() => ({}));
+				Alert.alert('Error', data?.error || 'No se pudo realizar el clausulazo');
+			}
+		} catch (e) {
+			Alert.alert('Error', e?.message || 'Fallo al ejecutar clausulazo');
+		}
+	};
 	
 	const assignPlayer = (player) => {
 		if (!currentKey) return;
-		setAssigned(prev => ({ ...prev, [currentKey]: player }));
+		setAssigned(prev => ({ ...prev, [currentKey]: { player } }));
 		setPickerVisible(false);
 		setCurrentKey(null);
 	};
@@ -140,12 +204,18 @@ function Team() {
 			return;
 		}
 
-		const playersList = Object.entries(assigned).map(([position, player]) => ({
-			playerId: player.id,
+		const playersList = Object.entries(assigned)
+			.map(([position, slotValue]) => {
+				const p = getAssignedPlayer(slotValue);
+				if (!p?.id) return null;
+				return {
+					playerId: p.id,
 			position: position,
 			lined: true,
 			isCaptain: false
-		}));
+				};
+			})
+			.filter(Boolean);
 
 		if (playersList.length === 0) {
 			Alert.alert('Error', 'Debes seleccionar al menos un jugador');
@@ -191,15 +261,24 @@ function Team() {
 	return (
 		<View style={styles.container}>
 			<View style={styles.topBar}>
-				<Text style={styles.header}>{selectedLeague ? `Equipo · ${selectedLeague.name}` : 'Equipo'}</Text>
-				
-				<TouchableOpacity 
-					style={[styles.saveBtn, saving && styles.saveBtnDisabled]} 
-					onPress={saveTeam}
-					disabled={saving}
-				>
-					<Text style={styles.saveBtnText}>{saving ? 'Guardando...' : 'Guardar'}</Text>
-				</TouchableOpacity>
+				<Text style={styles.header}>{readOnly && viewUser?.name ? `Equipo de ${viewUser.name}` : (selectedLeague ? `Equipo · ${selectedLeague.name}` : 'Equipo')}</Text>
+				{readOnly && (
+					<TouchableOpacity 
+						style={styles.backBtn}
+						onPress={() => { setViewUser(null); setNavTarget('league'); }}
+					>
+						<Text style={styles.backBtnText}>Volver</Text>
+					</TouchableOpacity>
+				)}
+				{!readOnly && (
+					<TouchableOpacity 
+						style={[styles.saveBtn, saving && styles.saveBtnDisabled]} 
+						onPress={saveTeam}
+						disabled={saving}
+					>
+						<Text style={styles.saveBtnText}>{saving ? 'Guardando...' : 'Guardar'}</Text>
+					</TouchableOpacity>
+				)}
 			</View>
 
 			<View style={styles.fieldContainer}>
@@ -208,27 +287,33 @@ function Team() {
 					<View key={p.key} style={[styles.spot, { left: p.x, top: p.y }]}> 
 					{assigned[p.key] ? (
 						(() => {
+							const ap = getAssignedPlayer(assigned[p.key]);
+							if (!ap) return null;
+							const displayName = (ap.fullName ?? ap.name ?? '').trim();
 							return (
 								<Player
-									name={assigned[p.key].fullName ?? assigned[p.key].name}
-									avatar={assigned[p.key].avatarUrl ? { uri: assigned[p.key].avatarUrl } : null}
+									name={displayName}
+									avatar={ap.avatarUrl ? { uri: ap.avatarUrl } : null}
 									size={50}
-									teamId={assigned[p.key].teamId}
-									onPress={() => openPicker(p.key)}
+									teamId={ap.teamId}
+									onPress={readOnly ? () => openOptions(assigned[p.key]) : () => openPicker(p.key)}
 								/>
 							);
 						})()
 					) : (
-						<TouchableOpacity style={styles.spotBtn} activeOpacity={0.7} onPress={() => openPicker(p.key)}>
-							<Text style={styles.plus}>+</Text>
-						</TouchableOpacity>
+						readOnly ? null : (
+							<TouchableOpacity style={styles.spotBtn} activeOpacity={0.7} onPress={() => openPicker(p.key)}>
+								<Text style={styles.plus}>+</Text>
+							</TouchableOpacity>
+						)
 					)}
-					{!assigned[p.key] && <Text style={styles.spotLabel}>{p.key}</Text>}
+					{!assigned[p.key] && !readOnly && <Text style={styles.spotLabel}>{p.key}</Text>}
 				</View>
 			))}
 			</View>
 
-			<Modal visible={pickerVisible} transparent animationType="fade" onRequestClose={() => setPickerVisible(false)}>
+			{!readOnly && (
+				<Modal visible={pickerVisible} transparent animationType="fade" onRequestClose={() => setPickerVisible(false)}>
 				<View style={styles.modalBackdrop}>
 					<View style={styles.modalCard}>
 						<Text style={styles.modalTitle}>Selecciona jugador para {currentKey}</Text>
@@ -236,7 +321,7 @@ function Team() {
 						{error && <Text style={{ color: 'red' }}>{error}</Text>}
 						{!loading && !error && (
 							<FlatList
-								data={players.filter(sp => matchesSpot(sp.position, currentKey) && !Object.values(assigned).some(a => a.id === sp.id) )}
+								data={players.filter(sp => matchesSpot(sp.position, currentKey) && !Object.values(assigned).some(a => (getAssignedPlayer(a)?.id) === sp.id) )}
 								keyExtractor={(item) => String(item.id ?? `${item.name}-${item.position}`)}
 								ItemSeparatorComponent={() => <View style={{ height: 6 }} />}
 								renderItem={({ item }) => (
@@ -252,7 +337,66 @@ function Team() {
 						</TouchableOpacity>
 					</View>
 				</View>
-			</Modal>
+				</Modal>
+			)}
+
+			{readOnly && (
+				<Modal visible={optionsVisible} transparent animationType="fade" onRequestClose={() => setOptionsVisible(false)}>
+					<View style={styles.modalBackdrop}>
+						<View style={styles.modalCard}>
+							<Text style={styles.modalTitle}>Acciones: {selectedPT?.player ? (selectedPT.player.fullName ?? selectedPT.player.name ?? '') : ''}</Text>
+							{selectedPT && (
+								<View style={{ gap: 8 }}>
+									{(() => {
+										const price = (selectedPT.buyPrice ?? selectedPT.sellPrice ?? 0);
+										const budgetKnown = typeof myBudget === 'number';
+										const remaining = budgetKnown ? (myBudget - price) : null;
+										const handleClausulazoPress = () => {
+											if (budgetKnown) {
+												if (remaining < 0) {
+													Alert.alert(
+														'Presupuesto insuficiente',
+														`Tu presupuesto: €${myBudget.toLocaleString('es-ES')} · tras compra: €${remaining.toLocaleString('es-ES')}`
+													);
+													return;
+												}
+												Alert.alert(
+													'Confirmar clausulazo',
+													`Tu presupuesto: €${myBudget.toLocaleString('es-ES')} · tras compra: €${remaining.toLocaleString('es-ES')}`,
+													[
+														{ text: 'Cancelar', style: 'cancel' },
+														{ text: 'Confirmar', onPress: () => { setOptionsVisible(false); buyout(selectedPT); } },
+													]
+												);
+											} else {
+												Alert.alert(
+													'Confirmar clausulazo',
+													`Precio cláusula: €${price.toLocaleString('es-ES')}`,
+													[
+														{ text: 'Cancelar', style: 'cancel' },
+														{ text: 'Confirmar', onPress: () => { setOptionsVisible(false); buyout(selectedPT); } },
+													]
+												);
+											}
+										};
+										return (
+											<View style={{ gap: 4 }}>
+												<Text>Precio cláusula: €{price.toLocaleString('es-ES')}</Text>
+												<TouchableOpacity style={[styles.saveBtn]} onPress={handleClausulazoPress}>
+													<Text style={styles.saveBtnText}>Clausulazo</Text>
+												</TouchableOpacity>
+											</View>
+										);
+									})()}
+								</View>
+							)}
+							<TouchableOpacity style={styles.closeBtn} onPress={() => setOptionsVisible(false)}>
+								<Text style={styles.closeText}>Cerrar</Text>
+							</TouchableOpacity>
+						</View>
+					</View>
+				</Modal>
+			)}
 		</View>
 	);
 }
@@ -265,6 +409,8 @@ const styles = StyleSheet.create({
 	saveBtn: { backgroundColor: '#4CAF50', paddingVertical: 8, paddingHorizontal: 16, borderRadius: 8 },
 	saveBtnDisabled: { backgroundColor: '#ccc' },
 	saveBtnText: { color: '#fff', fontWeight: '700', fontSize: 14 },
+	backBtn: { backgroundColor: '#111827', paddingVertical: 8, paddingHorizontal: 16, borderRadius: 8 },
+	backBtnText: { color: '#fff', fontWeight: '700', fontSize: 14 },
 	fieldContainer: { flex: 1, position: 'relative' },
 	fieldImage: { width: '100%', height: '100%' },
 	spot: { position: 'absolute', transform: [{ translateX: -25 }, { translateY: -25 }], alignItems: 'center' },
@@ -279,7 +425,9 @@ const styles = StyleSheet.create({
 	pickName: { fontSize: 12, fontWeight: '800' },
 	pickMeta: { fontSize: 11, color: '#555' },
 	closeBtn: { marginTop: 10, alignSelf: 'flex-end', paddingVertical: 6, paddingHorizontal: 12, borderRadius: 8, borderWidth: 1, borderColor: '#222' },
-	closeText: { fontSize: 12, fontWeight: '700' }
+	closeText: { fontSize: 12, fontWeight: '700' },
+	buyBtn: { marginTop: 4, backgroundColor: '#1d4ed8', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
+	buyTxt: { color: '#fff', fontSize: 10, fontWeight: '700' }
 });
 
 

@@ -2,6 +2,7 @@ package com.DraftLeague.models.user;
 
 import com.DraftLeague.models.League.League;
 import com.DraftLeague.models.League.LeagueRepository;
+import com.DraftLeague.models.Player.PlayerImportService;
 import com.DraftLeague.models.Player.PlayerRepository;
 import com.DraftLeague.models.Market.MarketService;
 
@@ -21,15 +22,18 @@ public class AdminController {
     private final LeagueRepository leagueRepository;
     private final PlayerRepository playerRepository;
     private final MarketService marketService;
+    private final PlayerImportService importService;
 
     public AdminController(UserRepository userRepository, 
                           LeagueRepository leagueRepository,
                           PlayerRepository playerRepository,
-                          MarketService marketService) {
+                          MarketService marketService,
+                          PlayerImportService importService) {
         this.userRepository = userRepository;
         this.leagueRepository = leagueRepository;
         this.playerRepository = playerRepository;
         this.marketService = marketService;
+        this.importService = importService;
     }
 
     private boolean isAdmin(Authentication auth) {
@@ -134,5 +138,15 @@ public class AdminController {
 
         List<League> leagues = leagueRepository.findAll();
         return ResponseEntity.ok(leagues);
+    }
+
+    @PostMapping("/import-players")
+    public String importPlayers() {
+        try {
+            int count = importService.importFromJsonResource();
+            return "Se importaron " + count + " jugadores.";
+        } catch (Exception e) {
+            return "Error al importar jugadores: " + e.getMessage();
+        }
     }
 }

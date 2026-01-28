@@ -32,24 +32,40 @@ public class PlayerImportService {
 
 		try (InputStream is = resource.getInputStream()) {
 			List<PlayerImportDto> dtos = objectMapper.readValue(is, new TypeReference<>() {});
+			int updated = 0;
+			int created = 0;
 
 			for (PlayerImportDto dto : dtos) {
-				Player p = new Player();
-
-				p.setId(Integer.parseInt(dto.getId()));
-				p.setFullName(dto.getFullName());
-				p.setPosition(mapPosition(dto.getPosition()));
-				p.setAvatarUrl(dto.getAvatarUrl());
-				p.setTeamId(dto.getTeamId());
-				p.setMarketValue(parseMarketValue(dto.getMarketValue()));
-				p.setActive(Boolean.TRUE);
-				p.setTotalPoints(0);
-
-				PlayerStatistic defaultStat = getDefaultStatistic();
-				p.setPlayerStatistic(defaultStat);
+				Integer playerId = Integer.parseInt(dto.getId());
+				Player p = repo.findById(playerId).orElse(null);
+				
+				if (p != null) {
+					p.setFullName(dto.getFullName());
+					p.setPosition(mapPosition(dto.getPosition()));
+					p.setAvatarUrl(dto.getAvatarUrl());
+					p.setTeamId(dto.getTeamId());
+					p.setMarketValue((dto.getMarketValue()));
+					updated++;
+				} else {
+					p = new Player();
+					p.setId(playerId);
+					p.setFullName(dto.getFullName());
+					p.setPosition(mapPosition(dto.getPosition()));
+					p.setAvatarUrl(dto.getAvatarUrl());
+					p.setTeamId(dto.getTeamId());
+					p.setMarketValue(dto.getMarketValue());
+					p.setActive(Boolean.TRUE);
+					p.setTotalPoints(0);
+					
+					PlayerStatistic defaultStat = getDefaultStatistic();
+					p.setPlayerStatistic(defaultStat);
+					created++;
+				}
 
 				repo.save(p);
 			}
+			
+			System.out.println("Importación completada: " + created + " jugadores creados, " + updated + " jugadores actualizados");
 			return dtos.size();
 		}
 	}
@@ -70,9 +86,9 @@ public class PlayerImportService {
 				case "CAM":
 				case "LM":
 				case "RM":
+					return Position.MID;
 				case "LW":
 				case "RW":
-					return Position.MID;
 				case "ST":
 				case "CF":
 				case "SS":
@@ -105,25 +121,6 @@ public class PlayerImportService {
 			ps.setTotalFantasyPoints(0);
 			entityManager.persist(ps);
 			return ps;
-		}
-
-		private Integer parseMarketValue(String value){
-			if (value == null){
-				return 0;
-			} else{
-				value = value.trim().toUpperCase().replace("€", "").replace(",", "").replace(" ", "");
-				try {
-					if (value.endsWith("M")){
-						return (int)(Float.parseFloat(value.substring(0, value.length() - 1)) * 1_000_000);
-					} else if (value.endsWith("K")){
-						return (int)(Float.parseFloat(value.substring(0, value.length() - 1)) * 1_000);
-					} else {
-						return Integer.parseInt(value);
-					}
-				} catch (Exception e){
-					return 0;
-				}
-			}
 		}
 
 }

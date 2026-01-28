@@ -94,6 +94,35 @@ public class MarketService {
         
         return availablePlayers;
     }
+    
+    public List<MarketPlayerDTO> getAvailableMarketPlayersForUser(Integer leagueId, String username) {
+        logger.info("Obteniendo jugadores del mercado para liga {} y usuario {}", leagueId, username);
+        
+        User user = userRepository.findUserByUsername(username)
+                .orElseThrow(() -> new IllegalStateException("Usuario no encontrado"));
+        
+        List<MarketPlayer> availablePlayers = getAvailableMarketPlayers(leagueId);
+        
+        return availablePlayers.stream().map(mp -> {
+            Map<String, Object> userBid = mp.getUserBid(user.getId());
+            Long myBid = null;
+            Boolean hasBid = false;
+            
+            if (userBid != null) {
+                myBid = ((Number) userBid.get("amount")).longValue();
+                hasBid = true;
+            }
+            
+            return new MarketPlayerDTO(
+                mp.getId(),
+                mp.getPlayer(),
+                mp.getAuctionEndTime(),
+                mp.getStatus(),
+                myBid,
+                hasBid
+            );
+        }).toList();
+    }
 
     @Transactional
     public void placeBid(Integer marketPlayerId, String username, Long bidAmount) {
@@ -108,8 +137,39 @@ public class MarketService {
             throw new IllegalStateException("La puja no puede ser inferior al valor de mercado del jugador");
         }
 
-        marketPlayer.setCurrentBid(bidAmount);
-        marketPlayer.setHighestBidder(user);
+        League league = marketPlayer.getLeague();
+        Team team = teamRepository.findByLeagueAndUser(league, user);
+        
+        Map<String, Object> existingBid = marketPlayer.getUserBid(user.getId());
+        Long previousBidAmount = 0L;
+        
+        if (existingBid != null) {
+            previousBidAmount = ((Number) existingBid.get("amount")).longValue();
+            team.setBudget(team.getBudget() + previousBidAmount.intValue());
+        }
+        
+        if (team.getBudget() < bidAmount) {
+            throw new IllegalStateException("Presupuesto insuficiente");
+        }
+        
+        team.setBudget(team.getBudget() - bidAmount.intValue());
+        teamRepository.save(team);
+        
+        if (existingBid != null) {
+            marketPlayer.removeBid(user.getId());
+        }
+        
+        marketPlayer.addBid(user.getId(), bidAmount);
+        
+        Map<String, Object> highestBid = marketPlayer.getHighestBidInfo();
+        if (highestBid != null) {
+            marketPlayer.setCurrentBid(((Number) highestBid.get("amount")).longValue());
+            Integer highestBidderId = (Integer) highestBid.get("userId");
+            User highestBidderUser = userRepository.findById(highestBidderId)
+                    .orElseThrow(() -> new IllegalStateException("Usuario no encontrado"));
+            marketPlayer.setHighestBidder(highestBidderUser);
+        }
+        
         marketPlayerRepository.save(marketPlayer);
     }
 
@@ -118,24 +178,43 @@ public class MarketService {
         MarketPlayer marketPlayer = marketPlayerRepository.findById(marketPlayerId)
                 .orElseThrow(() -> new IllegalStateException("Jugador de mercado no encontrado"));
 
-        if (marketPlayer.getHighestBidder() == null) {
+        Map<String, Object> highestBid = marketPlayer.getHighestBidInfo();
+        
+        if (highestBid == null) {
             marketPlayerRepository.save(marketPlayer);
             return;
         }
-        User winner = marketPlayer.getHighestBidder();
+        
+        Integer winnerId = (Integer) highestBid.get("userId");
+        Long winningAmount = ((Number) highestBid.get("amount")).longValue();
+        
+        User winner = userRepository.findById(winnerId)
+                .orElseThrow(() -> new IllegalStateException("Usuario ganador no encontrado"));
         League league = marketPlayer.getLeague();
-
-        Team team = teamRepository.findByLeagueAndUser(league, winner);
         
-        
+        List<Map<String, Object>> allBids = marketPlayer.getBidsList();
+        for (Map<String, Object> bid : allBids) {
+            Integer bidderId = (Integer) bid.get("userId");
+            Long bidAmount = ((Number) bid.get("amount")).longValue();
+            
+            if (!bidderId.equals(winnerId)) {
+                User bidder = userRepository.findById(bidderId)
+                        .orElseThrow(() -> new IllegalStateException("Usuario no encontrado"));
+                Team bidderTeam = teamRepository.findByLeagueAndUser(league, bidder);
+                bidderTeam.setBudget(bidderTeam.getBudget() + bidAmount.intValue());
+                teamRepository.save(bidderTeam);
+            }
+        }
 
+        Team winnerTeam = teamRepository.findByLeagueAndUser(league, winner);
+        
         PlayerTeam playerTeam = new PlayerTeam();
-        playerTeam.setTeam(team);
+        playerTeam.setTeam(winnerTeam);
         playerTeam.setPlayer(marketPlayer.getPlayer());
         playerTeam.setLined(false);
         playerTeam.setIsCaptain(false);
-        playerTeam.setSellPrice(marketPlayer.getCurrentBid().intValue());
-        playerTeam.setBuyPrice(marketPlayer.getCurrentBid().intValue());
+        playerTeam.setSellPrice(winningAmount.intValue());
+        playerTeam.setBuyPrice(winningAmount.intValue());
         playerTeamRepository.save(playerTeam);
 
         marketPlayer.setStatus(StatusMarketPlayer.SOLD);
@@ -182,4 +261,37 @@ public class MarketService {
         }
         
     }
+    @Transactional
+    public void cancelBid(Integer marketPlayerId, User user) {
+        MarketPlayer marketPlayer = marketPlayerRepository.findById(marketPlayerId)
+            .orElseThrow(() -> new RuntimeException("Jugador del mercado no encontrado"));
+        
+        Map<String, Object> userBid = marketPlayer.getUserBid(user.getId());
+        if (userBid == null) {
+            throw new RuntimeException("No tienes una puja activa en este jugador");
+        }
+        
+        Long bidAmount = ((Number) userBid.get("amount")).longValue();
+        
+        Team team = teamRepository.findByLeagueAndUser(marketPlayer.getLeague(), user);
+        team.setBudget(team.getBudget() + bidAmount.intValue());
+        teamRepository.save(team);
+        
+        marketPlayer.removeBid(user.getId());
+        
+        Map<String, Object> newHighestBid = marketPlayer.getHighestBidInfo();
+        if (newHighestBid != null) {
+            marketPlayer.setCurrentBid(((Number) newHighestBid.get("amount")).longValue());
+            Integer highestBidderId = (Integer) newHighestBid.get("userId");
+            User highestBidderUser = userRepository.findById(highestBidderId)
+                    .orElseThrow(() -> new IllegalStateException("Usuario no encontrado"));
+            marketPlayer.setHighestBidder(highestBidderUser);
+        } else {
+            marketPlayer.setCurrentBid(0L);
+            marketPlayer.setHighestBidder(null);
+        }
+        
+        marketPlayerRepository.save(marketPlayer);
+    }
+
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import com.DraftLeague.models.League.League;
 import com.DraftLeague.models.Player.PlayerTeam;
 import com.DraftLeague.models.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
@@ -62,6 +63,7 @@ public class Team {
     @Valid
     private User user;
 
+    @JsonIgnore
     @ManyToOne(optional = false)
     @NotNull
     @Valid

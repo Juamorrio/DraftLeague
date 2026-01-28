@@ -44,6 +44,9 @@ function Leagues() {
 	const [joinCode, setJoinCode] = useState('');
 	const [joinError, setJoinError] = useState('');
 	const [joinLoading, setJoinLoading] = useState(false);
+	const [assignedVisible, setAssignedVisible] = useState(false);
+	const [assignedPlayers, setAssignedPlayers] = useState([]);
+	const [assignedLeagueName, setAssignedLeagueName] = useState('');
 
 	const { selectedLeague, setSelectedLeague } = useLeague();
 
@@ -203,10 +206,25 @@ function Leagues() {
 				const txt = await res.text();
 				throw new Error(txt || 'Error al unirse');
 			}
+			const joined = await res.json(); // { id, code, name }
 			Alert.alert('Unión correcta', 'Te has unido a la liga.');
 			setJoinVisible(false);
 			setJoinCode('');
 			await getLeagues();
+			// Cargar jugadores asignados automáticamente y mostrar modal
+			try {
+				const me = await authService.getCurrentUser();
+				if (me?.id && joined?.id) {
+					const teamRes = await authService.authenticatedFetch(`/api/v1/teams/league/${joined.id}/${me.id}`);
+					if (teamRes.ok) {
+						const team = await teamRes.json();
+						const list = Array.isArray(team?.playerTeams) ? team.playerTeams.map(pt => pt?.player?.fullName ?? pt?.player?.name).filter(Boolean) : [];
+						setAssignedPlayers(list);
+						setAssignedLeagueName(joined?.name || '');
+						setAssignedVisible(true);
+					}
+				}
+			} catch {}
 		} catch (e) {
 			setJoinError((e?.message || 'Error').replace(/\s+/g, ' '));
 		} finally {
@@ -418,6 +436,33 @@ function Leagues() {
 				loading={joinLoading}
 				error={joinError}
 			/>
+			<Modal
+				visible={assignedVisible}
+				transparent
+				animationType="fade"
+				onRequestClose={() => setAssignedVisible(false)}
+			>
+				<View style={styles.modalBackdrop}>
+					<View style={[styles.modalCard, { backgroundColor: '#fff' }] }>
+						<Text style={[styles.title, { color: '#0f172a' } ]}>Equipo asignado{assignedLeagueName ? ` · ${assignedLeagueName}` : ''}</Text>
+						<ScrollView style={{ maxHeight: 320 }} contentContainerStyle={{ paddingVertical: 8, gap: 6 }}>
+							{assignedPlayers.length === 0 && (
+								<Text style={{ color: '#475569' }}>No se encontraron jugadores asignados.</Text>
+							)}
+							{assignedPlayers.map((name, idx) => (
+								<View key={`${name}-${idx}`} style={{ padding: 8, borderWidth: 1, borderColor: '#e5e7eb', borderRadius: 8 }}>
+									<Text style={{ color: '#111827', fontWeight: '600' }}>{name}</Text>
+								</View>
+							))}
+						</ScrollView>
+						<View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 10 }}>
+							<TouchableOpacity style={[styles.actionBtn, styles.save]} onPress={() => setAssignedVisible(false)}>
+								<Text style={{ color: '#fff', fontWeight: '700' }}>Entendido</Text>
+							</TouchableOpacity>
+						</View>
+					</View>
+				</View>
+			</Modal>
 		</View>
 	);
 }

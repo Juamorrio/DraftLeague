@@ -6,6 +6,7 @@ import com.DraftLeague.models.Player.Player;
 import com.DraftLeague.models.Player.PlayerRepository;
 import com.DraftLeague.models.Player.PlayerTeam;
 import com.DraftLeague.models.Player.PlayerTeamRepository;
+import com.DraftLeague.models.Player.playerTeamService;
 import com.DraftLeague.models.Team.Team;
 import com.DraftLeague.models.Team.TeamRepository;
 import com.DraftLeague.models.user.User;
@@ -47,18 +48,16 @@ public class MarketService {
 
     @Transactional
     public void initializeMarket(Integer leagueId) {
-        logger.info("Inicializando mercado para liga {} con 10 jugadores", leagueId);
         
         League league = leagueRepository.findById(Long.valueOf(leagueId))
                 .orElseThrow(() -> new IllegalStateException("Liga no encontrada"));
 
-        List<Player> allPlayers = playerRepository.findAll();
-        logger.info("Total de jugadores en BD: {}", allPlayers.size());
-        
-        if (allPlayers.isEmpty()) {
-            logger.warn("No hay jugadores en la base de datos para inicializar el mercado");
-            return;
-        }
+        List<Integer> teamIds = teamRepository.findByLeague(league).stream()
+                .map(Team::getId).toList();
+
+        List<Player> allPlayers = playerRepository.findAll().stream()
+                .filter(p -> playerTeamRepository.findPlayerTeamsByTeamIdIn(teamIds).stream()
+                        .noneMatch(pt -> pt.getPlayer().getId().equals(p.getId()))).toList();
         
         Collections.shuffle(allPlayers);
         List<Player> selectedPlayers = allPlayers.subList(0, 10);
@@ -246,7 +245,12 @@ public class MarketService {
         List<MarketPlayer> oldMarketPlayers = marketPlayerRepository.findByLeague(league);
         marketPlayerRepository.deleteAll(oldMarketPlayers);
 
-        List<Player> allPlayers = playerRepository.findAll();
+        List<Integer> teamIds = teamRepository.findByLeague(league).stream()
+                .map(Team::getId).toList();
+
+        List<Player> allPlayers = playerRepository.findAll().stream()
+                .filter(p -> playerTeamRepository.findPlayerTeamsByTeamIdIn(teamIds).stream()
+                        .noneMatch(pt -> pt.getPlayer().getId().equals(p.getId()))).toList();
         Collections.shuffle(allPlayers);
         List<Player> selectedPlayers = allPlayers.subList(0, Math.min(10, allPlayers.size()));
 

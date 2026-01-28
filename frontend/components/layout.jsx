@@ -14,7 +14,7 @@ import home2 from '../assets/layout/home white.png'
 import { Image } from 'react-native';
 import { useLeague } from '../context/LeagueContext';
 export default function Layout({ children, onNavigate, activeKey, isAdmin }) {
-	const { selectedLeague } = useLeague();
+	const { selectedLeague, viewUser, navTarget, setNavTarget } = useLeague();
 	const baseItems = [
 		{ key: 'home', label: 'Home', type: 'image', activeSrc: home2, inactiveSrc: home },
 		{ key: 'league', label: 'Ligas', type: 'image', activeSrc: trophy2, inactiveSrc: trophy },
@@ -39,7 +39,16 @@ export default function Layout({ children, onNavigate, activeKey, isAdmin }) {
 		if (!isAdmin && activeKey === 'admin') {
 			onNavigate && onNavigate('home');
 		}
-	}, [selectedLeague, activeKey, onNavigate, isAdmin]);
+		if (selectedLeague && viewUser && activeKey !== 'team') {
+			onNavigate && onNavigate('team');
+		}
+		if (navTarget && activeKey !== navTarget) {
+			onNavigate && onNavigate(navTarget);
+		}
+		if (navTarget) {
+			setNavTarget(null);
+		}
+	}, [selectedLeague, viewUser, navTarget, activeKey, onNavigate, isAdmin, setNavTarget]);
 
 	return (
 		<View style={styles.container}>

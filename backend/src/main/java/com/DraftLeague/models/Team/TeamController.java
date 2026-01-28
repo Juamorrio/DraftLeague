@@ -73,4 +73,24 @@ public class TeamController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PostMapping("/league/{leagueId}/buyout")
+    public ResponseEntity<?> buyoutPlayer(
+            @PathVariable Integer leagueId,
+            @RequestBody java.util.Map<String,Integer> body) {
+        try {
+            Integer sellerUserId = body.get("sellerUserId");
+            Integer playerId = body.get("playerId");
+            if (sellerUserId == null || playerId == null) {
+                return ResponseEntity.badRequest().body(java.util.Map.of("error", "Parámetros inválidos"));
+            }
+            Team buyerTeam = teamService.buyoutPlayer(leagueId, sellerUserId, playerId);
+            return ResponseEntity.ok(java.util.Map.of(
+                "teamId", buyerTeam.getId(),
+                "budget", buyerTeam.getBudget()
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("error", e.getMessage()));
+        }
+    }
 }

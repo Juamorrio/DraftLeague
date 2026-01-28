@@ -23,17 +23,20 @@ public class AdminController {
     private final PlayerRepository playerRepository;
     private final MarketService marketService;
     private final PlayerImportService importService;
+    private final UserService userService;
 
     public AdminController(UserRepository userRepository, 
                           LeagueRepository leagueRepository,
                           PlayerRepository playerRepository,
                           MarketService marketService,
-                          PlayerImportService importService) {
+                          PlayerImportService importService,
+                          UserService userService) {
         this.userRepository = userRepository;
         this.leagueRepository = leagueRepository;
         this.playerRepository = playerRepository;
         this.marketService = marketService;
         this.importService = importService;
+        this.userService = userService;
     }
 
     private boolean isAdmin(Authentication auth) {
@@ -101,7 +104,7 @@ public class AdminController {
             return ResponseEntity.status(403).body(Map.of("error", "Acceso denegado"));
         }
 
-        userRepository.deleteById(id);
+        userService.deleteUser(id);
         return ResponseEntity.ok(Map.of("message", "Usuario eliminado"));
     }
 

@@ -2,8 +2,10 @@ package com.DraftLeague.models.Team;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
@@ -23,6 +25,7 @@ public class TeamService {
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
     private final PlayerService playerService;
+    private final PlayerTeamRepository playerTeamRepository;
 
     @Autowired
     public TeamService(TeamRepository teamRepository, PlayerRepository playerRepository, 
@@ -30,6 +33,7 @@ public class TeamService {
         this.teamRepository = teamRepository;
         this.userRepository = userRepository;
         this.playerService = playerService;
+        this.playerTeamRepository = playerTeamRepository;
     }
 
     @Transactional
@@ -119,6 +123,7 @@ public class TeamService {
             playerTeam.setLined(selection.getLined());
             playerTeam.setIsCaptain(selection.getIsCaptain() != null ? selection.getIsCaptain() : false);
             playerTeam.setSellPrice(player.getMarketValue());
+            playerTeam.setBuyPrice(player.getMarketValue());
             
             newPlayerTeams.add(playerTeam);
         }
@@ -127,5 +132,44 @@ public class TeamService {
         team.getPlayerTeams().addAll(newPlayerTeams);
         
         return teamRepository.save(team);
+    }
+
+    @Transactional
+    public Team buyoutPlayer(Integer leagueId, Integer sellerUserId, Integer playerId) {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) throw new RuntimeException("No autenticado");
+        String buyerUsername = auth.getName();
+
+        User buyer = userRepository.findUserByUsername(buyerUsername)
+            .orElseThrow(() -> new RuntimeException("Usuario comprador no encontrado"));
+
+        Team buyerTeam = getTeamByUserAndLeague(leagueId, buyer.getId());
+        Team sellerTeam = getTeamByUserAndLeague(leagueId, sellerUserId);
+
+        PlayerTeam target = sellerTeam.getPlayerTeams().stream()
+            .filter(pt -> pt.getPlayer().getId().equals(playerId))
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException("El jugador no pertenece al equipo seleccionado"));
+
+        int price = Optional.ofNullable(target.getBuyPrice())
+            .or(() -> Optional.ofNullable(target.getSellPrice()))
+            .orElse(target.getPlayer().getMarketValue());
+
+        if (buyerTeam.getBudget() < price) {
+            throw new RuntimeException("Presupuesto insuficiente para el clausulazo");
+        }
+
+        buyerTeam.setBudget(buyerTeam.getBudget() - price);
+        sellerTeam.setBudget(sellerTeam.getBudget() + price);
+
+        target.setTeam(buyerTeam);
+        target.setIsCaptain(false);
+        target.setLined(false);
+        target.setBuyPrice(price);
+        playerTeamRepository.save(target);
+        teamRepository.save(buyerTeam);
+        teamRepository.save(sellerTeam);
+
+        return buyerTeam;
     }
 }

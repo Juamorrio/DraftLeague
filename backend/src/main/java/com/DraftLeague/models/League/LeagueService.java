@@ -13,6 +13,15 @@ import com.DraftLeague.models.Team.Team;
 import com.DraftLeague.models.Team.TeamRepository;
 import com.DraftLeague.models.user.User;
 import com.DraftLeague.models.user.UserRepository;
+import com.DraftLeague.models.Player.Player;
+import com.DraftLeague.models.Player.PlayerRepository;
+import com.DraftLeague.models.Player.PlayerTeam;
+import com.DraftLeague.models.Player.PlayerTeamRepository;
+import com.DraftLeague.models.Player.Position;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Collections;
+import java.util.Set;
 
 @Service
 public class LeagueService {
@@ -20,11 +29,16 @@ public class LeagueService {
     private final LeagueRepository leagueRepository;
     private final UserRepository userRepository;
     private final TeamRepository teamRepository;
+    private final PlayerRepository playerRepository;
+    private final PlayerTeamRepository playerTeamRepository;
 
-    public LeagueService(LeagueRepository leagueRepository, UserRepository userRepository, TeamRepository teamRepository) {
+    public LeagueService(LeagueRepository leagueRepository, UserRepository userRepository, TeamRepository teamRepository,
+                         PlayerRepository playerRepository, PlayerTeamRepository playerTeamRepository) {
         this.leagueRepository = leagueRepository;
         this.userRepository = userRepository;
         this.teamRepository = teamRepository;
+        this.playerRepository = playerRepository;
+        this.playerTeamRepository = playerTeamRepository;
     }
 
     public League createLeague(CreateLeagueRequest req) {
@@ -201,6 +215,92 @@ public class LeagueService {
         team.setWildcardUsed(false);
         team.setCaptainId(null);
         teamRepository.save(team);
+
+        try {
+            assignInitialSquad(league, team, 11);
+        } catch (Exception ignored) {}
         return league;
+    }
+
+    private void assignInitialSquad(League league, Team team, int size) {
+        List<Team> teamsInLeague = teamRepository.findByLeagueOrderByTotalPointsDesc(league);
+        Set<Integer> used = new HashSet<>();
+        for (Team t : teamsInLeague) {
+            for (PlayerTeam pt : playerTeamRepository.findByTeam(t)) {
+                if (pt.getPlayer() != null) used.add(pt.getPlayer().getId());
+            }
+        }
+
+        int needPOR = 1, needDEF = 4, needMID = 3, needDEL = 3, needCOACH = 1;
+
+        List<Player> all = playerRepository.findAll();
+        List<Player> lowPOR = new ArrayList<>(), highPOR = new ArrayList<>();
+        List<Player> lowDEF = new ArrayList<>(), highDEF = new ArrayList<>();
+        List<Player> lowMID = new ArrayList<>(), highMID = new ArrayList<>();
+        List<Player> lowDEL = new ArrayList<>(), highDEL = new ArrayList<>();
+        List<Player> lowCOA = new ArrayList<>(), highCOA = new ArrayList<>();
+
+        for (Player p : all) {
+            if (p == null || p.getMarketValue() == null) continue;
+            if (used.contains(p.getId())) continue;
+            int val = p.getMarketValue();
+            boolean isLow = val <= 10_000_000;
+            boolean isHigh = !isLow && val <= 20_000_000;
+            if (!isLow && !isHigh) continue; 
+            Position pos = p.getPosition();
+            if (pos == null) continue;
+            switch (pos) {
+                case POR -> { if (isLow) lowPOR.add(p); else highPOR.add(p); }
+                case DEF -> { if (isLow) lowDEF.add(p); else highDEF.add(p); }
+                case MID -> { if (isLow) lowMID.add(p); else highMID.add(p); }
+                case DEL -> { if (isLow) lowDEL.add(p); else highDEL.add(p); }
+                case COACH -> { if (isLow) lowCOA.add(p); else highCOA.add(p); }
+                default -> { /* ignore other positions for initial assignment */ }
+            }
+        }
+
+        Collections.shuffle(lowPOR); Collections.shuffle(highPOR);
+        Collections.shuffle(lowDEF); Collections.shuffle(highDEF);
+        Collections.shuffle(lowMID); Collections.shuffle(highMID);
+        Collections.shuffle(lowDEL); Collections.shuffle(highDEL);
+        Collections.shuffle(lowCOA); Collections.shuffle(highCOA);
+
+        List<Player> chosen = new ArrayList<>();
+        pickByQuota(lowPOR, highPOR, needPOR, chosen);
+        pickByQuota(lowDEF, highDEF, needDEF, chosen);
+        pickByQuota(lowMID, highMID, needMID, chosen);
+        pickByQuota(lowDEL, highDEL, needDEL, chosen);
+        pickByQuota(lowCOA, highCOA, needCOACH, chosen);
+
+        if (chosen.isEmpty()) return;
+
+        for (Player p : chosen) {
+            PlayerTeam pt = new PlayerTeam();
+            pt.setPlayer(p);
+            pt.setTeam(team);
+            pt.setIsCaptain(false);
+            pt.setLined(false);
+            int price = p.getMarketValue() == null ? 0 : p.getMarketValue();
+            pt.setSellPrice(price);
+            pt.setBuyPrice(price);
+            playerTeamRepository.save(pt);
+        }
+    }
+
+    private void pickByQuota(List<Player> low, List<Player> high, int need, List<Player> out) {
+        if (need <= 0) return;
+        int taken = 0;
+        for (Player p : low) {
+            if (taken >= need) break;
+            out.add(p);
+            taken++;
+        }
+        if (taken < need) {
+            for (Player p : high) {
+                if (taken >= need) break;
+                out.add(p);
+                taken++;
+            }
+        }
     }
 }

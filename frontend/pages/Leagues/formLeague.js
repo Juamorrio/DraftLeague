@@ -24,12 +24,13 @@ export default function FormLeague({
 	error,
 	fieldErrors = {},
 	onCreate,
+	isEditing = false,
 }) {
 	return (
 		<Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
 			<View style={styles.modalBackdrop}>
 				<LinearGradient colors={["#197319", "#013055"]} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={styles.modalCard}>
-					<Text style={styles.title}>Nueva Liga</Text>
+					<Text style={styles.title}>{isEditing ? 'Editar Liga' : 'Nueva Liga'}</Text>
 
 					<View style={styles.row}>
 						<Text style={styles.label}>Nombre:</Text>
@@ -42,33 +43,37 @@ export default function FormLeague({
 						<TextInput value={description} onChangeText={setDescription} style={styles.input} />
 					</View>
 
-					<View style={styles.row}>
-						<Text style={styles.label}>Equipos máx.:</Text>
-						<TextInput value={maxTeams} onChangeText={setMaxTeams} keyboardType="number-pad" style={[styles.input, fieldErrors.maxTeams ? styles.inputError : null]} />
-						{fieldErrors.maxTeams ? <Text style={styles.errorText}>{fieldErrors.maxTeams}</Text> : null}
-					</View>
+					{!isEditing && (
+						<>
+							<View style={styles.row}>
+								<Text style={styles.label}>Equipos máx.:</Text>
+								<TextInput value={maxTeams} onChangeText={setMaxTeams} keyboardType="number-pad" style={[styles.input, fieldErrors.maxTeams ? styles.inputError : null]} />
+								{fieldErrors.maxTeams ? <Text style={styles.errorText}>{fieldErrors.maxTeams}</Text> : null}
+							</View>
 
-					<View style={styles.row}>
-						<Text style={styles.label}>Presupuesto inicial:</Text>
-						<TextInput value={initialBudget} onChangeText={setInitialBudget} keyboardType="number-pad" style={[styles.input, fieldErrors.initialBudget ? styles.inputError : null]} />
-						{fieldErrors.initialBudget ? <Text style={styles.errorText}>{fieldErrors.initialBudget}</Text> : null}
-					</View>
+							<View style={styles.row}>
+								<Text style={styles.label}>Presupuesto inicial:</Text>
+								<TextInput value={initialBudget} onChangeText={setInitialBudget} keyboardType="number-pad" style={[styles.input, fieldErrors.initialBudget ? styles.inputError : null]} />
+								{fieldErrors.initialBudget ? <Text style={styles.errorText}>{fieldErrors.initialBudget}</Text> : null}
+							</View>
 
-					<View style={styles.row}>
-						<Text style={styles.label}>Cierre mercado (HH:mm):</Text>
-						<TextInput value={marketEndHour} onChangeText={setMarketEndHour} style={[styles.input, fieldErrors.marketEndHour ? styles.inputError : null]} />
-						{fieldErrors.marketEndHour ? <Text style={styles.errorText}>{fieldErrors.marketEndHour}</Text> : null}
-					</View>
+							<View style={styles.row}>
+								<Text style={styles.label}>Cierre mercado (HH:mm):</Text>
+								<TextInput value={marketEndHour} onChangeText={setMarketEndHour} style={[styles.input, fieldErrors.marketEndHour ? styles.inputError : null]} />
+								{fieldErrors.marketEndHour ? <Text style={styles.errorText}>{fieldErrors.marketEndHour}</Text> : null}
+							</View>
 
-					<View style={styles.rowSwitch}>
-						<Text style={styles.label}>Capitán habilitado</Text>
-						<Switch value={captainEnable} onValueChange={setCaptainEnable} />
-					</View>
+							<View style={styles.rowSwitch}>
+								<Text style={styles.label}>Capitán habilitado</Text>
+								<Switch value={captainEnable} onValueChange={setCaptainEnable} />
+							</View>
 
-					<View style={styles.rowSwitch}>
-						<Text style={styles.label}>Wildcards habilitados</Text>
-						<Switch value={wildCardsEnable} onValueChange={setWildCardsEnable} />
-					</View>
+							<View style={styles.rowSwitch}>
+								<Text style={styles.label}>Wildcards habilitados</Text>
+								<Switch value={wildCardsEnable} onValueChange={setWildCardsEnable} />
+							</View>
+						</>
+					)}
 
 					{error ? <Text style={styles.error}>{error}</Text> : null}
 

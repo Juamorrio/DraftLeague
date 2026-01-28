@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, Modal, FlatList, Alert
 import { useLeague } from '../../context/LeagueContext';
 import pitch from '../../assets/Team/pitch.png';
 import Player from '../../components/player';
-import { authenticatedFetch } from '../../services/authService';
+import authService, { authenticatedFetch } from '../../services/authService';
 import withAuth from '../../components/withAuth';
 
 
@@ -33,6 +33,7 @@ function Team() {
 				{ key: 'LW', x: '13%', y: '18%', role: 'DEL' },
 				{ key: 'RW', x: '77%', y: '18%', role: 'DEL' },
 				{ key: 'ST', x: '45%', y: '8%', role: 'DEL' },
+				{ key: 'COACH', x: '80%', y: '88%', role: 'COACH' },
 			]
 		},
 	};
@@ -68,7 +69,9 @@ function Team() {
 		if (!selectedLeague?.id) return;
 		let mounted = true;
 		try {
-			const res = await authenticatedFetch(`/api/v1/teams/league/${selectedLeague.id}`);
+			const user = await authService.getCurrentUser();
+			if (!user?.id) return;
+			const res = await authenticatedFetch(`/api/v1/teams/league/${selectedLeague.id}/${user.id}`);
 			if (res.ok) {
 				const team = await res.json();
 				if (mounted && team?.playerTeams) {
@@ -77,7 +80,8 @@ function Team() {
 						POR: [],
 						DEF: [],
 						MID: [],
-						DEL: []
+						DEL: [],
+						COACH: []
 					};	
 					team.playerTeams.forEach(pt => {
 						const role = pt.player.position;
@@ -90,7 +94,8 @@ function Team() {
 						POR: [],
 						DEF: [],
 						MID: [],
-						DEL: []
+						DEL: [],
+						COACH: []
 					};
 					
 					currentFormation.positions.forEach(pos => {
@@ -149,7 +154,13 @@ function Team() {
 
 		setSaving(true);
 		try {
-			const res = await authenticatedFetch(`/api/v1/teams/league/${selectedLeague.id}/players`, {
+			const user = await authService.getCurrentUser();
+			if (!user?.id) {
+				Alert.alert('Error', 'Usuario no autenticado');
+				setSaving(false);
+				return;
+			}
+			const res = await authenticatedFetch(`/api/v1/teams/league/${selectedLeague.id}/${user.id}/players`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ players: playersList })
@@ -170,9 +181,11 @@ function Team() {
 
 	function matchesSpot(playerPos, key) {
 		if (!playerPos || !key) return true;
-				const positionInfo = currentFormation.positions.find(p => p.key === key);
+		
+		const positionInfo = currentFormation.positions.find(p => p.key === key);
 		if (!positionInfo) return false;
-				return playerPos === positionInfo.role;
+		
+		return playerPos === positionInfo.role;
 	}
 
 	return (
@@ -229,7 +242,7 @@ function Team() {
 								renderItem={({ item }) => (
 									<TouchableOpacity style={styles.pickRow} onPress={() => assignPlayer(item)}>
 										<Text style={styles.pickName}>{item.fullName ?? item.name}</Text>
-										<Text style={styles.pickMeta}>{item.position} · {(item.totalPoints ?? 0)} pts · €{((item.marketValue ?? 0)).toLocaleString()}</Text>
+									<Text style={styles.pickMeta}>{item.position} · {(item.totalPoints ?? 0)} pts · €{((item.marketValue ?? 0)).toLocaleString('es-ES')}</Text>
 									</TouchableOpacity>
 								)}
 							/>

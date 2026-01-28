@@ -50,7 +50,7 @@ public class User  {
 
 	@NotNull
 	@Column(name = "role", nullable = false)
-	private RoleUser role = RoleUser.USER;
+	private String role = "USER";
 
 	@ManyToOne
 	@JoinColumn(name = "notification_id", nullable = true)

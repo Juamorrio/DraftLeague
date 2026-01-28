@@ -30,10 +30,10 @@ public class TeamController {
         return teamService.getTeamById(id);
     }
 
-    @GetMapping("/league/{leagueId}")
-    public ResponseEntity<Team> getTeamByLeague(@PathVariable Integer leagueId) {
+    @GetMapping("/league/{leagueId}/{userId}")
+    public ResponseEntity<Team> getTeamByLeague(@PathVariable Integer leagueId, @PathVariable Integer userId) {
         try {
-            Team team = teamService.getTeamByUserAndLeague(leagueId);
+            Team team = teamService.getTeamByUserAndLeague(leagueId, userId);
             return ResponseEntity.ok(team);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
@@ -50,16 +50,27 @@ public class TeamController {
         return teamService.updateTeam(team, id);
     }
 
-    @PutMapping("/league/{leagueId}/players")
+    @PutMapping("/league/{leagueId}/{userId}/players")
     public ResponseEntity<?> updateTeamPlayers(
             @PathVariable Integer leagueId, 
+            @PathVariable Integer userId,
             @Valid @RequestBody UpdateTeamPlayersRequest request) {
         try {
-            Team updatedTeam = teamService.updateTeamPlayers(leagueId, request);
+            Team updatedTeam = teamService.updateTeamPlayers(leagueId, userId, request);
             return ResponseEntity.ok(updatedTeam);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest()
                 .body(java.util.Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/my-team/{leagueId}/{userId}")
+    public ResponseEntity<Team> getMyTeam(@PathVariable Integer leagueId, @PathVariable Integer userId) {
+        try {
+            Team team = teamService.getTeamByUserAndLeague(leagueId, userId);
+            return ResponseEntity.ok(team);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 }

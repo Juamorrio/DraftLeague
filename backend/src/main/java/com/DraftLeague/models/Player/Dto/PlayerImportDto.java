@@ -11,6 +11,6 @@ public class PlayerImportDto {
 	private String position; 
 	private String avatarUrl;
     private Integer teamId;
-	private String marketValue;
+	private Integer marketValue;
 	
 }

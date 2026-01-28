@@ -24,6 +24,8 @@ const DRAFT_KEY = 'leagues.createDraft';
 
 function Leagues() {
 	const [creating, setCreating] = useState(false);
+	const [editing, setEditing] = useState(false);
+	const [editingLeague, setEditingLeague] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState('');
 	const [user, setUser] = useState(null);
@@ -31,7 +33,7 @@ function Leagues() {
 	const [name, setName] = useState('');
 	const [description, setDescription] = useState('');
 	const [maxTeams, setMaxTeams] = useState('10');
-	const [initialBudget, setInitialBudget] = useState('100');
+	const [initialBudget, setInitialBudget] = useState('100000000');
 	const [marketEndHour, setMarketEndHour] = useState('20:00');
 	const [captainEnable, setCaptainEnable] = useState(true);
 	const [wildCardsEnable, setWildCardsEnable] = useState(false);
@@ -100,7 +102,7 @@ function Leagues() {
 		setName('');
 		setDescription('');
 		setMaxTeams('10');
-		setInitialBudget('100');
+		setInitialBudget('100000000');
 		setMarketEndHour('20:00');
 		setCaptainEnable(true);
 		setWildCardsEnable(false);
@@ -212,13 +214,112 @@ function Leagues() {
 		}
 	};
 
+	const handleEditLeague = (league) => {
+		setEditingLeague(league);
+		setName(league.name || '');
+		setDescription(league.description || '');
+		setMaxTeams(String(league.maxTeams || '10'));
+		setInitialBudget(String(league.initialBudget || '100000000'));
+		setMarketEndHour(league.marketEndHour || '20:00');
+		setCaptainEnable(league.captainEnable ?? true);
+		setWildCardsEnable(league.wildCardsEnable ?? false);
+		setEditing(true);
+	};
+
+	const handleUpdateLeague = async () => {
+		setError('');
+		setFieldErrors({});
+		const errs = {};
+		if (name.trim().length < 3) errs.name = 'El nombre es obligatorio (mín. 3)';
+		if (Object.keys(errs).length) { setFieldErrors(errs); return; }
+		setLoading(true);
+		try {
+			const payload = {
+				name: name.trim(),
+				description: (description || '').trim() || null,
+			};
+			const res = await authService.authenticatedFetch(`/api/v1/leagues/${editingLeague.id}`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(payload),
+			});
+			if (!res.ok) {
+				const txt = await res.text();
+				throw new Error(txt || `Error ${res.status}`);
+			}
+			Alert.alert('Liga actualizada', 'Los cambios han sido guardados.');
+			setEditing(false);
+			setEditingLeague(null);
+			resetForm();
+			await getLeagues();
+		} catch (e) {
+			let msg = (e?.message || 'Error').trim();
+			try { const parsed = JSON.parse(msg); msg = parsed?.message || msg; } catch {}
+			setError(msg.replace(/\s+/g, ' '));
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const closeEditModal = () => {
+		setEditing(false);
+		setEditingLeague(null);
+		resetForm();
+	};
+
+	const handleDeleteLeague = async (league) => {
+		Alert.alert(
+			'Eliminar liga',
+			`¿Estás seguro de que quieres eliminar la liga "${league.name}"? Esta acción no se puede deshacer.`,
+			[
+				{ text: 'Cancelar', style: 'cancel' },
+				{
+					text: 'Eliminar',
+					style: 'destructive',
+					onPress: async () => {
+						try {
+							const res = await authService.authenticatedFetch(`/api/v1/leagues/${league.id}`, {
+								method: 'DELETE'
+							});
+							if (!res.ok) {
+								const txt = await res.text();
+								throw new Error(txt || 'Error al eliminar');
+							}
+							Alert.alert('Liga eliminada', 'La liga ha sido eliminada correctamente.');
+							await getLeagues();
+						} catch (e) {
+							Alert.alert('Error', e?.message || 'No se pudo eliminar la liga');
+						}
+					}
+				}
+			]
+		);
+	};
+
 	const LeagueCard = ({ league }) => {
 		const pts = league.points ?? league.pts ?? '-';
 		const pos = league.position ?? league.ranking ?? '-';
 		const participants = league.participants ?? league.currentTeams ?? league.maxTeams ?? '-';
-		const showCode = () => {
-			Alert.alert('Código de la liga', league.code ? String(league.code) : 'Sin código');
+		
+		const isCreator = user && league.createdBy && league.createdBy.id === user.id;
+		
+		const showOptions = () => {
+			const buttons = [
+				{ text: 'Ver código', onPress: () => Alert.alert('Código de la liga', league.code ? String(league.code) : 'Sin código') }
+			];
+			
+			if (isCreator) {
+				buttons.push(
+					{ text: 'Editar', onPress: () => handleEditLeague(league) },
+					{ text: 'Eliminar', onPress: () => handleDeleteLeague(league), style: 'destructive' }
+				);
+			}
+			
+			buttons.push({ text: 'Cancelar', style: 'cancel' });
+			
+			Alert.alert('Opciones de liga', league.name, buttons);
 		};
+		
 		const openRanking = () => setSelectedLeague(league);
 		return (
 			<View style={styles.leagueCard}>
@@ -230,7 +331,7 @@ function Leagues() {
 					<Text style={styles.leagueName}>{league.name}</Text>
 					<Text style={styles.leagueMeta}>Pts: {pts}   Posición: {pos}   Participantes: {participants}</Text>
 				</TouchableOpacity>
-				<TouchableOpacity onPress={showCode} style={styles.gearBtn} hitSlop={{top:8,bottom:8,left:8,right:8}}>
+				<TouchableOpacity onPress={showOptions} style={styles.gearBtn} hitSlop={{top:8,bottom:8,left:8,right:8}}>
 					<Image source={require('../../assets/header/gear.png')} style={styles.gearIcon} />
 				</TouchableOpacity>
 			</View>
@@ -269,6 +370,31 @@ function Leagues() {
 				error={error}
 				fieldErrors={fieldErrors}
 				onCreate={handleCreate}
+				isEditing={false}
+			/>
+			<FormLeague
+				visible={editing}
+				onClose={closeEditModal}
+				name={name}
+				setName={setName}
+				description={description}
+				setDescription={setDescription}
+				maxTeams={maxTeams}
+				setMaxTeams={setMaxTeams}
+				initialBudget={initialBudget}
+				setInitialBudget={setInitialBudget}
+				marketEndHour={marketEndHour}
+				setMarketEndHour={setMarketEndHour}
+				captainEnable={captainEnable}
+				setCaptainEnable={setCaptainEnable}
+				wildCardsEnable={wildCardsEnable}
+				setWildCardsEnable={setWildCardsEnable}
+				canSubmit={canSubmit}
+				loading={loading}
+				error={error}
+				fieldErrors={fieldErrors}
+				onCreate={handleUpdateLeague}
+				isEditing={true}
 			/>
 			{!selectedLeague && (
 				<ScrollView style={styles.list} contentContainerStyle={styles.listContent}>

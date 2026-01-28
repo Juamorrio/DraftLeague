@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.DraftLeague.models.League.dto.CreateLeagueRequest;
@@ -37,10 +38,19 @@ public class LeagueService {
         league.setWildCardsEnable(Boolean.TRUE.equals(req.getWildCardsEnable()));
         league.setCreatedAt(new Date(System.currentTimeMillis() - 1000));
         league.setCode(generateUniqueCode());
+        
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated()) {
+            String username = auth.getName();
+            User creator = userRepository.findUserByUsername(username).orElse(null);
+            if (creator != null) {
+                league.setCreatedBy(creator);
+            }
+        }
+        
         League saved = leagueRepository.save(league);
 
         try {
-            var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
             if (auth != null && auth.isAuthenticated()) {
                 String username = auth.getName();
                 User user = userRepository.findUserByUsername(username).orElse(null);
@@ -68,6 +78,24 @@ public class LeagueService {
 
     public League updateLeague(Long id, League league) {
         League existingLeague = getLeagueById(id);
+        
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated()) {
+            String username = auth.getName();
+            User currentUser = userRepository.findUserByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            
+            boolean isCreator = existingLeague.getCreatedBy() != null && 
+                               existingLeague.getCreatedBy().getId().equals(currentUser.getId());
+            boolean isAdmin = "ADMIN".equals(currentUser.getRole());
+            
+            if (!isCreator && !isAdmin) {
+                throw new RuntimeException("No tienes permisos para editar esta liga");
+            }
+        } else {
+            throw new RuntimeException("Usuario no autenticado");
+        }
+        
         existingLeague.setName(league.getName());
         existingLeague.setDescription(league.getDescription());
         return leagueRepository.save(existingLeague);
@@ -75,6 +103,24 @@ public class LeagueService {
 
     public void deleteLeague(Long id) {
         League league = getLeagueById(id);
+        
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated()) {
+            String username = auth.getName();
+            User currentUser = userRepository.findUserByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            
+            boolean isCreator = league.getCreatedBy() != null && 
+                               league.getCreatedBy().getId().equals(currentUser.getId());
+            boolean isAdmin = "ADMIN".equals(currentUser.getRole());
+            
+            if (!isCreator && !isAdmin) {
+                throw new RuntimeException("No tienes permisos para eliminar esta liga");
+            }
+        } else {
+            throw new RuntimeException("Usuario no autenticado");
+        }
+        
         leagueRepository.delete(league);
     }
 
@@ -137,7 +183,8 @@ public class LeagueService {
         if (auth == null || !auth.isAuthenticated()) throw new RuntimeException("No autenticado");
         String username = auth.getName();
         User user = userRepository.findUserByUsername(username).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        if (!teamRepository.findByLeagueAndUser(league, user).equals(null)) {
+        Team existingTeam = teamRepository.findByLeagueAndUser(league, user);
+        if (existingTeam != null) {
             throw new RuntimeException("Ya estás en esta liga");
         }
         long count = teamRepository.countByLeague(league);

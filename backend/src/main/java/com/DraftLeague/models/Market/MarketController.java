@@ -8,14 +8,19 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import com.DraftLeague.models.user.User;
+import com.DraftLeague.models.user.UserRepository;
+
 @RestController
 @RequestMapping("/api/v1/market")
 public class MarketController {
 
     private final MarketService marketService;
+    private final UserRepository userRepository;
 
-    public MarketController(MarketService marketService) {
+    public MarketController(MarketService marketService, UserRepository userRepository) {
         this.marketService = marketService;
+        this.userRepository = userRepository;
     }
 
     @PostMapping("/initialize")
@@ -33,7 +38,12 @@ public class MarketController {
     @GetMapping
     public ResponseEntity<?> getMarketPlayers(@RequestParam Integer leagueId) {
         try {
-            List<MarketPlayer> players = marketService.getAvailableMarketPlayers(leagueId);
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth == null || !auth.isAuthenticated()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "No autenticado"));
+            }
+            String username = auth.getName();
+            List<MarketPlayerDTO> players = marketService.getAvailableMarketPlayersForUser(leagueId, username);
             return ResponseEntity.ok(players);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
@@ -83,6 +93,20 @@ public class MarketController {
         try {
             marketService.finalizeExpiredAuctions();
             return ResponseEntity.ok(Map.of("message", "Subastas expiradas finalizadas"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/cancel-bid")
+    public ResponseEntity<?> cancelBid(@RequestParam Integer marketPlayerId, Authentication auth) {
+        try {
+            String username = auth.getName();
+            User user = userRepository.findUserByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            
+            marketService.cancelBid(marketPlayerId, user);
+            return ResponseEntity.ok(Map.of("message", "Puja cancelada correctamente"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }

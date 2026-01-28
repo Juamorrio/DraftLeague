@@ -22,6 +22,7 @@ function Admin() {
 	const [activeTab, setActiveTab] = useState('stats');
 	const [editingUser, setEditingUser] = useState(null);
 	const [selectedRole, setSelectedRole] = useState('USER');
+	const [importingPlayers, setImportingPlayers] = useState(false);
 
 	useEffect(() => {
 		loadStats();
@@ -160,6 +161,39 @@ function Admin() {
 		}
 	};
 
+	const importPlayers = async () => {
+		Alert.alert(
+			'Importar Jugadores',
+			'¿Estás seguro de importar/actualizar los jugadores desde el JSON? Esta operación puede tardar varios segundos.',
+			[
+				{ text: 'Cancelar', style: 'cancel' },
+				{
+					text: 'Importar',
+					onPress: async () => {
+						setImportingPlayers(true);
+						try {
+							const res = await authenticatedFetch('/api/v1/admin/import-players', {
+								method: 'POST'
+							});
+							if (res.ok) {
+								const message = await res.text();
+								Alert.alert('Éxito', message);
+								loadStats(); 
+							} else {
+								const error = await res.text();
+								Alert.alert('Error', error || 'No se pudieron importar los jugadores');
+							}
+						} catch (e) {
+							Alert.alert('Error', 'Error al importar jugadores: ' + e.message);
+						} finally {
+							setImportingPlayers(false);
+						}
+					}
+				}
+			]
+		);
+	};
+
 	if (loading && !stats) {
 		return (
 			<View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
@@ -198,6 +232,14 @@ function Admin() {
 				>
 					<Text style={[styles.tabText, activeTab === 'leagues' && styles.tabTextActive]}>
 						Ligas
+					</Text>
+				</TouchableOpacity>
+				<TouchableOpacity
+					style={[styles.tab, activeTab === 'players' && styles.tabActive]}
+					onPress={() => setActiveTab('players')}
+				>
+					<Text style={[styles.tabText, activeTab === 'players' && styles.tabTextActive]}>
+						Jugadores
 					</Text>
 				</TouchableOpacity>
 			</View>
@@ -288,6 +330,38 @@ function Admin() {
 						)}
 						ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
 					/>
+				)}
+
+				{activeTab === 'players' && (
+					<ScrollView contentContainerStyle={{ padding: 16 }}>
+						<View style={styles.playersContainer}>
+							<Text style={styles.playersTitle}>Gestión de Jugadores</Text>
+							<Text style={styles.playersDescription}>
+								Importa o actualiza jugadores desde el archivo JSON (players_data.json).
+								Si un jugador ya existe, se actualizará su información.
+							</Text>
+							<TouchableOpacity
+								style={[styles.btnImport, importingPlayers && styles.btnImportDisabled]}
+								onPress={importPlayers}
+								disabled={importingPlayers}
+							>
+								{importingPlayers ? (
+									<>
+										<ActivityIndicator size="small" color="#fff" />
+										<Text style={styles.btnImportText}>Importando...</Text>
+									</>
+								) : (
+									<Text style={styles.btnImportText}>Importar/Actualizar Jugadores</Text>
+								)}
+							</TouchableOpacity>
+							{stats && (
+								<View style={styles.playersStat}>
+									<Text style={styles.playersStatLabel}>Total de jugadores en BD:</Text>
+									<Text style={styles.playersStatValue}>{stats.totalPlayers}</Text>
+								</View>
+							)}
+						</View>
+					</ScrollView>
 				)}
 			</View>
 
@@ -500,5 +574,40 @@ const styles = StyleSheet.create({
 		backgroundColor: '#1a5c3a',
 		alignItems: 'center'
 	},
-	btnSaveText: { fontSize: 14, fontWeight: '700', color: '#fff' }
+	btnSaveText: { fontSize: 14, fontWeight: '700', color: '#fff' },
+	playersContainer: {
+		backgroundColor: '#fff',
+		padding: 20,
+		borderRadius: 12,
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.1,
+		shadowRadius: 4,
+		elevation: 3
+	},
+	playersTitle: { fontSize: 18, fontWeight: '800', color: '#222', marginBottom: 10 },
+	playersDescription: { fontSize: 14, color: '#666', marginBottom: 20, lineHeight: 20 },
+	btnImport: {
+		backgroundColor: '#1a5c3a',
+		paddingVertical: 14,
+		paddingHorizontal: 20,
+		borderRadius: 8,
+		alignItems: 'center',
+		flexDirection: 'row',
+		justifyContent: 'center',
+		gap: 8
+	},
+	btnImportDisabled: { backgroundColor: '#999', opacity: 0.7 },
+	btnImportText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+	playersStat: {
+		marginTop: 20,
+		padding: 16,
+		backgroundColor: '#e8f5e9',
+		borderRadius: 8,
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center'
+	},
+	playersStatLabel: { fontSize: 14, color: '#2e7d32', fontWeight: '600' },
+	playersStatValue: { fontSize: 24, fontWeight: '800', color: '#1b5e20' }
 });

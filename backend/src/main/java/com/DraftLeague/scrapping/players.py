@@ -32,11 +32,21 @@ def fetch_and_save_players(team_players_dict, output_path):
                 if positions and isinstance(positions, list):
                     pos_short = positions[0].get("strPosShort", {})
                     position = pos_short.get("label", None)
+                
+                market_value = None
+                player_info = data.get("playerInformation", [])
+                for info in player_info:
+                    if info.get("translationKey") == "transfer_value":
+                        value_obj = info.get("value", {})
+                        market_value = value_obj.get("numberValue", None)
+                        break
+                
                 avatar_url = "https://images.fotmob.com/image_resources/playerimages/"+str(player_id)+".png"
                 player = {
                     "id": str(player_id),
                     "fullName": data.get("name", "Desconocido"),
                     "position": position,
+                    "marketValue": market_value,
                     "avatarUrl": avatar_url,
                     "teamId": team_id,
                 }

@@ -14,7 +14,6 @@ import com.DraftLeague.models.Player.PlayerService;
 import com.DraftLeague.models.Player.PlayerTeam;
 import com.DraftLeague.models.Player.PlayerTeamRepository;
 import com.DraftLeague.models.Team.dto.UpdateTeamPlayersRequest;
-import com.DraftLeague.models.League.League;
 import com.DraftLeague.models.user.User;
 import com.DraftLeague.models.user.UserRepository;
 
@@ -22,8 +21,6 @@ import com.DraftLeague.models.user.UserRepository;
 public class TeamService {
 
     private final TeamRepository teamRepository;
-    private final PlayerRepository playerRepository;
-    private final PlayerTeamRepository playerTeamRepository;
     private final UserRepository userRepository;
     private final PlayerService playerService;
 
@@ -31,8 +28,6 @@ public class TeamService {
     public TeamService(TeamRepository teamRepository, PlayerRepository playerRepository, 
                       PlayerTeamRepository playerTeamRepository, UserRepository userRepository, PlayerService playerService) {
         this.teamRepository = teamRepository;
-        this.playerRepository = playerRepository;
-        this.playerTeamRepository = playerTeamRepository;
         this.userRepository = userRepository;
         this.playerService = playerService;
     }
@@ -92,13 +87,9 @@ public class TeamService {
     }
 
     @Transactional(readOnly = true)
-    public Team getTeamByUserAndLeague(Integer leagueId) {
-        var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new RuntimeException("No autenticado");
-        }
-        String username = auth.getName();
-        User user = userRepository.findUserByUsername(username)
+    public Team getTeamByUserAndLeague(Integer leagueId, Integer userId) {
+        
+        User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         
         List<Team> teams = teamRepository.findByUser(user);
@@ -109,13 +100,11 @@ public class TeamService {
     }
 
     @Transactional
-    public Team updateTeamPlayers(Integer leagueId, UpdateTeamPlayersRequest request) {
-        Team team = getTeamByUserAndLeague(leagueId);
+    public Team updateTeamPlayers(Integer leagueId, Integer userId, UpdateTeamPlayersRequest request) {
+        Team team = getTeamByUserAndLeague(leagueId, userId);
         
-        // Limpiar jugadores actuales
         team.getPlayerTeams().clear();
         
-        // Calcular presupuesto gastado y validar
         int totalCost = 0;
         List<PlayerTeam> newPlayerTeams = new ArrayList<>();
         
@@ -135,7 +124,6 @@ public class TeamService {
         }
         
         
-        // Añadir nuevos jugadores
         team.getPlayerTeams().addAll(newPlayerTeams);
         
         return teamRepository.save(team);

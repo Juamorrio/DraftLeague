@@ -29,7 +29,7 @@ public class Player {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "position", nullable = false, length = 3)
+    @Column(name = "position", nullable = false, length = 10)
     private Position position;
 
     @NotNull

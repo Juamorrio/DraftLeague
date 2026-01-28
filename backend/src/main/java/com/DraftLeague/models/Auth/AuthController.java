@@ -46,5 +46,5 @@ public class AuthController {
         return ResponseEntity.ok(body);
     }
 
-    // Token admin endpoints removed: no refresh tokens to list/revoke.
+  
 }

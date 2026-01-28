@@ -1,8 +1,15 @@
 package com.DraftLeague.models.League;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import com.DraftLeague.models.Market.MarketPlayer;
+import com.DraftLeague.models.Team.Team;
+import com.DraftLeague.models.user.User;
 
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -61,9 +68,16 @@ public class League {
     @Column(name = "wildcards_enable", nullable = false)
     private Boolean wildCardsEnable;
 
-    @Min(1)
-    @Column(name = "ranking")
-    private Integer ranking; 
+    @ManyToOne(optional = true)
+    @Valid
+    @JoinColumn(name = "created_by_user_id")
+    private User createdBy;
+
+    @OneToMany(mappedBy = "league", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Team> teams = new ArrayList<>();
+
+    @OneToMany(mappedBy = "league", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MarketPlayer> marketPlayers = new ArrayList<>();
 
     //@ManyToOne(optional = true)
     //@Valid

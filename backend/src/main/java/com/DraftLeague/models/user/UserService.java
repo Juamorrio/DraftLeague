@@ -1,5 +1,6 @@
 package com.DraftLeague.models.user;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,14 +11,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
 
+import com.DraftLeague.models.Team.Team;
+import com.DraftLeague.models.Team.TeamRepository;
+import com.DraftLeague.models.League.League;
+import com.DraftLeague.models.League.LeagueRepository;
+
 @Service
 public class UserService {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final TeamRepository teamRepository;
+    private final LeagueRepository leagueRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, TeamRepository teamRepository, LeagueRepository leagueRepository) {
         this.userRepository = userRepository;
+        this.teamRepository = teamRepository;
+        this.leagueRepository = leagueRepository;
     }
 
     @Transactional
@@ -46,6 +56,23 @@ public class UserService {
 	public void deleteUser(Integer userId) throws DataAccessException {
 		User userDelete = userRepository.findById(userId)
                 .orElseThrow(() -> new DataRetrievalFailureException("User not found"));
+
+        // 1) Detach leagues created by this user to avoid FK issues
+        List<League> created = leagueRepository.findByCreatedBy(userDelete);
+        if (created != null && !created.isEmpty()) {
+            for (League l : created) {
+                l.setCreatedBy(null);
+            }
+            leagueRepository.saveAll(created);
+        }
+
+        // 2) Delete user's teams (cascades PlayerTeam via Team mapping)
+        List<Team> teams = teamRepository.findByUser(userDelete);
+        if (teams != null && !teams.isEmpty()) {
+            teamRepository.deleteAll(teams);
+            teamRepository.flush();
+        }
+
 		this.userRepository.delete(userDelete);
 	}
 

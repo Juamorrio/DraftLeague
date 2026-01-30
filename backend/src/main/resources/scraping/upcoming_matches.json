@@ -1,0 +1,893 @@
+{
+  "jornada_22": [
+    {
+      "homeTeamId": 8558,
+      "awayTeamId": 9866,
+      "matchDate": "2026-01-30T20:00:00.000Z"
+    },
+    {
+      "homeTeamId": 8670,
+      "awayTeamId": 7732,
+      "matchDate": "2026-01-31T13:00:00Z"
+    },
+    {
+      "homeTeamId": 8371,
+      "awayTeamId": 10205,
+      "matchDate": "2026-01-31T15:15:00Z"
+    },
+    {
+      "homeTeamId": 8581,
+      "awayTeamId": 9906,
+      "matchDate": "2026-01-31T17:30:00Z"
+    },
+    {
+      "homeTeamId": 10268,
+      "awayTeamId": 8634,
+      "matchDate": "2026-01-31T20:00:00Z"
+    },
+    {
+      "homeTeamId": 8633,
+      "awayTeamId": 8370,
+      "matchDate": "2026-02-01T13:00:00Z"
+    },
+    {
+      "homeTeamId": 8603,
+      "awayTeamId": 10267,
+      "matchDate": "2026-02-01T15:15:00Z"
+    },
+    {
+      "homeTeamId": 8305,
+      "awayTeamId": 9910,
+      "matchDate": "2026-02-01T17:30:00Z"
+    },
+    {
+      "homeTeamId": 8315,
+      "awayTeamId": 8560,
+      "matchDate": "2026-02-01T20:00:00Z"
+    },
+    {
+      "homeTeamId": 8661,
+      "awayTeamId": 8302,
+      "matchDate": "2026-02-02T20:00:00Z"
+    }
+  ],
+  "jornada_23": [
+    {
+      "homeTeamId": 9910,
+      "awayTeamId": 8371,
+      "matchDate": "2026-02-06T20:00:00Z"
+    },
+    {
+      "homeTeamId": 8370,
+      "awayTeamId": 8670,
+      "matchDate": "2026-02-07T13:00:00Z"
+    },
+    {
+      "homeTeamId": 8634,
+      "awayTeamId": 8661,
+      "matchDate": "2026-02-07T15:15:00Z"
+    },
+    {
+      "homeTeamId": 8302,
+      "awayTeamId": 7732,
+      "matchDate": "2026-02-07T17:30:00Z"
+    },
+    {
+      "homeTeamId": 8560,
+      "awayTeamId": 10268,
+      "matchDate": "2026-02-07T20:00:00Z"
+    },
+    {
+      "homeTeamId": 9866,
+      "awayTeamId": 8305,
+      "matchDate": "2026-02-08T13:00:00Z"
+    },
+    {
+      "homeTeamId": 8315,
+      "awayTeamId": 8581,
+      "matchDate": "2026-02-08T15:15:00Z"
+    },
+    {
+      "homeTeamId": 9906,
+      "awayTeamId": 8603,
+      "matchDate": "2026-02-08T17:30:00Z"
+    },
+    {
+      "homeTeamId": 10267,
+      "awayTeamId": 8633,
+      "matchDate": "2026-02-08T20:00:00Z"
+    },
+    {
+      "homeTeamId": 10205,
+      "awayTeamId": 8558,
+      "matchDate": "2026-02-09T20:00:00Z"
+    }
+  ],
+  "jornada_24": [
+    {
+      "homeTeamId": 10268,
+      "awayTeamId": 8371,
+      "matchDate": "2026-02-13T20:00:00Z"
+    },
+    {
+      "homeTeamId": 8558,
+      "awayTeamId": 9910,
+      "matchDate": "2026-02-14T13:00:00Z"
+    },
+    {
+      "homeTeamId": 8370,
+      "awayTeamId": 9906,
+      "matchDate": "2026-02-14T15:15:00Z"
+    },
+    {
+      "homeTeamId": 8302,
+      "awayTeamId": 9866,
+      "matchDate": "2026-02-14T17:30:00Z"
+    },
+    {
+      "homeTeamId": 8633,
+      "awayTeamId": 8560,
+      "matchDate": "2026-02-14T20:00:00Z"
+    },
+    {
+      "homeTeamId": 8670,
+      "awayTeamId": 8315,
+      "matchDate": "2026-02-15T13:00:00Z"
+    },
+    {
+      "homeTeamId": 8305,
+      "awayTeamId": 10205,
+      "matchDate": "2026-02-15T15:15:00Z"
+    },
+    {
+      "homeTeamId": 8581,
+      "awayTeamId": 10267,
+      "matchDate": "2026-02-15T17:30:00Z"
+    },
+    {
+      "homeTeamId": 8661,
+      "awayTeamId": 8603,
+      "matchDate": "2026-02-15T20:00:00Z"
+    },
+    {
+      "homeTeamId": 7732,
+      "awayTeamId": 8634,
+      "matchDate": "2026-02-16T20:00:00Z"
+    }
+  ],
+  "jornada_16": [
+    {
+      "homeTeamId": 8581,
+      "awayTeamId": 10205,
+      "matchDate": "2026-02-18T19:00:00Z"
+    }
+  ],
+  "jornada_25": [
+    {
+      "homeTeamId": 8315,
+      "awayTeamId": 10268,
+      "matchDate": "2026-02-22T18:00:00Z"
+    },
+    {
+      "homeTeamId": 9906,
+      "awayTeamId": 8558,
+      "matchDate": "2026-02-22T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8634,
+      "awayTeamId": 8581,
+      "matchDate": "2026-02-22T18:00:00Z"
+    },
+    {
+      "homeTeamId": 9910,
+      "awayTeamId": 8661,
+      "matchDate": "2026-02-22T18:00:00Z"
+    },
+    {
+      "homeTeamId": 9866,
+      "awayTeamId": 7732,
+      "matchDate": "2026-02-22T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8305,
+      "awayTeamId": 8302,
+      "matchDate": "2026-02-22T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8371,
+      "awayTeamId": 8633,
+      "matchDate": "2026-02-22T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8603,
+      "awayTeamId": 8370,
+      "matchDate": "2026-02-22T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8560,
+      "awayTeamId": 8670,
+      "matchDate": "2026-02-22T18:00:00Z"
+    },
+    {
+      "homeTeamId": 10205,
+      "awayTeamId": 10267,
+      "matchDate": "2026-02-22T18:00:00Z"
+    }
+  ],
+  "jornada_26": [
+    {
+      "homeTeamId": 8634,
+      "awayTeamId": 10205,
+      "matchDate": "2026-03-01T18:00:00Z"
+    },
+    {
+      "homeTeamId": 10268,
+      "awayTeamId": 8558,
+      "matchDate": "2026-03-01T18:00:00Z"
+    },
+    {
+      "homeTeamId": 7732,
+      "awayTeamId": 9910,
+      "matchDate": "2026-03-01T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8581,
+      "awayTeamId": 9866,
+      "matchDate": "2026-03-01T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8661,
+      "awayTeamId": 8560,
+      "matchDate": "2026-03-01T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8370,
+      "awayTeamId": 8315,
+      "matchDate": "2026-03-01T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8603,
+      "awayTeamId": 8302,
+      "matchDate": "2026-03-01T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8633,
+      "awayTeamId": 8305,
+      "matchDate": "2026-03-01T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8670,
+      "awayTeamId": 9906,
+      "matchDate": "2026-03-01T18:00:00Z"
+    },
+    {
+      "homeTeamId": 10267,
+      "awayTeamId": 8371,
+      "matchDate": "2026-03-01T18:00:00Z"
+    }
+  ],
+  "jornada_27": [
+    {
+      "homeTeamId": 8315,
+      "awayTeamId": 8634,
+      "matchDate": "2026-03-08T18:00:00Z"
+    },
+    {
+      "homeTeamId": 9906,
+      "awayTeamId": 8560,
+      "matchDate": "2026-03-08T18:00:00Z"
+    },
+    {
+      "homeTeamId": 9910,
+      "awayTeamId": 8633,
+      "matchDate": "2026-03-08T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8558,
+      "awayTeamId": 8670,
+      "matchDate": "2026-03-08T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8305,
+      "awayTeamId": 8603,
+      "matchDate": "2026-03-08T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8581,
+      "awayTeamId": 7732,
+      "matchDate": "2026-03-08T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8371,
+      "awayTeamId": 8661,
+      "matchDate": "2026-03-08T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8302,
+      "awayTeamId": 8370,
+      "matchDate": "2026-03-08T18:00:00Z"
+    },
+    {
+      "homeTeamId": 10267,
+      "awayTeamId": 9866,
+      "matchDate": "2026-03-08T18:00:00Z"
+    },
+    {
+      "homeTeamId": 10205,
+      "awayTeamId": 10268,
+      "matchDate": "2026-03-08T18:00:00Z"
+    }
+  ],
+  "jornada_28": [
+    {
+      "homeTeamId": 9906,
+      "awayTeamId": 8305,
+      "matchDate": "2026-03-15T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8634,
+      "awayTeamId": 8302,
+      "matchDate": "2026-03-15T18:00:00Z"
+    },
+    {
+      "homeTeamId": 9866,
+      "awayTeamId": 10205,
+      "matchDate": "2026-03-15T18:00:00Z"
+    },
+    {
+      "homeTeamId": 7732,
+      "awayTeamId": 8315,
+      "matchDate": "2026-03-15T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8661,
+      "awayTeamId": 8558,
+      "matchDate": "2026-03-15T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8370,
+      "awayTeamId": 8581,
+      "matchDate": "2026-03-15T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8603,
+      "awayTeamId": 9910,
+      "matchDate": "2026-03-15T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8633,
+      "awayTeamId": 10268,
+      "matchDate": "2026-03-15T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8670,
+      "awayTeamId": 10267,
+      "matchDate": "2026-03-15T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8560,
+      "awayTeamId": 8371,
+      "matchDate": "2026-03-15T18:00:00Z"
+    }
+  ],
+  "jornada_29": [
+    {
+      "homeTeamId": 8315,
+      "awayTeamId": 8603,
+      "matchDate": "2026-03-22T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8634,
+      "awayTeamId": 8370,
+      "matchDate": "2026-03-22T18:00:00Z"
+    },
+    {
+      "homeTeamId": 9910,
+      "awayTeamId": 9866,
+      "matchDate": "2026-03-22T18:00:00Z"
+    },
+    {
+      "homeTeamId": 10268,
+      "awayTeamId": 8661,
+      "matchDate": "2026-03-22T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8558,
+      "awayTeamId": 8305,
+      "matchDate": "2026-03-22T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8581,
+      "awayTeamId": 8670,
+      "matchDate": "2026-03-22T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8371,
+      "awayTeamId": 7732,
+      "matchDate": "2026-03-22T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8633,
+      "awayTeamId": 9906,
+      "matchDate": "2026-03-22T18:00:00Z"
+    },
+    {
+      "homeTeamId": 8302,
+      "awayTeamId": 10267,
+      "matchDate": "2026-03-22T18:00:00Z"
+    },
+    {
+      "homeTeamId": 10205,
+      "awayTeamId": 8560,
+      "matchDate": "2026-03-22T18:00:00Z"
+    }
+  ],
+  "jornada_30": [
+    {
+      "homeTeamId": 9906,
+      "awayTeamId": 8634,
+      "matchDate": "2026-04-05T17:00:00Z"
+    },
+    {
+      "homeTeamId": 9866,
+      "awayTeamId": 8371,
+      "matchDate": "2026-04-05T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8305,
+      "awayTeamId": 8315,
+      "matchDate": "2026-04-05T17:00:00Z"
+    },
+    {
+      "homeTeamId": 7732,
+      "awayTeamId": 10205,
+      "matchDate": "2026-04-05T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8661,
+      "awayTeamId": 8633,
+      "matchDate": "2026-04-05T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8370,
+      "awayTeamId": 10268,
+      "matchDate": "2026-04-05T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8603,
+      "awayTeamId": 8558,
+      "matchDate": "2026-04-05T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8670,
+      "awayTeamId": 8302,
+      "matchDate": "2026-04-05T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8560,
+      "awayTeamId": 8581,
+      "matchDate": "2026-04-05T17:00:00Z"
+    },
+    {
+      "homeTeamId": 10267,
+      "awayTeamId": 9910,
+      "matchDate": "2026-04-05T17:00:00Z"
+    }
+  ],
+  "jornada_31": [
+    {
+      "homeTeamId": 8315,
+      "awayTeamId": 10205,
+      "matchDate": "2026-04-12T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8634,
+      "awayTeamId": 8558,
+      "matchDate": "2026-04-12T17:00:00Z"
+    },
+    {
+      "homeTeamId": 9910,
+      "awayTeamId": 8670,
+      "matchDate": "2026-04-12T17:00:00Z"
+    },
+    {
+      "homeTeamId": 10268,
+      "awayTeamId": 10267,
+      "matchDate": "2026-04-12T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8581,
+      "awayTeamId": 8305,
+      "matchDate": "2026-04-12T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8661,
+      "awayTeamId": 8370,
+      "matchDate": "2026-04-12T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8371,
+      "awayTeamId": 8603,
+      "matchDate": "2026-04-12T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8633,
+      "awayTeamId": 7732,
+      "matchDate": "2026-04-12T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8560,
+      "awayTeamId": 9866,
+      "matchDate": "2026-04-12T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8302,
+      "awayTeamId": 9906,
+      "matchDate": "2026-04-12T17:00:00Z"
+    }
+  ],
+  "jornada_32": [
+    {
+      "homeTeamId": 9906,
+      "awayTeamId": 8315,
+      "matchDate": "2026-04-19T17:00:00Z"
+    },
+    {
+      "homeTeamId": 9866,
+      "awayTeamId": 8661,
+      "matchDate": "2026-04-19T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8558,
+      "awayTeamId": 8581,
+      "matchDate": "2026-04-19T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8305,
+      "awayTeamId": 8634,
+      "matchDate": "2026-04-19T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8371,
+      "awayTeamId": 8302,
+      "matchDate": "2026-04-19T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8370,
+      "awayTeamId": 8560,
+      "matchDate": "2026-04-19T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8603,
+      "awayTeamId": 8633,
+      "matchDate": "2026-04-19T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8670,
+      "awayTeamId": 10268,
+      "matchDate": "2026-04-19T17:00:00Z"
+    },
+    {
+      "homeTeamId": 10267,
+      "awayTeamId": 7732,
+      "matchDate": "2026-04-19T17:00:00Z"
+    },
+    {
+      "homeTeamId": 10205,
+      "awayTeamId": 9910,
+      "matchDate": "2026-04-19T17:00:00Z"
+    }
+  ],
+  "jornada_33": [
+    {
+      "homeTeamId": 8315,
+      "awayTeamId": 8371,
+      "matchDate": "2026-04-22T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8634,
+      "awayTeamId": 9910,
+      "matchDate": "2026-04-22T17:00:00Z"
+    },
+    {
+      "homeTeamId": 10268,
+      "awayTeamId": 9906,
+      "matchDate": "2026-04-22T17:00:00Z"
+    },
+    {
+      "homeTeamId": 7732,
+      "awayTeamId": 8603,
+      "matchDate": "2026-04-22T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8581,
+      "awayTeamId": 8302,
+      "matchDate": "2026-04-22T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8661,
+      "awayTeamId": 10267,
+      "matchDate": "2026-04-22T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8370,
+      "awayTeamId": 8558,
+      "matchDate": "2026-04-22T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8633,
+      "awayTeamId": 9866,
+      "matchDate": "2026-04-22T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8670,
+      "awayTeamId": 10205,
+      "matchDate": "2026-04-22T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8560,
+      "awayTeamId": 8305,
+      "matchDate": "2026-04-22T17:00:00Z"
+    }
+  ],
+  "jornada_34": [
+    {
+      "homeTeamId": 9910,
+      "awayTeamId": 10268,
+      "matchDate": "2026-05-03T17:00:00Z"
+    },
+    {
+      "homeTeamId": 9866,
+      "awayTeamId": 8315,
+      "matchDate": "2026-05-03T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8558,
+      "awayTeamId": 8633,
+      "matchDate": "2026-05-03T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8305,
+      "awayTeamId": 8370,
+      "matchDate": "2026-05-03T17:00:00Z"
+    },
+    {
+      "homeTeamId": 7732,
+      "awayTeamId": 8661,
+      "matchDate": "2026-05-03T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8371,
+      "awayTeamId": 8634,
+      "matchDate": "2026-05-03T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8603,
+      "awayTeamId": 8670,
+      "matchDate": "2026-05-03T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8302,
+      "awayTeamId": 8560,
+      "matchDate": "2026-05-03T17:00:00Z"
+    },
+    {
+      "homeTeamId": 10267,
+      "awayTeamId": 9906,
+      "matchDate": "2026-05-03T17:00:00Z"
+    },
+    {
+      "homeTeamId": 10205,
+      "awayTeamId": 8581,
+      "matchDate": "2026-05-03T17:00:00Z"
+    }
+  ],
+  "jornada_35": [
+    {
+      "homeTeamId": 8315,
+      "awayTeamId": 10267,
+      "matchDate": "2026-05-10T17:00:00Z"
+    },
+    {
+      "homeTeamId": 9906,
+      "awayTeamId": 9910,
+      "matchDate": "2026-05-10T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8634,
+      "awayTeamId": 8633,
+      "matchDate": "2026-05-10T17:00:00Z"
+    },
+    {
+      "homeTeamId": 10268,
+      "awayTeamId": 9866,
+      "matchDate": "2026-05-10T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8581,
+      "awayTeamId": 8371,
+      "matchDate": "2026-05-10T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8661,
+      "awayTeamId": 10205,
+      "matchDate": "2026-05-10T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8370,
+      "awayTeamId": 7732,
+      "matchDate": "2026-05-10T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8670,
+      "awayTeamId": 8305,
+      "matchDate": "2026-05-10T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8560,
+      "awayTeamId": 8603,
+      "matchDate": "2026-05-10T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8302,
+      "awayTeamId": 8558,
+      "matchDate": "2026-05-10T17:00:00Z"
+    }
+  ],
+  "jornada_36": [
+    {
+      "homeTeamId": 9910,
+      "awayTeamId": 8581,
+      "matchDate": "2026-05-13T17:00:00Z"
+    },
+    {
+      "homeTeamId": 9866,
+      "awayTeamId": 8634,
+      "matchDate": "2026-05-13T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8558,
+      "awayTeamId": 8315,
+      "matchDate": "2026-05-13T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8305,
+      "awayTeamId": 8661,
+      "matchDate": "2026-05-13T17:00:00Z"
+    },
+    {
+      "homeTeamId": 7732,
+      "awayTeamId": 8560,
+      "matchDate": "2026-05-13T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8371,
+      "awayTeamId": 9906,
+      "matchDate": "2026-05-13T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8603,
+      "awayTeamId": 10268,
+      "matchDate": "2026-05-13T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8633,
+      "awayTeamId": 8670,
+      "matchDate": "2026-05-13T17:00:00Z"
+    },
+    {
+      "homeTeamId": 10267,
+      "awayTeamId": 8370,
+      "matchDate": "2026-05-13T17:00:00Z"
+    },
+    {
+      "homeTeamId": 10205,
+      "awayTeamId": 8302,
+      "matchDate": "2026-05-13T17:00:00Z"
+    }
+  ],
+  "jornada_37": [
+    {
+      "homeTeamId": 8315,
+      "awayTeamId": 9910,
+      "matchDate": "2026-05-17T17:00:00Z"
+    },
+    {
+      "homeTeamId": 9906,
+      "awayTeamId": 7732,
+      "matchDate": "2026-05-17T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8634,
+      "awayTeamId": 8603,
+      "matchDate": "2026-05-17T17:00:00Z"
+    },
+    {
+      "homeTeamId": 10268,
+      "awayTeamId": 8305,
+      "matchDate": "2026-05-17T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8581,
+      "awayTeamId": 8661,
+      "matchDate": "2026-05-17T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8371,
+      "awayTeamId": 8558,
+      "matchDate": "2026-05-17T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8370,
+      "awayTeamId": 10205,
+      "matchDate": "2026-05-17T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8670,
+      "awayTeamId": 9866,
+      "matchDate": "2026-05-17T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8560,
+      "awayTeamId": 10267,
+      "matchDate": "2026-05-17T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8302,
+      "awayTeamId": 8633,
+      "matchDate": "2026-05-17T17:00:00Z"
+    }
+  ],
+  "jornada_38": [
+    {
+      "homeTeamId": 9910,
+      "awayTeamId": 8302,
+      "matchDate": "2026-05-24T17:00:00Z"
+    },
+    {
+      "homeTeamId": 9866,
+      "awayTeamId": 8370,
+      "matchDate": "2026-05-24T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8558,
+      "awayTeamId": 8560,
+      "matchDate": "2026-05-24T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8305,
+      "awayTeamId": 8371,
+      "matchDate": "2026-05-24T17:00:00Z"
+    },
+    {
+      "homeTeamId": 7732,
+      "awayTeamId": 10268,
+      "matchDate": "2026-05-24T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8661,
+      "awayTeamId": 8670,
+      "matchDate": "2026-05-24T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8603,
+      "awayTeamId": 8581,
+      "matchDate": "2026-05-24T17:00:00Z"
+    },
+    {
+      "homeTeamId": 8633,
+      "awayTeamId": 8315,
+      "matchDate": "2026-05-24T17:00:00Z"
+    },
+    {
+      "homeTeamId": 10267,
+      "awayTeamId": 8634,
+      "matchDate": "2026-05-24T17:00:00Z"
+    },
+    {
+      "homeTeamId": 10205,
+      "awayTeamId": 9906,
+      "matchDate": "2026-05-24T17:00:00Z"
+    }
+  ]
+}

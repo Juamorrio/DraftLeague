@@ -2,6 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import Layout from './components/layout';
 import { LeagueProvider, useLeague } from './context/LeagueContext';
+import { MatchesProvider } from './context/MatchesContext';
 import React from 'react';
 import Header from './components/header';
 import Register from './pages/auth/register';
@@ -11,6 +12,7 @@ import Leagues from './pages/Leagues/leagues';
 import Team from './pages/Teams/team';
 import Market from './pages/Market/market';
 import Admin from './pages/Admin/admin';
+import Home from './pages/Home/home';
 
 
 function RobotPlaceholder() {
@@ -82,29 +84,26 @@ export default function App() {
 
   return (
     <LeagueProvider>
-      <Header onLogout={async () => { await authService.logout(); setAuthed(false); }} />
-      <Layout
-        activeKey={active}
-        onNavigate={(key) => {
-          setActive(key);
-        }}
-        isAdmin={user?.role === 'ADMIN'}
-      >
-        {active === 'league' && <Leagues />}
-        {active === 'home' && (
-          <View style={styles.container}>
-            <StatusBar style="auto" />
-            <Text>Bienvenido</Text>
-          </View>
-        )}
-        {active === 'team' && <Team />}
-        {active === 'market' && <Market />}
-        {active === 'robot' && <RobotPlaceholder />}
-        {active === 'admin' && <Admin />}
-        {!['home','league','team','market','robot','admin'].includes(active) && (
-          <View style={styles.container}><Text>Pantalla no definida</Text></View>
-        )}
-      </Layout>
+      <MatchesProvider>
+        <Header onLogout={async () => { await authService.logout(); setAuthed(false); }} />
+        <Layout
+          activeKey={active}
+          onNavigate={(key) => {
+            setActive(key);
+          }}
+          isAdmin={user?.role === 'ADMIN'}
+        >
+          {active === 'league' && <Leagues />}
+          {active === 'home' && <Home />}
+          {active === 'team' && <Team />}
+          {active === 'market' && <Market />}
+          {active === 'robot' && <RobotPlaceholder />}
+          {active === 'admin' && <Admin />}
+          {!['home','league','team','market','robot','admin'].includes(active) && (
+            <View style={styles.container}><Text>Pantalla no definida</Text></View>
+          )}
+        </Layout>
+      </MatchesProvider>
     </LeagueProvider>
   );
 }

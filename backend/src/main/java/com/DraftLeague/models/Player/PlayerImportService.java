@@ -28,7 +28,7 @@ public class PlayerImportService {
 
 	@Transactional
 	public int importFromJsonResource() throws Exception {
-		ClassPathResource resource = new ClassPathResource("scrapping/players_data.json");
+		ClassPathResource resource = new ClassPathResource("scraping/players_data.json");
 
 		try (InputStream is = resource.getInputStream()) {
 			List<PlayerImportDto> dtos = objectMapper.readValue(is, new TypeReference<>() {});

@@ -6,7 +6,6 @@ import com.DraftLeague.models.Player.Player;
 import com.DraftLeague.models.Player.PlayerRepository;
 import com.DraftLeague.models.Player.PlayerTeam;
 import com.DraftLeague.models.Player.PlayerTeamRepository;
-import com.DraftLeague.models.Player.playerTeamService;
 import com.DraftLeague.models.Team.Team;
 import com.DraftLeague.models.Team.TeamRepository;
 import com.DraftLeague.models.user.User;

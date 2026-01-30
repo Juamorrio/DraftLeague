@@ -1,0 +1,1298 @@
+{
+  "jornada_1": [
+    {
+      "homeTeamId": 7732,
+      "awayTeamId": 8370,
+      "homeScore": 1,
+      "awayScore": 3
+    },
+    {
+      "homeTeamId": 10205,
+      "awayTeamId": 8670,
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8661,
+      "awayTeamId": 8634,
+      "homeScore": 0,
+      "awayScore": 3
+    },
+    {
+      "homeTeamId": 9866,
+      "awayTeamId": 8581,
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 10267,
+      "awayTeamId": 8560,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 9910,
+      "awayTeamId": 8305,
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8315,
+      "awayTeamId": 8302,
+      "homeScore": 3,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8558,
+      "awayTeamId": 9906,
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 10268,
+      "awayTeamId": 8603,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8633,
+      "awayTeamId": 8371,
+      "homeScore": 1,
+      "awayScore": 0
+    }
+  ],
+  "jornada_2": [
+    {
+      "homeTeamId": 8603,
+      "awayTeamId": 9866,
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8661,
+      "awayTeamId": 9910,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 9906,
+      "awayTeamId": 10268,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8581,
+      "awayTeamId": 8634,
+      "homeScore": 2,
+      "awayScore": 3
+    },
+    {
+      "homeTeamId": 8371,
+      "awayTeamId": 10267,
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8560,
+      "awayTeamId": 8558,
+      "homeScore": 2,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 10205,
+      "awayTeamId": 7732,
+      "homeScore": 5,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8670,
+      "awayTeamId": 8633,
+      "homeScore": 0,
+      "awayScore": 3
+    },
+    {
+      "homeTeamId": 8315,
+      "awayTeamId": 8370,
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8302,
+      "awayTeamId": 8305,
+      "homeScore": 1,
+      "awayScore": 2
+    }
+  ],
+  "jornada_6": [
+    {
+      "homeTeamId": 9910,
+      "awayTeamId": 8603,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8315,
+      "awayTeamId": 7732,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8558,
+      "awayTeamId": 10267,
+      "homeScore": 2,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8581,
+      "awayTeamId": 8633,
+      "homeScore": 1,
+      "awayScore": 4
+    },
+    {
+      "homeTeamId": 8302,
+      "awayTeamId": 10205,
+      "homeScore": 1,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8305,
+      "awayTeamId": 9866,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 9906,
+      "awayTeamId": 8370,
+      "homeScore": 3,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8560,
+      "awayTeamId": 8661,
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8371,
+      "awayTeamId": 10268,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8670,
+      "awayTeamId": 8634,
+      "homeScore": 1,
+      "awayScore": 3
+    }
+  ],
+  "jornada_3": [
+    {
+      "homeTeamId": 10268,
+      "awayTeamId": 8581,
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 10267,
+      "awayTeamId": 8305,
+      "homeScore": 3,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 9866,
+      "awayTeamId": 9906,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8670,
+      "awayTeamId": 8560,
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 7732,
+      "awayTeamId": 8302,
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8633,
+      "awayTeamId": 8661,
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 9910,
+      "awayTeamId": 10205,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8603,
+      "awayTeamId": 8315,
+      "homeScore": 1,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8558,
+      "awayTeamId": 8371,
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8370,
+      "awayTeamId": 8634,
+      "homeScore": 1,
+      "awayScore": 1
+    }
+  ],
+  "jornada_4": [
+    {
+      "homeTeamId": 8302,
+      "awayTeamId": 10268,
+      "homeScore": 2,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8305,
+      "awayTeamId": 8670,
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8560,
+      "awayTeamId": 8633,
+      "homeScore": 1,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8315,
+      "awayTeamId": 9866,
+      "homeScore": 0,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 9906,
+      "awayTeamId": 10205,
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 9910,
+      "awayTeamId": 7732,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8581,
+      "awayTeamId": 8603,
+      "homeScore": 2,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8371,
+      "awayTeamId": 8370,
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8634,
+      "awayTeamId": 10267,
+      "homeScore": 6,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8558,
+      "awayTeamId": 8661,
+      "homeScore": 3,
+      "awayScore": 2
+    }
+  ],
+  "jornada_5": [
+    {
+      "homeTeamId": 8603,
+      "awayTeamId": 8560,
+      "homeScore": 3,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 7732,
+      "awayTeamId": 8581,
+      "homeScore": 0,
+      "awayScore": 4
+    },
+    {
+      "homeTeamId": 8633,
+      "awayTeamId": 8558,
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 9866,
+      "awayTeamId": 8302,
+      "homeScore": 1,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 10205,
+      "awayTeamId": 8371,
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 10267,
+      "awayTeamId": 8315,
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8370,
+      "awayTeamId": 9910,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8661,
+      "awayTeamId": 9906,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 10268,
+      "awayTeamId": 8670,
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8634,
+      "awayTeamId": 8305,
+      "homeScore": 3,
+      "awayScore": 0
+    }
+  ],
+  "jornada_7": [
+    {
+      "homeTeamId": 7732,
+      "awayTeamId": 8558,
+      "homeScore": 0,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8305,
+      "awayTeamId": 8581,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 9906,
+      "awayTeamId": 8633,
+      "homeScore": 5,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8661,
+      "awayTeamId": 9866,
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 10205,
+      "awayTeamId": 8315,
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8370,
+      "awayTeamId": 8302,
+      "homeScore": 0,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 10268,
+      "awayTeamId": 9910,
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8634,
+      "awayTeamId": 8560,
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8603,
+      "awayTeamId": 8371,
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 10267,
+      "awayTeamId": 8670,
+      "homeScore": 1,
+      "awayScore": 2
+    }
+  ],
+  "jornada_8": [
+    {
+      "homeTeamId": 8371,
+      "awayTeamId": 8305,
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8670,
+      "awayTeamId": 8581,
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 7732,
+      "awayTeamId": 10267,
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8315,
+      "awayTeamId": 8661,
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8633,
+      "awayTeamId": 10205,
+      "homeScore": 3,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 9866,
+      "awayTeamId": 10268,
+      "homeScore": 3,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8302,
+      "awayTeamId": 8634,
+      "homeScore": 4,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8558,
+      "awayTeamId": 8603,
+      "homeScore": 1,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8560,
+      "awayTeamId": 8370,
+      "homeScore": 0,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 9910,
+      "awayTeamId": 9906,
+      "homeScore": 1,
+      "awayScore": 1
+    }
+  ],
+  "jornada_9": [
+    {
+      "homeTeamId": 8670,
+      "awayTeamId": 8558,
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8302,
+      "awayTeamId": 8661,
+      "homeScore": 1,
+      "awayScore": 3
+    },
+    {
+      "homeTeamId": 8634,
+      "awayTeamId": 7732,
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 10205,
+      "awayTeamId": 8603,
+      "homeScore": 2,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 9906,
+      "awayTeamId": 8371,
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 10268,
+      "awayTeamId": 8315,
+      "homeScore": 0,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 9910,
+      "awayTeamId": 8560,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8581,
+      "awayTeamId": 8370,
+      "homeScore": 0,
+      "awayScore": 3
+    },
+    {
+      "homeTeamId": 8305,
+      "awayTeamId": 8633,
+      "homeScore": 0,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 9866,
+      "awayTeamId": 10267,
+      "homeScore": 0,
+      "awayScore": 0
+    }
+  ],
+  "jornada_10": [
+    {
+      "homeTeamId": 8560,
+      "awayTeamId": 8302,
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 7732,
+      "awayTeamId": 8670,
+      "homeScore": 3,
+      "awayScore": 3
+    },
+    {
+      "homeTeamId": 8558,
+      "awayTeamId": 10268,
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8315,
+      "awayTeamId": 8305,
+      "homeScore": 0,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 10267,
+      "awayTeamId": 10205,
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8661,
+      "awayTeamId": 8581,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8633,
+      "awayTeamId": 8634,
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8371,
+      "awayTeamId": 9910,
+      "homeScore": 2,
+      "awayScore": 3
+    },
+    {
+      "homeTeamId": 8370,
+      "awayTeamId": 9866,
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8603,
+      "awayTeamId": 9906,
+      "homeScore": 0,
+      "awayScore": 2
+    }
+  ],
+  "jornada_11": [
+    {
+      "homeTeamId": 8305,
+      "awayTeamId": 7732,
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 10205,
+      "awayTeamId": 8370,
+      "homeScore": 4,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 9906,
+      "awayTeamId": 8302,
+      "homeScore": 3,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8560,
+      "awayTeamId": 8315,
+      "homeScore": 3,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8633,
+      "awayTeamId": 10267,
+      "homeScore": 4,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8581,
+      "awayTeamId": 9910,
+      "homeScore": 1,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 9866,
+      "awayTeamId": 8558,
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8634,
+      "awayTeamId": 10268,
+      "homeScore": 3,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8603,
+      "awayTeamId": 8661,
+      "homeScore": 3,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8670,
+      "awayTeamId": 8371,
+      "homeScore": 0,
+      "awayScore": 0
+    }
+  ],
+  "jornada_12": [
+    {
+      "homeTeamId": 10268,
+      "awayTeamId": 8560,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 7732,
+      "awayTeamId": 9866,
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8302,
+      "awayTeamId": 8371,
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 9906,
+      "awayTeamId": 8581,
+      "homeScore": 3,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8558,
+      "awayTeamId": 10205,
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8315,
+      "awayTeamId": 8670,
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8370,
+      "awayTeamId": 8633,
+      "homeScore": 0,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8661,
+      "awayTeamId": 8305,
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 10267,
+      "awayTeamId": 8603,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 9910,
+      "awayTeamId": 8634,
+      "homeScore": 2,
+      "awayScore": 4
+    }
+  ],
+  "jornada_13": [
+    {
+      "homeTeamId": 10267,
+      "awayTeamId": 8581,
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 9866,
+      "awayTeamId": 9910,
+      "homeScore": 0,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8634,
+      "awayTeamId": 8315,
+      "homeScore": 4,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8371,
+      "awayTeamId": 8560,
+      "homeScore": 1,
+      "awayScore": 3
+    },
+    {
+      "homeTeamId": 10205,
+      "awayTeamId": 8661,
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8670,
+      "awayTeamId": 8370,
+      "homeScore": 0,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8603,
+      "awayTeamId": 7732,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8305,
+      "awayTeamId": 9906,
+      "homeScore": 0,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 10268,
+      "awayTeamId": 8633,
+      "homeScore": 2,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8558,
+      "awayTeamId": 8302,
+      "homeScore": 2,
+      "awayScore": 1
+    }
+  ],
+  "jornada_14": [
+    {
+      "homeTeamId": 8305,
+      "awayTeamId": 10268,
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8661,
+      "awayTeamId": 8371,
+      "homeScore": 2,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8634,
+      "awayTeamId": 9866,
+      "homeScore": 3,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8581,
+      "awayTeamId": 8315,
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 9906,
+      "awayTeamId": 8670,
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8560,
+      "awayTeamId": 10205,
+      "homeScore": 2,
+      "awayScore": 3
+    },
+    {
+      "homeTeamId": 8302,
+      "awayTeamId": 8603,
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 9910,
+      "awayTeamId": 8558,
+      "homeScore": 0,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 7732,
+      "awayTeamId": 8633,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8370,
+      "awayTeamId": 10267,
+      "homeScore": 1,
+      "awayScore": 1
+    }
+  ],
+  "jornada_19": [
+    {
+      "homeTeamId": 8634,
+      "awayTeamId": 9906,
+      "homeScore": 3,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8315,
+      "awayTeamId": 8633,
+      "homeScore": 0,
+      "awayScore": 3
+    },
+    {
+      "homeTeamId": 8305,
+      "awayTeamId": 8560,
+      "homeScore": 1,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8670,
+      "awayTeamId": 8603,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 10205,
+      "awayTeamId": 9866,
+      "homeScore": 3,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 7732,
+      "awayTeamId": 8371,
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 10267,
+      "awayTeamId": 10268,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8370,
+      "awayTeamId": 8661,
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8581,
+      "awayTeamId": 8558,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8302,
+      "awayTeamId": 9910,
+      "homeScore": 0,
+      "awayScore": 1
+    }
+  ],
+  "jornada_15": [
+    {
+      "homeTeamId": 8670,
+      "awayTeamId": 8661,
+      "homeScore": 0,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 10205,
+      "awayTeamId": 8305,
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 9866,
+      "awayTeamId": 8560,
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8603,
+      "awayTeamId": 8634,
+      "homeScore": 3,
+      "awayScore": 5
+    },
+    {
+      "homeTeamId": 8315,
+      "awayTeamId": 9906,
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 10268,
+      "awayTeamId": 7732,
+      "homeScore": 3,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 10267,
+      "awayTeamId": 8302,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8558,
+      "awayTeamId": 8370,
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8633,
+      "awayTeamId": 9910,
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8371,
+      "awayTeamId": 8581,
+      "homeScore": 2,
+      "awayScore": 0
+    }
+  ],
+  "jornada_16": [
+    {
+      "homeTeamId": 8560,
+      "awayTeamId": 7732,
+      "homeScore": 1,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 9906,
+      "awayTeamId": 10267,
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8661,
+      "awayTeamId": 10268,
+      "homeScore": 3,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8634,
+      "awayTeamId": 8371,
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8305,
+      "awayTeamId": 8558,
+      "homeScore": 0,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8302,
+      "awayTeamId": 8670,
+      "homeScore": 4,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 9910,
+      "awayTeamId": 8315,
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 9866,
+      "awayTeamId": 8633,
+      "homeScore": 1,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8370,
+      "awayTeamId": 8603,
+      "homeScore": 0,
+      "awayScore": 0
+    }
+  ],
+  "jornada_17": [
+    {
+      "homeTeamId": 10267,
+      "awayTeamId": 8661,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8670,
+      "awayTeamId": 9910,
+      "homeScore": 0,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8581,
+      "awayTeamId": 8560,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8371,
+      "awayTeamId": 9866,
+      "homeScore": 3,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8633,
+      "awayTeamId": 8302,
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 7732,
+      "awayTeamId": 9906,
+      "homeScore": 0,
+      "awayScore": 3
+    },
+    {
+      "homeTeamId": 10205,
+      "awayTeamId": 8634,
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 10268,
+      "awayTeamId": 8370,
+      "homeScore": 4,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8603,
+      "awayTeamId": 8305,
+      "homeScore": 4,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8315,
+      "awayTeamId": 8558,
+      "homeScore": 1,
+      "awayScore": 2
+    }
+  ],
+  "jornada_18": [
+    {
+      "homeTeamId": 8370,
+      "awayTeamId": 8305,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 9910,
+      "awayTeamId": 10267,
+      "homeScore": 4,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8371,
+      "awayTeamId": 8315,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 10268,
+      "awayTeamId": 10205,
+      "homeScore": 1,
+      "awayScore": 3
+    },
+    {
+      "homeTeamId": 8558,
+      "awayTeamId": 8634,
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8302,
+      "awayTeamId": 8581,
+      "homeScore": 0,
+      "awayScore": 3
+    },
+    {
+      "homeTeamId": 8633,
+      "awayTeamId": 8603,
+      "homeScore": 5,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 9866,
+      "awayTeamId": 8670,
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 8661,
+      "awayTeamId": 7732,
+      "homeScore": 1,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8560,
+      "awayTeamId": 9906,
+      "homeScore": 1,
+      "awayScore": 1
+    }
+  ],
+  "jornada_20": [
+    {
+      "homeTeamId": 8558,
+      "awayTeamId": 7732,
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8633,
+      "awayTeamId": 8581,
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8661,
+      "awayTeamId": 8315,
+      "homeScore": 3,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8371,
+      "awayTeamId": 8670,
+      "homeScore": 3,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8603,
+      "awayTeamId": 10205,
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8305,
+      "awayTeamId": 10267,
+      "homeScore": 0,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 9906,
+      "awayTeamId": 9866,
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 9910,
+      "awayTeamId": 8370,
+      "homeScore": 3,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8560,
+      "awayTeamId": 8634,
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 10268,
+      "awayTeamId": 8302,
+      "homeScore": 2,
+      "awayScore": 2
+    }
+  ],
+  "jornada_21": [
+    {
+      "homeTeamId": 8581,
+      "awayTeamId": 10268,
+      "homeScore": 3,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8370,
+      "awayTeamId": 8371,
+      "homeScore": 1,
+      "awayScore": 3
+    },
+    {
+      "homeTeamId": 10267,
+      "awayTeamId": 8558,
+      "homeScore": 3,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 8302,
+      "awayTeamId": 8315,
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 10205,
+      "awayTeamId": 8633,
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "homeTeamId": 9906,
+      "awayTeamId": 8661,
+      "homeScore": 3,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8634,
+      "awayTeamId": 8670,
+      "homeScore": 3,
+      "awayScore": 0
+    },
+    {
+      "homeTeamId": 8560,
+      "awayTeamId": 9910,
+      "homeScore": 3,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 9866,
+      "awayTeamId": 8603,
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "homeTeamId": 7732,
+      "awayTeamId": 8305,
+      "homeScore": 1,
+      "awayScore": 1
+    }
+  ]
+}

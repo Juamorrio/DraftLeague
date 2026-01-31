@@ -5,6 +5,7 @@ import com.DraftLeague.models.League.LeagueRepository;
 import com.DraftLeague.models.Player.PlayerImportService;
 import com.DraftLeague.models.Player.PlayerRepository;
 import com.DraftLeague.models.Market.MarketService;
+import com.DraftLeague.models.Match.MatchService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -24,19 +25,22 @@ public class AdminController {
     private final MarketService marketService;
     private final PlayerImportService importService;
     private final UserService userService;
+    private final MatchService matchService;
 
     public AdminController(UserRepository userRepository, 
                           LeagueRepository leagueRepository,
                           PlayerRepository playerRepository,
                           MarketService marketService,
                           PlayerImportService importService,
-                          UserService userService) {
+                          UserService userService,
+                          MatchService matchService) {
         this.userRepository = userRepository;
         this.leagueRepository = leagueRepository;
         this.playerRepository = playerRepository;
         this.marketService = marketService;
         this.importService = importService;
         this.userService = userService;
+        this.matchService = matchService;
     }
 
     private boolean isAdmin(Authentication auth) {
@@ -150,6 +154,34 @@ public class AdminController {
             return "Se importaron " + count + " jugadores.";
         } catch (Exception e) {
             return "Error al importar jugadores: " + e.getMessage();
+        }
+    }
+
+    @PostMapping("/sync-matches")
+    public ResponseEntity<?> syncMatches(Authentication auth) {
+        if (!isAdmin(auth)) {
+            return ResponseEntity.status(403).body(Map.of("error", "Acceso denegado"));
+        }
+
+        try {
+            String output = matchService.syncMatches();
+            return ResponseEntity.ok(Map.of("message", "Partidos sincronizados exitosamente", "output", output));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", "Error al sincronizar partidos: " + e.getMessage()));
+        }
+    }
+
+    @PostMapping("/sync-players")
+    public ResponseEntity<?> syncPlayers(Authentication auth) {
+        if (!isAdmin(auth)) {
+            return ResponseEntity.status(403).body(Map.of("error", "Acceso denegado"));
+        }
+
+        try {
+            String output = importService.syncPlayers();
+            return ResponseEntity.ok(Map.of("message", "Jugadores sincronizados exitosamente", "output", output));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", "Error al sincronizar jugadores: " + e.getMessage()));
         }
     }
 }

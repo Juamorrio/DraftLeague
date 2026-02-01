@@ -10,7 +10,10 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -121,6 +124,36 @@ public class PlayerImportService {
 			ps.setTotalFantasyPoints(0);
 			entityManager.persist(ps);
 			return ps;
+		}
+
+		public String syncPlayers() throws Exception {
+			ClassPathResource resource = new ClassPathResource("scraping/players.py");
+			String scriptPath = resource.getFile().getAbsolutePath();
+			
+			List<String> command = new ArrayList<>();
+			command.add("python");
+			command.add(scriptPath);
+			
+			ProcessBuilder processBuilder = new ProcessBuilder(command);
+			processBuilder.redirectErrorStream(true);
+			
+			Process process = processBuilder.start();
+			
+			StringBuilder output = new StringBuilder();
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+				String line;
+				while ((line = reader.readLine()) != null) {
+					output.append(line).append("\n");
+				}
+			}
+			
+			int exitCode = process.waitFor();
+			
+			if (exitCode != 0) {
+				throw new RuntimeException("Error al ejecutar script de Python. Código de salida: " + exitCode + "\n" + output.toString());
+			}
+			
+			return output.toString();
 		}
 
 }

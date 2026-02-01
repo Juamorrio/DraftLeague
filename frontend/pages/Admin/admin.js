@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { authenticatedFetch } from '../../services/authService';
 import withAuth from '../../components/withAuth';
+import { useMatches } from '../../context/MatchesContext';
 
 function Admin() {
 	const [stats, setStats] = useState(null);
@@ -23,6 +24,9 @@ function Admin() {
 	const [editingUser, setEditingUser] = useState(null);
 	const [selectedRole, setSelectedRole] = useState('USER');
 	const [importingPlayers, setImportingPlayers] = useState(false);
+	const [syncingMatches, setSyncingMatches] = useState(false);
+	const [syncingPlayers, setSyncingPlayers] = useState(false);
+	const { loadMatches } = useMatches();
 
 	useEffect(() => {
 		loadStats();
@@ -194,6 +198,72 @@ function Admin() {
 		);
 	};
 
+	const syncMatches = async () => {
+		Alert.alert(
+			'Sincronizar Partidos',
+			'¿Estás seguro de sincronizar los partidos desde FotMob? Esta operación puede tardar varios segundos.',
+			[
+				{ text: 'Cancelar', style: 'cancel' },
+				{
+					text: 'Sincronizar',
+					onPress: async () => {
+						setSyncingMatches(true);
+						try {
+							const res = await authenticatedFetch('/api/v1/admin/sync-matches', {
+								method: 'POST'
+							});
+							if (res.ok) {
+								const data = await res.json();
+								Alert.alert('Éxito', data.message);
+								await loadMatches();
+							} else {
+								const error = await res.json();
+								Alert.alert('Error', error.error || 'No se pudieron sincronizar los partidos');
+							}
+						} catch (e) {
+							Alert.alert('Error', 'Error al sincronizar partidos: ' + e.message);
+						} finally {
+							setSyncingMatches(false);
+						}
+					}
+				}
+			]
+		);
+	};
+
+	const syncPlayers = async () => {
+		Alert.alert(
+			'Sincronizar Jugadores',
+			'¿Estás seguro de sincronizar los jugadores desde FotMob? Esta operación puede tardar varios segundos.',
+			[
+				{ text: 'Cancelar', style: 'cancel' },
+				{
+					text: 'Sincronizar',
+					onPress: async () => {
+						setSyncingPlayers(true);
+						try {
+							const res = await authenticatedFetch('/api/v1/admin/sync-players', {
+								method: 'POST'
+							});
+							if (res.ok) {
+								const data = await res.json();
+								Alert.alert('Éxito', data.message);
+								loadStats(); 
+							} else {
+								const error = await res.json();
+								Alert.alert('Error', error.error || 'No se pudieron sincronizar los jugadores');
+							}
+						} catch (e) {
+							Alert.alert('Error', 'Error al sincronizar jugadores: ' + e.message);
+						} finally {
+							setSyncingPlayers(false);
+						}
+					}
+				}
+			]
+		);
+	};
+
 	if (loading && !stats) {
 		return (
 			<View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
@@ -240,6 +310,14 @@ function Admin() {
 				>
 					<Text style={[styles.tabText, activeTab === 'players' && styles.tabTextActive]}>
 						Jugadores
+					</Text>
+				</TouchableOpacity>
+				<TouchableOpacity
+					style={[styles.tab, activeTab === 'matches' && styles.tabActive]}
+					onPress={() => setActiveTab('matches')}
+				>
+					<Text style={[styles.tabText, activeTab === 'matches' && styles.tabTextActive]}>
+						Partidos
 					</Text>
 				</TouchableOpacity>
 			</View>
@@ -335,9 +413,31 @@ function Admin() {
 				{activeTab === 'players' && (
 					<ScrollView contentContainerStyle={{ padding: 16 }}>
 						<View style={styles.playersContainer}>
-							<Text style={styles.playersTitle}>Gestión de Jugadores</Text>
+							<Text style={styles.playersTitle}>Sincronización de Jugadores</Text>
 							<Text style={styles.playersDescription}>
-								Importa o actualiza jugadores desde el archivo JSON (players_data.json).
+								Sincroniza los jugadores desde FotMob API. Esta operación actualizará el archivo 
+								players_data.json con los datos más recientes de LaLiga.
+							</Text>
+							<TouchableOpacity
+								style={[styles.btnImport, syncingPlayers && styles.btnImportDisabled]}
+								onPress={syncPlayers}
+								disabled={syncingPlayers}
+							>
+								{syncingPlayers ? (
+									<>
+										<ActivityIndicator size="small" color="#fff" />
+										<Text style={styles.btnImportText}>Sincronizando...</Text>
+									</>
+								) : (
+									<Text style={styles.btnImportText}>Sincronizar Jugadores</Text>
+								)}
+							</TouchableOpacity>
+
+							<View style={{ height: 20 }} />
+
+							<Text style={styles.playersTitle}>Importar a Base de Datos</Text>
+							<Text style={styles.playersDescription}>
+								Importa o actualiza jugadores desde el archivo JSON a la base de datos.
 								Si un jugador ya existe, se actualizará su información.
 							</Text>
 							<TouchableOpacity
@@ -360,6 +460,32 @@ function Admin() {
 									<Text style={styles.playersStatValue}>{stats.totalPlayers}</Text>
 								</View>
 							)}
+						</View>
+					</ScrollView>
+				)}
+
+				{activeTab === 'matches' && (
+					<ScrollView contentContainerStyle={{ padding: 16 }}>
+						<View style={styles.playersContainer}>
+							<Text style={styles.playersTitle}>Sincronización de Partidos</Text>
+							<Text style={styles.playersDescription}>
+								Sincroniza los partidos desde FotMob API. Esta operación actualizará los archivos 
+								matches.json y upcoming_matches.json con los datos más recientes de LaLiga.
+							</Text>
+							<TouchableOpacity
+								style={[styles.btnImport, syncingMatches && styles.btnImportDisabled]}
+								onPress={syncMatches}
+								disabled={syncingMatches}
+							>
+								{syncingMatches ? (
+									<>
+										<ActivityIndicator size="small" color="#fff" />
+										<Text style={styles.btnImportText}>Sincronizando...</Text>
+									</>
+								) : (
+									<Text style={styles.btnImportText}>Sincronizar Partidos</Text>
+								)}
+							</TouchableOpacity>
 						</View>
 					</ScrollView>
 				)}

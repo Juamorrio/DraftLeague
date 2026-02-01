@@ -78,7 +78,8 @@ export function MatchesProvider({ children }) {
         loading,
         error,
         refetch,
-        loadTeamImage
+        loadTeamImage,
+        loadMatches
       }}
     >
       {children}

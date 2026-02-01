@@ -7,8 +7,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,5 +47,35 @@ public class MatchService {
             e.printStackTrace();
             return new HashMap<>();
         }
+    }
+
+    public String syncMatches() throws Exception {
+        ClassPathResource resource = new ClassPathResource("scraping/home.py");
+        String scriptPath = resource.getFile().getAbsolutePath();
+        
+        List<String> command = new ArrayList<>();
+        command.add("python");
+        command.add(scriptPath);
+        
+        ProcessBuilder processBuilder = new ProcessBuilder(command);
+        processBuilder.redirectErrorStream(true);
+        
+        Process process = processBuilder.start();
+        
+        StringBuilder output = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append("\n");
+            }
+        }
+        
+        int exitCode = process.waitFor();
+        
+        if (exitCode != 0) {
+            throw new RuntimeException("Error al ejecutar script de Python. Código de salida: " + exitCode + "\n" + output.toString());
+        }
+        
+        return output.toString();
     }
 }

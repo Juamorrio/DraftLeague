@@ -1,6 +1,5 @@
 package com.DraftLeague.models.Notification;
 
-import com.DraftLeague.models.Chat.Chat;
 import com.DraftLeague.models.League.League;
 
 import jakarta.persistence.Column;

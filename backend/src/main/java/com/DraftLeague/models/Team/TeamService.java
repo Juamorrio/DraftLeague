@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
 
+import com.DraftLeague.models.Notification.NotificationService;
 import com.DraftLeague.models.Player.Player;
 import com.DraftLeague.models.Player.PlayerRepository;
 import com.DraftLeague.models.Player.PlayerService;
@@ -18,6 +19,8 @@ import com.DraftLeague.models.Player.PlayerTeamRepository;
 import com.DraftLeague.models.Team.dto.UpdateTeamPlayersRequest;
 import com.DraftLeague.models.user.User;
 import com.DraftLeague.models.user.UserRepository;
+import com.DraftLeague.models.League.League;
+import com.DraftLeague.models.League.LeagueRepository;
 
 @Service
 public class TeamService {
@@ -26,14 +29,18 @@ public class TeamService {
     private final UserRepository userRepository;
     private final PlayerService playerService;
     private final PlayerTeamRepository playerTeamRepository;
+    private final NotificationService notificationService;
+    private final LeagueRepository leagueRepository;
 
     @Autowired
     public TeamService(TeamRepository teamRepository, PlayerRepository playerRepository, 
-                      PlayerTeamRepository playerTeamRepository, UserRepository userRepository, PlayerService playerService) {
+                      PlayerTeamRepository playerTeamRepository, UserRepository userRepository, PlayerService playerService, NotificationService notificationService, LeagueRepository leagueRepository) {
         this.teamRepository = teamRepository;
         this.userRepository = userRepository;
         this.playerService = playerService;
         this.playerTeamRepository = playerTeamRepository;
+        this.notificationService = notificationService;
+        this.leagueRepository = leagueRepository;
     }
 
     @Transactional
@@ -96,11 +103,17 @@ public class TeamService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         
-        List<Team> teams = teamRepository.findByUser(user);
-        return teams.stream()
-            .filter(t -> t.getLeague().getId().equals(leagueId))
-            .findFirst()
-            .orElseThrow(() -> new RuntimeException("No tienes un equipo en esta liga"));
+        League league = leagueRepository.findById(leagueId.longValue())
+            .orElseThrow(() -> new RuntimeException("Liga no encontrada"));
+        
+        // Usar el método del repository que ya existe y hace el JOIN correctamente
+        Team team = teamRepository.findByLeagueAndUser(league, user);
+        
+        if (team == null) {
+            throw new RuntimeException("No tienes un equipo en esta liga");
+        }
+        
+        return team;
     }
 
     @Transactional
@@ -113,7 +126,7 @@ public class TeamService {
         List<PlayerTeam> newPlayerTeams = new ArrayList<>();
         
         for (UpdateTeamPlayersRequest.PlayerSelection selection : request.getPlayers()) {
-            Player player = playerService.getPlayerById(Integer.parseInt(selection.getPlayerId()));
+            Player player = playerService.getPlayerById(selection.getPlayerId());
             
             totalCost += player.getMarketValue();
             
@@ -135,7 +148,7 @@ public class TeamService {
     }
 
     @Transactional
-    public Team buyoutPlayer(Integer leagueId, Integer sellerUserId, Integer playerId) {
+    public Team buyoutPlayer(Integer leagueId, Integer sellerUserId, String playerId) {
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) throw new RuntimeException("No autenticado");
         String buyerUsername = auth.getName();
@@ -169,6 +182,8 @@ public class TeamService {
         playerTeamRepository.save(target);
         teamRepository.save(buyerTeam);
         teamRepository.save(sellerTeam);
+        
+        notificationService.createClauseNotification(leagueId, buyer, sellerTeam.getUser(), target.getPlayer(), price);
 
         return buyerTeam;
     }

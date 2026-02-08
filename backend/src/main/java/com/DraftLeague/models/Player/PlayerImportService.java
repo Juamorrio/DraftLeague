@@ -2,7 +2,6 @@ package com.DraftLeague.models.Player;
 
 import com.DraftLeague.models.Player.Dto.PlayerImportDto;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.DraftLeague.models.Statistics.PlayerStatistic;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,33 +38,37 @@ public class PlayerImportService {
 			int created = 0;
 
 			for (PlayerImportDto dto : dtos) {
-				Integer playerId = Integer.parseInt(dto.getId());
-				Player p = repo.findById(playerId).orElse(null);
-				
-				if (p != null) {
-					p.setFullName(dto.getFullName());
-					p.setPosition(mapPosition(dto.getPosition()));
-					p.setAvatarUrl(dto.getAvatarUrl());
-					p.setTeamId(dto.getTeamId());
-					p.setMarketValue((dto.getMarketValue()));
-					updated++;
-				} else {
-					p = new Player();
-					p.setId(playerId);
-					p.setFullName(dto.getFullName());
-					p.setPosition(mapPosition(dto.getPosition()));
-					p.setAvatarUrl(dto.getAvatarUrl());
-					p.setTeamId(dto.getTeamId());
-					p.setMarketValue(dto.getMarketValue());
-					p.setActive(Boolean.TRUE);
-					p.setTotalPoints(0);
+				try {
+					String playerId = dto.getId();
+					Player p = repo.findById(playerId).orElse(null);
 					
-					PlayerStatistic defaultStat = getDefaultStatistic();
-					p.setPlayerStatistic(defaultStat);
-					created++;
-				}
+					if (p != null) {
+						p.setFullName(dto.getFullName());
+						p.setPosition(mapPosition(dto.getPosition()));
+						p.setAvatarUrl(dto.getAvatarUrl());
+						p.setTeamId(dto.getTeamId());
+						p.setMarketValue(dto.getMarketValue() != null ? dto.getMarketValue() : 100000);
+						updated++;
+					} else {
+						p = new Player();
+						p.setId(playerId);
+						p.setFullName(dto.getFullName());
+						p.setPosition(mapPosition(dto.getPosition()));
+						p.setAvatarUrl(dto.getAvatarUrl());
+						p.setTeamId(dto.getTeamId());
+						p.setMarketValue(dto.getMarketValue() != null ? dto.getMarketValue() : 100000);
+						p.setActive(Boolean.TRUE);
+						p.setTotalPoints(0);
 
-				repo.save(p);
+						created++;
+					}
+
+					repo.save(p);
+				} catch (Exception e) {
+					System.err.println("Error al importar jugador: " + dto.getId() + " - " + dto.getFullName());
+					System.err.println("Detalles: " + e.getMessage());
+					throw e; 
+				}
 			}
 			
 			System.out.println("Importación completada: " + created + " jugadores creados, " + updated + " jugadores actualizados");
@@ -101,59 +104,35 @@ public class PlayerImportService {
 			}
 		}
 
-		private PlayerStatistic getDefaultStatistic() {
-			List<PlayerStatistic> stats = entityManager
-				.createQuery("select ps from PlayerStatistic ps order by ps.id asc", PlayerStatistic.class)
-				.setMaxResults(1)
-				.getResultList();
-			if (!stats.isEmpty()) {
-				return stats.get(0);
-			}
-			PlayerStatistic ps = new PlayerStatistic();
-			ps.setMinutesPlayed(0);
-			ps.setGoals(0);
-			ps.setAssists(0);
-			ps.setShots(0);
-			ps.setShotsOnTarget(0);
-			ps.setFoulsDrawn(0);
-			ps.setFoulsCommitted(0);
-			ps.setOwnGoals(0);
-			ps.setYellowCards(0);
-			ps.setRedCards(0);
-			ps.setRatingAvg(0.0);
-			ps.setTotalFantasyPoints(0);
-			entityManager.persist(ps);
-			return ps;
-		}
 
-		public String syncPlayers() throws Exception {
-			ClassPathResource resource = new ClassPathResource("scraping/players.py");
-			String scriptPath = resource.getFile().getAbsolutePath();
-			
-			List<String> command = new ArrayList<>();
-			command.add("python");
-			command.add(scriptPath);
-			
-			ProcessBuilder processBuilder = new ProcessBuilder(command);
-			processBuilder.redirectErrorStream(true);
-			
-			Process process = processBuilder.start();
-			
-			StringBuilder output = new StringBuilder();
-			try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-				String line;
-				while ((line = reader.readLine()) != null) {
-					output.append(line).append("\n");
-				}
+	public String syncPlayers() throws Exception {
+		ClassPathResource resource = new ClassPathResource("scraping/players.py");
+		String scriptPath = resource.getFile().getAbsolutePath();
+		
+		List<String> command = new ArrayList<>();
+		command.add("python");
+		command.add(scriptPath);
+		
+		ProcessBuilder processBuilder = new ProcessBuilder(command);
+		processBuilder.redirectErrorStream(true);
+		
+		Process process = processBuilder.start();
+		
+		StringBuilder output = new StringBuilder();
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				output.append(line).append("\n");
 			}
-			
-			int exitCode = process.waitFor();
-			
-			if (exitCode != 0) {
-				throw new RuntimeException("Error al ejecutar script de Python. Código de salida: " + exitCode + "\n" + output.toString());
-			}
-			
-			return output.toString();
 		}
+		
+		int exitCode = process.waitFor();
+		
+		if (exitCode != 0) {
+			throw new RuntimeException("Error al ejecutar script de Python. Código de salida: " + exitCode + "\n" + output.toString());
+		}
+		
+		return output.toString();
+	}
 
 }

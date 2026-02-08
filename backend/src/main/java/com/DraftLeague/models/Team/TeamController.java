@@ -77,10 +77,10 @@ public class TeamController {
     @PostMapping("/league/{leagueId}/buyout")
     public ResponseEntity<?> buyoutPlayer(
             @PathVariable Integer leagueId,
-            @RequestBody java.util.Map<String,Integer> body) {
+            @RequestBody java.util.Map<String,Object> body) {
         try {
-            Integer sellerUserId = body.get("sellerUserId");
-            Integer playerId = body.get("playerId");
+            Integer sellerUserId = (Integer) body.get("sellerUserId");
+            String playerId = (String) body.get("playerId");
             if (sellerUserId == null || playerId == null) {
                 return ResponseEntity.badRequest().body(java.util.Map.of("error", "Parámetros inválidos"));
             }

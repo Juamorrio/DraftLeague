@@ -135,6 +135,17 @@ public class LeagueService {
             throw new RuntimeException("Usuario no autenticado");
         }
         
+        List<Team> teams = teamRepository.findByLeague(league);
+        if (teams != null && !teams.isEmpty()) {
+            for(Team t : teams) {
+                List<PlayerTeam> pts = playerTeamRepository.findByTeam(t);
+                if (pts != null && !pts.isEmpty()) {
+                    playerTeamRepository.deleteAll(pts);
+                }
+            }
+            teamRepository.deleteAll(teams);
+        }
+
         leagueRepository.delete(league);
     }
 
@@ -164,12 +175,7 @@ public class LeagueService {
 
     public List<League> getLeaguesByUserId(int userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        List<Team> teams = teamRepository.findByUser(user);
-        List<League> leagues = teams.stream()
-                                    .map(Team::getLeague)
-                                    .distinct()
-                                    .toList();
-        return leagues;
+        return teamRepository.findDistinctLeaguesByUser(user);
     }
 
     public List<Map<String,Object>> getRanking(Long leagueId) {
@@ -224,7 +230,7 @@ public class LeagueService {
 
     private void assignInitialSquad(League league, Team team, int size) {
         List<Team> teamsInLeague = teamRepository.findByLeagueOrderByTotalPointsDesc(league);
-        Set<Integer> used = new HashSet<>();
+        Set<String> used = new HashSet<>();
         for (Team t : teamsInLeague) {
             for (PlayerTeam pt : playerTeamRepository.findByTeam(t)) {
                 if (pt.getPlayer() != null) used.add(pt.getPlayer().getId());

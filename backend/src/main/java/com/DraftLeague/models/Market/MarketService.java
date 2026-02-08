@@ -2,6 +2,7 @@ package com.DraftLeague.models.Market;
 
 import com.DraftLeague.models.League.League;
 import com.DraftLeague.models.League.LeagueRepository;
+import com.DraftLeague.models.Notification.NotificationService;
 import com.DraftLeague.models.Player.Player;
 import com.DraftLeague.models.Player.PlayerRepository;
 import com.DraftLeague.models.Player.PlayerTeam;
@@ -30,19 +31,22 @@ public class MarketService {
     private final UserRepository userRepository;
     private final TeamRepository teamRepository;
     private final PlayerTeamRepository playerTeamRepository;
+    private final NotificationService notificationService;
 
     public MarketService(MarketPlayerRepository marketPlayerRepository, 
                         PlayerRepository playerRepository,
                         LeagueRepository leagueRepository,
                         UserRepository userRepository,
                         TeamRepository teamRepository,
-                        PlayerTeamRepository playerTeamRepository) {
+                        PlayerTeamRepository playerTeamRepository,
+                        NotificationService notificationService) {
         this.marketPlayerRepository = marketPlayerRepository;
         this.playerRepository = playerRepository;
         this.leagueRepository = leagueRepository;
         this.userRepository = userRepository;
         this.teamRepository = teamRepository;
         this.playerTeamRepository = playerTeamRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -54,9 +58,9 @@ public class MarketService {
         List<Integer> teamIds = teamRepository.findByLeague(league).stream()
                 .map(Team::getId).toList();
 
-        List<Player> allPlayers = playerRepository.findAll().stream()
+        List<Player> allPlayers = new ArrayList<>(playerRepository.findAll().stream()
                 .filter(p -> playerTeamRepository.findPlayerTeamsByTeamIdIn(teamIds).stream()
-                        .noneMatch(pt -> pt.getPlayer().getId().equals(p.getId()))).toList();
+                        .noneMatch(pt -> pt.getPlayer().getId().equals(p.getId()))).toList());
         
         Collections.shuffle(allPlayers);
         List<Player> selectedPlayers = allPlayers.subList(0, 10);
@@ -217,12 +221,13 @@ public class MarketService {
 
         marketPlayer.setStatus(StatusMarketPlayer.SOLD);
         marketPlayerRepository.save(marketPlayer);
+        notificationService.createMarketBuyNotification(marketPlayer.getLeague().getId(), winner, marketPlayer.getPlayer(), winningAmount);
     }
     
     @Transactional
     public void finalizeExpiredAuctions() {
-        List<MarketPlayer> expiredAuctions = marketPlayerRepository
-                .findAll().stream().filter(p -> p.getHighestBidder() != null).toList();
+        List<MarketPlayer> expiredAuctions = new ArrayList<>(marketPlayerRepository
+                .findAll().stream().filter(p -> p.getHighestBidder() != null).toList());
         
         for (MarketPlayer marketPlayer : expiredAuctions) {
             finalizeAuction(marketPlayer.getId());
@@ -231,9 +236,13 @@ public class MarketService {
 
     @Transactional
     public void refreshMarket(Integer leagueId) {
+        logger.info("=== Refrescando mercado ===");
+        logger.info("LeagueId recibido: {}", leagueId);
+        logger.info("Tipo: {}", leagueId.getClass().getName());
+        logger.info("Convirtiendo a Long: {}", Long.valueOf(leagueId));
         
         League league = leagueRepository.findById(Long.valueOf(leagueId))
-                .orElseThrow(() -> new IllegalStateException("Liga no encontrada"));
+                .orElseThrow(() -> new IllegalStateException("Liga no encontrada con id: " + leagueId));
 
         List<MarketPlayer> expiredAuctions = marketPlayerRepository
                 .findByLeagueAndStatusAndAuctionEndTimeBefore(league, StatusMarketPlayer.AVAILABLE, LocalDateTime.now());
@@ -247,9 +256,9 @@ public class MarketService {
         List<Integer> teamIds = teamRepository.findByLeague(league).stream()
                 .map(Team::getId).toList();
 
-        List<Player> allPlayers = playerRepository.findAll().stream()
+        List<Player> allPlayers = new ArrayList<>(playerRepository.findAll().stream()
                 .filter(p -> playerTeamRepository.findPlayerTeamsByTeamIdIn(teamIds).stream()
-                        .noneMatch(pt -> pt.getPlayer().getId().equals(p.getId()))).toList();
+                        .noneMatch(pt -> pt.getPlayer().getId().equals(p.getId()))).toList());
         Collections.shuffle(allPlayers);
         List<Player> selectedPlayers = allPlayers.subList(0, Math.min(10, allPlayers.size()));
 
@@ -263,6 +272,7 @@ public class MarketService {
             marketPlayerRepository.save(marketPlayer);
         }
         
+        logger.info("Mercado refrescado con {} jugadores", selectedPlayers.size());
     }
     @Transactional
     public void cancelBid(Integer marketPlayerId, User user) {

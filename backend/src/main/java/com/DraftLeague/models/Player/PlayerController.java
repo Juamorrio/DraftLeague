@@ -62,7 +62,7 @@ public class PlayerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Player> getPlayerById(@PathVariable int id) {
+    public ResponseEntity<Player> getPlayerById(@PathVariable String id) {
         Player player = playerService.getPlayerById(id);
         return ResponseEntity.ok(player);
     }
@@ -74,14 +74,14 @@ public class PlayerController {
     //}
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePlayer(@PathVariable int id) {
+    public ResponseEntity<Void> deletePlayer(@PathVariable String id) {
         playerService.deletePlayer(id);
         return ResponseEntity.noContent().build();
     }
     
     @PostMapping("/purchase")
     public ResponseEntity<?> purchasePlayer(
-            @RequestParam Integer playerId,
+            @RequestParam String playerId,
             @RequestParam Integer leagueId) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();

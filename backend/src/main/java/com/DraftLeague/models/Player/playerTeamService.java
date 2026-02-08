@@ -18,7 +18,7 @@ public class playerTeamService {
     private PlayerRepository playerRepository;
     
     @Transactional
-    public PlayerTeam buyPlayer(Integer playerId, Integer teamId, Integer price) {
+    public PlayerTeam buyPlayer(String playerId, Integer teamId, Integer price) {
         Team team = teamRepository.findById(teamId)
             .orElseThrow(() -> new IllegalArgumentException("Team not found"));
         

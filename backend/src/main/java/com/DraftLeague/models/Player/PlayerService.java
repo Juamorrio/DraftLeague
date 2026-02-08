@@ -35,7 +35,7 @@ public class PlayerService {
         return playerRepository.save(player);
     }
 
-    public Player getPlayerById(int id) {
+    public Player getPlayerById(String id) {
         return playerRepository.findById(id).orElseThrow(() -> new RuntimeException("Player not found"));
     }
 
@@ -61,7 +61,7 @@ public class PlayerService {
 
     public List<Player> getAvailablePlayersForUserInLeague(User user, Integer leagueId) {
         List<Player> ownedPlayers = getPlayersByUserAndLeague(user, leagueId);
-        List<Integer> ownedPlayerIds = ownedPlayers.stream()
+        List<String> ownedPlayerIds = ownedPlayers.stream()
                 .map(Player::getId)
                 .collect(Collectors.toList());
         
@@ -70,12 +70,12 @@ public class PlayerService {
                 .collect(Collectors.toList());
     }
 
-    public void deletePlayer(int id) {
+    public void deletePlayer(String id) {
         Player player = getPlayerById(id);
         playerRepository.delete(player);
     }
 
-    public void purchasePlayer(Integer playerId, Integer leagueId, User user) {
+    public void purchasePlayer(String playerId, Integer leagueId, User user) {
         Player player = playerRepository.findById(playerId)
                 .orElseThrow(() -> new IllegalStateException("Jugador no encontrado"));
         

@@ -148,12 +148,30 @@ public class AdminController {
     }
 
     @PostMapping("/import-players")
-    public String importPlayers() {
+    public ResponseEntity<?> importPlayers(Authentication auth) {
+        if (!isAdmin(auth)) {
+            return ResponseEntity.status(403).body(Map.of("error", "Acceso denegado"));
+        }
+
         try {
             int count = importService.importFromJsonResource();
-            return "Se importaron " + count + " jugadores.";
+            return ResponseEntity.ok(Map.of("message", "Se importaron " + count + " jugadores."));
         } catch (Exception e) {
-            return "Error al importar jugadores: " + e.getMessage();
+            e.printStackTrace();
+            System.err.println("===== ERROR DETALLADO AL IMPORTAR JUGADORES =====");
+            System.err.println("Mensaje: " + e.getMessage());
+            System.err.println("Tipo: " + e.getClass().getName());
+            
+            Throwable cause = e.getCause();
+            if (cause != null) {
+                System.err.println("Causa raíz: " + cause.getMessage());
+                System.err.println("Tipo causa: " + cause.getClass().getName());
+            }
+            
+            return ResponseEntity.status(500).body(Map.of(
+                "error", "Error al importar jugadores: " + e.getMessage(),
+                "type", e.getClass().getSimpleName()
+            ));
         }
     }
 

@@ -14,7 +14,16 @@ class PlayerStatisticsExtractor:
         'corners': 'corners', 'dispossessed': 'dispossessed', 'expected_goals_non_penalty': 'xgNonPenalty',
         'matchstats.headers.tackles': 'tackles', 'shot_blocks': 'blocks', 'clearances': 'clearances',
         'interceptions': 'interceptions', 'recoveries': 'recoveries', 'dribbled_past': 'dribbledPast',
-        'was_fouled': 'wasFouled', 'fouls': 'foulsCommitted'
+        'was_fouled': 'wasFouled', 'fouls': 'foulsCommitted',
+        # Goalkeeper-specific stats
+        'saves': 'saves', 'goals_conceded': 'goalsConceded',
+        'expected_goals_on_target_faced': 'xgotFaced', 'goals_prevented': 'goalsPrevented',
+        'keeper_sweeper': 'sweeperActions', 'keeper_high_claim': 'highClaims',
+        'keeper_diving_save': 'divingSaves', 'saves_inside_box': 'savesInsideBox',
+        'punches': 'punches', 'player_throws': 'goalKeeperThrows',
+        # Additional stats for all positions
+        'headed_clearance': 'headedClearances', 'big_chance_missed_title': 'bigChancesMissed',
+        'blocked_shots': 'blockedShots'
     }
     
     FRACTION_MAPPING = {
@@ -77,6 +86,17 @@ class PlayerStatisticsExtractor:
             return stat_data.get('value')
         return None
     
+    def _map_fraction_stat(self, stats_dict: Dict, field_names, value):
+        """Mapea estadísticas fraccionarias a campos individuales."""
+        try:
+            stats_dict[field_names[0]] = value['value']
+            stats_dict[field_names[1]] = value['total']
+        except (TypeError, KeyError, IndexError):
+            try:
+                stats_dict[field_names] = value['value'] if isinstance(value, dict) else value
+            except TypeError:
+                stats_dict[field_names[0]] = value
+    
     def parse_player_statistics(self, player_data: Dict[str, Any], match_id: int) -> Dict[str, Any]:
         role = player_data.get('role', '')
         stats_dict = {
@@ -97,18 +117,14 @@ class PlayerStatisticsExtractor:
                 if stat_key in self.STAT_MAPPING:
                     stats_dict[self.STAT_MAPPING[stat_key]] = value
                 elif stat_key in self.FRACTION_MAPPING:
-                    field_names = self.FRACTION_MAPPING[stat_key]
-                    if isinstance(value, dict) and isinstance(field_names, tuple):
-                        stats_dict[field_names[0]] = value['value']
-                        stats_dict[field_names[1]] = value['total']
-                    elif isinstance(value, dict):
-                        stats_dict[field_names] = value['value']
-                    elif isinstance(field_names, tuple):
-                        stats_dict[field_names[0]] = value
-                    else:
-                        stats_dict[field_names] = value
+                    self._map_fraction_stat(stats_dict, self.FRACTION_MAPPING[stat_key], value)
         
         return stats_dict
+    
+    def _process_player_data(self, player_data: Dict, match_id: int) -> Optional[Dict]:
+        """Procesa datos de un jugador y retorna sus estadísticas."""
+        stats = self.parse_player_statistics(player_data, match_id)
+        return stats if stats.get('playerId') else None
     
     def process_match(self, match_id: int) -> List[Dict[str, Any]]:
         match_data = self.get_match_details(match_id)
@@ -122,32 +138,50 @@ class PlayerStatisticsExtractor:
         
         statistics_list = []
         
-        # Formato diccionario con IDs como claves
-        if isinstance(player_stats, dict) and 'homeTeam' not in player_stats:
-            home_team_id = match_data.get('general', {}).get('homeTeam', {}).get('id')
-            for player_id, player_data in player_stats.items():
-                if not player_data.get('stats'):
-                    continue
-                player_data['id'] = player_data.get('id', int(player_id))
-                player_data['role'] = self._get_role_from_position(player_data.get('usualPosition'))
-                player_data['isHomeTeam'] = player_data.get('teamId') == home_team_id
-                stats = self.parse_player_statistics(player_data, match_id)
-                if stats.get('playerId'):
-                    statistics_list.append(stats)
-        # Formato con homeTeam/awayTeam
-        else:
+        if 'homeTeam' in player_stats:
             for team in ['homeTeam', 'awayTeam']:
                 for player in player_stats.get(team, []):
-                    if not player.get('role'):
-                        continue
-                    stats = self.parse_player_statistics(player, match_id)
-                    if stats.get('playerId'):
+                    if player.get('role'):
+                        stats = self._process_player_data(player, match_id)
+                        if stats:
+                            statistics_list.append(stats)
+
+        else:
+            home_team_id = match_data.get('general', {}).get('homeTeam', {}).get('id')
+            for player_id, player_data in player_stats.items():
+                if player_data.get('stats'):
+                    player_data.setdefault('id', int(player_id))
+                    player_data['role'] = self._get_role_from_position(player_data.get('usualPosition'))
+                    player_data['isHomeTeam'] = player_data.get('teamId') == home_team_id
+                    stats = self._process_player_data(player_data, match_id)
+                    if stats:
                         statistics_list.append(stats)
         
         return statistics_list
     
     def _get_role_from_position(self, position: int) -> str:
         return self.POSITION_MAP.get(position, "Midfielder")
+    
+    def _print_header(self, title: str):
+        """Imprime un encabezado formateado."""
+        print(f"\n{'='*70}\n{title}\n{'='*70}")
+    
+    def _save_and_report(self, statistics: List[Dict], jornada_key: str, output_file: str):
+        """Guarda estadísticas en archivo y muestra resumen."""
+        positions = {}
+        for stat in statistics:
+            pos = stat.get('playerType', 'UNKNOWN')
+            positions[pos] = positions.get(pos, 0) + 1
+        
+        print(f"\nDistribución por posición:")
+        for pos in sorted(positions.keys()):
+            print(f"  {pos}: {positions[pos]} jugadores")
+        
+        output_path = output_file or os.path.join(os.path.dirname(__file__), f"{jornada_key}_stats.json")
+        with open(output_path, 'w', encoding='utf-8') as f:
+            json.dump(statistics, f, indent=2, ensure_ascii=False)
+        print(f"\nJSON guardado en: {output_path}")
+        print(f"{len(statistics)} estadísticas listas para enviar al backend")
     
     def process_jornada(self, jornada: str, output_file: str = None) -> List[Dict[str, Any]]:
         matches = self.load_matches()
@@ -159,7 +193,7 @@ class PlayerStatisticsExtractor:
             return []
         
         jornada_matches = matches[jornada_key]
-        print(f"\n{'='*70}\nPROCESANDO {jornada_key.upper()}\n{'='*70}")
+        self._print_header(f"PROCESANDO {jornada_key.upper()}")
         print(f"{len(jornada_matches)} partidos a procesar\n")
         
         all_statistics = []
@@ -167,7 +201,9 @@ class PlayerStatisticsExtractor:
         
         for i, match in enumerate(jornada_matches, 1):
             match_id = match.get('matchId')
-            print(f"[{i}/{len(jornada_matches)}] Partido {match_id} ({match.get('homeTeamId')} vs {match.get('awayTeamId')}, {match.get('homeScore')}-{match.get('awayScore')})")
+            home, away = match.get('homeTeamId'), match.get('awayTeamId')
+            score = f"{match.get('homeScore')}-{match.get('awayScore')}"
+            print(f"[{i}/{len(jornada_matches)}] Partido {match_id} ({home} vs {away}, {score})")
             
             stats = self.process_match(match_id)
             if stats:
@@ -177,25 +213,12 @@ class PlayerStatisticsExtractor:
             else:
                 print(f"   WARNING: Sin estadísticas disponibles")
         
-        print(f"\n{'='*70}\nRESUMEN DE {jornada_key.upper()}\n{'='*70}")
+        self._print_header(f"RESUMEN DE {jornada_key.upper()}")
         print(f"Partidos procesados: {success_count}/{len(jornada_matches)}")
         print(f"Total jugadores: {len(all_statistics)}")
         
         if all_statistics:
-            positions = {}
-            for stat in all_statistics:
-                pos = stat.get('playerType', 'UNKNOWN')
-                positions[pos] = positions.get(pos, 0) + 1
-            
-            print(f"\nDistribución por posición:")
-            for pos in sorted(positions.keys()):
-                print(f"  {pos}: {positions[pos]} jugadores")
-            
-            output_file = output_file or os.path.join(os.path.dirname(__file__), f"{jornada_key}_stats.json")
-            with open(output_file, 'w', encoding='utf-8') as f:
-                json.dump(all_statistics, f, indent=2, ensure_ascii=False)
-            print(f"\nJSON guardado en: {output_file}")
-            print(f"{len(all_statistics)} estadísticas listas para enviar al backend")
+            self._save_and_report(all_statistics, jornada_key, output_file)
         
         print(f"{'='*70}\n")
         return all_statistics
@@ -210,8 +233,16 @@ class PlayerStatisticsExtractor:
             return False
 
 
-def extract_jornada(jornada: str, output_file: str = None):
-    return PlayerStatisticsExtractor().process_jornada(jornada, output_file)
+def extract_jornada(jornada: str, output_file: str = None, send_to_backend: bool = False):
+    extractor = PlayerStatisticsExtractor()
+    statistics = extractor.process_jornada(jornada, output_file)
+    
+    if statistics and send_to_backend:
+        print(f"\nEnviando estadisticas al backend...")
+        success = extractor.send_bulk_statistics(statistics)
+        print("OK: Estadisticas enviadas correctamente" if success else "ERROR: Fallo al enviar estadisticas")
+    
+    return statistics
 
 
 def list_jornadas():
@@ -220,17 +251,15 @@ def list_jornadas():
         print("ERROR: No hay jornadas disponibles. Ejecuta primero: python home.py")
         return
     print(f"\nJORNADAS DISPONIBLES EN MATCHES.JSON\n{'='*50}")
-    for jornada in jornadas:
-        print(f"  - {jornada}")
+    print('\n'.join(f"  - {j}" for j in jornadas))
     print(f"{'='*50}\nTotal: {len(jornadas)} jornadas\n")
 
 
 def check_match(match_id: int):
-    print(f"\nDIAGNÓSTICO DEL PARTIDO {match_id}\n{'='*70}")
-    
     extractor = PlayerStatisticsExtractor()
-    match_data = extractor.get_match_details(match_id)
+    extractor._print_header(f"DIAGNÓSTICO DEL PARTIDO {match_id}")
     
+    match_data = extractor.get_match_details(match_id)
     if not match_data:
         print("ERROR: No se pudo obtener información del partido")
         return
@@ -242,7 +271,9 @@ def check_match(match_id: int):
     
     general = match_data.get('general', {})
     status = general.get('status', {})
-    print(f"\nPartido: {general.get('homeTeam', {}).get('name', 'N/A')} vs {general.get('awayTeam', {}).get('name', 'N/A')}")
+    home = general.get('homeTeam', {}).get('name', 'N/A')
+    away = general.get('awayTeam', {}).get('name', 'N/A')
+    print(f"\nPartido: {home} vs {away}")
     print(f"Estado: {'Finalizado' if status.get('finished') else 'No finalizado'}")
     print(f"Resultado: {status.get('scoreStr', 'N/A')}")
     
@@ -250,27 +281,27 @@ def check_match(match_id: int):
     print(f"\nClaves en 'content': {list(content.keys())}")
     
     player_stats = content.get('playerStats')
-    print(f"\nEstadísticas de jugadores:")
     if not player_stats:
-        print("No disponibles (campo 'playerStats' no existe)")
-        possible_keys = [k for k in content.keys() if 'player' in k.lower() or 'lineup' in k.lower() or 'stats' in k.lower()]
-        if possible_keys:
-            print(f"\nClaves alternativas encontradas: {possible_keys}")
+        print("\nEstadísticas de jugadores: No disponibles")
+        possible = [k for k in content.keys() if any(x in k.lower() for x in ['player', 'lineup', 'stats'])]
+        if possible:
+            print(f"Claves alternativas: {possible}")
     else:
         home_players = player_stats.get('homeTeam', [])
         away_players = player_stats.get('awayTeam', [])
-        print(f"Disponibles")
+        total_with_role = sum(1 for p in home_players + away_players if p.get('role'))
+        
+        print(f"\nEstadísticas disponibles:")
         print(f"   - Equipo local: {len(home_players)} jugadores")
         print(f"   - Equipo visitante: {len(away_players)} jugadores")
-        print(f"   - Total con rol: {sum(1 for p in home_players if p.get('role')) + sum(1 for p in away_players if p.get('role'))}")
+        print(f"   - Total con rol: {total_with_role}")
         
         if home_players:
             example = home_players[0]
-            print(f"\nEjemplo de jugador (primero del equipo local):")
-            print(f"   - ID: {example.get('id', 'N/A')}")
-            print(f"   - Nombre: {example.get('name', {}).get('fullName', 'N/A')}")
-            print(f"   - Rol: {example.get('role', 'N/A')}")
-            print(f"   - Tiene stats: {'Si' if example.get('stats') else 'No'}")
+            name = example.get('name', {}).get('fullName', 'N/A')
+            print(f"\nEjemplo (primer jugador local):")
+            print(f"   - ID: {example.get('id', 'N/A')} | Nombre: {name}")
+            print(f"   - Rol: {example.get('role', 'N/A')} | Stats: {'Si' if example.get('stats') else 'No'}")
     
     print("="*70 + "\n")
 
@@ -278,27 +309,34 @@ def check_match(match_id: int):
 if __name__ == "__main__":
     import sys
     
-    print("=" * 70)
-    print("EXTRACTOR DE ESTADÍSTICAS POR JORNADA - FotMob API")
-    print("=" * 70)
-    
-    if len(sys.argv) < 2:
+    def print_usage():
+        print("=" * 70)
+        print("EXTRACTOR DE ESTADÍSTICAS POR JORNADA - FotMob API")
+        print("=" * 70)
         print("\nUSO:")
-        print("  python players_data.py <jornada> [output_file]")
+        print("  python players_data.py <jornada> [output_file] [--send]")
         print("\nCOMANDOS ESPECIALES:")
         print("  --list                     Ver jornadas disponibles")
         print("  --check <match_id>         Verificar estado de un partido")
+        print("\nOPCIONES:")
+        print("  --send                     Enviar automaticamente al backend")
         print("\nEJEMPLOS:")
-        print("  python players_data.py 1              # Procesar jornada 1 -> jornada_1_stats.json")
-        print("  python players_data.py 1 custom.json  # Especificar nombre del archivo")
-        print("  python players_data.py --list         # Ver jornadas disponibles")
-        print("  python players_data.py --check 4837303 # Verificar estado de un partido\n")
+        print("  python players_data.py 1                    # Procesar jornada 1")
+        print("  python players_data.py 1 custom.json        # Archivo custom")
+        print("  python players_data.py 1 --send             # Procesar y enviar")
+        print("  python players_data.py --list               # Ver jornadas")
+        print("  python players_data.py --check 4837303      # Verificar partido\n")
+    
+    if len(sys.argv) < 2:
+        print_usage()
         list_jornadas()
         sys.exit(0)
     
-    if sys.argv[1] == '--list':
+    command = sys.argv[1]
+    
+    if command == '--list':
         list_jornadas()
-    elif sys.argv[1] == '--check':
+    elif command == '--check':
         if len(sys.argv) < 3:
             print("ERROR: Debes proporcionar un match ID\n   Uso: python players_data.py --check <match_id>")
             sys.exit(1)
@@ -307,12 +345,17 @@ if __name__ == "__main__":
         except ValueError:
             print(f"ERROR: '{sys.argv[2]}' no es un número válido")
     else:
-        stats = extract_jornada(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else None)
+        output_file = next((arg for arg in sys.argv[2:] if not arg.startswith('--')), None)
+        send_to_backend = '--send' in sys.argv
+        
+        stats = extract_jornada(command, output_file, send_to_backend)
+        
         if stats:
-            output_name = sys.argv[2] if len(sys.argv) > 2 else f"jornada_{sys.argv[1]}_stats.json"
-            print(f"\nEXITO: {len(stats)} estadísticas procesadas")
-            print(f"Archivo: {output_name}")
-            print(f"Envía al backend con: POST {output_name} -> /api/statistics/bulk")
+            output_name = output_file or f"jornada_{command}_stats.json"
+            print(f"\nEXITO: {len(stats)} estadísticas procesadas → {output_name}")
+            if not send_to_backend:
+                print(f"Envía con: python players_data.py {command} --send")
         else:
             print("\nERROR: No se encontraron estadísticas para procesar")
+
 

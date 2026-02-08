@@ -59,8 +59,11 @@ def build_matches_json(all_matches):
             continue
         
         round_id = match.get("round") or match.get("roundName")
+        match_id = match.get("id")
         home_id = match.get("home", {}).get("id")
         away_id = match.get("away", {}).get("id")
+        home_club = match.get("home", {}).get("name", "")
+        away_club = match.get("away", {}).get("name", "")
         score_str = status.get("scoreStr", "")
         home_score, away_score = parse_score(score_str)
         jornada_key = f"jornada_{round_id}"
@@ -68,8 +71,11 @@ def build_matches_json(all_matches):
             matches_by_round[jornada_key] = []
         
         matches_by_round[jornada_key].append({
+            "matchId": int(match_id) if match_id else None,
             "homeTeamId": int(home_id),
             "awayTeamId": int(away_id),
+            "homeClub": home_club,
+            "awayClub": away_club,
             "homeScore": home_score,
             "awayScore": away_score
         })
@@ -90,8 +96,11 @@ def build_upcoming_matches_json(all_matches):
             continue
         
         round_id = match.get("round") or match.get("roundName")
+        match_id = match.get("id")
         home_id = match.get("home", {}).get("id")
-        away_id = match.get("away", {}).get("id")   
+        away_id = match.get("away", {}).get("id")
+        home_club = match.get("home", {}).get("name", "")
+        away_club = match.get("away", {}).get("name", "")   
         match_date = status.get("utcTime") or match.get("status", {}).get("utcTime")
         
         jornada_key = f"jornada_{round_id}"
@@ -99,8 +108,11 @@ def build_upcoming_matches_json(all_matches):
             upcoming_by_round[jornada_key] = []
         
         match_data = {
+            "matchId": int(match_id) if match_id else None,
             "homeTeamId": int(home_id),
-            "awayTeamId": int(away_id)
+            "awayTeamId": int(away_id),
+            "homeClub": home_club,
+            "awayClub": away_club
         }
         if match_date:
             match_data["matchDate"] = match_date

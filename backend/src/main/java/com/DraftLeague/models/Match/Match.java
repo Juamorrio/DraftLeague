@@ -24,7 +24,18 @@ public class Match {
     @Column(name = "id", updatable = false, nullable = false, unique = true)
     private Integer id;
 
+    @Column(name = "fotmob_match_id", unique = true)
+    private Integer fotmobMatchId;
+
+    @Column(name = "round")
+    private Integer round;
     
+    @Column(name = "home_team_id")
+    private Integer homeTeamId;
+
+    @Column(name = "away_team_id")
+    private Integer awayTeamId;
+
     @NotNull
     @Column(name = "home_club", nullable = false)
     private String homeClub;
@@ -39,11 +50,14 @@ public class Match {
     private MatchStatus status;
 
     @Min(0)
-    @Column(name = "home_goals", nullable = false)
+    @Column(name = "home_goals")
     private Integer homeGoals;
 
     @Min(0)
-    @Column(name = "away_goals", nullable = false)
+    @Column(name = "away_goals")
     private Integer awayGoals;
+
+    @Column(name = "match_date")
+    private String matchDate;
 
 }

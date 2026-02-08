@@ -20,9 +20,11 @@ import java.util.Map;
 public class MatchService {
 
     private final ObjectMapper objectMapper;
+    private final MatchRepository matchRepository;
 
-    public MatchService(ObjectMapper objectMapper) {
+    public MatchService(ObjectMapper objectMapper, MatchRepository matchRepository) {
         this.objectMapper = objectMapper;
+        this.matchRepository = matchRepository;
     }
 
     public Map<String, List<MatchDTO>> getPlayedMatches() {
@@ -77,5 +79,133 @@ public class MatchService {
         }
         
         return output.toString();
+    }
+
+    public String importMatchesFromJson() {
+        try {
+            int importedCount = 0;
+            
+            // Import played matches
+            Map<String, List<MatchDTO>> matchesByRound = getPlayedMatches();
+            for (Map.Entry<String, List<MatchDTO>> entry : matchesByRound.entrySet()) {
+                String roundKey = entry.getKey();
+                Integer roundNumber = Integer.parseInt(roundKey.replace("jornada_", ""));
+                
+                for (MatchDTO matchDTO : entry.getValue()) {
+                    if (matchDTO.getMatchId() != null && 
+                        matchRepository.findByFotmobMatchId(matchDTO.getMatchId()).isPresent()) {
+                        continue;
+                    }
+                    
+                    Match match = new Match();
+                    match.setFotmobMatchId(matchDTO.getMatchId());
+                    match.setRound(roundNumber);
+                    match.setHomeTeamId(matchDTO.getHomeTeamId());
+                    match.setAwayTeamId(matchDTO.getAwayTeamId());
+                    match.setHomeClub(matchDTO.getHomeTeamName() != null ? matchDTO.getHomeTeamName() : "");
+                    match.setAwayClub(matchDTO.getAwayTeamName() != null ? matchDTO.getAwayTeamName() : "");
+                    match.setHomeGoals(matchDTO.getHomeScore() != null ? matchDTO.getHomeScore() : 0);
+                    match.setAwayGoals(matchDTO.getAwayScore() != null ? matchDTO.getAwayScore() : 0);
+                    match.setStatus(MatchStatus.FINISHED);
+                    
+                    matchRepository.save(match);
+                    importedCount++;
+                }
+            }
+            
+            // Import upcoming matches
+            Map<String, List<UpcomingMatchDTO>> upcomingByRound = getUpcomingMatches();
+            for (Map.Entry<String, List<UpcomingMatchDTO>> entry : upcomingByRound.entrySet()) {
+                String roundKey = entry.getKey();
+                Integer roundNumber = Integer.parseInt(roundKey.replace("jornada_", ""));
+                
+                for (UpcomingMatchDTO upcomingDTO : entry.getValue()) {
+                    // Check by teamIds and round since upcoming matches don't have matchId
+                    if (matchRepository.findByRoundAndHomeTeamIdAndAwayTeamId(
+                            roundNumber, upcomingDTO.getHomeTeamId(), upcomingDTO.getAwayTeamId()).isPresent()) {
+                        continue;
+                    }
+                    
+                    Match match = new Match();
+                    match.setRound(roundNumber);
+                    match.setHomeTeamId(upcomingDTO.getHomeTeamId());
+                    match.setAwayTeamId(upcomingDTO.getAwayTeamId());
+                    match.setHomeClub(upcomingDTO.getHomeTeamName() != null ? upcomingDTO.getHomeTeamName() : "");
+                    match.setAwayClub(upcomingDTO.getAwayTeamName() != null ? upcomingDTO.getAwayTeamName() : "");
+                    match.setMatchDate(upcomingDTO.getMatchDate());
+                    match.setStatus(MatchStatus.UPCOMING);
+                    match.setHomeGoals(0);
+                    match.setAwayGoals(0);
+                    
+                    matchRepository.save(match);
+                    importedCount++;
+                }
+            }
+            
+            return "Imported " + importedCount + " matches successfully";
+        } catch (Exception e) {
+            throw new RuntimeException("Error importing matches: " + e.getMessage(), e);
+        }
+    }
+
+    public List<Match> getAllMatches() {
+        return matchRepository.findAll();
+    }
+
+    public Match getMatchByFotmobId(Integer fotmobMatchId) {
+        return matchRepository.findByFotmobMatchId(fotmobMatchId).orElse(null);
+    }
+
+    public Map<String, List<MatchDTO>> getPlayedMatchesFromDB() {
+        List<Match> matches = matchRepository.findByStatus(MatchStatus.FINISHED);
+        Map<String, List<MatchDTO>> result = new HashMap<>();
+        
+        for (Match match : matches) {
+            String roundKey = "jornada_" + match.getRound();
+            result.computeIfAbsent(roundKey, k -> new ArrayList<>());
+            
+            MatchDTO dto = new MatchDTO();
+            dto.setMatchId(match.getFotmobMatchId());
+            dto.setHomeTeamId(match.getHomeTeamId());
+            dto.setAwayTeamId(match.getAwayTeamId());
+            dto.setHomeScore(match.getHomeGoals());
+            dto.setAwayScore(match.getAwayGoals());
+            dto.setHomeTeamName(match.getHomeClub());
+            dto.setAwayTeamName(match.getAwayClub());
+            
+            result.get(roundKey).add(dto);
+        }
+        
+        return result;
+    }
+
+    public Map<String, List<UpcomingMatchDTO>> getUpcomingMatchesFromDB() {
+        List<Match> matches = matchRepository.findByStatus(MatchStatus.UPCOMING);
+        Map<String, List<UpcomingMatchDTO>> result = new HashMap<>();
+        
+        for (Match match : matches) {
+            String roundKey = "jornada_" + match.getRound();
+            result.computeIfAbsent(roundKey, k -> new ArrayList<>());
+            
+            UpcomingMatchDTO dto = new UpcomingMatchDTO();
+            dto.setMatchId(match.getFotmobMatchId());
+            dto.setHomeTeamId(match.getHomeTeamId());
+            dto.setAwayTeamId(match.getAwayTeamId());
+            dto.setMatchDate(match.getMatchDate());
+            dto.setHomeTeamName(match.getHomeClub());
+            dto.setAwayTeamName(match.getAwayClub());
+            
+            result.get(roundKey).add(dto);
+        }
+        
+        return result;
+    }
+
+    public List<String> getNameTeamMatch(Integer id){
+        Match match = matchRepository.findById(id).orElseThrow(() -> new RuntimeException("Partido no encontrado"));
+        List<String> teamNames = new ArrayList<>();
+        teamNames.add(match.getHomeClub());
+        teamNames.add(match.getAwayClub());
+        return teamNames;
     }
 }

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PlayerStatisticsSummaryDTO {
 
-    private Integer playerId;
+    private String playerId;
     private String playerName;
     private String playerType;
     private Integer matchesPlayed;

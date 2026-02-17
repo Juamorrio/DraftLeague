@@ -1,8 +1,7 @@
 package com.DraftLeague.models.Player;
 
-import org.checkerframework.checker.units.qual.C;
-
-import com.DraftLeague.models.Statistics.PlayerStatistic;
+import com.DraftLeague.models.Team.Team;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
@@ -20,7 +19,7 @@ public class Player {
     @Id
     @Column(name = "id", nullable = false, unique = true)
     @NotNull
-    private Integer id;
+    private String id;
 
     @NotNull
     @Size(max = 60)
@@ -53,7 +52,12 @@ public class Player {
     @Column(name = "team_id", nullable = false)
     private Integer teamId;
 
-    @ManyToOne(optional = false)
-    @Valid
-    private PlayerStatistic playerStatistic;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_id", insertable = false, updatable = false)
+    @JsonIgnore
+    private Team team;
+
+    public String getName() {
+        return this.fullName;
+    }
 }

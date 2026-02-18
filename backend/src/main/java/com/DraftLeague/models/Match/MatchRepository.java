@@ -10,5 +10,9 @@ import java.util.Optional;
 public interface MatchRepository extends JpaRepository<Match, Integer> {
     Optional<Match> findByFotmobMatchId(Integer fotmobMatchId);
     List<Match> findByStatus(MatchStatus status);
+    List<Match> findByStatusOrderByRoundAsc(MatchStatus status);
+    List<Match> findByRound(Integer round);
     Optional<Match> findByRoundAndHomeTeamIdAndAwayTeamId(Integer round, Integer homeTeamId, Integer awayTeamId);
+    Optional<Match> findFirstByStatusAndHomeTeamIdOrderByRoundAsc(MatchStatus status, Integer homeTeamId);
+    Optional<Match> findFirstByStatusAndAwayTeamIdOrderByRoundAsc(MatchStatus status, Integer awayTeamId);
 }

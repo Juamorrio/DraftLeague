@@ -11,6 +11,7 @@ import {
 	Modal,
 	TextInput
 } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import { authenticatedFetch } from '../../services/authService';
 import withAuth from '../../components/withAuth';
 import { useMatches } from '../../context/MatchesContext';
@@ -26,6 +27,9 @@ function Admin() {
 	const [importingPlayers, setImportingPlayers] = useState(false);
 	const [syncingMatches, setSyncingMatches] = useState(false);
 	const [syncingPlayers, setSyncingPlayers] = useState(false);
+	const [selectedGameweek, setSelectedGameweek] = useState(1);
+	const [recalculating, setRecalculating] = useState(false);
+	const [updatingPlayerPoints, setUpdatingPlayerPoints] = useState(false);
 	const { loadMatches } = useMatches();
 
 	useEffect(() => {
@@ -151,6 +155,10 @@ function Admin() {
 	};
 
 	const refreshMarket = async (leagueId) => {
+		console.log('=== Refrescando mercado ===');
+		console.log('League ID:', leagueId);
+		console.log('Tipo de leagueId:', typeof leagueId);
+		
 		try {
 			const res = await authenticatedFetch(`/api/v1/admin/market/${leagueId}/refresh`, {
 				method: 'POST'
@@ -158,10 +166,13 @@ function Admin() {
 			if (res.ok) {
 				Alert.alert('Éxito', 'Mercado refrescado correctamente');
 			} else {
-				Alert.alert('Error', 'No se pudo refrescar el mercado');
+				const errorData = await res.json().catch(() => ({}));
+				console.error('Error del servidor:', errorData);
+				Alert.alert('Error', errorData.error || 'No se pudo refrescar el mercado');
 			}
 		} catch (e) {
-			Alert.alert('Error', 'Error al refrescar mercado');
+			console.error('Error al refrescar mercado:', e);
+			Alert.alert('Error', 'Error al refrescar mercado: ' + e.message);
 		}
 	};
 
@@ -264,6 +275,70 @@ function Admin() {
 		);
 	};
 
+	const recalculateGameweek = async () => {
+		Alert.alert(
+			'Recalcular Puntos',
+			`¿Recalcular los puntos de la jornada ${selectedGameweek} para todos los equipos?`,
+			[
+				{ text: 'Cancelar', style: 'cancel' },
+				{
+					text: 'Recalcular',
+					onPress: async () => {
+						setRecalculating(true);
+						try {
+							const res = await authenticatedFetch(`/api/v1/fantasy-points/gameweek/${selectedGameweek}/recalculate`, {
+								method: 'POST'
+							});
+							if (res.ok) {
+								const data = await res.json();
+								Alert.alert('Completado', data.message || `Puntos de la jornada ${selectedGameweek} recalculados correctamente`);
+							} else {
+								const error = await res.json().catch(() => ({}));
+								Alert.alert('Error', error.error || 'No se pudieron recalcular los puntos');
+							}
+						} catch (e) {
+							Alert.alert('Error', 'Error al recalcular puntos: ' + e.message);
+						} finally {
+							setRecalculating(false);
+						}
+					}
+				}
+			]
+		);
+	};
+
+	const updateAllPlayerPoints = async () => {
+		Alert.alert(
+			'Actualizar Puntos de Jugadores',
+			'¿Actualizar los puntos totales de TODOS los jugadores?',
+			[
+				{ text: 'Cancelar', style: 'cancel' },
+				{
+					text: 'Actualizar',
+					onPress: async () => {
+						setUpdatingPlayerPoints(true);
+						try {
+							const res = await authenticatedFetch('/api/v1/fantasy-points/players/update-all', {
+								method: 'POST'
+							});
+							if (res.ok) {
+								const data = await res.json();
+								Alert.alert('Completado', data.message || 'Puntos de jugadores actualizados correctamente');
+							} else {
+								const error = await res.json().catch(() => ({}));
+								Alert.alert('Error', error.error || 'No se pudieron actualizar los puntos');
+							}
+						} catch (e) {
+							Alert.alert('Error', 'Error al actualizar puntos: ' + e.message);
+						} finally {
+							setUpdatingPlayerPoints(false);
+						}
+					}
+				}
+			]
+		);
+	};
+
 	if (loading && !stats) {
 		return (
 			<View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
@@ -318,6 +393,14 @@ function Admin() {
 				>
 					<Text style={[styles.tabText, activeTab === 'matches' && styles.tabTextActive]}>
 						Partidos
+					</Text>
+				</TouchableOpacity>
+				<TouchableOpacity
+					style={[styles.tab, activeTab === 'points' && styles.tabActive]}
+					onPress={() => setActiveTab('points')}
+				>
+					<Text style={[styles.tabText, activeTab === 'points' && styles.tabTextActive]}>
+						Puntos
 					</Text>
 				</TouchableOpacity>
 			</View>
@@ -484,6 +567,70 @@ function Admin() {
 									</>
 								) : (
 									<Text style={styles.btnImportText}>Sincronizar Partidos</Text>
+								)}
+							</TouchableOpacity>
+						</View>
+					</ScrollView>
+				)}
+
+				{activeTab === 'points' && (
+					<ScrollView contentContainerStyle={{ padding: 16 }}>
+						<View style={styles.playersContainer}>
+							<Text style={styles.playersTitle}>Recalcular Puntos por Jornada</Text>
+							<Text style={styles.playersDescription}>
+								Recalcula los puntos fantasy de todos los equipos para la jornada seleccionada.
+								Esto actualiza los puntos individuales por jugador, los puntos totales del equipo
+								y el ranking de la liga.
+							</Text>
+
+							<Text style={{ fontSize: 14, fontWeight: '600', color: '#333', marginBottom: 8 }}>
+								Seleccionar Jornada:
+							</Text>
+							<View style={{ borderWidth: 1, borderColor: '#ddd', borderRadius: 8, marginBottom: 16, backgroundColor: '#fff' }}>
+								<Picker
+									selectedValue={selectedGameweek}
+									onValueChange={(value) => setSelectedGameweek(value)}
+								>
+									{Array.from({ length: 38 }, (_, i) => i + 1).map(gw => (
+										<Picker.Item key={gw} label={`Jornada ${gw}`} value={gw} />
+									))}
+								</Picker>
+							</View>
+
+							<TouchableOpacity
+								style={[styles.btnImport, recalculating && styles.btnImportDisabled]}
+								onPress={recalculateGameweek}
+								disabled={recalculating}
+							>
+								{recalculating ? (
+									<>
+										<ActivityIndicator size="small" color="#fff" />
+										<Text style={styles.btnImportText}>Recalculando...</Text>
+									</>
+								) : (
+									<Text style={styles.btnImportText}>Recalcular Jornada {selectedGameweek}</Text>
+								)}
+							</TouchableOpacity>
+
+							<View style={{ height: 24 }} />
+
+							<Text style={styles.playersTitle}>Actualizar Puntos de Jugadores</Text>
+							<Text style={styles.playersDescription}>
+								Recalcula los puntos totales acumulados de todos los jugadores
+								sumando los puntos fantasy de todas sus estadisticas de cada partido.
+							</Text>
+							<TouchableOpacity
+								style={[styles.btnImport, updatingPlayerPoints && styles.btnImportDisabled, { backgroundColor: '#2563eb' }]}
+								onPress={updateAllPlayerPoints}
+								disabled={updatingPlayerPoints}
+							>
+								{updatingPlayerPoints ? (
+									<>
+										<ActivityIndicator size="small" color="#fff" />
+										<Text style={styles.btnImportText}>Actualizando...</Text>
+									</>
+								) : (
+									<Text style={styles.btnImportText}>Actualizar Puntos de Jugadores</Text>
 								)}
 							</TouchableOpacity>
 						</View>

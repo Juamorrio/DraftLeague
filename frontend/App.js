@@ -13,14 +13,9 @@ import Team from './pages/Teams/team';
 import Market from './pages/Market/market';
 import Admin from './pages/Admin/admin';
 import Home from './pages/Home/home';
+import PlayerStats from './pages/Player/playerStats';
+import AIInsights from './pages/AI/aiInsights';
 
-
-function RobotPlaceholder() {
-  const { selectedLeague } = useLeague();
-  return (
-    <View style={styles.container}><Text>IA de {selectedLeague?.name}</Text></View>
-  );
-}
 
 export default function App() {
   const [active, setActive] = React.useState('home');
@@ -97,9 +92,10 @@ export default function App() {
           {active === 'home' && <Home />}
           {active === 'team' && <Team />}
           {active === 'market' && <Market />}
-          {active === 'robot' && <RobotPlaceholder />}
+          {active === 'robot' && <AIInsights />}
           {active === 'admin' && <Admin />}
-          {!['home','league','team','market','robot','admin'].includes(active) && (
+          {active === 'playerStats' && <PlayerStats />}
+          {!['home','league','team','market','robot','admin','playerStats'].includes(active) && (
             <View style={styles.container}><Text>Pantalla no definida</Text></View>
           )}
         </Layout>

@@ -9,7 +9,8 @@ export default function Player({
 	avatar,
 	onPress,
 	style,
-	teamId
+	teamId,
+	isCaptain = false
 }) {
 	const [teamImage, setTeamImage] = useState(null);
 	const source = avatar || placeholder;
@@ -46,7 +47,7 @@ export default function Player({
 	return (
 		<TouchableOpacity onPress={onPress} style={[styles.wrapper, style]} activeOpacity={0.8}>
 			<View style={styles.playerContainer}>
-				<View style={styles.avatarContainer}>
+				<View style={[styles.avatarContainer, isCaptain && styles.captainBorder]}>
 					{source ? (
 						<Image source={source} style={styles.avatarImage} />
 					) : (
@@ -55,6 +56,11 @@ export default function Player({
 						</View>
 					)}
 				</View>
+				{isCaptain && (
+					<View style={styles.captainBadge}>
+						<Text style={styles.captainText}>C</Text>
+					</View>
+				)}
 				{teamImage && (
 					<View style={styles.teamBadge}>
 						<Image source={{ uri: teamImage }} style={styles.teamImage} />
@@ -157,5 +163,32 @@ const styles = StyleSheet.create({
 		width: 22,
 		height: 22,
 		resizeMode: 'contain',
+	},
+	captainBorder: {
+		borderColor: '#f59e0b',
+		borderWidth: 3,
+	},
+	captainBadge: {
+		position: 'absolute',
+		top: -4,
+		left: -4,
+		backgroundColor: '#f59e0b',
+		borderRadius: 12,
+		width: 24,
+		height: 24,
+		justifyContent: 'center',
+		alignItems: 'center',
+		borderWidth: 2.5,
+		borderColor: '#ffffff',
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 1 },
+		shadowOpacity: 0.15,
+		shadowRadius: 2,
+		elevation: 4,
+	},
+	captainText: {
+		color: '#ffffff',
+		fontSize: 12,
+		fontWeight: '900',
 	},
 });

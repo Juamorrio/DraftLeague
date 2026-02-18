@@ -29,7 +29,7 @@ public class Match {
 
     @Column(name = "round")
     private Integer round;
-    
+
     @Column(name = "home_team_id")
     private Integer homeTeamId;
 

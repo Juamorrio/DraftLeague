@@ -1,77 +1,85 @@
-import requests
 import json
-from teams import extract_players_teams
 import os
+import time
+import requests
+from public import ApiPublic
 
-def fetch_and_save_players(team_players_dict, output_path):
+
+# API-Football position mapping to app positions
+POSITION_MAP = {
+    "Goalkeeper": "GK",
+    "Defender": "CB",
+    "Midfielder": "CM",
+    "Attacker": "ST",
+}
+
+
+def fetch_and_save_players(output_path):
     """
-    team_players_dict: dict con clave id equipo y valor lista de ids de jugadores
-    output_path: ruta donde guardar el JSON resultante
+    Fetch player data for all La Liga teams using API-Football squads endpoint.
+    Uses /players/squads (1 request per team, 20 total).
+    No per-player requests needed since squads returns name, photo, position.
     """
     all_players = []
     errores = []
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                      "AppleWebKit/537.36 (KHTML, like Gecko) "
-                      "Chrome/139.0.0.0 Safari/537.36",
-        "X-Mas": ""
-    }
-    total = sum(len(ids) for ids in team_players_dict.values())
-    count = 0
-    for team_id, player_ids in team_players_dict.items():
-        print(f"Procesando equipo {team_id} con {len(player_ids)} jugadores...")
-        for player_id in player_ids:
-            url = f"https://www.fotmob.com/api/data/playerData?id={player_id}"
-            try:
-                resp = requests.get(url, headers=headers, timeout=10)
-                resp.raise_for_status()
-                data = resp.json()
-                pos_desc = data.get("positionDescription", {})
-                position = None
-                positions = pos_desc.get("positions", [])
-                if positions and isinstance(positions, list):
-                    pos_short = positions[0].get("strPosShort", {})
-                    position = pos_short.get("label", None)
-                
-                market_value = None
-                player_info = data.get("playerInformation", [])
-                for info in player_info:
-                    if info.get("translationKey") == "transfer_value":
-                        value_obj = info.get("value", {})
-                        market_value = value_obj.get("numberValue", None)
-                        break
-                
-                avatar_url = "https://images.fotmob.com/image_resources/playerimages/"+str(player_id)+".png"
+
+    for team_id in ApiPublic.TEAM_IDS:
+        try:
+            url = f"{ApiPublic.BASE_URL}/players/squads"
+            params = {"team": team_id}
+            resp = requests.get(url, headers=ApiPublic.headers, params=params, timeout=15)
+            resp.raise_for_status()
+            data = resp.json()
+
+            response = data.get("response", [])
+            if not response:
+                print(f"Sin datos para equipo {team_id}")
+                continue
+
+            squad = response[0].get("players", [])
+            print(f"Procesando equipo {team_id} con {len(squad)} jugadores...")
+
+            for player_data in squad:
+                player_id = player_data.get("id")
+                if not player_id:
+                    continue
+
+                api_position = player_data.get("position", "Midfielder")
+                position = POSITION_MAP.get(api_position, "CM")
+
+                avatar_url = player_data.get("photo", "")
+
                 player = {
                     "id": str(player_id),
-                    "fullName": data.get("name", "Desconocido"),
+                    "fullName": player_data.get("name", "Desconocido"),
                     "position": position,
-                    "marketValue": market_value,
+                    "marketValue": None,  # Not available in free tier
                     "avatarUrl": avatar_url,
                     "teamId": team_id,
                 }
                 all_players.append(player)
-                count += 1
-                if count % 10 == 0 or count == total:
-                    print(f"  Progreso: {count}/{total} jugadores procesados...")
-            except Exception as e:
-                print(f"Error con jugador {player_id}: {e}")
-                errores.append((player_id, str(e)))
+
+            time.sleep(ApiPublic.RATE_LIMIT_DELAY_SQUADS)  
+        except Exception as e:
+            print(f"Error con equipo {team_id}: {e}")
+            errores.append((team_id, str(e)))
+
     if all_players:
         try:
             with open(output_path, "w", encoding="utf-8") as f:
                 json.dump(all_players, f, ensure_ascii=False, indent=2)
-            print(f"Se han guardado {len(all_players)} jugadores en {output_path}")
+            print(f"\nSe han guardado {len(all_players)} jugadores en {output_path}")
         except Exception as e:
             print(f"Error al guardar el archivo JSON: {e}")
     else:
-        print("No se ha generado ningún JSON porque no se obtuvo ningún jugador.")
+        print("No se ha generado ningun JSON porque no se obtuvo ningun jugador.")
+
     if errores:
-         print(f"Errores encontrados en {len(errores)} jugadores:")
-         for pid, err in errores:
-            print(f"  ID {pid}: {err}")
+        print(f"\nErrores encontrados en {len(errores)} equipos:")
+        for tid, err in errores:
+            print(f"  Team {tid}: {err}")
+
 
 if __name__ == "__main__":
-    team_players = json.loads(extract_players_teams())
     output_path = os.path.join(os.path.dirname(__file__), "players_data.json")
-    fetch_and_save_players(team_players, output_path)
+    fetch_and_save_players(output_path)

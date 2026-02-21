@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import authService from '../../services/authService';
 import { useLeague } from '../../context/LeagueContext';
 
@@ -9,13 +10,22 @@ export default function RankingLeague({ league, onBack }) {
   const [rows, setRows] = useState([]);
   const { setViewUser } = useLeague();
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [selectedView, setSelectedView] = useState('total'); // 'total' o número de jornada
+  const [maxGameweek] = useState(38); // Número máximo de jornadas
 
   useEffect(() => {
     if (!league || !league.id) return;
     const load = async () => {
       setLoading(true); setError('');
       try {
-        const res = await authService.authenticatedFetch(`/api/v1/leagues/${league.id}/ranking`);
+        let endpoint;
+        if (selectedView === 'total') {
+          endpoint = `/api/v1/leagues/${league.id}/ranking`;
+        } else {
+          endpoint = `/api/v1/fantasy-points/leagues/${league.id}/gameweek/${selectedView}/ranking`;
+        }
+
+        const res = await authService.authenticatedFetch(endpoint);
         if (!res.ok) throw new Error(await res.text());
         const data = await res.json();
         setRows(Array.isArray(data) ? data : []);
@@ -24,7 +34,7 @@ export default function RankingLeague({ league, onBack }) {
       } finally { setLoading(false); }
     };
     load();
-  }, [league]);
+  }, [league, selectedView]); // Agregar selectedView como dependencia
 
   useEffect(() => {
     (async () => {
@@ -35,9 +45,21 @@ export default function RankingLeague({ league, onBack }) {
 
   return (
     <View style={styles.screen}>
-      <View style={styles.header}> 
+      <View style={styles.header}>
         <Text style={styles.title}>Ranking: {league?.name}</Text>
         <TouchableOpacity onPress={onBack} style={styles.backBtn}><Text style={styles.backTxt}>Volver</Text></TouchableOpacity>
+      </View>
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={selectedView}
+          style={styles.picker}
+          onValueChange={(value) => setSelectedView(value)}
+        >
+          <Picker.Item label="Total Acumulado" value="total" />
+          {Array.from({ length: maxGameweek }, (_, i) => i + 1).map(gw => (
+            <Picker.Item key={gw} label={`Jornada ${gw}`} value={gw} />
+          ))}
+        </Picker>
       </View>
       {loading && <ActivityIndicator size="large" color="#1d4ed8" />}
       {error ? <Text style={styles.error}>{error}</Text> : null}
@@ -61,7 +83,14 @@ export default function RankingLeague({ league, onBack }) {
                     <View style={styles.meTag}><Text style={styles.meTagText}>Tú</Text></View>
                   )}
                 </View>
-                <Text style={styles.points}>{r.totalPoints} pts</Text>
+                {selectedView === 'total' ? (
+                  <Text style={styles.points}>{r.totalPoints} pts</Text>
+                ) : (
+                  <View>
+                    <Text style={styles.points}>{r.gameweekPoints} pts (jornada)</Text>
+                    <Text style={styles.totalPointsSecondary}>{r.totalPoints} pts total</Text>
+                  </View>
+                )}
               </View>
             </TouchableOpacity>
           );
@@ -89,4 +118,7 @@ const styles = StyleSheet.create({
   meTag: { backgroundColor: '#f59e0b', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 9999 },
   meTagText: { color: '#fff', fontWeight: '700', fontSize: 10 },
   points: { marginTop: 2, fontSize: 12, color: '#374151' },
+  pickerContainer: { marginBottom: 12 },
+  picker: { backgroundColor: '#f3f4f6', borderRadius: 8, height: 50 },
+  totalPointsSecondary: { fontSize: 10, color: '#6b7280', marginTop: 2 },
 });

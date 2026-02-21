@@ -52,8 +52,8 @@ public abstract class PlayerStatistic {
     @Column(name = "role")
     private String role;
 
-    @Column(name = "fotmob_rating")
-    private Double fotmobRating;
+    @Column(name = "rating")
+    private Double rating;
 
     @NotNull
     @Min(0)
@@ -73,6 +73,10 @@ public abstract class PlayerStatistic {
     private Integer totalShots = 0;
 
     @Min(0)
+    @Column(name = "shots_on_target")
+    private Integer shotsOnTarget = 0;
+
+    @Min(0)
     @Column(name = "accurate_passes")
     private Integer accuratePasses = 0;
 
@@ -84,31 +88,29 @@ public abstract class PlayerStatistic {
     @Column(name = "chances_created")
     private Integer chancesCreated = 0;
 
-    @Column(name = "expected_assists")
-    private Double expectedAssists;
-
-    @Column(name = "xg_and_xa")
-    private Double xgAndXa;
+    @Min(0)
+    @Column(name = "successful_dribbles")
+    private Integer successfulDribbles = 0;
 
     @Min(0)
-    @Column(name = "defensive_actions")
-    private Integer defensiveActions = 0;
+    @Column(name = "total_dribbles")
+    private Integer totalDribbles = 0;
 
     @Min(0)
-    @Column(name = "touches")
-    private Integer touches = 0;
+    @Column(name = "dribbled_past")
+    private Integer dribbledPast = 0;
 
     @Min(0)
-    @Column(name = "accurate_long_balls")
-    private Integer accurateLongBalls = 0;
+    @Column(name = "offsides")
+    private Integer offsides = 0;
 
     @Min(0)
-    @Column(name = "total_long_balls")
-    private Integer totalLongBalls = 0;
+    @Column(name = "accurate_crosses")
+    private Integer accurateCrosses = 0;
 
     @Min(0)
-    @Column(name = "dispossessed")
-    private Integer dispossessed = 0;
+    @Column(name = "total_crosses")
+    private Integer totalCrosses = 0;
 
     @Min(0)
     @Column(name = "tackles")
@@ -119,20 +121,8 @@ public abstract class PlayerStatistic {
     private Integer blocks = 0;
 
     @Min(0)
-    @Column(name = "clearances")
-    private Integer clearances = 0;
-
-    @Min(0)
     @Column(name = "interceptions")
     private Integer interceptions = 0;
-
-    @Min(0)
-    @Column(name = "recoveries")
-    private Integer recoveries = 0;
-
-    @Min(0)
-    @Column(name = "dribbled_past")
-    private Integer dribbledPast = 0;
 
     @Min(0)
     @Column(name = "duels_won")
@@ -141,22 +131,6 @@ public abstract class PlayerStatistic {
     @Min(0)
     @Column(name = "duels_lost")
     private Integer duelsLost = 0;
-
-    @Min(0)
-    @Column(name = "ground_duels_won")
-    private Integer groundDuelsWon = 0;
-
-    @Min(0)
-    @Column(name = "total_ground_duels")
-    private Integer totalGroundDuels = 0;
-
-    @Min(0)
-    @Column(name = "aerial_duels_won")
-    private Integer aerialDuelsWon = 0;
-
-    @Min(0)
-    @Column(name = "total_aerial_duels")
-    private Integer totalAerialDuels = 0;
 
     @Min(0)
     @Column(name = "was_fouled")
@@ -174,14 +148,23 @@ public abstract class PlayerStatistic {
     @Column(name = "red_cards")
     private Integer redCards = 0;
 
-    // Goalkeeper specific fields (available for all, but mainly used by GK)
+    // Penalty stats
+    @Min(0)
+    @Column(name = "penalties_won")
+    private Integer penaltiesWon = 0;
+
+    @Min(0)
+    @Column(name = "penalty_scored")
+    private Integer penaltyScored = 0;
+
+    @Min(0)
+    @Column(name = "penalty_missed")
+    private Integer penaltyMissed = 0;
+
+    // Goalkeeper specific fields
     @Min(0)
     @Column(name = "saves")
     private Integer saves;
-
-    @Min(0)
-    @Column(name = "saves_inside_box")
-    private Integer savesInsideBox;
 
     @Min(0)
     @Column(name = "penalties_saved")
@@ -194,35 +177,49 @@ public abstract class PlayerStatistic {
     @Column(name = "goals_conceded")
     private Integer goalsConceded;
 
+    @Column(name = "is_substitute")
+    private Boolean isSubstitute = false;
+
+    @Column(name = "is_captain")
+    private Boolean isCaptain = false;
+
+    @Min(0)
+    @Column(name = "shirt_number")
+    private Integer shirtNumber;
+
+    @Min(0)
+    @Column(name = "penalty_committed")
+    private Integer penaltyCommitted = 0;
+
     @Column(name = "total_fantasy_points")
     private Integer totalFantasyPoints = 0;
 
     /**
-     * Calcula los puntos fantasy basándose en las estadísticas del jugador
-     * Sistema de puntuación inspirado en LaLiga Fantasy
+     * Calcula los puntos fantasy basandose en las estadisticas del jugador
+     * Sistema de puntuacion inspirado en LaLiga Fantasy
      */
     public int calculateFantasyPoints() {
         int points = 0;
 
         // Puntos base por minutos jugados
         if (minutesPlayed >= 60) {
-            points += 2;  // Jugó más de 60 minutos
+            points += 2;
         } else if (minutesPlayed > 0) {
-            points += 1;  // Jugó menos de 60 minutos
+            points += 1;
         }
 
-        // Goles (varía según posición)
+        // Goles (varia segun posicion)
         if (goals != null && goals > 0) {
             switch (playerType) {
                 case GOALKEEPER:
                 case DEFENDER:
-                    points += goals * 6;  // Gol de defensa/portero vale más
+                    points += goals * 6;
                     break;
                 case MIDFIELDER:
                     points += goals * 5;
                     break;
                 case FORWARD:
-                    points += goals * 4;  // Gol de delantero vale menos
+                    points += goals * 4;
                     break;
             }
         }
@@ -233,75 +230,75 @@ public abstract class PlayerStatistic {
         }
 
         // Bonus por rating
-        if (fotmobRating != null) {
-            if (fotmobRating >= 9.0) {
-                points += 5;  // Rendimiento excepcional
-            } else if (fotmobRating >= 8.0) {
-                points += 3;  // Muy buen rendimiento
-            } else if (fotmobRating >= 7.0) {
-                points += 1;  // Buen rendimiento
-            } else if (fotmobRating < 5.0) {
-                points -= 1;  // Mal rendimiento
+        if (rating != null) {
+            if (rating >= 9.0) {
+                points += 5;
+            } else if (rating >= 8.0) {
+                points += 3;
+            } else if (rating >= 7.0) {
+                points += 1;
+            } else if (rating < 5.0) {
+                points -= 1;
             }
         }
 
         // Tarjetas
         if (yellowCards != null && yellowCards > 0) {
-            points -= yellowCards;  // -1 por amarilla
+            points -= yellowCards;
         }
         if (redCards != null && redCards > 0) {
-            points -= redCards * 3;  // -3 por roja
+            points -= redCards * 3;
         }
 
         // Acciones defensivas (para defensores y mediocampistas)
         if (playerType == PlayerType.DEFENDER || playerType == PlayerType.MIDFIELDER) {
-            if (tackles != null) points += tackles / 3;  // +1 cada 3 tackles
-            if (interceptions != null) points += interceptions / 3;  // +1 cada 3 intercepciones
-            if (clearances != null) points += clearances / 4;  // +1 cada 4 despejes
+            if (tackles != null) points += tackles / 3;
+            if (interceptions != null) points += interceptions / 3;
+            if (blocks != null) points += blocks / 4;
         }
 
         // Duelos ganados (todos los jugadores)
         if (duelsWon != null && duelsWon >= 5) {
-            points += 1;  // Bonus por ganar muchos duelos
-        }
-
-        // Penalización por pérdidas de balón excesivas
-        if (dispossessed != null && dispossessed >= 3) {
-            points -= 1;
+            points += 1;
         }
 
         // BONIFICACIONES ESPECIALES
-        // Clean Sheet (portero/defensa sin goles recibidos y jugó >60 min)
+        // Clean Sheet (portero/defensa sin goles recibidos y jugo >60 min)
         if ((playerType == PlayerType.GOALKEEPER || playerType == PlayerType.DEFENDER)
             && minutesPlayed >= 60) {
             if (cleanSheet != null && cleanSheet) {
-                points += 4; // +4 por clean sheet
+                points += 4;
             }
         }
 
         // Hat-trick (3+ goles)
         if (goals != null && goals >= 3) {
-            points += 5; // +5 bonus por hat-trick
+            points += 5;
         }
 
         // Penalti parado (solo porteros)
         if (playerType == PlayerType.GOALKEEPER && penaltiesSaved != null && penaltiesSaved > 0) {
-            points += penaltiesSaved * 5; // +5 por cada penalti parado
+            points += penaltiesSaved * 5;
         }
 
         // Asistencia doble (2 asistencias)
         if (assists != null && assists == 2) {
-            points += 3; // +3 bonus
+            points += 3;
         }
 
-        // Asistencia triple o más (3+ asistencias)
+        // Asistencia triple o mas (3+ asistencias)
         if (assists != null && assists >= 3) {
-            points += 8; // +8 bonus (total +11 con el anterior)
+            points += 8;
         }
 
-        // Múltiples goles concedidos (penalización para porteros)
+        // Multiples goles concedidos (penalizacion para porteros)
         if (playerType == PlayerType.GOALKEEPER && goalsConceded != null && goalsConceded >= 3) {
-            points -= 2; // -2 por recibir 3 o más goles
+            points -= 2;
+        }
+
+        // Penalti cometido (provocar penalti del rival)
+        if (penaltyCommitted != null && penaltyCommitted > 0) {
+            points -= penaltyCommitted * 2;
         }
 
         // Asegurar que no sea negativo
@@ -325,7 +322,7 @@ public abstract class PlayerStatistic {
             total += 1;
         }
 
-        // Goles (varía según posición)
+        // Goles (varia segun posicion)
         if (goals != null && goals > 0) {
             int goalPoints = 0;
             switch (playerType) {
@@ -354,15 +351,15 @@ public abstract class PlayerStatistic {
         }
 
         // Bonus por rating
-        if (fotmobRating != null) {
+        if (rating != null) {
             int ratingPoints = 0;
-            if (fotmobRating >= 9.0) {
+            if (rating >= 9.0) {
                 ratingPoints = 5;
-            } else if (fotmobRating >= 8.0) {
+            } else if (rating >= 8.0) {
                 ratingPoints = 3;
-            } else if (fotmobRating >= 7.0) {
+            } else if (rating >= 7.0) {
                 ratingPoints = 1;
-            } else if (fotmobRating < 5.0) {
+            } else if (rating < 5.0) {
                 ratingPoints = -1;
             }
             if (ratingPoints != 0) {
@@ -388,7 +385,7 @@ public abstract class PlayerStatistic {
             int defPoints = 0;
             if (tackles != null) defPoints += tackles / 3;
             if (interceptions != null) defPoints += interceptions / 3;
-            if (clearances != null) defPoints += clearances / 4;
+            if (blocks != null) defPoints += blocks / 4;
             if (defPoints != 0) {
                 breakdown.put("defensiveActions", defPoints);
                 total += defPoints;
@@ -399,12 +396,6 @@ public abstract class PlayerStatistic {
         if (duelsWon != null && duelsWon >= 5) {
             breakdown.put("duelsBonus", 1);
             total += 1;
-        }
-
-        // Penalización por pérdidas de balón
-        if (dispossessed != null && dispossessed >= 3) {
-            breakdown.put("dispossessedPenalty", -1);
-            total -= 1;
         }
 
         // Clean Sheet
@@ -435,16 +426,23 @@ public abstract class PlayerStatistic {
             total += 3;
         }
 
-        // Asistencia triple o más
+        // Asistencia triple o mas
         if (assists != null && assists >= 3) {
             breakdown.put("tripleAssist", 8);
             total += 8;
         }
 
-        // Múltiples goles concedidos
+        // Multiples goles concedidos
         if (playerType == PlayerType.GOALKEEPER && goalsConceded != null && goalsConceded >= 3) {
             breakdown.put("multipleGoalsConceded", -2);
             total -= 2;
+        }
+
+        // Penalti cometido
+        if (penaltyCommitted != null && penaltyCommitted > 0) {
+            int penCommittedPoints = -penaltyCommitted * 2;
+            breakdown.put("penaltyCommitted", penCommittedPoints);
+            total += penCommittedPoints;
         }
 
         breakdown.put("total", Math.max(total, 0));

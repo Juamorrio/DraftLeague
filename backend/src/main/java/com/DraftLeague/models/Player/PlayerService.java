@@ -104,7 +104,7 @@ public class PlayerService {
     }
 
     public byte[] fetchPlayerTeamImage(String teamId) {
-    String url = "https://images.fotmob.com/image_resources/logo/teamlogo/" + teamId + ".png";
+    String url = "https://media.api-sports.io/football/teams/" + teamId + ".png";
     
     HttpClient client = HttpClient.newHttpClient();
     HttpRequest request = HttpRequest.newBuilder()

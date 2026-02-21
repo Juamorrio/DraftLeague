@@ -92,13 +92,13 @@ public class MatchService {
                 Integer roundNumber = Integer.parseInt(roundKey.replace("jornada_", ""));
                 
                 for (MatchDTO matchDTO : entry.getValue()) {
-                    if (matchDTO.getMatchId() != null && 
-                        matchRepository.findByFotmobMatchId(matchDTO.getMatchId()).isPresent()) {
+                    if (matchDTO.getFixtureId() != null &&
+                        matchRepository.findByApiFootballFixtureId(matchDTO.getFixtureId()).isPresent()) {
                         continue;
                     }
-                    
+
                     Match match = new Match();
-                    match.setFotmobMatchId(matchDTO.getMatchId());
+                    match.setApiFootballFixtureId(matchDTO.getFixtureId());
                     match.setRound(roundNumber);
                     match.setHomeTeamId(matchDTO.getHomeTeamId());
                     match.setAwayTeamId(matchDTO.getAwayTeamId());
@@ -106,6 +106,8 @@ public class MatchService {
                     match.setAwayClub(matchDTO.getAwayTeamName() != null ? matchDTO.getAwayTeamName() : "");
                     match.setHomeGoals(matchDTO.getHomeScore() != null ? matchDTO.getHomeScore() : 0);
                     match.setAwayGoals(matchDTO.getAwayScore() != null ? matchDTO.getAwayScore() : 0);
+                    match.setHomeXg(matchDTO.getHomeXg());
+                    match.setAwayXg(matchDTO.getAwayXg());
                     match.setStatus(MatchStatus.FINISHED);
                     
                     matchRepository.save(match);
@@ -152,8 +154,8 @@ public class MatchService {
         return matchRepository.findAll();
     }
 
-    public Match getMatchByFotmobId(Integer fotmobMatchId) {
-        return matchRepository.findByFotmobMatchId(fotmobMatchId).orElse(null);
+    public Match getMatchByFixtureId(Integer fixtureId) {
+        return matchRepository.findByApiFootballFixtureId(fixtureId).orElse(null);
     }
 
     public Map<String, List<MatchDTO>> getPlayedMatchesFromDB() {
@@ -165,30 +167,32 @@ public class MatchService {
             result.computeIfAbsent(roundKey, k -> new ArrayList<>());
             
             MatchDTO dto = new MatchDTO();
-            dto.setMatchId(match.getFotmobMatchId());
+            dto.setFixtureId(match.getApiFootballFixtureId());
             dto.setHomeTeamId(match.getHomeTeamId());
             dto.setAwayTeamId(match.getAwayTeamId());
             dto.setHomeScore(match.getHomeGoals());
             dto.setAwayScore(match.getAwayGoals());
+            dto.setHomeXg(match.getHomeXg());
+            dto.setAwayXg(match.getAwayXg());
             dto.setHomeTeamName(match.getHomeClub());
             dto.setAwayTeamName(match.getAwayClub());
-            
+
             result.get(roundKey).add(dto);
         }
-        
+
         return result;
     }
 
     public Map<String, List<UpcomingMatchDTO>> getUpcomingMatchesFromDB() {
         List<Match> matches = matchRepository.findByStatus(MatchStatus.UPCOMING);
         Map<String, List<UpcomingMatchDTO>> result = new HashMap<>();
-        
+
         for (Match match : matches) {
             String roundKey = "jornada_" + match.getRound();
             result.computeIfAbsent(roundKey, k -> new ArrayList<>());
-            
+
             UpcomingMatchDTO dto = new UpcomingMatchDTO();
-            dto.setMatchId(match.getFotmobMatchId());
+            dto.setFixtureId(match.getApiFootballFixtureId());
             dto.setHomeTeamId(match.getHomeTeamId());
             dto.setAwayTeamId(match.getAwayTeamId());
             dto.setMatchDate(match.getMatchDate());
@@ -207,5 +211,46 @@ public class MatchService {
         teamNames.add(match.getHomeClub());
         teamNames.add(match.getAwayClub());
         return teamNames;
+    }
+
+    /**
+     * Get the next upcoming round number (the lowest round with UPCOMING matches).
+     * @return the next round number, or null if no upcoming matches exist
+     */
+    public Integer getNextRound() {
+        List<Match> upcoming = matchRepository.findByStatusOrderByRoundAsc(MatchStatus.UPCOMING);
+        if (upcoming.isEmpty()) return null;
+        return upcoming.get(0).getRound();
+    }
+
+    /**
+     * Get all matches in the next upcoming round.
+     * @return list of matches in the next round, or empty list
+     */
+    public List<Match> getNextRoundMatches() {
+        Integer nextRound = getNextRound();
+        if (nextRound == null) return new ArrayList<>();
+        return matchRepository.findByRound(nextRound);
+    }
+
+    /**
+     * Get the next upcoming match for a specific club (by API-Football team ID).
+     * Searches for the earliest upcoming match where the club plays as home or away.
+     * @param clubTeamId the API-Football team ID
+     * @return the next match, or null if not found
+     */
+    public Match getNextMatchForClub(Integer clubTeamId) {
+        if (clubTeamId == null) return null;
+
+        var homeMatch = matchRepository.findFirstByStatusAndHomeTeamIdOrderByRoundAsc(
+                MatchStatus.UPCOMING, clubTeamId);
+        var awayMatch = matchRepository.findFirstByStatusAndAwayTeamIdOrderByRoundAsc(
+                MatchStatus.UPCOMING, clubTeamId);
+
+        if (homeMatch.isPresent() && awayMatch.isPresent()) {
+            return homeMatch.get().getRound() <= awayMatch.get().getRound()
+                    ? homeMatch.get() : awayMatch.get();
+        }
+        return homeMatch.orElseGet(() -> awayMatch.orElse(null));
     }
 }

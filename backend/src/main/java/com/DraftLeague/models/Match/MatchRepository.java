@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface MatchRepository extends JpaRepository<Match, Integer> {
-    Optional<Match> findByFotmobMatchId(Integer fotmobMatchId);
+    Optional<Match> findByApiFootballFixtureId(Integer apiFootballFixtureId);
     List<Match> findByStatus(MatchStatus status);
     List<Match> findByStatusOrderByRoundAsc(MatchStatus status);
     List<Match> findByRound(Integer round);

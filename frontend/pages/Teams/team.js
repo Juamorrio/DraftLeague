@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Modal, FlatList, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Modal, FlatList, Alert, ScrollView, ActivityIndicator } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import { useLeague } from '../../context/LeagueContext';
 import pitch from '../../assets/Team/pitch.png';
 import Player from '../../components/player';
@@ -8,7 +9,7 @@ import withAuth from '../../components/withAuth';
 
 
 function Team({ userId: viewUserId = null, readOnly = false }) {
-	const { selectedLeague, viewUser, setViewUser, setNavTarget } = useLeague();
+	const { selectedLeague, viewUser, setViewUser, setNavTarget, setSelectedPlayer } = useLeague();
 	const [players, setPlayers] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [assigned, setAssigned] = useState({});
@@ -19,7 +20,17 @@ function Team({ userId: viewUserId = null, readOnly = false }) {
 	const [currentKey, setCurrentKey] = useState(null);
 	const [error, setError] = useState(null);
 	const [saving, setSaving] = useState(false);
-	const [formation, setFormation] = useState('4-3-3'); 
+	const [formation, setFormation] = useState('4-3-3');
+	const [selectedPlayerSlot, setSelectedPlayerSlot] = useState(null);
+	const [teamPrediction, setTeamPrediction] = useState(null);
+	const [loadingPrediction, setLoadingPrediction] = useState(false);
+	const [selectedGameweek, setSelectedGameweek] = useState('total');
+	const [playerGameweekPoints, setPlayerGameweekPoints] = useState({});
+	const [gameweekSnapshots, setGameweekSnapshots] = useState([]);
+	const [maxGameweek] = useState(38);
+	const [loadingPoints, setLoadingPoints] = useState(false);
+	const [captainPlayerId, setCaptainPlayerId] = useState(null);
+
 
 	const formations = {
 		'4-3-3': {
@@ -43,6 +54,50 @@ function Team({ userId: viewUserId = null, readOnly = false }) {
 
 	const currentFormation = formations[formation];
 	const positions = currentFormation.positions;
+
+	// Build historical lineup from gameweek snapshots
+	const historicalAssigned = useMemo(() => {
+		if (selectedGameweek === 'total' || gameweekSnapshots.length === 0) return null;
+
+		const positionSlots = { POR: [], DEF: [], MID: [], DEL: [] };
+		const slotKeys = {
+			POR: ['GK'],
+			DEF: ['LB', 'CB1', 'CB2', 'RB'],
+			MID: ['CM1', 'CM2', 'CAM'],
+			DEL: ['LW', 'RW', 'ST'],
+		};
+
+		// Group snapshots by position
+		gameweekSnapshots.forEach(s => {
+			const pos = s.position;
+			if (positionSlots[pos]) {
+				positionSlots[pos].push(s);
+			}
+		});
+
+		const result = {};
+		// Assign each snapshot to available pitch slots
+		Object.entries(slotKeys).forEach(([pos, keys]) => {
+			const players = positionSlots[pos] || [];
+			keys.forEach((key, i) => {
+				if (i < players.length) {
+					const s = players[i];
+					result[key] = {
+						player: {
+							id: s.playerId,
+							fullName: s.playerName,
+							name: s.playerName,
+							position: s.position,
+							totalPoints: s.gameweekPoints || 0,
+							avatarUrl: s.avatarUrl || null,
+						}
+					};
+				}
+			});
+		});
+
+		return result;
+	}, [selectedGameweek, gameweekSnapshots]);
 
 	if (!viewUserId && viewUser?.id) {
 		viewUserId = viewUser.id;
@@ -128,7 +183,10 @@ function Team({ userId: viewUserId = null, readOnly = false }) {
 							}
 						});
 					});
-					
+
+					const captain = team.playerTeams.find(pt => pt.isCaptain);
+					setCaptainPlayerId(captain ? captain.player.id : null);
+
 					setAssigned(newAssigned);
 				}
 			}
@@ -137,9 +195,105 @@ function Team({ userId: viewUserId = null, readOnly = false }) {
 		}
 	};
 
+	const loadPlayerGameweekPoints = async (teamId, gameweek) => {
+		if (gameweek === 'total') {
+			setPlayerGameweekPoints({});
+			setGameweekSnapshots([]);
+			return;
+		}
+
+		try {
+			setLoadingPoints(true);
+			const res = await authenticatedFetch(
+				`/api/v1/fantasy-points/teams/${teamId}/gameweek/${gameweek}/players`
+			);
+			if (!res.ok) throw new Error('Error loading gameweek points');
+
+			const data = await res.json();
+			const pointsMap = {};
+			data.forEach(p => {
+				pointsMap[p.playerId] = p.gameweekPoints || 0;
+			});
+			setPlayerGameweekPoints(pointsMap);
+			setGameweekSnapshots(data);
+		} catch (e) {
+			console.error('Error loading gameweek points:', e);
+			setPlayerGameweekPoints({});
+			setGameweekSnapshots([]);
+		} finally {
+			setLoadingPoints(false);
+		}
+	};
+
 	useEffect(() => {
 		loadTeam();
 	}, [selectedLeague?.id, formation]);
+
+	useEffect(() => {
+		if (selectedGameweek === 'total') {
+			setPlayerGameweekPoints({});
+			setGameweekSnapshots([]);
+			return;
+		}
+
+		(async () => {
+			if (!selectedLeague?.id) return;
+
+			try {
+				let userIdToUse = viewUserId;
+				if (!userIdToUse) {
+					const user = await authService.getCurrentUser();
+					if (!user?.id) return;
+					userIdToUse = user.id;
+				}
+
+				const res = await authenticatedFetch(`/api/v1/teams/league/${selectedLeague.id}/${userIdToUse}`);
+				if (res.ok) {
+					const team = await res.json();
+					if (team?.id) {
+						await loadPlayerGameweekPoints(team.id, selectedGameweek);
+					}
+				}
+			} catch (e) {
+				console.error('Error loading team for points:', e);
+			}
+		})();
+	}, [selectedGameweek, selectedLeague?.id, viewUserId]);
+
+	// Cargar predicción ML del equipo
+	useEffect(() => {
+		const loadTeamPrediction = async () => {
+			if (!selectedLeague?.id || Object.keys(assigned).length === 0) {
+				setTeamPrediction(null);
+				return;
+			}
+
+			setLoadingPrediction(true);
+			try {
+				// Obtener el teamId del primer jugador asignado
+				const firstAssigned = Object.values(assigned).find(pt => pt?.team?.id);
+				if (!firstAssigned) return;
+
+				const teamId = firstAssigned.team.id;
+
+				const response = await authenticatedFetch(`/api/ml/predict/team/${teamId}`);
+				if (response.ok) {
+					const prediction = await response.json();
+					console.log('Prediccion de equipo cargada:', prediction);
+					setTeamPrediction(prediction);
+				} else {
+					console.log('No se pudo cargar la prediccion del equipo');
+				}
+			} catch (e) {
+				console.log('Error al cargar prediccion de equipo:', e);
+			} finally {
+				setLoadingPrediction(false);
+			}
+		};
+
+		loadTeamPrediction();
+	}, [selectedLeague?.id, assigned]);
+
 
 	const loadMyBudget = async () => {
 		if (!selectedLeague?.id) return;
@@ -156,6 +310,14 @@ function Team({ userId: viewUserId = null, readOnly = false }) {
 
 	useEffect(() => { loadMyBudget(); }, [selectedLeague?.id]);
 
+	const getPlayerPoints = (player) => {
+		if (selectedGameweek === 'total') {
+			return player.totalPoints || 0;
+		} else {
+			return playerGameweekPoints[player.id] || 0;
+		}
+	};
+
 	const openPicker = (key) => { if (readOnly) return; setCurrentKey(key); setPickerVisible(true); };
 
 	const getAssignedPlayer = (slotValue) => {
@@ -163,10 +325,18 @@ function Team({ userId: viewUserId = null, readOnly = false }) {
 		return slotValue.player ?? slotValue;
 	};
 
-	const openOptions = (pt) => {
-		if (!readOnly || !pt) return;
+	const openOptions = (pt, slotKey) => {
+		if (!pt) return;
 		setSelectedPT(pt);
+		setSelectedPlayerSlot(slotKey);
 		setOptionsVisible(true);
+	};
+
+	const goToPlayerStats = (player) => {
+		if (!player?.id) return;
+		setSelectedPlayer(player);
+		setOptionsVisible(false);
+		setNavTarget('playerStats');
 	};
 
 	const buyout = async (pt) => {
@@ -188,6 +358,30 @@ function Team({ userId: viewUserId = null, readOnly = false }) {
 			}
 		} catch (e) {
 			Alert.alert('Error', e?.message || 'Fallo al ejecutar clausulazo');
+		}
+	};
+
+	const sellPlayer = async (pt) => {
+		if (!selectedLeague?.id || !pt?.player?.id) return;
+		try {
+			const res = await authenticatedFetch(`/api/v1/teams/league/${selectedLeague.id}/sell-player`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ playerId: pt.player.id })
+			});
+			if (res.ok) {
+				const data = await res.json();
+				if (typeof data.budget === 'number') setMyBudget(data.budget);
+				const price = data.sellPrice || 0;
+				Alert.alert('Jugador vendido', `${pt.player.fullName || pt.player.name} vendido por €${price.toLocaleString('es-ES')}`);
+				if (captainPlayerId === pt.player.id) setCaptainPlayerId(null);
+				await loadTeam();
+			} else {
+				const data = await res.json().catch(() => ({}));
+				Alert.alert('Error', data?.error || 'No se pudo vender el jugador');
+			}
+		} catch (e) {
+			Alert.alert('Error', e?.message || 'Fallo al vender jugador');
 		}
 	};
 	
@@ -212,7 +406,7 @@ function Team({ userId: viewUserId = null, readOnly = false }) {
 					playerId: p.id,
 			position: position,
 			lined: true,
-			isCaptain: false
+			isCaptain: p.id === captainPlayerId
 				};
 			})
 			.filter(Boolean);
@@ -281,13 +475,41 @@ function Team({ userId: viewUserId = null, readOnly = false }) {
 				)}
 			</View>
 
+			{!readOnly && (
+				<View style={styles.pickerContainer}>
+					<Text style={styles.pickerLabel}>Ver puntos:</Text>
+					<Picker
+						selectedValue={selectedGameweek}
+						style={styles.picker}
+						onValueChange={(value) => setSelectedGameweek(value)}
+					>
+						<Picker.Item label="Total Acumulado" value="total" />
+						{Array.from({ length: maxGameweek }, (_, i) => i + 1).map(gw => (
+							<Picker.Item key={gw} label={`Jornada ${gw}`} value={gw} />
+						))}
+					</Picker>
+				</View>
+			)}
+
+			{selectedGameweek !== 'total' && historicalAssigned && (
+				<View style={styles.historicalBanner}>
+					<Text style={styles.historicalBannerText}>
+						Jornada {selectedGameweek} - Alineacion historica
+					</Text>
+				</View>
+			)}
+
 			<View style={styles.fieldContainer}>
 				<Image source={pitch} style={styles.fieldImage} />
-				{positions.map(p => (
-					<View key={p.key} style={[styles.spot, { left: p.x, top: p.y }]}> 
-					{assigned[p.key] ? (
+				{positions.map(p => {
+					const displaySource = historicalAssigned || assigned;
+					const slotData = displaySource[p.key];
+					const isHistorical = !!historicalAssigned;
+					return (
+					<View key={p.key} style={[styles.spot, { left: p.x, top: p.y }]}>
+					{slotData ? (
 						(() => {
-							const ap = getAssignedPlayer(assigned[p.key]);
+							const ap = getAssignedPlayer(slotData);
 							if (!ap) return null;
 							const displayName = (ap.fullName ?? ap.name ?? '').trim();
 							return (
@@ -296,21 +518,101 @@ function Team({ userId: viewUserId = null, readOnly = false }) {
 									avatar={ap.avatarUrl ? { uri: ap.avatarUrl } : null}
 									size={50}
 									teamId={ap.teamId}
-									onPress={readOnly ? () => openOptions(assigned[p.key]) : () => openPicker(p.key)}
+									points={getPlayerPoints(ap)}
+									isCaptain={captainPlayerId === ap.id}
+									onPress={isHistorical ? undefined : () => openOptions(slotData, p.key)}
 								/>
 							);
 						})()
 					) : (
-						readOnly ? null : (
+						readOnly || isHistorical ? null : (
 							<TouchableOpacity style={styles.spotBtn} activeOpacity={0.7} onPress={() => openPicker(p.key)}>
 								<Text style={styles.plus}>+</Text>
 							</TouchableOpacity>
 						)
 					)}
-					{!assigned[p.key] && !readOnly && <Text style={styles.spotLabel}>{p.key}</Text>}
+					{!slotData && !readOnly && !isHistorical && <Text style={styles.spotLabel}>{p.key}</Text>}
 				</View>
-			))}
+				);
+			})}
 			</View>
+
+			{/* Predicción ML del Equipo */}
+			{(teamPrediction || loadingPrediction) && (
+				<View style={styles.predictionSection}>
+					{loadingPrediction ? (
+						<View style={styles.loadingContainer}>
+							<ActivityIndicator size="small" color="#1a5c3a" />
+							<Text style={styles.loadingText}>Cargando predicción del equipo...</Text>
+						</View>
+					) : (
+						<ScrollView horizontal showsHorizontalScrollIndicator={false}>
+							<View style={styles.predictionContent}>
+								{/* Total Predicho */}
+								<View style={styles.totalPredictionCard}>
+									<Text style={styles.predictionCardTitle}>🔮 Predicción Total</Text>
+									<Text style={styles.totalPredictionValue}>
+										{teamPrediction.totalPredictedPoints?.toFixed(1) || '0.0'}
+									</Text>
+									<Text style={styles.predictionLabel}>PUNTOS</Text>
+									{teamPrediction.confidenceInterval && teamPrediction.confidenceInterval.length === 2 && (
+										<Text style={styles.rangeText}>
+											Rango: {teamPrediction.confidenceInterval[0]}-{teamPrediction.confidenceInterval[1]}
+										</Text>
+									)}
+								</View>
+
+								{/* Top 3 Jugadores */}
+								{teamPrediction.players && teamPrediction.players.length > 0 && (
+									<View style={styles.topPlayersCard}>
+										<Text style={styles.predictionCardTitle}>⭐ Top Predicciones</Text>
+										{teamPrediction.players
+											.sort((a, b) => (b.predictedPoints || 0) - (a.predictedPoints || 0))
+											.slice(0, 3)
+											.map((player, index) => (
+												<View key={player.playerId} style={styles.playerPredictionRow}>
+													<View style={styles.playerRank}>
+														<Text style={styles.rankNumber}>{index + 1}</Text>
+													</View>
+													<View style={styles.playerInfo}>
+														<Text style={styles.playerPredictionName} numberOfLines={1}>
+															{player.name}
+														</Text>
+														<Text style={styles.playerPosition}>{player.position}</Text>
+													</View>
+													<View style={styles.playerPredictionPoints}>
+														<Text style={styles.pointsValue}>
+															{player.predictedPoints?.toFixed(1) || '0.0'}
+														</Text>
+														<Text style={styles.pointsLabel}>pts</Text>
+													</View>
+												</View>
+											))}
+									</View>
+								)}
+
+								{/* Breakdown por Posición */}
+								{teamPrediction.players && teamPrediction.players.length > 0 && (
+									<View style={styles.breakdownCard}>
+										<Text style={styles.predictionCardTitle}>📊 Por Posición</Text>
+										{['POR', 'DEF', 'MID', 'DEL'].map(pos => {
+											const posPlayers = teamPrediction.players.filter(p => p.position === pos);
+											if (posPlayers.length === 0) return null;
+											const totalPos = posPlayers.reduce((sum, p) => sum + (p.predictedPoints || 0), 0);
+											return (
+												<View key={pos} style={styles.positionRow}>
+													<Text style={styles.positionLabel}>{pos}</Text>
+													<Text style={styles.positionValue}>{totalPos.toFixed(1)} pts</Text>
+												</View>
+											);
+										})}
+									</View>
+								)}
+							</View>
+						</ScrollView>
+					)}
+				</View>
+			)}
 
 			{!readOnly && (
 				<Modal visible={pickerVisible} transparent animationType="fade" onRequestClose={() => setPickerVisible(false)}>
@@ -340,14 +642,80 @@ function Team({ userId: viewUserId = null, readOnly = false }) {
 				</Modal>
 			)}
 
-			{readOnly && (
-				<Modal visible={optionsVisible} transparent animationType="fade" onRequestClose={() => setOptionsVisible(false)}>
-					<View style={styles.modalBackdrop}>
-						<View style={styles.modalCard}>
-							<Text style={styles.modalTitle}>Acciones: {selectedPT?.player ? (selectedPT.player.fullName ?? selectedPT.player.name ?? '') : ''}</Text>
-							{selectedPT && (
-								<View style={{ gap: 8 }}>
-									{(() => {
+			<Modal visible={optionsVisible} transparent animationType="fade" onRequestClose={() => setOptionsVisible(false)}>
+				<View style={styles.modalBackdrop}>
+					<View style={styles.modalCard}>
+						<Text style={styles.modalTitle}>Acciones: {selectedPT?.player ? (selectedPT.player.fullName ?? selectedPT.player.name ?? '') : ''}</Text>
+						{selectedPT && (
+							<View style={{ gap: 8 }}>
+								<TouchableOpacity 
+									style={[styles.saveBtn, { backgroundColor: '#2563eb' }]} 
+									onPress={() => goToPlayerStats(selectedPT.player)}
+								>
+									<Text style={styles.saveBtnText}>Ver Estadísticas</Text>
+								</TouchableOpacity>
+								{!readOnly && selectedPlayerSlot && (
+									<TouchableOpacity
+										style={[styles.saveBtn, { backgroundColor: '#16a34a' }]}
+										onPress={() => {
+											setOptionsVisible(false);
+											openPicker(selectedPlayerSlot);
+										}}
+									>
+										<Text style={styles.saveBtnText}>Cambiar Jugador</Text>
+									</TouchableOpacity>
+								)}
+								{!readOnly && selectedPT?.player && (
+									(() => {
+										const player = selectedPT.player;
+										const marketValue = player.marketValue || 0;
+										const minPrice = Math.round(marketValue * 0.9);
+										const maxPrice = Math.round(marketValue * 1.1);
+										const isCaptain = captainPlayerId === player.id;
+										return (
+											<View style={{ gap: 8 }}>
+												<View style={{ backgroundColor: '#f3f4f6', padding: 8, borderRadius: 8 }}>
+													<Text style={{ fontSize: 12, color: '#374151', fontWeight: '600' }}>
+														Valor de mercado: {marketValue.toLocaleString('es-ES')}
+													</Text>
+													<Text style={{ fontSize: 11, color: '#6b7280' }}>
+														Precio de venta: entre {minPrice.toLocaleString('es-ES')} y {maxPrice.toLocaleString('es-ES')}
+													</Text>
+												</View>
+												<TouchableOpacity
+													style={[styles.saveBtn, { backgroundColor: '#dc2626' }]}
+													onPress={() => {
+														Alert.alert(
+															'Vender jugador',
+															`Vas a vender a ${player.fullName || player.name} por un precio entre ${minPrice.toLocaleString('es-ES')} y ${maxPrice.toLocaleString('es-ES')}. El precio exacto se determina al confirmar.`,
+															[
+																{ text: 'Cancelar', style: 'cancel' },
+																{ text: 'Vender', style: 'destructive', onPress: () => { setOptionsVisible(false); sellPlayer(selectedPT); } },
+															]
+														);
+													}}
+												>
+													<Text style={styles.saveBtnText}>Vender al Mercado</Text>
+												</TouchableOpacity>
+												<TouchableOpacity
+													style={[styles.saveBtn, { backgroundColor: isCaptain ? '#9ca3af' : '#f59e0b' }]}
+													onPress={() => {
+														if (isCaptain) {
+															setCaptainPlayerId(null);
+														} else {
+															setCaptainPlayerId(player.id);
+														}
+														setOptionsVisible(false);
+													}}
+												>
+													<Text style={styles.saveBtnText}>{isCaptain ? 'Quitar Capitan' : 'Elegir Capitan (x2 pts)'}</Text>
+												</TouchableOpacity>
+											</View>
+										);
+									})()
+								)}
+								{readOnly && (
+									(() => {
 										const price = (selectedPT.buyPrice ?? selectedPT.sellPrice ?? 0);
 										const budgetKnown = typeof myBudget === 'number';
 										const remaining = budgetKnown ? (myBudget - price) : null;
@@ -387,16 +755,16 @@ function Team({ userId: viewUserId = null, readOnly = false }) {
 												</TouchableOpacity>
 											</View>
 										);
-									})()}
-								</View>
-							)}
-							<TouchableOpacity style={styles.closeBtn} onPress={() => setOptionsVisible(false)}>
-								<Text style={styles.closeText}>Cerrar</Text>
-							</TouchableOpacity>
-						</View>
+									})())
+								}
+							</View>
+						)}
+						<TouchableOpacity style={styles.closeBtn} onPress={() => setOptionsVisible(false)}>
+							<Text style={styles.closeText}>Cerrar</Text>
+						</TouchableOpacity>
 					</View>
-				</Modal>
-			)}
+				</View>
+			</Modal>
 		</View>
 	);
 }
@@ -427,7 +795,180 @@ const styles = StyleSheet.create({
 	closeBtn: { marginTop: 10, alignSelf: 'flex-end', paddingVertical: 6, paddingHorizontal: 12, borderRadius: 8, borderWidth: 1, borderColor: '#222' },
 	closeText: { fontSize: 12, fontWeight: '700' },
 	buyBtn: { marginTop: 4, backgroundColor: '#1d4ed8', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
-	buyTxt: { color: '#fff', fontSize: 10, fontWeight: '700' }
+	buyTxt: { color: '#fff', fontSize: 10, fontWeight: '700' },
+	// Estilos para predicción ML del equipo
+	predictionSection: {
+		backgroundColor: '#f9fafb',
+		paddingVertical: 12,
+		paddingHorizontal: 8,
+		borderTopWidth: 2,
+		borderTopColor: '#1a5c3a',
+		maxHeight: 180
+	},
+	loadingContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		padding: 20
+	},
+	loadingText: {
+		marginLeft: 12,
+		fontSize: 13,
+		color: '#6b7280',
+		fontWeight: '600'
+	},
+	predictionContent: {
+		flexDirection: 'row',
+		gap: 12
+	},
+	totalPredictionCard: {
+		backgroundColor: '#f0fdf4',
+		padding: 16,
+		borderRadius: 12,
+		borderWidth: 2,
+		borderColor: '#1a5c3a',
+		alignItems: 'center',
+		minWidth: 140
+	},
+	predictionCardTitle: {
+		fontSize: 12,
+		fontWeight: '700',
+		color: '#374151',
+		marginBottom: 8,
+		textAlign: 'center'
+	},
+	totalPredictionValue: {
+		fontSize: 36,
+		fontWeight: '900',
+		color: '#1a5c3a',
+		marginVertical: 4
+	},
+	predictionLabel: {
+		fontSize: 10,
+		color: '#6b7280',
+		fontWeight: '600',
+		letterSpacing: 1
+	},
+	rangeText: {
+		fontSize: 10,
+		color: '#6b7280',
+		marginTop: 4,
+		fontWeight: '500'
+	},
+	topPlayersCard: {
+		backgroundColor: '#ffffff',
+		padding: 12,
+		borderRadius: 12,
+		borderWidth: 1,
+		borderColor: '#e5e7eb',
+		minWidth: 180
+	},
+	playerPredictionRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		paddingVertical: 8,
+		borderBottomWidth: 1,
+		borderBottomColor: '#f3f4f6'
+	},
+	playerRank: {
+		width: 24,
+		height: 24,
+		borderRadius: 12,
+		backgroundColor: '#1a5c3a',
+		alignItems: 'center',
+		justifyContent: 'center',
+		marginRight: 8
+	},
+	rankNumber: {
+		color: '#fff',
+		fontSize: 11,
+		fontWeight: '800'
+	},
+	playerInfo: {
+		flex: 1,
+		marginRight: 8
+	},
+	playerPredictionName: {
+		fontSize: 12,
+		fontWeight: '700',
+		color: '#111827'
+	},
+	playerPosition: {
+		fontSize: 10,
+		color: '#6b7280',
+		marginTop: 2
+	},
+	playerPredictionPoints: {
+		alignItems: 'flex-end'
+	},
+	pointsValue: {
+		fontSize: 16,
+		fontWeight: '800',
+		color: '#1a5c3a'
+	},
+	pointsLabel: {
+		fontSize: 9,
+		color: '#6b7280',
+		fontWeight: '600'
+	},
+	breakdownCard: {
+		backgroundColor: '#ffffff',
+		padding: 12,
+		borderRadius: 12,
+		borderWidth: 1,
+		borderColor: '#e5e7eb',
+		minWidth: 160
+	},
+	positionRow: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		paddingVertical: 6,
+		borderBottomWidth: 1,
+		borderBottomColor: '#f3f4f6'
+	},
+	positionLabel: {
+		fontSize: 12,
+		fontWeight: '700',
+		color: '#374151'
+	},
+	positionValue: {
+		fontSize: 13,
+		fontWeight: '800',
+		color: '#1a5c3a'
+	},
+	pickerContainer: {
+		backgroundColor: '#f3f4f6',
+		padding: 12,
+		borderRadius: 8,
+		marginBottom: 12,
+		marginHorizontal: 16,
+	},
+	historicalBanner: {
+		backgroundColor: '#1e40af',
+		paddingVertical: 8,
+		paddingHorizontal: 16,
+		marginHorizontal: 16,
+		borderRadius: 8,
+		marginBottom: 8,
+		alignItems: 'center',
+	},
+	historicalBannerText: {
+		color: '#fff',
+		fontSize: 13,
+		fontWeight: '700',
+	},
+	pickerLabel: {
+		fontSize: 14,
+		fontWeight: '600',
+		color: '#374151',
+		marginBottom: 6,
+	},
+	picker: {
+		backgroundColor: '#fff',
+		borderRadius: 6,
+		height: 50,
+	},
 });
 
 

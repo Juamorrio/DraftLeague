@@ -24,34 +24,25 @@ public class PlayerMatchSummaryDTO {
 
     // Player performance
     private Integer minutesPlayed;
-    private Double fotmobRating;
+    private Double rating;
     private Integer fantasyPoints;
 
     // Offensive stats
     private Integer goals;
     private Integer assists;
     private Integer totalShots;
+    private Integer shotsOnTarget;
     private Integer chancesCreated;
-    private Double expectedGoals;
-    private Double expectedAssists;
 
     // Passing stats
     private Integer totalPasses;
     private Integer accuratePasses;
-    private Integer totalCrosses;
-    private Integer accurateCrosses;
     private Double passAccuracy;
-
-    // Physical stats
-    private Integer touches;
-    private Integer defensiveActions;
 
     // Defensive stats
     private Integer tackles;
     private Integer interceptions;
-    private Integer clearances;
     private Integer blocks;
-    private Integer recoveries;
 
     // Duels
     private Integer duelsWon;
@@ -63,8 +54,14 @@ public class PlayerMatchSummaryDTO {
 
     // Goalkeeper specific
     private Integer saves;
-    private Integer goalkeeperSaves;
     private Integer goalsAllowed;
+
+    // Captain and jersey info
+    private Boolean isCaptain;
+    private Integer shirtNumber;
+
+    // Penalty discipline
+    private Integer penaltyCommitted;
 
     // Points breakdown
     private Map<String, Integer> pointsBreakdown;

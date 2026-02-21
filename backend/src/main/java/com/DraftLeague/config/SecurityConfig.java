@@ -32,6 +32,11 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers("/api/statistics/**").permitAll()
+                .requestMatchers("/api/v1/matches/**").permitAll()
+                .requestMatchers("/api/v1/fantasy-points/**").authenticated()
+                .requestMatchers("/api/ml/**").permitAll()
                 .requestMatchers("/api/v1/admin/**").authenticated()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/error").permitAll()

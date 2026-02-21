@@ -212,7 +212,7 @@ function Admin() {
 	const syncMatches = async () => {
 		Alert.alert(
 			'Sincronizar Partidos',
-			'¿Estás seguro de sincronizar los partidos desde FotMob? Esta operación puede tardar varios segundos.',
+			'¿Estás seguro de sincronizar los partidos desde API-Football? Esta operación puede tardar varios segundos.',
 			[
 				{ text: 'Cancelar', style: 'cancel' },
 				{
@@ -245,7 +245,7 @@ function Admin() {
 	const syncPlayers = async () => {
 		Alert.alert(
 			'Sincronizar Jugadores',
-			'¿Estás seguro de sincronizar los jugadores desde FotMob? Esta operación puede tardar varios segundos.',
+			'¿Estás seguro de sincronizar los jugadores desde API-Football? Esta operación puede tardar varios segundos.',
 			[
 				{ text: 'Cancelar', style: 'cancel' },
 				{
@@ -498,7 +498,7 @@ function Admin() {
 						<View style={styles.playersContainer}>
 							<Text style={styles.playersTitle}>Sincronización de Jugadores</Text>
 							<Text style={styles.playersDescription}>
-								Sincroniza los jugadores desde FotMob API. Esta operación actualizará el archivo 
+								Sincroniza los jugadores desde API-Football API. Esta operación actualizará el archivo 
 								players_data.json con los datos más recientes de LaLiga.
 							</Text>
 							<TouchableOpacity
@@ -552,7 +552,7 @@ function Admin() {
 						<View style={styles.playersContainer}>
 							<Text style={styles.playersTitle}>Sincronización de Partidos</Text>
 							<Text style={styles.playersDescription}>
-								Sincroniza los partidos desde FotMob API. Esta operación actualizará los archivos 
+								Sincroniza los partidos desde API-Football API. Esta operación actualizará los archivos 
 								matches.json y upcoming_matches.json con los datos más recientes de LaLiga.
 							</Text>
 							<TouchableOpacity

@@ -93,23 +93,22 @@ function PlayerStats() {
 
 	const translateFeature = (featureName) => {
 		const translations = {
-			avgRatingLast3: 'Rating últimos 3',
-			avgMinutesLast3: 'Minutos últimos 3',
-			avgGoalsLast3: 'Goles últimos 3',
-			avgAssistsLast3: 'Asistencias últimos 3',
-			avgXgLast3: 'xG últimos 3',
-			avgXaLast3: 'xA últimos 3',
-			avgPassAccuracyLast3: 'Precisión pases últimos 3',
-			avgTouchesLast3: 'Toques últimos 3',
-			avgDuelsWonLast3: 'Duelos ganados últimos 3',
-			avgRatingLast5: 'Rating últimos 5',
-			avgMinutesLast5: 'Minutos últimos 5',
-			avgGoalsLast5: 'Goles últimos 5',
-			avgAssistsLast5: 'Asistencias últimos 5',
-			avgXgLast5: 'xG últimos 5',
-			avgXaLast5: 'xA últimos 5',
-			avgRatingLast10: 'Rating últimos 10',
-			avgMinutesLast10: 'Minutos últimos 10',
+			avgRatingLast3: 'Rating ultimos 3',
+			avgMinutesLast3: 'Minutos ultimos 3',
+			avgGoalsLast3: 'Goles ultimos 3',
+			avgAssistsLast3: 'Asistencias ultimos 3',
+			avgShotsOnTargetLast3: 'Tiros a puerta ultimos 3',
+			avgKeyPassesLast3: 'Pases clave ultimos 3',
+			avgPassAccuracyLast3: 'Precision pases ultimos 3',
+			avgDuelsWonLast3: 'Duelos ganados ultimos 3',
+			avgRatingLast5: 'Rating ultimos 5',
+			avgMinutesLast5: 'Minutos ultimos 5',
+			avgGoalsLast5: 'Goles ultimos 5',
+			avgAssistsLast5: 'Asistencias ultimos 5',
+			avgShotsOnTargetLast5: 'Tiros a puerta ultimos 5',
+			avgKeyPassesLast5: 'Pases clave ultimos 5',
+			avgRatingLast10: 'Rating ultimos 10',
+			avgMinutesLast10: 'Minutos ultimos 10',
 			ratingTrend: 'Tendencia rating',
 			minutesTrend: 'Tendencia minutos',
 			ratingStdDev: 'Consistencia rating',
@@ -256,7 +255,7 @@ function PlayerStats() {
 												</View>
 												<View style={styles.detailRow}>
 													<Text style={styles.detailLabel}>Rating:</Text>
-													<Text style={styles.detailValue}>{selectedStat.fotmobRating?.toFixed(2) || '-'}</Text>
+													<Text style={styles.detailValue}>{selectedStat.rating?.toFixed(2) || '-'}</Text>
 												</View>
 												<View style={styles.detailRow}>
 													<Text style={styles.detailLabel}>Puntos Fantasy:</Text>
@@ -264,6 +263,18 @@ function PlayerStats() {
 														{selectedStat.fantasyPoints}
 													</Text>
 												</View>
+												{selectedStat.shirtNumber && (
+													<View style={styles.detailRow}>
+														<Text style={styles.detailLabel}>Dorsal:</Text>
+														<Text style={styles.detailValue}>#{selectedStat.shirtNumber}</Text>
+													</View>
+												)}
+												{selectedStat.isCaptain && (
+													<View style={styles.detailRow}>
+														<Text style={styles.detailLabel}>Capitan:</Text>
+														<Text style={styles.detailValue}>(C)</Text>
+													</View>
+												)}
 											</View>
 
 											{/* Desglose de Puntos Fantasy */}
@@ -281,15 +292,15 @@ function PlayerStats() {
 																	ratingBonus: 'Bonus por rating',
 																	yellowCards: 'Tarjetas amarillas',
 																	redCards: 'Tarjetas rojas',
-																	defensiveActions: 'Acciones defensivas',
+																	blocksBonus: 'Bonus bloqueos',
 																	duelsBonus: 'Bonus duelos ganados',
-																	dispossessedPenalty: 'Perdidas de balon',
 																	cleanSheet: 'Porteria a cero',
 																	hatTrick: 'Bonus hat-trick',
 																	penaltySaved: 'Penalti parado',
 																	doubleAssist: 'Bonus doble asistencia',
 																	tripleAssist: 'Bonus triple asistencia',
 																	multipleGoalsConceded: 'Goles encajados (3+)',
+																	penaltyCommitted: 'Penalti cometido',
 																};
 																return (
 																	<View key={key} style={styles.breakdownRow}>
@@ -314,7 +325,7 @@ function PlayerStats() {
 											)}
 
 											{/* Estadísticas ofensivas */}
-											{(selectedStat.goals > 0 || selectedStat.assists > 0 || selectedStat.expectedGoals !== undefined) && (
+											{(selectedStat.goals > 0 || selectedStat.assists > 0 || selectedStat.totalShots > 0) && (
 												<View style={styles.statsSection}>
 													<Text style={styles.statsSubtitle}>⚽ Estadísticas Ofensivas</Text>
 													<View style={styles.statGrid2Col}>
@@ -330,16 +341,10 @@ function PlayerStats() {
 																<Text style={styles.statValue}>{selectedStat.assists}</Text>
 															</View>
 														)}
-														{selectedStat.expectedGoals !== undefined && (
+														{selectedStat.shotsOnTarget !== undefined && selectedStat.shotsOnTarget > 0 && (
 															<View style={styles.statItem2Col}>
-																<Text style={styles.statLabel}>xG</Text>
-																<Text style={styles.statValue}>{selectedStat.expectedGoals?.toFixed(2) || '-'}</Text>
-															</View>
-														)}
-														{selectedStat.expectedAssists !== undefined && (
-															<View style={styles.statItem2Col}>
-																<Text style={styles.statLabel}>xA</Text>
-																<Text style={styles.statValue}>{selectedStat.expectedAssists?.toFixed(2) || '-'}</Text>
+																<Text style={styles.statLabel}>Tiros a puerta</Text>
+																<Text style={styles.statValue}>{selectedStat.shotsOnTarget}</Text>
 															</View>
 														)}
 														{selectedStat.chancesCreated !== undefined && selectedStat.chancesCreated > 0 && (
@@ -354,12 +359,18 @@ function PlayerStats() {
 																<Text style={styles.statValue}>{selectedStat.totalShots}</Text>
 															</View>
 														)}
+														{selectedStat.penaltyCommitted !== undefined && selectedStat.penaltyCommitted > 0 && (
+															<View style={styles.statItem2Col}>
+																<Text style={styles.statLabel}>Penaltis cometidos</Text>
+																<Text style={styles.statValue}>{selectedStat.penaltyCommitted}</Text>
+															</View>
+														)}
 													</View>
 												</View>
 											)}
 
 											{/* Estadísticas de pase y posesión */}
-											{(selectedStat.totalPasses !== undefined || selectedStat.accuratePasses !== undefined || selectedStat.totalCrosses !== undefined) && (
+											{(selectedStat.totalPasses !== undefined || selectedStat.accuratePasses !== undefined) && (
 												<View style={styles.statsSection}>
 													<Text style={styles.statsSubtitle}>🎯 Pase y Posesión</Text>
 													<View style={styles.statGrid2Col}>
@@ -377,16 +388,10 @@ function PlayerStats() {
 																</Text>
 															</View>
 														)}
-														{selectedStat.totalCrosses !== undefined && (
+														{selectedStat.penaltyCommitted !== undefined && selectedStat.penaltyCommitted > 0 && (
 															<View style={styles.statItem2Col}>
-																<Text style={styles.statLabel}>Centros</Text>
-																<Text style={styles.statValue}>{selectedStat.totalCrosses}</Text>
-															</View>
-														)}
-														{selectedStat.touches !== undefined && (
-															<View style={styles.statItem2Col}>
-																<Text style={styles.statLabel}>Toques</Text>
-																<Text style={styles.statValue}>{selectedStat.touches}</Text>
+																<Text style={styles.statLabel}>Penaltis cometidos</Text>
+																<Text style={styles.statValue}>{selectedStat.penaltyCommitted}</Text>
 															</View>
 														)}
 													</View>
@@ -394,7 +399,7 @@ function PlayerStats() {
 											)}
 
 											{/* Estadísticas defensivas */}
-											{(selectedStat.tackles !== undefined || selectedStat.interceptions !== undefined || selectedStat.clearances !== undefined || selectedStat.blocks !== undefined) && (
+											{(selectedStat.tackles !== undefined || selectedStat.interceptions !== undefined || selectedStat.blocks !== undefined) && (
 												<View style={styles.statsSection}>
 													<Text style={styles.statsSubtitle}>🛡️ Defensa</Text>
 													<View style={styles.statGrid2Col}>
@@ -410,16 +415,16 @@ function PlayerStats() {
 																<Text style={styles.statValue}>{selectedStat.interceptions}</Text>
 															</View>
 														)}
-														{selectedStat.clearances !== undefined && selectedStat.clearances > 0 && (
-															<View style={styles.statItem2Col}>
-																<Text style={styles.statLabel}>Despejes</Text>
-																<Text style={styles.statValue}>{selectedStat.clearances}</Text>
-															</View>
-														)}
 														{selectedStat.blocks !== undefined && selectedStat.blocks > 0 && (
 															<View style={styles.statItem2Col}>
 																<Text style={styles.statLabel}>Bloqueos</Text>
 																<Text style={styles.statValue}>{selectedStat.blocks}</Text>
+															</View>
+														)}
+														{selectedStat.penaltyCommitted !== undefined && selectedStat.penaltyCommitted > 0 && (
+															<View style={styles.statItem2Col}>
+																<Text style={styles.statLabel}>Penaltis cometidos</Text>
+																<Text style={styles.statValue}>{selectedStat.penaltyCommitted}</Text>
 															</View>
 														)}
 													</View>
@@ -454,19 +459,25 @@ function PlayerStats() {
 																</Text>
 															</View>
 														)}
+														{selectedStat.penaltyCommitted !== undefined && selectedStat.penaltyCommitted > 0 && (
+															<View style={styles.statItem2Col}>
+																<Text style={styles.statLabel}>Penaltis cometidos</Text>
+																<Text style={styles.statValue}>{selectedStat.penaltyCommitted}</Text>
+															</View>
+														)}
 													</View>
 												</View>
 											)}
 
 											{/* Portero - Estadísticas especiales */}
-											{(selectedStat.saves !== undefined || selectedStat.goalkeeperSaves !== undefined) && (
+											{(selectedStat.saves !== undefined) && (
 												<View style={styles.statsSection}>
-													<Text style={styles.statsSubtitle}>🥅 Portero</Text>
+													<Text style={styles.statsSubtitle}>Portero</Text>
 													<View style={styles.statGrid2Col}>
-														{(selectedStat.saves !== undefined || selectedStat.goalkeeperSaves !== undefined) && (
+														{selectedStat.saves !== undefined && (
 															<View style={styles.statItem2Col}>
 																<Text style={styles.statLabel}>Paradas</Text>
-																<Text style={styles.statValue}>{selectedStat.saves || selectedStat.goalkeeperSaves || '-'}</Text>
+																<Text style={styles.statValue}>{selectedStat.saves || '-'}</Text>
 															</View>
 														)}
 														{selectedStat.goalsAllowed !== undefined && (
@@ -475,12 +486,18 @@ function PlayerStats() {
 																<Text style={styles.statValue}>{selectedStat.goalsAllowed}</Text>
 															</View>
 														)}
+														{selectedStat.penaltyCommitted !== undefined && selectedStat.penaltyCommitted > 0 && (
+															<View style={styles.statItem2Col}>
+																<Text style={styles.statLabel}>Penaltis cometidos</Text>
+																<Text style={styles.statValue}>{selectedStat.penaltyCommitted}</Text>
+															</View>
+														)}
 													</View>
 												</View>
 											)}
 
 											{/* Tarjetas */}
-											{(selectedStat.yellowCards !== undefined || selectedStat.redCards !== undefined) && (
+											{(selectedStat.yellowCards !== undefined || selectedStat.redCards !== undefined || selectedStat.penaltyCommitted > 0) && (
 												<View style={styles.statsSection}>
 													<Text style={styles.statsSubtitle}>🟥 Disciplina</Text>
 													<View style={styles.statGrid2Col}>
@@ -494,6 +511,12 @@ function PlayerStats() {
 															<View style={styles.statItem2Col}>
 																<Text style={styles.statLabel}>Rojas</Text>
 																<Text style={styles.statValue}>{selectedStat.redCards}</Text>
+															</View>
+														)}
+														{selectedStat.penaltyCommitted !== undefined && selectedStat.penaltyCommitted > 0 && (
+															<View style={styles.statItem2Col}>
+																<Text style={styles.statLabel}>Penaltis cometidos</Text>
+																<Text style={styles.statValue}>{selectedStat.penaltyCommitted}</Text>
 															</View>
 														)}
 													</View>
@@ -517,7 +540,7 @@ function PlayerStats() {
 									<View style={styles.summaryRow}>
 										<Text style={styles.summaryLabel}>Rating Promedio:</Text>
 										<Text style={styles.summaryValue}>
-											{(statistics.reduce((sum, s) => sum + (s.fotmobRating || 0), 0) / statistics.length).toFixed(2)}
+											{(statistics.reduce((sum, s) => sum + (s.rating || 0), 0) / statistics.length).toFixed(2)}
 										</Text>
 									</View>
 									<View style={styles.summaryRow}>
@@ -544,6 +567,22 @@ function PlayerStats() {
 											{statistics.reduce((sum, s) => sum + (s.fantasyPoints || 0), 0)}
 										</Text>
 									</View>
+									{statistics.reduce((sum, s) => sum + (s.penaltyCommitted || 0), 0) > 0 && (
+										<View style={styles.summaryRow}>
+											<Text style={styles.summaryLabel}>Penaltis Cometidos:</Text>
+											<Text style={styles.summaryValue}>
+												{statistics.reduce((sum, s) => sum + (s.penaltyCommitted || 0), 0)}
+											</Text>
+										</View>
+									)}
+									{statistics.filter(s => s.isCaptain).length > 0 && (
+										<View style={styles.summaryRow}>
+											<Text style={styles.summaryLabel}>Veces Capitan:</Text>
+											<Text style={styles.summaryValue}>
+												{statistics.filter(s => s.isCaptain).length}
+											</Text>
+										</View>
+									)}
 								</View>
 							</View>
 						)}

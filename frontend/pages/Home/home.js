@@ -87,11 +87,22 @@ export default function Home() {
 							<Text style={styles.dateText}>{formatDate(match.matchDate)}</Text>
 						</View>
 					) : (
-						<View style={styles.scoreBox}>
-							<Text style={styles.scoreText}>{match.homeScore}</Text>
-							<Text style={styles.scoreSeparator}>-</Text>
-							<Text style={styles.scoreText}>{match.awayScore}</Text>
-						</View>
+						<>
+							<View style={styles.scoreBox}>
+								<Text style={styles.scoreText}>{match.homeScore}</Text>
+								<Text style={styles.scoreSeparator}>-</Text>
+								<Text style={styles.scoreText}>{match.awayScore}</Text>
+							</View>
+							{(match.homeXg != null || match.awayXg != null) && (
+								<View style={styles.xgRow}>
+									<Text style={styles.xgText}>
+										xG: {match.homeXg != null ? match.homeXg.toFixed(2) : '-'}
+										{' - '}
+										{match.awayXg != null ? match.awayXg.toFixed(2) : '-'}
+									</Text>
+								</View>
+							)}
+						</>
 					)}
 				</View>
 
@@ -341,6 +352,15 @@ const styles = StyleSheet.create({
 	},
 	scoreSeparator: {
 		fontSize: 20,
+		fontWeight: '600',
+		color: '#94a3b8',
+	},
+	xgRow: {
+		marginTop: 4,
+		alignItems: 'center',
+	},
+	xgText: {
+		fontSize: 11,
 		fontWeight: '600',
 		color: '#94a3b8',
 	},

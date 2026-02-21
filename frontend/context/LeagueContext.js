@@ -6,8 +6,18 @@ export function LeagueProvider({ children }) {
   const [selectedLeague, setSelectedLeague] = useState(null);
   const [viewUser, setViewUser] = useState(null); 
   const [navTarget, setNavTarget] = useState(null);
+  const [selectedPlayer, setSelectedPlayer] = useState(null);
   return (
-    <LeagueContext.Provider value={{ selectedLeague, setSelectedLeague, viewUser, setViewUser, navTarget, setNavTarget }}>
+    <LeagueContext.Provider value={{ 
+      selectedLeague, 
+      setSelectedLeague, 
+      viewUser, 
+      setViewUser, 
+      navTarget, 
+      setNavTarget,
+      selectedPlayer,
+      setSelectedPlayer 
+    }}>
       {children}
     </LeagueContext.Provider>
   );

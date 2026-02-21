@@ -43,9 +43,9 @@ public class MatchController {
         return ResponseEntity.ok(matchService.getAllMatches());
     }
 
-    @GetMapping("/{fotmobMatchId}")
-    public ResponseEntity<Match> getMatchByFotmobId(@PathVariable Integer fotmobMatchId) {
-        Match match = matchService.getMatchByFotmobId(fotmobMatchId);
+    @GetMapping("/{fixtureId}")
+    public ResponseEntity<Match> getMatchByFixtureId(@PathVariable Integer fixtureId) {
+        Match match = matchService.getMatchByFixtureId(fixtureId);
         if (match != null) {
             return ResponseEntity.ok(match);
         }

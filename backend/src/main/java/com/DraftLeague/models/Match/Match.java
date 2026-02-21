@@ -24,8 +24,8 @@ public class Match {
     @Column(name = "id", updatable = false, nullable = false, unique = true)
     private Integer id;
 
-    @Column(name = "fotmob_match_id", unique = true)
-    private Integer fotmobMatchId;
+    @Column(name = "api_football_fixture_id", unique = true)
+    private Integer apiFootballFixtureId;
 
     @Column(name = "round")
     private Integer round;
@@ -56,6 +56,12 @@ public class Match {
     @Min(0)
     @Column(name = "away_goals")
     private Integer awayGoals;
+
+    @Column(name = "home_xg")
+    private Double homeXg;
+
+    @Column(name = "away_xg")
+    private Double awayXg;
 
     @Column(name = "match_date")
     private String matchDate;

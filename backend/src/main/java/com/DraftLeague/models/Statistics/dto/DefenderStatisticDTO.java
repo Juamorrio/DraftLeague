@@ -8,15 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class DefenderStatisticDTO extends BasePlayerStatisticDTO {
-    
-    private Double expectedGoals;
-    private Double expectedGoalsOnTarget;
-    private Double xgNonPenalty;
-    private Integer shotsOnTarget;
-    private Integer totalShotsOnTarget;
-    private Integer touchesOppBox;
+
     private Integer penaltiesWon;
-    
-    private Integer headedClearances;
-    private Integer blockedShots;
+    private Integer successfulDribbles;
+    private Integer totalDribbles;
 }

@@ -5,10 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Base DTO containing common fields for all player statistics.
- * Should be extended by position-specific DTOs.
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,45 +16,45 @@ public abstract class BasePlayerStatisticDTO {
     private Boolean isHomeTeam;
     private PlayerType playerType;
     private String role;
-    
-    private Double fotmobRating;
+
+    private Double rating;
     private Integer minutesPlayed;
     private Integer totalFantasyPoints;
-    
+
     private Integer goals;
     private Integer assists;
     private Integer totalShots;
+    private Integer shotsOnTarget;
     private Integer chancesCreated;
-    
+    private Integer successfulDribbles;
+    private Integer totalDribbles;
+    private Integer dribbledPast;
+    private Integer offsides;
+
     private Integer accuratePasses;
     private Integer totalPasses;
     private Double passAccuracy;
-    private Integer accurateLongBalls;
-    private Integer totalLongBalls;
-    
-    private Double expectedAssists;
-    private Double xgAndXa;
-    
-    private Integer touches;
-    private Integer defensiveActions;
-    private Integer dispossessed;
-    
+    private Integer accurateCrosses;
+    private Integer totalCrosses;
+
     private Integer tackles;
     private Integer blocks;
-    private Integer clearances;
     private Integer interceptions;
-    private Integer recoveries;
-    private Integer dribbledPast;
-    
+
     private Integer duelsWon;
     private Integer duelsLost;
-    private Integer groundDuelsWon;
-    private Integer totalGroundDuels;
-    private Integer aerialDuelsWon;
-    private Integer totalAerialDuels;
-    
+
     private Integer wasFouled;
     private Integer foulsCommitted;
     private Integer yellowCards;
     private Integer redCards;
+
+    private Integer penaltiesWon;
+    private Integer penaltyScored;
+    private Integer penaltyMissed;
+
+    private Boolean isSubstitute;
+    private Boolean isCaptain;
+    private Integer shirtNumber;
+    private Integer penaltyCommitted;
 }

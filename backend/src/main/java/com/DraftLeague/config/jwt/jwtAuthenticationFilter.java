@@ -1,4 +1,4 @@
-package com.DraftLeague.models.jwt;
+package com.DraftLeague.config.jwt;
 
 import java.io.IOException;
 import org.springframework.http.HttpHeaders;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.DraftLeague.models.Auth.JwtService;
+import com.DraftLeague.services.auth.JwtService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 

@@ -1,5 +1,8 @@
-package com.DraftLeague.models.Auth;
+package com.DraftLeague.services.auth;
 
+import com.DraftLeague.dto.auth.AuthResponse;
+import com.DraftLeague.dto.auth.LoginRequest;
+import com.DraftLeague.dto.auth.RegisterRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;

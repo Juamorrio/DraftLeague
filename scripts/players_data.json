@@ -1,0 +1,2802 @@
+[
+  {
+    "id": "730",
+    "fullName": "T. Courtois",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/730.png",
+    "teamId": 541
+  },
+  {
+    "id": "396475",
+    "fullName": "Fran González",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/396475.png",
+    "teamId": 541
+  },
+  {
+    "id": "47400",
+    "fullName": "A. Lunin",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47400.png",
+    "teamId": 541
+  },
+  {
+    "id": "386872",
+    "fullName": "Sergio Mestre",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/386872.png",
+    "teamId": 541
+  },
+  {
+    "id": "544044",
+    "fullName": "J. Navarro Jimenez",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/544044.png",
+    "teamId": 541
+  },
+  {
+    "id": "451355",
+    "fullName": "Diego Aguado",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/451355.png",
+    "teamId": 541
+  },
+  {
+    "id": "505",
+    "fullName": "D. Alaba",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/505.png",
+    "teamId": 541
+  },
+  {
+    "id": "283",
+    "fullName": "T. Alexander-Arnold",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/283.png",
+    "teamId": 541
+  },
+  {
+    "id": "341640",
+    "fullName": "Raúl Asencio",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/341640.png",
+    "teamId": 541
+  },
+  {
+    "id": "284300",
+    "fullName": "Álvaro Fernández",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/284300.png",
+    "teamId": 541
+  },
+  {
+    "id": "733",
+    "fullName": "Dani Carvajal",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/733.png",
+    "teamId": 541
+  },
+  {
+    "id": "372",
+    "fullName": "Éder Militão",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/372.png",
+    "teamId": 541
+  },
+  {
+    "id": "736",
+    "fullName": "Fran García",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/736.png",
+    "teamId": 541
+  },
+  {
+    "id": "361497",
+    "fullName": "D. Huijsen",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/361497.png",
+    "teamId": 541
+  },
+  {
+    "id": "330436",
+    "fullName": "David Jiménez",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/330436.png",
+    "teamId": 541
+  },
+  {
+    "id": "561033",
+    "fullName": "J. Martinez",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/561033.png",
+    "teamId": 541
+  },
+  {
+    "id": "653",
+    "fullName": "F. Mendy",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/653.png",
+    "teamId": 541
+  },
+  {
+    "id": "2285",
+    "fullName": "A. Rüdiger",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/2285.png",
+    "teamId": 541
+  },
+  {
+    "id": "560901",
+    "fullName": "V. Valdepenas",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/560901.png",
+    "teamId": 541
+  },
+  {
+    "id": "129718",
+    "fullName": "J. Bellingham",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/129718.png",
+    "teamId": 541
+  },
+  {
+    "id": "2207",
+    "fullName": "E. Camavinga",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/2207.png",
+    "teamId": 541
+  },
+  {
+    "id": "748",
+    "fullName": "Dani Ceballos",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/748.png",
+    "teamId": 541
+  },
+  {
+    "id": "560905",
+    "fullName": "J. Cestero Sancho",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/560905.png",
+    "teamId": 541
+  },
+  {
+    "id": "744",
+    "fullName": "Brahim Díaz",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/744.png",
+    "teamId": 541
+  },
+  {
+    "id": "371913",
+    "fullName": "Pol Fortuny",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/371913.png",
+    "teamId": 541
+  },
+  {
+    "id": "291964",
+    "fullName": "A. Güler",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/291964.png",
+    "teamId": 541
+  },
+  {
+    "id": "313167",
+    "fullName": "Manuel Ángel",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/313167.png",
+    "teamId": 541
+  },
+  {
+    "id": "386306",
+    "fullName": "César Palacios",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/386306.png",
+    "teamId": 541
+  },
+  {
+    "id": "509470",
+    "fullName": "Thiago Pitarch",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/509470.png",
+    "teamId": 541
+  },
+  {
+    "id": "1271",
+    "fullName": "A. Tchouaméni",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/1271.png",
+    "teamId": 541
+  },
+  {
+    "id": "756",
+    "fullName": "F. Valverde",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/756.png",
+    "teamId": 541
+  },
+  {
+    "id": "440339",
+    "fullName": "Adrian Arnuncio",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/440339.png",
+    "teamId": 541
+  },
+  {
+    "id": "336711",
+    "fullName": "Gonzalo García",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/336711.png",
+    "teamId": 541
+  },
+  {
+    "id": "308998",
+    "fullName": "Ávaro Leiva",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/308998.png",
+    "teamId": 541
+  },
+  {
+    "id": "449249",
+    "fullName": "Franco Mastantuono",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/449249.png",
+    "teamId": 541
+  },
+  {
+    "id": "278",
+    "fullName": "Kylian Mbappé",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/278.png",
+    "teamId": 541
+  },
+  {
+    "id": "10009",
+    "fullName": "Rodrygo",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/10009.png",
+    "teamId": 541
+  },
+  {
+    "id": "762",
+    "fullName": "Vinícius Júnior",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/762.png",
+    "teamId": 541
+  },
+  {
+    "id": "543468",
+    "fullName": "Eder Aller",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/543468.png",
+    "teamId": 529
+  },
+  {
+    "id": "182718",
+    "fullName": "Joan García",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/182718.png",
+    "teamId": 529
+  },
+  {
+    "id": "383647",
+    "fullName": "D. Kochen",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/383647.png",
+    "teamId": 529
+  },
+  {
+    "id": "851",
+    "fullName": "W. Szczęsny",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/851.png",
+    "teamId": 529
+  },
+  {
+    "id": "101814",
+    "fullName": "R. Araújo",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/101814.png",
+    "teamId": 529
+  },
+  {
+    "id": "161928",
+    "fullName": "Alejandro Balde",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/161928.png",
+    "teamId": 529
+  },
+  {
+    "id": "855",
+    "fullName": "João Cancelo",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/855.png",
+    "teamId": 529
+  },
+  {
+    "id": "2282",
+    "fullName": "A. Christensen",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/2282.png",
+    "teamId": 529
+  },
+  {
+    "id": "396623",
+    "fullName": "Pau Cubarsí Paredes",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/396623.png",
+    "teamId": 529
+  },
+  {
+    "id": "568001",
+    "fullName": "X. Espart",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/568001.png",
+    "teamId": 529
+  },
+  {
+    "id": "619",
+    "fullName": "Eric García",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/619.png",
+    "teamId": 529
+  },
+  {
+    "id": "1257",
+    "fullName": "J. Koundé",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/1257.png",
+    "teamId": 529
+  },
+  {
+    "id": "181701",
+    "fullName": "Gerard Martín",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/181701.png",
+    "teamId": 529
+  },
+  {
+    "id": "457214",
+    "fullName": "J. Onstein",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/457214.png",
+    "teamId": 529
+  },
+  {
+    "id": "414433",
+    "fullName": "P. PacÃ­fico",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/414433.png",
+    "teamId": 529
+  },
+  {
+    "id": "491250",
+    "fullName": "Jofre Torrents",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/491250.png",
+    "teamId": 529
+  },
+  {
+    "id": "433396",
+    "fullName": "Marc Bernal",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/433396.png",
+    "teamId": 529
+  },
+  {
+    "id": "329728",
+    "fullName": "Marc Casadó",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/329728.png",
+    "teamId": 529
+  },
+  {
+    "id": "340626",
+    "fullName": "Fermín",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/340626.png",
+    "teamId": 529
+  },
+  {
+    "id": "296667",
+    "fullName": "Gavi",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/296667.png",
+    "teamId": 529
+  },
+  {
+    "id": "491086",
+    "fullName": "Tomás Marqués",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/491086.png",
+    "teamId": 529
+  },
+  {
+    "id": "1323",
+    "fullName": "Dani Olmo",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/1323.png",
+    "teamId": 529
+  },
+  {
+    "id": "133609",
+    "fullName": "Pedri",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/133609.png",
+    "teamId": 529
+  },
+  {
+    "id": "538",
+    "fullName": "F. de Jong",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/538.png",
+    "teamId": 529
+  },
+  {
+    "id": "338958",
+    "fullName": "R. Bardghji",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/338958.png",
+    "teamId": 529
+  },
+  {
+    "id": "445973",
+    "fullName": "Toni Fernández",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/445973.png",
+    "teamId": 529
+  },
+  {
+    "id": "579244",
+    "fullName": "Juan Hernández",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/579244.png",
+    "teamId": 529
+  },
+  {
+    "id": "386828",
+    "fullName": "Lamine Yamal",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/386828.png",
+    "teamId": 529
+  },
+  {
+    "id": "521",
+    "fullName": "R. Lewandowski",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/521.png",
+    "teamId": 529
+  },
+  {
+    "id": "1496",
+    "fullName": "Raphinha",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/1496.png",
+    "teamId": 529
+  },
+  {
+    "id": "909",
+    "fullName": "M. Rashford",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/909.png",
+    "teamId": 529
+  },
+  {
+    "id": "931",
+    "fullName": "Ferran Torres",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/931.png",
+    "teamId": 529
+  },
+  {
+    "id": "393198",
+    "fullName": "Salvador Esquivel",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/393198.png",
+    "teamId": 530
+  },
+  {
+    "id": "2465",
+    "fullName": "J. Musso",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/2465.png",
+    "teamId": 530
+  },
+  {
+    "id": "29",
+    "fullName": "J. Oblak",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/29.png",
+    "teamId": 530
+  },
+  {
+    "id": "548862",
+    "fullName": "M. de Luis",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/548862.png",
+    "teamId": 530
+  },
+  {
+    "id": "336685",
+    "fullName": "Javier Boñar",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/336685.png",
+    "teamId": 530
+  },
+  {
+    "id": "386870",
+    "fullName": "Julio Díaz del Romo",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/386870.png",
+    "teamId": 530
+  },
+  {
+    "id": "31",
+    "fullName": "J. Giménez",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/31.png",
+    "teamId": 530
+  },
+  {
+    "id": "30399",
+    "fullName": "D. Hancko",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/30399.png",
+    "teamId": 530
+  },
+  {
+    "id": "338508",
+    "fullName": "I. Kostis",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/338508.png",
+    "teamId": 530
+  },
+  {
+    "id": "47301",
+    "fullName": "Robin Le Normand",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47301.png",
+    "teamId": 530
+  },
+  {
+    "id": "133",
+    "fullName": "C. Lenglet",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/133.png",
+    "teamId": 530
+  },
+  {
+    "id": "753",
+    "fullName": "Marcos Llorente",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/753.png",
+    "teamId": 530
+  },
+  {
+    "id": "386869",
+    "fullName": "Dani MartÃ­nez",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/386869.png",
+    "teamId": 530
+  },
+  {
+    "id": "6503",
+    "fullName": "N. Molina",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/6503.png",
+    "teamId": 530
+  },
+  {
+    "id": "295793",
+    "fullName": "Marc Pubill",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/295793.png",
+    "teamId": 530
+  },
+  {
+    "id": "428799",
+    "fullName": "A. Puric",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/428799.png",
+    "teamId": 530
+  },
+  {
+    "id": "162012",
+    "fullName": "M. Ruggeri",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/162012.png",
+    "teamId": 530
+  },
+  {
+    "id": "336594",
+    "fullName": "Pablo Barrios",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/336594.png",
+    "teamId": 530
+  },
+  {
+    "id": "133185",
+    "fullName": "J. Cardoso",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/133185.png",
+    "teamId": 530
+  },
+  {
+    "id": "50",
+    "fullName": "Koke",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/50.png",
+    "teamId": 530
+  },
+  {
+    "id": "341371",
+    "fullName": "Rodrigo Mendoza",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/341371.png",
+    "teamId": 530
+  },
+  {
+    "id": "451594",
+    "fullName": "Alejandro Monserrate",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/451594.png",
+    "teamId": 530
+  },
+  {
+    "id": "323869",
+    "fullName": "L. Nájera",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/323869.png",
+    "teamId": 530
+  },
+  {
+    "id": "548867",
+    "fullName": "T. Seidu",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/548867.png",
+    "teamId": 530
+  },
+  {
+    "id": "303378",
+    "fullName": "Javi Serrano",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/303378.png",
+    "teamId": 530
+  },
+  {
+    "id": "313383",
+    "fullName": "O. Vargas",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/313383.png",
+    "teamId": 530
+  },
+  {
+    "id": "6067",
+    "fullName": "T. Almada",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/6067.png",
+    "teamId": 530
+  },
+  {
+    "id": "6009",
+    "fullName": "J. Álvarez",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/6009.png",
+    "teamId": 530
+  },
+  {
+    "id": "182219",
+    "fullName": "Álex Baena",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/182219.png",
+    "teamId": 530
+  },
+  {
+    "id": "443668",
+    "fullName": "Rayane Belid",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/443668.png",
+    "teamId": 530
+  },
+  {
+    "id": "491091",
+    "fullName": "Sergio Esteban",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/491091.png",
+    "teamId": 530
+  },
+  {
+    "id": "26315",
+    "fullName": "N. González",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/26315.png",
+    "teamId": 530
+  },
+  {
+    "id": "56",
+    "fullName": "A. Griezmann",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/56.png",
+    "teamId": 530
+  },
+  {
+    "id": "18767",
+    "fullName": "A. Lookman",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/18767.png",
+    "teamId": 530
+  },
+  {
+    "id": "548706",
+    "fullName": "I. Luque",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/548706.png",
+    "teamId": 530
+  },
+  {
+    "id": "323935",
+    "fullName": "G. Simeone",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/323935.png",
+    "teamId": 530
+  },
+  {
+    "id": "8492",
+    "fullName": "A. Sørloth",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/8492.png",
+    "teamId": 530
+  },
+  {
+    "id": "431160",
+    "fullName": "T. Folgado",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/431160.png",
+    "teamId": 548
+  },
+  {
+    "id": "337843",
+    "fullName": "Aitor Fraga",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/337843.png",
+    "teamId": 548
+  },
+  {
+    "id": "189832",
+    "fullName": "Unai Marrero",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/189832.png",
+    "teamId": 548
+  },
+  {
+    "id": "47269",
+    "fullName": "Álex Remiro",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47269.png",
+    "teamId": 548
+  },
+  {
+    "id": "199044",
+    "fullName": "J. Aramburu",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/199044.png",
+    "teamId": 548
+  },
+  {
+    "id": "349063",
+    "fullName": "Luken Beitia",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/349063.png",
+    "teamId": 548
+  },
+  {
+    "id": "1902",
+    "fullName": "D. Ćaleta-Car",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/1902.png",
+    "teamId": 548
+  },
+  {
+    "id": "47298",
+    "fullName": "Elustondo",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47298.png",
+    "teamId": 548
+  },
+  {
+    "id": "23",
+    "fullName": "Sergio Gómez",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/23.png",
+    "teamId": 548
+  },
+  {
+    "id": "405073",
+    "fullName": "Jon Martín",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/405073.png",
+    "teamId": 548
+  },
+  {
+    "id": "47303",
+    "fullName": "Aihen Muñoz",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47303.png",
+    "teamId": 548
+  },
+  {
+    "id": "387139",
+    "fullName": "J. Ochieng",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/387139.png",
+    "teamId": 548
+  },
+  {
+    "id": "737",
+    "fullName": "Odriozola",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/737.png",
+    "teamId": 548
+  },
+  {
+    "id": "47314",
+    "fullName": "Zubeldia",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47314.png",
+    "teamId": 548
+  },
+  {
+    "id": "469672",
+    "fullName": "Ibai Aguirre",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/469672.png",
+    "teamId": 548
+  },
+  {
+    "id": "445881",
+    "fullName": "Lander Astiazarán",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/445881.png",
+    "teamId": 548
+  },
+  {
+    "id": "454301",
+    "fullName": "Tomás Carbonell",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/454301.png",
+    "teamId": 548
+  },
+  {
+    "id": "287654",
+    "fullName": "Jon Gorrotxategi",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/287654.png",
+    "teamId": 548
+  },
+  {
+    "id": "2449",
+    "fullName": "Y. Herrera",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/2449.png",
+    "teamId": 548
+  },
+  {
+    "id": "353634",
+    "fullName": "A. Lebarbier",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/353634.png",
+    "teamId": 548
+  },
+  {
+    "id": "290106",
+    "fullName": "Pablo Marín",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/290106.png",
+    "teamId": 548
+  },
+  {
+    "id": "47440",
+    "fullName": "Brais Méndez",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47440.png",
+    "teamId": 548
+  },
+  {
+    "id": "930",
+    "fullName": "Carlos Soler",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/930.png",
+    "teamId": 548
+  },
+  {
+    "id": "7332",
+    "fullName": "L. Sučić",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/7332.png",
+    "teamId": 548
+  },
+  {
+    "id": "183744",
+    "fullName": "Beñat Turrientes",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/183744.png",
+    "teamId": 548
+  },
+  {
+    "id": "268960",
+    "fullName": "A. Zakharyan",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/268960.png",
+    "teamId": 548
+  },
+  {
+    "id": "47317",
+    "fullName": "Barrenetxea",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47317.png",
+    "teamId": 548
+  },
+  {
+    "id": "403561",
+    "fullName": "Gorka Carrera",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/403561.png",
+    "teamId": 548
+  },
+  {
+    "id": "287653",
+    "fullName": "Alberto Dadie",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/287653.png",
+    "teamId": 548
+  },
+  {
+    "id": "412738",
+    "fullName": "Dani Díaz",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/412738.png",
+    "teamId": 548
+  },
+  {
+    "id": "925",
+    "fullName": "Gonçalo Guedes",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/925.png",
+    "teamId": 548
+  },
+  {
+    "id": "183748",
+    "fullName": "Jon Karrikaburu",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/183748.png",
+    "teamId": 548
+  },
+  {
+    "id": "32862",
+    "fullName": "T. Kubo",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/32862.png",
+    "teamId": 548
+  },
+  {
+    "id": "449063",
+    "fullName": "Alex Garcia",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/449063.png",
+    "teamId": 548
+  },
+  {
+    "id": "402168",
+    "fullName": "Arkaitz Mariezkurrena",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/402168.png",
+    "teamId": 548
+  },
+  {
+    "id": "61774",
+    "fullName": "O. Óskarsson",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/61774.png",
+    "teamId": 548
+  },
+  {
+    "id": "47323",
+    "fullName": "Mikel Oyarzabal",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47323.png",
+    "teamId": 548
+  },
+  {
+    "id": "365287",
+    "fullName": "Wesley Gassova",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/365287.png",
+    "teamId": 548
+  },
+  {
+    "id": "18812",
+    "fullName": "Adrián",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/18812.png",
+    "teamId": 543
+  },
+  {
+    "id": "392455",
+    "fullName": "Germán García",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/392455.png",
+    "teamId": 543
+  },
+  {
+    "id": "456619",
+    "fullName": "Manu González",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/456619.png",
+    "teamId": 543
+  },
+  {
+    "id": "1557",
+    "fullName": "Pau López",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/1557.png",
+    "teamId": 543
+  },
+  {
+    "id": "46990",
+    "fullName": "Álvaro Vallés",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/46990.png",
+    "teamId": 543
+  },
+  {
+    "id": "1561",
+    "fullName": "Marc Bartra",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/1561.png",
+    "teamId": 543
+  },
+  {
+    "id": "1439",
+    "fullName": "Héctor Bellerín",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/1439.png",
+    "teamId": 543
+  },
+  {
+    "id": "548853",
+    "fullName": "D. Bladi",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/548853.png",
+    "teamId": 543
+  },
+  {
+    "id": "610742",
+    "fullName": "C. De Roa",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/610742.png",
+    "teamId": 543
+  },
+  {
+    "id": "1564",
+    "fullName": "Junior Firpo",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/1564.png",
+    "teamId": 543
+  },
+  {
+    "id": "355004",
+    "fullName": "V. Gómez",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/355004.png",
+    "teamId": 543
+  },
+  {
+    "id": "47302",
+    "fullName": "Diego Llorente",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47302.png",
+    "teamId": 543
+  },
+  {
+    "id": "195100",
+    "fullName": "Natan",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/195100.png",
+    "teamId": 543
+  },
+  {
+    "id": "334574",
+    "fullName": "Ángel Ortiz",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/334574.png",
+    "teamId": 543
+  },
+  {
+    "id": "1631",
+    "fullName": "R. Rodríguez",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/1631.png",
+    "teamId": 543
+  },
+  {
+    "id": "286084",
+    "fullName": "Sergi Altimira",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/286084.png",
+    "teamId": 543
+  },
+  {
+    "id": "74",
+    "fullName": "S. Amrabat",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/74.png",
+    "teamId": 543
+  },
+  {
+    "id": "450714",
+    "fullName": "Ivan Corralejo",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/450714.png",
+    "teamId": 543
+  },
+  {
+    "id": "300885",
+    "fullName": "N. Deossa",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/300885.png",
+    "teamId": 543
+  },
+  {
+    "id": "750",
+    "fullName": "Álvaro Fidalgo",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/750.png",
+    "teamId": 543
+  },
+  {
+    "id": "1697",
+    "fullName": "Pablo Fornals",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/1697.png",
+    "teamId": 543
+  },
+  {
+    "id": "745",
+    "fullName": "Isco",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/745.png",
+    "teamId": 543
+  },
+  {
+    "id": "1578",
+    "fullName": "G. Lo Celso",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/1578.png",
+    "teamId": 543
+  },
+  {
+    "id": "351131",
+    "fullName": "Dani Pérez",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/351131.png",
+    "teamId": 543
+  },
+  {
+    "id": "47341",
+    "fullName": "Marc Roca",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47341.png",
+    "teamId": 543
+  },
+  {
+    "id": "9971",
+    "fullName": "Antony",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/9971.png",
+    "teamId": 543
+  },
+  {
+    "id": "47579",
+    "fullName": "E. Ávila",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47579.png",
+    "teamId": 543
+  },
+  {
+    "id": "3033",
+    "fullName": "C. Bakambu",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/3033.png",
+    "teamId": 543
+  },
+  {
+    "id": "47582",
+    "fullName": "C. Hernández",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47582.png",
+    "teamId": 543
+  },
+  {
+    "id": "181421",
+    "fullName": "A. Ezzalzouli",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/181421.png",
+    "teamId": 543
+  },
+  {
+    "id": "443163",
+    "fullName": "Pablo García",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/443163.png",
+    "teamId": 543
+  },
+  {
+    "id": "548691",
+    "fullName": "R. Marina",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/548691.png",
+    "teamId": 543
+  },
+  {
+    "id": "544644",
+    "fullName": "J. A. Morante",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/544644.png",
+    "teamId": 543
+  },
+  {
+    "id": "136117",
+    "fullName": "Rodrigo Riquelme",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/136117.png",
+    "teamId": 543
+  },
+  {
+    "id": "47119",
+    "fullName": "Aitor Ruibal",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47119.png",
+    "teamId": 543
+  },
+  {
+    "id": "312468",
+    "fullName": "Álex Padilla",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/312468.png",
+    "teamId": 531
+  },
+  {
+    "id": "437637",
+    "fullName": "Mikel Santos",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/437637.png",
+    "teamId": 531
+  },
+  {
+    "id": "47270",
+    "fullName": "Unai Simón",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47270.png",
+    "teamId": 531
+  },
+  {
+    "id": "182181",
+    "fullName": "Jesús Areso",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/182181.png",
+    "teamId": 531
+  },
+  {
+    "id": "47273",
+    "fullName": "Yuri",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47273.png",
+    "teamId": 531
+  },
+  {
+    "id": "336998",
+    "fullName": "A. Boiro",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/336998.png",
+    "teamId": 531
+  },
+  {
+    "id": "335490",
+    "fullName": "Jon de Luis",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/335490.png",
+    "teamId": 531
+  },
+  {
+    "id": "384262",
+    "fullName": "Aimar Duñabeitia",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/384262.png",
+    "teamId": 531
+  },
+  {
+    "id": "47299",
+    "fullName": "Gorosabel",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47299.png",
+    "teamId": 531
+  },
+  {
+    "id": "561097",
+    "fullName": "A. Izagirre Cestona",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/561097.png",
+    "teamId": 531
+  },
+  {
+    "id": "622",
+    "fullName": "Aymeric Laporte",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/622.png",
+    "teamId": 531
+  },
+  {
+    "id": "47276",
+    "fullName": "Lekue",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47276.png",
+    "teamId": 531
+  },
+  {
+    "id": "407677",
+    "fullName": "Iker Monreal",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/407677.png",
+    "teamId": 531
+  },
+  {
+    "id": "183849",
+    "fullName": "Aitor Paredes",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/183849.png",
+    "teamId": 531
+  },
+  {
+    "id": "332309",
+    "fullName": "Alejandro Rego",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/332309.png",
+    "teamId": 531
+  },
+  {
+    "id": "47278",
+    "fullName": "Dani Vivian",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47278.png",
+    "teamId": 531
+  },
+  {
+    "id": "560981",
+    "fullName": "E. Gift",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/560981.png",
+    "teamId": 531
+  },
+  {
+    "id": "332308",
+    "fullName": "Unai Gómez",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/332308.png",
+    "teamId": 531
+  },
+  {
+    "id": "383780",
+    "fullName": "Mikel Jauregizar",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/383780.png",
+    "teamId": 531
+  },
+  {
+    "id": "432555",
+    "fullName": "Efe Korkut Martin",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/432555.png",
+    "teamId": 531
+  },
+  {
+    "id": "84086",
+    "fullName": "Robert Navarro",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/84086.png",
+    "teamId": 531
+  },
+  {
+    "id": "543467",
+    "fullName": "Adrian Perez",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/543467.png",
+    "teamId": 531
+  },
+  {
+    "id": "182617",
+    "fullName": "Beñat Prados",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/182617.png",
+    "teamId": 531
+  },
+  {
+    "id": "47007",
+    "fullName": "Ruíz de Galarreta",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47007.png",
+    "teamId": 531
+  },
+  {
+    "id": "128398",
+    "fullName": "Oihan Sancet",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/128398.png",
+    "teamId": 531
+  },
+  {
+    "id": "384267",
+    "fullName": "Ibon Sánchez",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/384267.png",
+    "teamId": 531
+  },
+  {
+    "id": "568156",
+    "fullName": "S. Sanchez",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/568156.png",
+    "teamId": 531
+  },
+  {
+    "id": "47418",
+    "fullName": "Mikel Vesga",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47418.png",
+    "teamId": 531
+  },
+  {
+    "id": "30510",
+    "fullName": "Álex Berenguer",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/30510.png",
+    "teamId": 531
+  },
+  {
+    "id": "377257",
+    "fullName": "Endika Bujan",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/377257.png",
+    "teamId": 531
+  },
+  {
+    "id": "560978",
+    "fullName": "E. Garcia",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/560978.png",
+    "teamId": 531
+  },
+  {
+    "id": "47291",
+    "fullName": "Gorka Guruzeta",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47291.png",
+    "teamId": 531
+  },
+  {
+    "id": "560954",
+    "fullName": "A. Hierro",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/560954.png",
+    "teamId": 531
+  },
+  {
+    "id": "183776",
+    "fullName": "Urko Izeta",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/183776.png",
+    "teamId": 531
+  },
+  {
+    "id": "287680",
+    "fullName": "Maroan Sannadi",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/287680.png",
+    "teamId": 531
+  },
+  {
+    "id": "286593",
+    "fullName": "Nico Serrano",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/286593.png",
+    "teamId": 531
+  },
+  {
+    "id": "47294",
+    "fullName": "I. Williams",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47294.png",
+    "teamId": 531
+  },
+  {
+    "id": "183799",
+    "fullName": "Nico Williams",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/183799.png",
+    "teamId": 531
+  },
+  {
+    "id": "122956",
+    "fullName": "Diego Conde",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/122956.png",
+    "teamId": 533
+  },
+  {
+    "id": "302277",
+    "fullName": "Rubén Gómez",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/302277.png",
+    "teamId": 533
+  },
+  {
+    "id": "278619",
+    "fullName": "Luíz Júnior",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/278619.png",
+    "teamId": 533
+  },
+  {
+    "id": "162473",
+    "fullName": "Arnau Tenas",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/162473.png",
+    "teamId": 533
+  },
+  {
+    "id": "455356",
+    "fullName": "Daniel Budesca",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/455356.png",
+    "teamId": 533
+  },
+  {
+    "id": "70500",
+    "fullName": "Sergi Cardona",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/70500.png",
+    "teamId": 533
+  },
+  {
+    "id": "166",
+    "fullName": "J. Foyth",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/166.png",
+    "teamId": 533
+  },
+  {
+    "id": "355994",
+    "fullName": "A. Freeman",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/355994.png",
+    "teamId": 533
+  },
+  {
+    "id": "237066",
+    "fullName": "Rafa Marín",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/237066.png",
+    "teamId": 533
+  },
+  {
+    "id": "311773",
+    "fullName": "S. Mouriño",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/311773.png",
+    "teamId": 533
+  },
+  {
+    "id": "435552",
+    "fullName": "Pau Navarro",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/435552.png",
+    "teamId": 533
+  },
+  {
+    "id": "1702",
+    "fullName": "Pedraza",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/1702.png",
+    "teamId": 533
+  },
+  {
+    "id": "330443",
+    "fullName": "Isma Sierra",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/330443.png",
+    "teamId": 533
+  },
+  {
+    "id": "484474",
+    "fullName": "J. Valou",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/484474.png",
+    "teamId": 533
+  },
+  {
+    "id": "336671",
+    "fullName": "Renato Veiga",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/336671.png",
+    "teamId": 533
+  },
+  {
+    "id": "418188",
+    "fullName": "M. Barry",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/418188.png",
+    "teamId": 533
+  },
+  {
+    "id": "51016",
+    "fullName": "T. Buchanan",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/51016.png",
+    "teamId": 533
+  },
+  {
+    "id": "47541",
+    "fullName": "Santi Comesaña",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47541.png",
+    "teamId": 533
+  },
+  {
+    "id": "463280",
+    "fullName": "A. Diatta",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/463280.png",
+    "teamId": 533
+  },
+  {
+    "id": "20696",
+    "fullName": "P. Gueye",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/20696.png",
+    "teamId": 533
+  },
+  {
+    "id": "514913",
+    "fullName": "Hugo López",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/514913.png",
+    "teamId": 533
+  },
+  {
+    "id": "548734",
+    "fullName": "C. Macia",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/548734.png",
+    "teamId": 533
+  },
+  {
+    "id": "182519",
+    "fullName": "Alberto Moleiro",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/182519.png",
+    "teamId": 533
+  },
+  {
+    "id": "928",
+    "fullName": "Dani Parejo",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/928.png",
+    "teamId": 533
+  },
+  {
+    "id": "49",
+    "fullName": "T. Partey",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/49.png",
+    "teamId": 533
+  },
+  {
+    "id": "391775",
+    "fullName": "Ayman Arguigue",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/391775.png",
+    "teamId": 533
+  },
+  {
+    "id": "411702",
+    "fullName": "Pau Cabanes",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/411702.png",
+    "teamId": 533
+  },
+  {
+    "id": "551397",
+    "fullName": "E. Eto'o",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/551397.png",
+    "teamId": 533
+  },
+  {
+    "id": "548807",
+    "fullName": "J. A. Gaitan Diaz",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/548807.png",
+    "teamId": 533
+  },
+  {
+    "id": "119213",
+    "fullName": "Alfon González",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/119213.png",
+    "teamId": 533
+  },
+  {
+    "id": "180496",
+    "fullName": "G. Mikautadze",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/180496.png",
+    "teamId": 533
+  },
+  {
+    "id": "1707",
+    "fullName": "Gerard Moreno",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/1707.png",
+    "teamId": 533
+  },
+  {
+    "id": "351587",
+    "fullName": "T. Oluwaseyi",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/351587.png",
+    "teamId": 533
+  },
+  {
+    "id": "3246",
+    "fullName": "N. Pépé",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/3246.png",
+    "teamId": 533
+  },
+  {
+    "id": "18906",
+    "fullName": "Ayoze Pérez",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/18906.png",
+    "teamId": 533
+  },
+  {
+    "id": "47448",
+    "fullName": "Aitor Fernández",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47448.png",
+    "teamId": 727
+  },
+  {
+    "id": "46646",
+    "fullName": "Sergio Herrera",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/46646.png",
+    "teamId": 727
+  },
+  {
+    "id": "348029",
+    "fullName": "D. Stamatakis",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/348029.png",
+    "teamId": 727
+  },
+  {
+    "id": "279822",
+    "fullName": "F. Boyomo",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/279822.png",
+    "teamId": 727
+  },
+  {
+    "id": "181259",
+    "fullName": "Abel Bretones",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/181259.png",
+    "teamId": 727
+  },
+  {
+    "id": "47533",
+    "fullName": "Catena",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47533.png",
+    "teamId": 727
+  },
+  {
+    "id": "46967",
+    "fullName": "Juan Cruz",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/46967.png",
+    "teamId": 727
+  },
+  {
+    "id": "47566",
+    "fullName": "Javi Galán",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47566.png",
+    "teamId": 727
+  },
+  {
+    "id": "338872",
+    "fullName": "Jon García",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/338872.png",
+    "teamId": 727
+  },
+  {
+    "id": "182592",
+    "fullName": "Jorge Herrando",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/182592.png",
+    "teamId": 727
+  },
+  {
+    "id": "21701",
+    "fullName": "V. Rosier",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/21701.png",
+    "teamId": 727
+  },
+  {
+    "id": "332304",
+    "fullName": "Raúl Chasco",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/332304.png",
+    "teamId": 727
+  },
+  {
+    "id": "560924",
+    "fullName": "U. Santos",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/560924.png",
+    "teamId": 727
+  },
+  {
+    "id": "560997",
+    "fullName": "M. Serrano",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/560997.png",
+    "teamId": 727
+  },
+  {
+    "id": "429553",
+    "fullName": "Mauro Echegoyen",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/429553.png",
+    "teamId": 727
+  },
+  {
+    "id": "46662",
+    "fullName": "Moncayola",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/46662.png",
+    "teamId": 727
+  },
+  {
+    "id": "182621",
+    "fullName": "Iker Muñoz",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/182621.png",
+    "teamId": 727
+  },
+  {
+    "id": "67939",
+    "fullName": "Aimar Oroz",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/67939.png",
+    "teamId": 727
+  },
+  {
+    "id": "381197",
+    "fullName": "Asier Osambela",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/381197.png",
+    "teamId": 727
+  },
+  {
+    "id": "1825",
+    "fullName": "Lucas Torró",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/1825.png",
+    "teamId": 727
+  },
+  {
+    "id": "421044",
+    "fullName": "Íñigo Arguibide",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/421044.png",
+    "teamId": 727
+  },
+  {
+    "id": "331003",
+    "fullName": "Roberto Arroyo",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/331003.png",
+    "teamId": 727
+  },
+  {
+    "id": "46667",
+    "fullName": "Kike Barja",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/46667.png",
+    "teamId": 727
+  },
+  {
+    "id": "288800",
+    "fullName": "Iker Benito",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/288800.png",
+    "teamId": 727
+  },
+  {
+    "id": "46746",
+    "fullName": "A. Budimir",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/46746.png",
+    "teamId": 727
+  },
+  {
+    "id": "146751",
+    "fullName": "Raúl García",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/146751.png",
+    "teamId": 727
+  },
+  {
+    "id": "46658",
+    "fullName": "Rubén García",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/46658.png",
+    "teamId": 727
+  },
+  {
+    "id": "47574",
+    "fullName": "Moi Gómez",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47574.png",
+    "teamId": 727
+  },
+  {
+    "id": "264470",
+    "fullName": "Raul Moro",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/264470.png",
+    "teamId": 727
+  },
+  {
+    "id": "338751",
+    "fullName": "Víctor Muñoz",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/338751.png",
+    "teamId": 727
+  },
+  {
+    "id": "391819",
+    "fullName": "Martin Pedroarena",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/391819.png",
+    "teamId": 727
+  },
+  {
+    "id": "337011",
+    "fullName": "Manu Rico",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/337011.png",
+    "teamId": 727
+  },
+  {
+    "id": "442861",
+    "fullName": "A. Andreev",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/442861.png",
+    "teamId": 547
+  },
+  {
+    "id": "47426",
+    "fullName": "Rubén Blanco",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47426.png",
+    "teamId": 547
+  },
+  {
+    "id": "158",
+    "fullName": "P. Gazzaniga",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/158.png",
+    "teamId": 547
+  },
+  {
+    "id": "47153",
+    "fullName": "Juan Carlos",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47153.png",
+    "teamId": 547
+  },
+  {
+    "id": "432476",
+    "fullName": "V. Krapyvtsov",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/432476.png",
+    "teamId": 547
+  },
+  {
+    "id": "127",
+    "fullName": "M. ter Stegen",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/127.png",
+    "teamId": 547
+  },
+  {
+    "id": "429757",
+    "fullName": "Pol Arnau",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/429757.png",
+    "teamId": 547
+  },
+  {
+    "id": "531",
+    "fullName": "D. Blind",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/531.png",
+    "teamId": 547
+  },
+  {
+    "id": "162434",
+    "fullName": "Alejandro Francés",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/162434.png",
+    "teamId": 547
+  },
+  {
+    "id": "491106",
+    "fullName": "Gibert Jordana",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/491106.png",
+    "teamId": 547
+  },
+  {
+    "id": "47334",
+    "fullName": "David López",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47334.png",
+    "teamId": 547
+  },
+  {
+    "id": "283668",
+    "fullName": "Arnau Martínez",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/283668.png",
+    "teamId": 547
+  },
+  {
+    "id": "47547",
+    "fullName": "Álex Moreno",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47547.png",
+    "teamId": 547
+  },
+  {
+    "id": "313025",
+    "fullName": "Hugo Rincón",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/313025.png",
+    "teamId": 547
+  },
+  {
+    "id": "439709",
+    "fullName": "Antonio Salguero",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/439709.png",
+    "teamId": 547
+  },
+  {
+    "id": "414359",
+    "fullName": "Vitor Nunes",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/414359.png",
+    "teamId": 547
+  },
+  {
+    "id": "47435",
+    "fullName": "Fran Beltrán",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47435.png",
+    "teamId": 547
+  },
+  {
+    "id": "414385",
+    "fullName": "C. Echeverri",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/414385.png",
+    "teamId": 547
+  },
+  {
+    "id": "551459",
+    "fullName": "L. Kourouma",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/551459.png",
+    "teamId": 547
+  },
+  {
+    "id": "45",
+    "fullName": "T. Lemar",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/45.png",
+    "teamId": 547
+  },
+  {
+    "id": "1700",
+    "fullName": "Iván Martín",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/1700.png",
+    "teamId": 547
+  },
+  {
+    "id": "129678",
+    "fullName": "A. Ounahi",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/129678.png",
+    "teamId": 547
+  },
+  {
+    "id": "339105",
+    "fullName": "Joel Roca",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/339105.png",
+    "teamId": 547
+  },
+  {
+    "id": "2182",
+    "fullName": "V. Tsygankov",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/2182.png",
+    "teamId": 547
+  },
+  {
+    "id": "20",
+    "fullName": "A. Witsel",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/20.png",
+    "teamId": 547
+  },
+  {
+    "id": "547",
+    "fullName": "D. van de Beek",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/547.png",
+    "teamId": 547
+  },
+  {
+    "id": "626331",
+    "fullName": "Juan Arango",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/626331.png",
+    "teamId": 547
+  },
+  {
+    "id": "455366",
+    "fullName": "P. Ba",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/455366.png",
+    "teamId": 547
+  },
+  {
+    "id": "2061",
+    "fullName": "Bryan Gil",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/2061.png",
+    "teamId": 547
+  },
+  {
+    "id": "47520",
+    "fullName": "Portu",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47520.png",
+    "teamId": 547
+  },
+  {
+    "id": "155",
+    "fullName": "Abel Ruiz",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/155.png",
+    "teamId": 547
+  },
+  {
+    "id": "553313",
+    "fullName": "Javier Sarasa",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/553313.png",
+    "teamId": 547
+  },
+  {
+    "id": "2617",
+    "fullName": "C. Stuani",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/2617.png",
+    "teamId": 547
+  },
+  {
+    "id": "161670",
+    "fullName": "V. Vanat",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/161670.png",
+    "teamId": 547
+  },
+  {
+    "id": "152955",
+    "fullName": "L. Bergström",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/152955.png",
+    "teamId": 798
+  },
+  {
+    "id": "47399",
+    "fullName": "Iván Cuéllar",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47399.png",
+    "teamId": 798
+  },
+  {
+    "id": "179139",
+    "fullName": "Leo Román",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/179139.png",
+    "teamId": 798
+  },
+  {
+    "id": "613218",
+    "fullName": "Torreguitart Nil",
+    "position": "GK",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/613218.png",
+    "teamId": 798
+  },
+  {
+    "id": "30924",
+    "fullName": "M. Kumbulla",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/30924.png",
+    "teamId": 798
+  },
+  {
+    "id": "920",
+    "fullName": "Toni Lato",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/920.png",
+    "teamId": 798
+  },
+  {
+    "id": "335697",
+    "fullName": "David López",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/335697.png",
+    "teamId": 798
+  },
+  {
+    "id": "26302",
+    "fullName": "Pablo Maffeo",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/26302.png",
+    "teamId": 798
+  },
+  {
+    "id": "64268",
+    "fullName": "J. Mojica",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/64268.png",
+    "teamId": 798
+  },
+  {
+    "id": "108519",
+    "fullName": "Mateu Morey",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/108519.png",
+    "teamId": 798
+  },
+  {
+    "id": "551463",
+    "fullName": "J. Olaizola",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/551463.png",
+    "teamId": 798
+  },
+  {
+    "id": "626497",
+    "fullName": "L. Orejuela",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/626497.png",
+    "teamId": 798
+  },
+  {
+    "id": "46733",
+    "fullName": "Raíllo",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/46733.png",
+    "teamId": 798
+  },
+  {
+    "id": "462277",
+    "fullName": "I. Salhi",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/462277.png",
+    "teamId": 798
+  },
+  {
+    "id": "46738",
+    "fullName": "M. Valjent",
+    "position": "CB",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/46738.png",
+    "teamId": 798
+  },
+  {
+    "id": "47336",
+    "fullName": "Darder",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/47336.png",
+    "teamId": 798
+  },
+  {
+    "id": "629089",
+    "fullName": "J. Garcia",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/629089.png",
+    "teamId": 798
+  },
+  {
+    "id": "414",
+    "fullName": "Omar Mascarell",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/414.png",
+    "teamId": 798
+  },
+  {
+    "id": "1701",
+    "fullName": "Manu Morlanes",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/1701.png",
+    "teamId": 798
+  },
+  {
+    "id": "411424",
+    "fullName": "Miquel Salas",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/411424.png",
+    "teamId": 798
+  },
+  {
+    "id": "190485",
+    "fullName": "Samú Costa",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/190485.png",
+    "teamId": 798
+  },
+  {
+    "id": "107194",
+    "fullName": "Antonio Sánchez",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/107194.png",
+    "teamId": 798
+  },
+  {
+    "id": "285909",
+    "fullName": "Pablo Torre",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/285909.png",
+    "teamId": 798
+  },
+  {
+    "id": "25375",
+    "fullName": "T. Asano",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/25375.png",
+    "teamId": 798
+  },
+  {
+    "id": "313059",
+    "fullName": "M. Joseph",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/313059.png",
+    "teamId": 798
+  },
+  {
+    "id": "405074",
+    "fullName": "J. Kalumba",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/405074.png",
+    "teamId": 798
+  },
+  {
+    "id": "293604",
+    "fullName": "Javi Llabrés",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/293604.png",
+    "teamId": 798
+  },
+  {
+    "id": "140831",
+    "fullName": "Zito Luvumbo",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/140831.png",
+    "teamId": 798
+  },
+  {
+    "id": "50048",
+    "fullName": "V. Muriqi",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/50048.png",
+    "teamId": 798
+  },
+  {
+    "id": "46751",
+    "fullName": "Abdón Prats",
+    "position": "ST",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/46751.png",
+    "teamId": 798
+  },
+  {
+    "id": "491248",
+    "fullName": "Jan Virgili",
+    "position": "CM",
+    "marketValue": null,
+    "avatarUrl": "https://media.api-sports.io/football/players/491248.png",
+    "teamId": 798
+  }
+]

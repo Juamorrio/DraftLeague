@@ -1,4 +1,4 @@
-package com.DraftLeague.models.Auth;
+package com.DraftLeague.services.auth;
 
 import java.security.Key;
 import java.security.MessageDigest;

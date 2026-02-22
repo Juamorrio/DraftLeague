@@ -4,13 +4,17 @@ import com.DraftLeague.models.Match.dto.MatchDTO;
 import com.DraftLeague.models.Match.dto.UpcomingMatchDTO;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +26,9 @@ public class MatchService {
     private final ObjectMapper objectMapper;
     private final MatchRepository matchRepository;
 
+    @Value("${scripts.path}")
+    private String scriptsPath;
+
     public MatchService(ObjectMapper objectMapper, MatchRepository matchRepository) {
         this.objectMapper = objectMapper;
         this.matchRepository = matchRepository;
@@ -29,10 +36,11 @@ public class MatchService {
 
     public Map<String, List<MatchDTO>> getPlayedMatches() {
         try {
-            ClassPathResource resource = new ClassPathResource("scraping/matches.json");
-            InputStream inputStream = resource.getInputStream();
-            TypeReference<Map<String, List<MatchDTO>>> typeRef = new TypeReference<>() {};
-            return objectMapper.readValue(inputStream, typeRef);
+            Path path = Paths.get(scriptsPath, "matches.json");
+            try (InputStream inputStream = Files.newInputStream(path)) {
+                TypeReference<Map<String, List<MatchDTO>>> typeRef = new TypeReference<>() {};
+                return objectMapper.readValue(inputStream, typeRef);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             return new HashMap<>();
@@ -41,10 +49,11 @@ public class MatchService {
 
     public Map<String, List<UpcomingMatchDTO>> getUpcomingMatches() {
         try {
-            ClassPathResource resource = new ClassPathResource("scraping/upcoming_matches.json");
-            InputStream inputStream = resource.getInputStream();
-            TypeReference<Map<String, List<UpcomingMatchDTO>>> typeRef = new TypeReference<>() {};
-            return objectMapper.readValue(inputStream, typeRef);
+            Path path = Paths.get(scriptsPath, "upcoming_matches.json");
+            try (InputStream inputStream = Files.newInputStream(path)) {
+                TypeReference<Map<String, List<UpcomingMatchDTO>>> typeRef = new TypeReference<>() {};
+                return objectMapper.readValue(inputStream, typeRef);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             return new HashMap<>();
@@ -52,12 +61,11 @@ public class MatchService {
     }
 
     public String syncMatches() throws Exception {
-        ClassPathResource resource = new ClassPathResource("scraping/home.py");
-        String scriptPath = resource.getFile().getAbsolutePath();
+        Path scriptPath = Paths.get(scriptsPath, "home.py").toAbsolutePath();
         
         List<String> command = new ArrayList<>();
         command.add("python");
-        command.add(scriptPath);
+        command.add(scriptPath.toString());
         
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         processBuilder.redirectErrorStream(true);
@@ -85,7 +93,6 @@ public class MatchService {
         try {
             int importedCount = 0;
             
-            // Import played matches
             Map<String, List<MatchDTO>> matchesByRound = getPlayedMatches();
             for (Map.Entry<String, List<MatchDTO>> entry : matchesByRound.entrySet()) {
                 String roundKey = entry.getKey();
@@ -115,14 +122,12 @@ public class MatchService {
                 }
             }
             
-            // Import upcoming matches
             Map<String, List<UpcomingMatchDTO>> upcomingByRound = getUpcomingMatches();
             for (Map.Entry<String, List<UpcomingMatchDTO>> entry : upcomingByRound.entrySet()) {
                 String roundKey = entry.getKey();
                 Integer roundNumber = Integer.parseInt(roundKey.replace("jornada_", ""));
                 
                 for (UpcomingMatchDTO upcomingDTO : entry.getValue()) {
-                    // Check by teamIds and round since upcoming matches don't have matchId
                     if (matchRepository.findByRoundAndHomeTeamIdAndAwayTeamId(
                             roundNumber, upcomingDTO.getHomeTeamId(), upcomingDTO.getAwayTeamId()).isPresent()) {
                         continue;
@@ -156,6 +161,10 @@ public class MatchService {
 
     public Match getMatchByFixtureId(Integer fixtureId) {
         return matchRepository.findByApiFootballFixtureId(fixtureId).orElse(null);
+    }
+
+    public Match getMatchById(Integer id) {
+        return matchRepository.findById(id).orElse(null);
     }
 
     public Map<String, List<MatchDTO>> getPlayedMatchesFromDB() {
@@ -213,32 +222,19 @@ public class MatchService {
         return teamNames;
     }
 
-    /**
-     * Get the next upcoming round number (the lowest round with UPCOMING matches).
-     * @return the next round number, or null if no upcoming matches exist
-     */
     public Integer getNextRound() {
         List<Match> upcoming = matchRepository.findByStatusOrderByRoundAsc(MatchStatus.UPCOMING);
         if (upcoming.isEmpty()) return null;
         return upcoming.get(0).getRound();
     }
 
-    /**
-     * Get all matches in the next upcoming round.
-     * @return list of matches in the next round, or empty list
-     */
+
     public List<Match> getNextRoundMatches() {
         Integer nextRound = getNextRound();
         if (nextRound == null) return new ArrayList<>();
         return matchRepository.findByRound(nextRound);
     }
 
-    /**
-     * Get the next upcoming match for a specific club (by API-Football team ID).
-     * Searches for the earliest upcoming match where the club plays as home or away.
-     * @param clubTeamId the API-Football team ID
-     * @return the next match, or null if not found
-     */
     public Match getNextMatchForClub(Integer clubTeamId) {
         if (clubTeamId == null) return null;
 

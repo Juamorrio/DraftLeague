@@ -2,6 +2,7 @@ package com.DraftLeague.models.Team;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -186,5 +187,35 @@ public class TeamService {
         notificationService.createClauseNotification(leagueId, buyer, sellerTeam.getUser(), target.getPlayer(), price);
 
         return buyerTeam;
+    }
+
+    @Transactional
+    public Map<String, Object> sellPlayer(Integer leagueId, String playerId) {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) throw new RuntimeException("No autenticado");
+        String username = auth.getName();
+
+        User user = userRepository.findUserByUsername(username)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        Team team = getTeamByUserAndLeague(leagueId, user.getId());
+
+        PlayerTeam target = team.getPlayerTeams().stream()
+            .filter(pt -> pt.getPlayer().getId().equals(playerId))
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException("El jugador no pertenece a tu equipo"));
+
+        int marketValue = target.getPlayer().getMarketValue();
+        double factor = 0.9 + (Math.random() * 0.2);
+        int sellPrice = (int) Math.round(marketValue * factor);
+
+        team.setBudget(team.getBudget() + sellPrice);
+        team.getPlayerTeams().remove(target);
+        playerTeamRepository.delete(target);
+        teamRepository.save(team);
+
+        notificationService.createSellNotification(leagueId, user, target.getPlayer(), sellPrice);
+
+        return Map.of("sellPrice", sellPrice, "budget", team.getBudget());
     }
 }

@@ -1,5 +1,9 @@
-package com.DraftLeague.models.Auth;
+package com.DraftLeague.controllers.auth;
 
+import com.DraftLeague.dto.auth.AuthResponse;
+import com.DraftLeague.dto.auth.LoginRequest;
+import com.DraftLeague.dto.auth.RegisterRequest;
+import com.DraftLeague.services.auth.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;

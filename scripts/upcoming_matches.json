@@ -1,0 +1,1160 @@
+{
+  "jornada_25": [
+    {
+      "fixtureId": 1391060,
+      "homeTeamId": 531,
+      "awayTeamId": 797,
+      "homeClub": "Athletic Club",
+      "awayClub": "Elche",
+      "matchDate": "2026-02-20T20:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391067,
+      "homeTeamId": 548,
+      "awayTeamId": 718,
+      "homeClub": "Real Sociedad",
+      "awayClub": "Oviedo",
+      "matchDate": "2026-02-21T13:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391063,
+      "homeTeamId": 543,
+      "awayTeamId": 728,
+      "homeClub": "Real Betis",
+      "awayClub": "Rayo Vallecano",
+      "matchDate": "2026-02-21T15:15:00+00:00"
+    },
+    {
+      "fixtureId": 1391066,
+      "homeTeamId": 727,
+      "awayTeamId": 541,
+      "homeClub": "Osasuna",
+      "awayClub": "Real Madrid",
+      "matchDate": "2026-02-21T17:30:00+00:00"
+    },
+    {
+      "fixtureId": 1391061,
+      "homeTeamId": 530,
+      "awayTeamId": 540,
+      "homeClub": "Atletico Madrid",
+      "awayClub": "Espanyol",
+      "matchDate": "2026-02-21T20:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391065,
+      "homeTeamId": 546,
+      "awayTeamId": 536,
+      "homeClub": "Getafe",
+      "awayClub": "Sevilla",
+      "matchDate": "2026-02-22T13:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391062,
+      "homeTeamId": 529,
+      "awayTeamId": 539,
+      "homeClub": "Barcelona",
+      "awayClub": "Levante",
+      "matchDate": "2026-02-22T15:15:00+00:00"
+    },
+    {
+      "fixtureId": 1391064,
+      "homeTeamId": 538,
+      "awayTeamId": 798,
+      "homeClub": "Celta Vigo",
+      "awayClub": "Mallorca",
+      "matchDate": "2026-02-22T17:30:00+00:00"
+    },
+    {
+      "fixtureId": 1391068,
+      "homeTeamId": 533,
+      "awayTeamId": 532,
+      "homeClub": "Villarreal",
+      "awayClub": "Valencia",
+      "matchDate": "2026-02-22T20:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391059,
+      "homeTeamId": 542,
+      "awayTeamId": 547,
+      "homeClub": "Alaves",
+      "awayClub": "Girona",
+      "matchDate": "2026-02-23T20:00:00+00:00"
+    }
+  ],
+  "jornada_26": [
+    {
+      "fixtureId": 1391073,
+      "homeTeamId": 539,
+      "awayTeamId": 542,
+      "homeClub": "Levante",
+      "awayClub": "Alaves",
+      "matchDate": "2026-02-27T20:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391075,
+      "homeTeamId": 728,
+      "awayTeamId": 531,
+      "homeClub": "Rayo Vallecano",
+      "awayClub": "Athletic Club",
+      "matchDate": "2026-02-28T13:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391069,
+      "homeTeamId": 529,
+      "awayTeamId": 533,
+      "homeClub": "Barcelona",
+      "awayClub": "Villarreal",
+      "matchDate": "2026-02-28T15:15:00+00:00"
+    },
+    {
+      "fixtureId": 1391074,
+      "homeTeamId": 798,
+      "awayTeamId": 548,
+      "homeClub": "Mallorca",
+      "awayClub": "Real Sociedad",
+      "matchDate": "2026-02-28T17:30:00+00:00"
+    },
+    {
+      "fixtureId": 1391077,
+      "homeTeamId": 718,
+      "awayTeamId": 530,
+      "homeClub": "Oviedo",
+      "awayClub": "Atletico Madrid",
+      "matchDate": "2026-02-28T20:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391071,
+      "homeTeamId": 797,
+      "awayTeamId": 540,
+      "homeClub": "Elche",
+      "awayClub": "Espanyol",
+      "matchDate": "2026-03-01T13:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391078,
+      "homeTeamId": 532,
+      "awayTeamId": 727,
+      "homeClub": "Valencia",
+      "awayClub": "Osasuna",
+      "matchDate": "2026-03-01T15:15:00+00:00"
+    },
+    {
+      "fixtureId": 1391070,
+      "homeTeamId": 543,
+      "awayTeamId": 536,
+      "homeClub": "Real Betis",
+      "awayClub": "Sevilla",
+      "matchDate": "2026-03-01T17:30:00+00:00"
+    },
+    {
+      "fixtureId": 1391072,
+      "homeTeamId": 547,
+      "awayTeamId": 538,
+      "homeClub": "Girona",
+      "awayClub": "Celta Vigo",
+      "matchDate": "2026-03-01T20:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391076,
+      "homeTeamId": 541,
+      "awayTeamId": 546,
+      "homeClub": "Real Madrid",
+      "awayClub": "Getafe",
+      "matchDate": "2026-03-02T20:00:00+00:00"
+    }
+  ],
+  "jornada_23": [
+    {
+      "fixtureId": 1391044,
+      "homeTeamId": 728,
+      "awayTeamId": 718,
+      "homeClub": "Rayo Vallecano",
+      "awayClub": "Oviedo",
+      "matchDate": "2026-03-04T18:00:00+00:00"
+    }
+  ],
+  "jornada_27": [
+    {
+      "fixtureId": 1391085,
+      "homeTeamId": 727,
+      "awayTeamId": 798,
+      "homeClub": "Osasuna",
+      "awayClub": "Mallorca",
+      "matchDate": "2026-03-06T20:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391083,
+      "homeTeamId": 546,
+      "awayTeamId": 543,
+      "homeClub": "Getafe",
+      "awayClub": "Real Betis",
+      "matchDate": "2026-03-07T13:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391084,
+      "homeTeamId": 539,
+      "awayTeamId": 547,
+      "homeClub": "Levante",
+      "awayClub": "Girona",
+      "matchDate": "2026-03-07T15:15:00+00:00"
+    },
+    {
+      "fixtureId": 1391080,
+      "homeTeamId": 530,
+      "awayTeamId": 548,
+      "homeClub": "Atletico Madrid",
+      "awayClub": "Real Sociedad",
+      "matchDate": "2026-03-07T17:30:00+00:00"
+    },
+    {
+      "fixtureId": 1391081,
+      "homeTeamId": 538,
+      "awayTeamId": 541,
+      "homeClub": "Celta Vigo",
+      "awayClub": "Real Madrid",
+      "matchDate": "2026-03-07T20:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391088,
+      "homeTeamId": 533,
+      "awayTeamId": 797,
+      "homeClub": "Villarreal",
+      "awayClub": "Elche",
+      "matchDate": "2026-03-08T13:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391079,
+      "homeTeamId": 531,
+      "awayTeamId": 529,
+      "homeClub": "Athletic Club",
+      "awayClub": "Barcelona",
+      "matchDate": "2026-03-08T15:15:00+00:00"
+    },
+    {
+      "fixtureId": 1391086,
+      "homeTeamId": 536,
+      "awayTeamId": 728,
+      "homeClub": "Sevilla",
+      "awayClub": "Rayo Vallecano",
+      "matchDate": "2026-03-08T17:30:00+00:00"
+    },
+    {
+      "fixtureId": 1391087,
+      "homeTeamId": 532,
+      "awayTeamId": 542,
+      "homeClub": "Valencia",
+      "awayClub": "Alaves",
+      "matchDate": "2026-03-08T20:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391082,
+      "homeTeamId": 540,
+      "awayTeamId": 718,
+      "homeClub": "Espanyol",
+      "awayClub": "Oviedo",
+      "matchDate": "2026-03-09T20:00:00+00:00"
+    }
+  ],
+  "jornada_28": [
+    {
+      "fixtureId": 1391089,
+      "homeTeamId": 542,
+      "awayTeamId": 533,
+      "homeClub": "Alaves",
+      "awayClub": "Villarreal",
+      "matchDate": "2026-03-13T20:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391093,
+      "homeTeamId": 547,
+      "awayTeamId": 531,
+      "homeClub": "Girona",
+      "awayClub": "Athletic Club",
+      "matchDate": "2026-03-14T13:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391090,
+      "homeTeamId": 530,
+      "awayTeamId": 546,
+      "homeClub": "Atletico Madrid",
+      "awayClub": "Getafe",
+      "matchDate": "2026-03-14T15:15:00+00:00"
+    },
+    {
+      "fixtureId": 1391098,
+      "homeTeamId": 718,
+      "awayTeamId": 532,
+      "homeClub": "Oviedo",
+      "awayClub": "Valencia",
+      "matchDate": "2026-03-14T17:30:00+00:00"
+    },
+    {
+      "fixtureId": 1391096,
+      "homeTeamId": 541,
+      "awayTeamId": 797,
+      "homeClub": "Real Madrid",
+      "awayClub": "Elche",
+      "matchDate": "2026-03-14T20:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391094,
+      "homeTeamId": 798,
+      "awayTeamId": 540,
+      "homeClub": "Mallorca",
+      "awayClub": "Espanyol",
+      "matchDate": "2026-03-15T13:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391091,
+      "homeTeamId": 529,
+      "awayTeamId": 536,
+      "homeClub": "Barcelona",
+      "awayClub": "Sevilla",
+      "matchDate": "2026-03-15T15:15:00+00:00"
+    },
+    {
+      "fixtureId": 1391092,
+      "homeTeamId": 543,
+      "awayTeamId": 538,
+      "homeClub": "Real Betis",
+      "awayClub": "Celta Vigo",
+      "matchDate": "2026-03-15T17:30:00+00:00"
+    },
+    {
+      "fixtureId": 1391097,
+      "homeTeamId": 548,
+      "awayTeamId": 727,
+      "homeClub": "Real Sociedad",
+      "awayClub": "Osasuna",
+      "matchDate": "2026-03-15T20:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391095,
+      "homeTeamId": 728,
+      "awayTeamId": 539,
+      "homeClub": "Rayo Vallecano",
+      "awayClub": "Levante",
+      "matchDate": "2026-03-16T20:00:00+00:00"
+    }
+  ],
+  "jornada_29": [
+    {
+      "fixtureId": 1391100,
+      "homeTeamId": 529,
+      "awayTeamId": 728,
+      "homeClub": "Barcelona",
+      "awayClub": "Rayo Vallecano",
+      "matchDate": "2026-03-22T17:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391099,
+      "homeTeamId": 531,
+      "awayTeamId": 543,
+      "homeClub": "Athletic Club",
+      "awayClub": "Real Betis",
+      "matchDate": "2026-03-22T17:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391108,
+      "homeTeamId": 533,
+      "awayTeamId": 548,
+      "homeClub": "Villarreal",
+      "awayClub": "Real Sociedad",
+      "matchDate": "2026-03-22T17:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391107,
+      "homeTeamId": 536,
+      "awayTeamId": 532,
+      "homeClub": "Sevilla",
+      "awayClub": "Valencia",
+      "matchDate": "2026-03-22T17:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391101,
+      "homeTeamId": 538,
+      "awayTeamId": 542,
+      "homeClub": "Celta Vigo",
+      "awayClub": "Alaves",
+      "matchDate": "2026-03-22T17:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391104,
+      "homeTeamId": 539,
+      "awayTeamId": 718,
+      "homeClub": "Levante",
+      "awayClub": "Oviedo",
+      "matchDate": "2026-03-22T17:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391103,
+      "homeTeamId": 540,
+      "awayTeamId": 546,
+      "homeClub": "Espanyol",
+      "awayClub": "Getafe",
+      "matchDate": "2026-03-22T17:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391106,
+      "homeTeamId": 541,
+      "awayTeamId": 530,
+      "homeClub": "Real Madrid",
+      "awayClub": "Atletico Madrid",
+      "matchDate": "2026-03-22T17:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391105,
+      "homeTeamId": 727,
+      "awayTeamId": 547,
+      "homeClub": "Osasuna",
+      "awayClub": "Girona",
+      "matchDate": "2026-03-22T17:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391102,
+      "homeTeamId": 797,
+      "awayTeamId": 798,
+      "homeClub": "Elche",
+      "awayClub": "Mallorca",
+      "matchDate": "2026-03-22T17:00:00+00:00"
+    }
+  ],
+  "jornada_30": [
+    {
+      "fixtureId": 1391110,
+      "homeTeamId": 530,
+      "awayTeamId": 529,
+      "homeClub": "Atletico Madrid",
+      "awayClub": "Barcelona",
+      "matchDate": "2026-04-05T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391118,
+      "homeTeamId": 532,
+      "awayTeamId": 538,
+      "homeClub": "Valencia",
+      "awayClub": "Celta Vigo",
+      "matchDate": "2026-04-05T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391109,
+      "homeTeamId": 542,
+      "awayTeamId": 727,
+      "homeClub": "Alaves",
+      "awayClub": "Osasuna",
+      "matchDate": "2026-04-05T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391111,
+      "homeTeamId": 543,
+      "awayTeamId": 540,
+      "homeClub": "Real Betis",
+      "awayClub": "Espanyol",
+      "matchDate": "2026-04-05T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391112,
+      "homeTeamId": 546,
+      "awayTeamId": 531,
+      "homeClub": "Getafe",
+      "awayClub": "Athletic Club",
+      "matchDate": "2026-04-05T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391113,
+      "homeTeamId": 547,
+      "awayTeamId": 533,
+      "homeClub": "Girona",
+      "awayClub": "Villarreal",
+      "matchDate": "2026-04-05T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391116,
+      "homeTeamId": 548,
+      "awayTeamId": 539,
+      "homeClub": "Real Sociedad",
+      "awayClub": "Levante",
+      "matchDate": "2026-04-05T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391117,
+      "homeTeamId": 718,
+      "awayTeamId": 536,
+      "homeClub": "Oviedo",
+      "awayClub": "Sevilla",
+      "matchDate": "2026-04-05T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391115,
+      "homeTeamId": 728,
+      "awayTeamId": 797,
+      "homeClub": "Rayo Vallecano",
+      "awayClub": "Elche",
+      "matchDate": "2026-04-05T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391114,
+      "homeTeamId": 798,
+      "awayTeamId": 541,
+      "homeClub": "Mallorca",
+      "awayClub": "Real Madrid",
+      "matchDate": "2026-04-05T16:00:00+00:00"
+    }
+  ],
+  "jornada_31": [
+    {
+      "fixtureId": 1391120,
+      "homeTeamId": 529,
+      "awayTeamId": 540,
+      "homeClub": "Barcelona",
+      "awayClub": "Espanyol",
+      "matchDate": "2026-04-12T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391119,
+      "homeTeamId": 531,
+      "awayTeamId": 533,
+      "homeClub": "Athletic Club",
+      "awayClub": "Villarreal",
+      "matchDate": "2026-04-12T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391128,
+      "homeTeamId": 536,
+      "awayTeamId": 530,
+      "homeClub": "Sevilla",
+      "awayClub": "Atletico Madrid",
+      "matchDate": "2026-04-12T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391121,
+      "homeTeamId": 538,
+      "awayTeamId": 718,
+      "homeClub": "Celta Vigo",
+      "awayClub": "Oviedo",
+      "matchDate": "2026-04-12T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391123,
+      "homeTeamId": 539,
+      "awayTeamId": 546,
+      "homeClub": "Levante",
+      "awayClub": "Getafe",
+      "matchDate": "2026-04-12T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391126,
+      "homeTeamId": 541,
+      "awayTeamId": 547,
+      "homeClub": "Real Madrid",
+      "awayClub": "Girona",
+      "matchDate": "2026-04-12T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391127,
+      "homeTeamId": 548,
+      "awayTeamId": 542,
+      "homeClub": "Real Sociedad",
+      "awayClub": "Alaves",
+      "matchDate": "2026-04-12T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391125,
+      "homeTeamId": 727,
+      "awayTeamId": 543,
+      "homeClub": "Osasuna",
+      "awayClub": "Real Betis",
+      "matchDate": "2026-04-12T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391122,
+      "homeTeamId": 797,
+      "awayTeamId": 532,
+      "homeClub": "Elche",
+      "awayClub": "Valencia",
+      "matchDate": "2026-04-12T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391124,
+      "homeTeamId": 798,
+      "awayTeamId": 728,
+      "homeClub": "Mallorca",
+      "awayClub": "Rayo Vallecano",
+      "matchDate": "2026-04-12T16:00:00+00:00"
+    }
+  ],
+  "jornada_33": [
+    {
+      "fixtureId": 1391140,
+      "homeTeamId": 529,
+      "awayTeamId": 538,
+      "homeClub": "Barcelona",
+      "awayClub": "Celta Vigo",
+      "matchDate": "2026-04-22T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391139,
+      "homeTeamId": 531,
+      "awayTeamId": 727,
+      "homeClub": "Athletic Club",
+      "awayClub": "Osasuna",
+      "matchDate": "2026-04-22T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391143,
+      "homeTeamId": 539,
+      "awayTeamId": 536,
+      "homeClub": "Levante",
+      "awayClub": "Sevilla",
+      "matchDate": "2026-04-22T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391146,
+      "homeTeamId": 541,
+      "awayTeamId": 542,
+      "homeClub": "Real Madrid",
+      "awayClub": "Alaves",
+      "matchDate": "2026-04-22T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391142,
+      "homeTeamId": 547,
+      "awayTeamId": 543,
+      "homeClub": "Girona",
+      "awayClub": "Real Betis",
+      "matchDate": "2026-04-22T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391147,
+      "homeTeamId": 548,
+      "awayTeamId": 546,
+      "homeClub": "Real Sociedad",
+      "awayClub": "Getafe",
+      "matchDate": "2026-04-22T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391148,
+      "homeTeamId": 718,
+      "awayTeamId": 533,
+      "homeClub": "Oviedo",
+      "awayClub": "Villarreal",
+      "matchDate": "2026-04-22T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391145,
+      "homeTeamId": 728,
+      "awayTeamId": 540,
+      "homeClub": "Rayo Vallecano",
+      "awayClub": "Espanyol",
+      "matchDate": "2026-04-22T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391141,
+      "homeTeamId": 797,
+      "awayTeamId": 530,
+      "homeClub": "Elche",
+      "awayClub": "Atletico Madrid",
+      "matchDate": "2026-04-22T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391144,
+      "homeTeamId": 798,
+      "awayTeamId": 532,
+      "homeClub": "Mallorca",
+      "awayClub": "Valencia",
+      "matchDate": "2026-04-22T16:00:00+00:00"
+    }
+  ],
+  "jornada_32": [
+    {
+      "fixtureId": 1391130,
+      "homeTeamId": 530,
+      "awayTeamId": 531,
+      "homeClub": "Atletico Madrid",
+      "awayClub": "Athletic Club",
+      "matchDate": "2026-04-25T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391137,
+      "homeTeamId": 532,
+      "awayTeamId": 547,
+      "homeClub": "Valencia",
+      "awayClub": "Girona",
+      "matchDate": "2026-04-25T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391138,
+      "homeTeamId": 533,
+      "awayTeamId": 538,
+      "homeClub": "Villarreal",
+      "awayClub": "Celta Vigo",
+      "matchDate": "2026-04-25T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391132,
+      "homeTeamId": 540,
+      "awayTeamId": 539,
+      "homeClub": "Espanyol",
+      "awayClub": "Levante",
+      "matchDate": "2026-04-25T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391129,
+      "homeTeamId": 542,
+      "awayTeamId": 798,
+      "homeClub": "Alaves",
+      "awayClub": "Mallorca",
+      "matchDate": "2026-04-25T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391131,
+      "homeTeamId": 543,
+      "awayTeamId": 541,
+      "homeClub": "Real Betis",
+      "awayClub": "Real Madrid",
+      "matchDate": "2026-04-25T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391133,
+      "homeTeamId": 546,
+      "awayTeamId": 529,
+      "homeClub": "Getafe",
+      "awayClub": "Barcelona",
+      "matchDate": "2026-04-25T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391136,
+      "homeTeamId": 718,
+      "awayTeamId": 797,
+      "homeClub": "Oviedo",
+      "awayClub": "Elche",
+      "matchDate": "2026-04-25T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391134,
+      "homeTeamId": 727,
+      "awayTeamId": 536,
+      "homeClub": "Osasuna",
+      "awayClub": "Sevilla",
+      "matchDate": "2026-04-25T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391135,
+      "homeTeamId": 728,
+      "awayTeamId": 548,
+      "homeClub": "Rayo Vallecano",
+      "awayClub": "Real Sociedad",
+      "matchDate": "2026-04-25T16:00:00+00:00"
+    }
+  ],
+  "jornada_34": [
+    {
+      "fixtureId": 1391157,
+      "homeTeamId": 532,
+      "awayTeamId": 530,
+      "homeClub": "Valencia",
+      "awayClub": "Atletico Madrid",
+      "matchDate": "2026-05-03T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391158,
+      "homeTeamId": 533,
+      "awayTeamId": 539,
+      "homeClub": "Villarreal",
+      "awayClub": "Levante",
+      "matchDate": "2026-05-03T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391156,
+      "homeTeamId": 536,
+      "awayTeamId": 548,
+      "homeClub": "Sevilla",
+      "awayClub": "Real Sociedad",
+      "matchDate": "2026-05-03T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391151,
+      "homeTeamId": 538,
+      "awayTeamId": 797,
+      "homeClub": "Celta Vigo",
+      "awayClub": "Elche",
+      "matchDate": "2026-05-03T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391152,
+      "homeTeamId": 540,
+      "awayTeamId": 541,
+      "homeClub": "Espanyol",
+      "awayClub": "Real Madrid",
+      "matchDate": "2026-05-03T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391149,
+      "homeTeamId": 542,
+      "awayTeamId": 531,
+      "homeClub": "Alaves",
+      "awayClub": "Athletic Club",
+      "matchDate": "2026-05-03T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391150,
+      "homeTeamId": 543,
+      "awayTeamId": 718,
+      "homeClub": "Real Betis",
+      "awayClub": "Oviedo",
+      "matchDate": "2026-05-03T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391153,
+      "homeTeamId": 546,
+      "awayTeamId": 728,
+      "homeClub": "Getafe",
+      "awayClub": "Rayo Vallecano",
+      "matchDate": "2026-05-03T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391154,
+      "homeTeamId": 547,
+      "awayTeamId": 798,
+      "homeClub": "Girona",
+      "awayClub": "Mallorca",
+      "matchDate": "2026-05-03T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391155,
+      "homeTeamId": 727,
+      "awayTeamId": 529,
+      "homeClub": "Osasuna",
+      "awayClub": "Barcelona",
+      "matchDate": "2026-05-03T16:00:00+00:00"
+    }
+  ],
+  "jornada_35": [
+    {
+      "fixtureId": 1391161,
+      "homeTeamId": 529,
+      "awayTeamId": 541,
+      "homeClub": "Barcelona",
+      "awayClub": "Real Madrid",
+      "matchDate": "2026-05-10T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391160,
+      "homeTeamId": 530,
+      "awayTeamId": 538,
+      "homeClub": "Atletico Madrid",
+      "awayClub": "Celta Vigo",
+      "matchDate": "2026-05-10T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391159,
+      "homeTeamId": 531,
+      "awayTeamId": 532,
+      "homeClub": "Athletic Club",
+      "awayClub": "Valencia",
+      "matchDate": "2026-05-10T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391168,
+      "homeTeamId": 536,
+      "awayTeamId": 540,
+      "homeClub": "Sevilla",
+      "awayClub": "Espanyol",
+      "matchDate": "2026-05-10T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391163,
+      "homeTeamId": 539,
+      "awayTeamId": 727,
+      "homeClub": "Levante",
+      "awayClub": "Osasuna",
+      "matchDate": "2026-05-10T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391166,
+      "homeTeamId": 548,
+      "awayTeamId": 543,
+      "homeClub": "Real Sociedad",
+      "awayClub": "Real Betis",
+      "matchDate": "2026-05-10T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391167,
+      "homeTeamId": 718,
+      "awayTeamId": 546,
+      "homeClub": "Oviedo",
+      "awayClub": "Getafe",
+      "matchDate": "2026-05-10T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391165,
+      "homeTeamId": 728,
+      "awayTeamId": 547,
+      "homeClub": "Rayo Vallecano",
+      "awayClub": "Girona",
+      "matchDate": "2026-05-10T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391162,
+      "homeTeamId": 797,
+      "awayTeamId": 542,
+      "homeClub": "Elche",
+      "awayClub": "Alaves",
+      "matchDate": "2026-05-10T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391164,
+      "homeTeamId": 798,
+      "awayTeamId": 533,
+      "homeClub": "Mallorca",
+      "awayClub": "Villarreal",
+      "matchDate": "2026-05-10T16:00:00+00:00"
+    }
+  ],
+  "jornada_36": [
+    {
+      "fixtureId": 1391177,
+      "homeTeamId": 532,
+      "awayTeamId": 728,
+      "homeClub": "Valencia",
+      "awayClub": "Rayo Vallecano",
+      "matchDate": "2026-05-13T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391178,
+      "homeTeamId": 533,
+      "awayTeamId": 536,
+      "homeClub": "Villarreal",
+      "awayClub": "Sevilla",
+      "matchDate": "2026-05-13T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391171,
+      "homeTeamId": 538,
+      "awayTeamId": 539,
+      "homeClub": "Celta Vigo",
+      "awayClub": "Levante",
+      "matchDate": "2026-05-13T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391172,
+      "homeTeamId": 540,
+      "awayTeamId": 531,
+      "homeClub": "Espanyol",
+      "awayClub": "Athletic Club",
+      "matchDate": "2026-05-13T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391176,
+      "homeTeamId": 541,
+      "awayTeamId": 718,
+      "homeClub": "Real Madrid",
+      "awayClub": "Oviedo",
+      "matchDate": "2026-05-13T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391169,
+      "homeTeamId": 542,
+      "awayTeamId": 529,
+      "homeClub": "Alaves",
+      "awayClub": "Barcelona",
+      "matchDate": "2026-05-13T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391170,
+      "homeTeamId": 543,
+      "awayTeamId": 797,
+      "homeClub": "Real Betis",
+      "awayClub": "Elche",
+      "matchDate": "2026-05-13T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391173,
+      "homeTeamId": 546,
+      "awayTeamId": 798,
+      "homeClub": "Getafe",
+      "awayClub": "Mallorca",
+      "matchDate": "2026-05-13T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391174,
+      "homeTeamId": 547,
+      "awayTeamId": 548,
+      "homeClub": "Girona",
+      "awayClub": "Real Sociedad",
+      "matchDate": "2026-05-13T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391175,
+      "homeTeamId": 727,
+      "awayTeamId": 530,
+      "homeClub": "Osasuna",
+      "awayClub": "Atletico Madrid",
+      "matchDate": "2026-05-13T16:00:00+00:00"
+    }
+  ],
+  "jornada_37": [
+    {
+      "fixtureId": 1391181,
+      "homeTeamId": 529,
+      "awayTeamId": 543,
+      "homeClub": "Barcelona",
+      "awayClub": "Real Betis",
+      "matchDate": "2026-05-17T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391180,
+      "homeTeamId": 530,
+      "awayTeamId": 547,
+      "homeClub": "Atletico Madrid",
+      "awayClub": "Girona",
+      "matchDate": "2026-05-17T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391179,
+      "homeTeamId": 531,
+      "awayTeamId": 538,
+      "homeClub": "Athletic Club",
+      "awayClub": "Celta Vigo",
+      "matchDate": "2026-05-17T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391188,
+      "homeTeamId": 536,
+      "awayTeamId": 541,
+      "homeClub": "Sevilla",
+      "awayClub": "Real Madrid",
+      "matchDate": "2026-05-17T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391183,
+      "homeTeamId": 539,
+      "awayTeamId": 798,
+      "homeClub": "Levante",
+      "awayClub": "Mallorca",
+      "matchDate": "2026-05-17T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391186,
+      "homeTeamId": 548,
+      "awayTeamId": 532,
+      "homeClub": "Real Sociedad",
+      "awayClub": "Valencia",
+      "matchDate": "2026-05-17T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391187,
+      "homeTeamId": 718,
+      "awayTeamId": 542,
+      "homeClub": "Oviedo",
+      "awayClub": "Alaves",
+      "matchDate": "2026-05-17T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391184,
+      "homeTeamId": 727,
+      "awayTeamId": 540,
+      "homeClub": "Osasuna",
+      "awayClub": "Espanyol",
+      "matchDate": "2026-05-17T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391185,
+      "homeTeamId": 728,
+      "awayTeamId": 533,
+      "homeClub": "Rayo Vallecano",
+      "awayClub": "Villarreal",
+      "matchDate": "2026-05-17T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391182,
+      "homeTeamId": 797,
+      "awayTeamId": 546,
+      "homeClub": "Elche",
+      "awayClub": "Getafe",
+      "matchDate": "2026-05-17T16:00:00+00:00"
+    }
+  ],
+  "jornada_38": [
+    {
+      "fixtureId": 1391197,
+      "homeTeamId": 532,
+      "awayTeamId": 529,
+      "homeClub": "Valencia",
+      "awayClub": "Barcelona",
+      "matchDate": "2026-05-24T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391198,
+      "homeTeamId": 533,
+      "awayTeamId": 530,
+      "homeClub": "Villarreal",
+      "awayClub": "Atletico Madrid",
+      "matchDate": "2026-05-24T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391191,
+      "homeTeamId": 538,
+      "awayTeamId": 536,
+      "homeClub": "Celta Vigo",
+      "awayClub": "Sevilla",
+      "matchDate": "2026-05-24T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391192,
+      "homeTeamId": 540,
+      "awayTeamId": 548,
+      "homeClub": "Espanyol",
+      "awayClub": "Real Sociedad",
+      "matchDate": "2026-05-24T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391196,
+      "homeTeamId": 541,
+      "awayTeamId": 531,
+      "homeClub": "Real Madrid",
+      "awayClub": "Athletic Club",
+      "matchDate": "2026-05-24T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391189,
+      "homeTeamId": 542,
+      "awayTeamId": 728,
+      "homeClub": "Alaves",
+      "awayClub": "Rayo Vallecano",
+      "matchDate": "2026-05-24T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391190,
+      "homeTeamId": 543,
+      "awayTeamId": 539,
+      "homeClub": "Real Betis",
+      "awayClub": "Levante",
+      "matchDate": "2026-05-24T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391193,
+      "homeTeamId": 546,
+      "awayTeamId": 727,
+      "homeClub": "Getafe",
+      "awayClub": "Osasuna",
+      "matchDate": "2026-05-24T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391194,
+      "homeTeamId": 547,
+      "awayTeamId": 797,
+      "homeClub": "Girona",
+      "awayClub": "Elche",
+      "matchDate": "2026-05-24T16:00:00+00:00"
+    },
+    {
+      "fixtureId": 1391195,
+      "homeTeamId": 798,
+      "awayTeamId": 718,
+      "homeClub": "Mallorca",
+      "awayClub": "Oviedo",
+      "matchDate": "2026-05-24T16:00:00+00:00"
+    }
+  ]
+}

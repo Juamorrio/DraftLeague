@@ -1,4 +1,4 @@
-package com.DraftLeague.models.Auth.dto;
+package com.DraftLeague.dto.auth;
 
 import java.time.Instant;
 

@@ -1,4 +1,4 @@
-package com.DraftLeague.models.Auth;
+package com.DraftLeague.dto.auth;
 
 import lombok.Builder;
 import lombok.Data;

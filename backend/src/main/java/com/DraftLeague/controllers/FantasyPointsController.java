@@ -34,10 +34,7 @@ public class FantasyPointsController {
     private final MatchRepository matchRepository;
     private final TeamPlayerGameweekPointsRepository tpgwPointsRepository;
 
-    /**
-     * GET /api/v1/fantasy-points/leagues/{leagueId}/gameweek/{gameweek}/ranking
-     * Ranking de una jornada específica
-     */
+  
     @GetMapping("/leagues/{leagueId}/gameweek/{gameweek}/ranking")
     public ResponseEntity<List<GameweekRankingDTO>> getGameweekRanking(
             @PathVariable Long leagueId,
@@ -64,10 +61,8 @@ public class FantasyPointsController {
             ranking.add(dto);
         }
 
-        // Ordenar por puntos de jornada DESC
         ranking.sort((a, b) -> b.getGameweekPoints().compareTo(a.getGameweekPoints()));
 
-        // Asignar posiciones
         for (int i = 0; i < ranking.size(); i++) {
             ranking.get(i).setPosition(i + 1);
         }
@@ -75,10 +70,7 @@ public class FantasyPointsController {
         return ResponseEntity.ok(ranking);
     }
 
-    /**
-     * GET /api/v1/fantasy-points/teams/{teamId}/history
-     * Histórico de puntos de un equipo
-     */
+
     @GetMapping("/teams/{teamId}/history")
     public ResponseEntity<TeamPointsHistoryDTO> getTeamPointsHistory(
             @PathVariable Integer teamId) {
@@ -103,10 +95,7 @@ public class FantasyPointsController {
         return ResponseEntity.ok(dto);
     }
 
-    /**
-     * GET /api/v1/fantasy-points/teams/{teamId}/gameweek/{gameweek}/breakdown
-     * Desglose detallado de puntos por posición
-     */
+
     @GetMapping("/teams/{teamId}/gameweek/{gameweek}/breakdown")
     public ResponseEntity<TeamGameweekPointsDTO> getPointsBreakdown(
             @PathVariable Integer teamId,
@@ -134,7 +123,6 @@ public class FantasyPointsController {
         dto.setTopScorerPoints(gwPoints.getTopScorerPoints());
         dto.setCalculatedAt(gwPoints.getCalculatedAt());
 
-        // Nombres de capitán y top scorer
         if (gwPoints.getCaptainId() != null) {
             playerRepository.findById(gwPoints.getCaptainId())
                 .ifPresent(p -> dto.setCaptainName(p.getFullName()));
@@ -147,10 +135,6 @@ public class FantasyPointsController {
         return ResponseEntity.ok(dto);
     }
 
-    /**
-     * POST /api/v1/fantasy-points/gameweek/{gameweek}/recalculate
-     * Recalcular puntos (solo admin)
-     */
     @PostMapping("/gameweek/{gameweek}/recalculate")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, String>> recalculateGameweek(@PathVariable Integer gameweek) {
@@ -163,10 +147,7 @@ public class FantasyPointsController {
         }
     }
 
-    /**
-     * GET /api/v1/fantasy-points/teams/{teamId}/gameweek/{gameweek}/players
-     * Puntos individuales por jugador en una jornada específica (DATOS INMUTABLES)
-     */
+
     @GetMapping("/teams/{teamId}/gameweek/{gameweek}/players")
     public ResponseEntity<List<PlayerGameweekPointsDTO>> getPlayerGameweekPoints(
             @PathVariable Integer teamId,
@@ -175,16 +156,13 @@ public class FantasyPointsController {
         Team team = teamRepository.findById(teamId)
             .orElseThrow(() -> new RuntimeException("Team not found"));
 
-        // ⭐ CAMBIO: Leer desde snapshots guardados en lugar de calcular dinámicamente
         List<TeamPlayerGameweekPoints> snapshots =
             tpgwPointsRepository.findByTeamAndGameweek(team, gameweek);
 
         if (snapshots.isEmpty()) {
-            // Si no hay snapshots, la jornada no se ha calculado aún
             return ResponseEntity.ok(new ArrayList<>());
         }
 
-        // Pre-cargar avatares de los jugadores
         List<String> playerIds = snapshots.stream()
             .filter(s -> s.getIsInLineup())
             .map(TeamPlayerGameweekPoints::getPlayerId)
@@ -193,12 +171,12 @@ public class FantasyPointsController {
             .collect(Collectors.toMap(Player::getId, p -> p.getAvatarUrl() != null ? p.getAvatarUrl() : "", (a, b) -> a));
 
         List<PlayerGameweekPointsDTO> results = snapshots.stream()
-            .filter(s -> s.getIsInLineup()) // Solo titulares
+            .filter(s -> s.getIsInLineup()) 
             .map(s -> PlayerGameweekPointsDTO.builder()
                 .playerId(s.getPlayerId())
                 .playerName(s.getPlayerName())
                 .position(s.getPosition())
-                .gameweekPoints(s.getPoints()) // Ya incluye multiplicador de capitán
+                .gameweekPoints(s.getPoints()) 
                 .matchId(s.getMatchId())
                 .played(s.getMinutesPlayed() > 0)
                 .isCaptain(s.getIsCaptain())
@@ -209,30 +187,13 @@ public class FantasyPointsController {
         return ResponseEntity.ok(results);
     }
 
-    /**
-     * POST /api/v1/fantasy-points/players/update-all
-     * Actualizar totalPoints de TODOS los jugadores (solo admin)
-     */
     @PostMapping("/players/update-all")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, String>> updateAllPlayerPoints() {
         try {
-            List<Player> players = playerRepository.findAll();
-            int updated = 0;
-
-            for (Player player : players) {
-                try {
-                    fantasyPointsService.updatePlayerTotalPoints(player.getId());
-                    updated++;
-                } catch (Exception e) {
-                    System.err.println("Error updating player " + player.getId() + ": " + e.getMessage());
-                }
-            }
-
+            fantasyPointsService.updateAllPlayerPoints();
             return ResponseEntity.ok(Map.of(
-                "message", "Updated total points for " + updated + " players",
-                "total", String.valueOf(players.size()),
-                "updated", String.valueOf(updated)
+                "message", "Update request triggered for all players"
             ));
         } catch (Exception e) {
             return ResponseEntity.internalServerError()

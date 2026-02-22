@@ -5,6 +5,8 @@ import { useLeague } from '../../context/LeagueContext';
 import pitch from '../../assets/Team/pitch.png';
 import Player from '../../components/player';
 import authService, { authenticatedFetch } from '../../services/authService';
+import predictionService from '../../services/predictionService';
+import { LineChartComponent } from '../../components/StatisticsChart';
 import withAuth from '../../components/withAuth';
 
 
@@ -30,6 +32,7 @@ function Team({ userId: viewUserId = null, readOnly = false }) {
 	const [maxGameweek] = useState(38);
 	const [loadingPoints, setLoadingPoints] = useState(false);
 	const [captainPlayerId, setCaptainPlayerId] = useState(null);
+	const [pointsHistory, setPointsHistory] = useState(null);
 
 
 	const formations = {
@@ -55,7 +58,6 @@ function Team({ userId: viewUserId = null, readOnly = false }) {
 	const currentFormation = formations[formation];
 	const positions = currentFormation.positions;
 
-	// Build historical lineup from gameweek snapshots
 	const historicalAssigned = useMemo(() => {
 		if (selectedGameweek === 'total' || gameweekSnapshots.length === 0) return null;
 
@@ -67,7 +69,6 @@ function Team({ userId: viewUserId = null, readOnly = false }) {
 			DEL: ['LW', 'RW', 'ST'],
 		};
 
-		// Group snapshots by position
 		gameweekSnapshots.forEach(s => {
 			const pos = s.position;
 			if (positionSlots[pos]) {
@@ -76,7 +77,6 @@ function Team({ userId: viewUserId = null, readOnly = false }) {
 		});
 
 		const result = {};
-		// Assign each snapshot to available pitch slots
 		Object.entries(slotKeys).forEach(([pos, keys]) => {
 			const players = positionSlots[pos] || [];
 			keys.forEach((key, i) => {
@@ -188,6 +188,22 @@ function Team({ userId: viewUserId = null, readOnly = false }) {
 					setCaptainPlayerId(captain ? captain.player.id : null);
 
 					setAssigned(newAssigned);
+
+					if (team.id) {
+						predictionService.getTeamPointsHistory(team.id)
+							.then(history => {
+								if (history && history.history?.length > 0) {
+									const chartData = {
+										labels: history.history.map(h => `J${h.gameweek}`),
+										datasets: [{
+											data: history.history.map(h => h.points)
+										}]
+									};
+									setPointsHistory(chartData);
+								}
+							})
+							.catch(err => console.log('Error cargando historial de puntos:', err));
+					}
 				}
 			}
 		} catch (e) {
@@ -260,7 +276,6 @@ function Team({ userId: viewUserId = null, readOnly = false }) {
 		})();
 	}, [selectedGameweek, selectedLeague?.id, viewUserId]);
 
-	// Cargar predicción ML del equipo
 	useEffect(() => {
 		const loadTeamPrediction = async () => {
 			if (!selectedLeague?.id || Object.keys(assigned).length === 0) {
@@ -270,7 +285,6 @@ function Team({ userId: viewUserId = null, readOnly = false }) {
 
 			setLoadingPrediction(true);
 			try {
-				// Obtener el teamId del primer jugador asignado
 				const firstAssigned = Object.values(assigned).find(pt => pt?.team?.id);
 				if (!firstAssigned) return;
 
@@ -312,9 +326,9 @@ function Team({ userId: viewUserId = null, readOnly = false }) {
 
 	const getPlayerPoints = (player) => {
 		if (selectedGameweek === 'total') {
-			return player.totalPoints || 0;
+			return player.totalPoints ?? 0;
 		} else {
-			return playerGameweekPoints[player.id] || 0;
+			return playerGameweekPoints[player.id] ?? 0;
 		}
 	};
 
@@ -499,120 +513,109 @@ function Team({ userId: viewUserId = null, readOnly = false }) {
 				</View>
 			)}
 
-			<View style={styles.fieldContainer}>
-				<Image source={pitch} style={styles.fieldImage} />
-				{positions.map(p => {
-					const displaySource = historicalAssigned || assigned;
-					const slotData = displaySource[p.key];
-					const isHistorical = !!historicalAssigned;
-					return (
-					<View key={p.key} style={[styles.spot, { left: p.x, top: p.y }]}>
-					{slotData ? (
-						(() => {
-							const ap = getAssignedPlayer(slotData);
-							if (!ap) return null;
-							const displayName = (ap.fullName ?? ap.name ?? '').trim();
-							return (
-								<Player
-									name={displayName}
-									avatar={ap.avatarUrl ? { uri: ap.avatarUrl } : null}
-									size={50}
-									teamId={ap.teamId}
-									points={getPlayerPoints(ap)}
-									isCaptain={captainPlayerId === ap.id}
-									onPress={isHistorical ? undefined : () => openOptions(slotData, p.key)}
-								/>
-							);
-						})()
-					) : (
-						readOnly || isHistorical ? null : (
-							<TouchableOpacity style={styles.spotBtn} activeOpacity={0.7} onPress={() => openPicker(p.key)}>
-								<Text style={styles.plus}>+</Text>
-							</TouchableOpacity>
-						)
-					)}
-					{!slotData && !readOnly && !isHistorical && <Text style={styles.spotLabel}>{p.key}</Text>}
+			<ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+				<View style={styles.fieldContainer}>
+					<Image source={pitch} style={styles.fieldImage} />
+					{positions.map(p => {
+						const displaySource = historicalAssigned || assigned;
+						const slotData = displaySource[p.key];
+						const isHistorical = !!historicalAssigned;
+						return (
+						<View key={p.key} style={[styles.spot, { left: p.x, top: p.y }]}>
+						{slotData ? (
+							(() => {
+								const ap = getAssignedPlayer(slotData);
+								if (!ap) return null;
+								const displayName = (ap.fullName ?? ap.name ?? '').trim();
+								return (
+									<Player
+										name={displayName}
+										avatar={ap.avatarUrl ? { uri: ap.avatarUrl } : null}
+										size={50}
+										teamId={ap.teamId}
+										points={getPlayerPoints(ap)}
+										isCaptain={captainPlayerId === ap.id}
+										onPress={isHistorical ? undefined : () => openOptions(slotData, p.key)}
+									/>
+								);
+							})()
+						) : (
+							readOnly || isHistorical ? null : (
+								<TouchableOpacity style={styles.spotBtn} activeOpacity={0.7} onPress={() => openPicker(p.key)}>
+									<Text style={styles.plus}>+</Text>
+								</TouchableOpacity>
+							)
+						)}
+						{!slotData && !readOnly && !isHistorical && <Text style={styles.spotLabel}>{p.key}</Text>}
+					</View>
+					);
+				})}
 				</View>
-				);
-			})}
-			</View>
 
-			{/* Predicción ML del Equipo */}
-			{(teamPrediction || loadingPrediction) && (
-				<View style={styles.predictionSection}>
-					{loadingPrediction ? (
-						<View style={styles.loadingContainer}>
-							<ActivityIndicator size="small" color="#1a5c3a" />
-							<Text style={styles.loadingText}>Cargando predicción del equipo...</Text>
-						</View>
-					) : (
-						<ScrollView horizontal showsHorizontalScrollIndicator={false}>
-							<View style={styles.predictionContent}>
-								{/* Total Predicho */}
-								<View style={styles.totalPredictionCard}>
-									<Text style={styles.predictionCardTitle}>🔮 Predicción Total</Text>
-									<Text style={styles.totalPredictionValue}>
-										{teamPrediction.totalPredictedPoints?.toFixed(1) || '0.0'}
-									</Text>
-									<Text style={styles.predictionLabel}>PUNTOS</Text>
-									{teamPrediction.confidenceInterval && teamPrediction.confidenceInterval.length === 2 && (
-										<Text style={styles.rangeText}>
-											Rango: {teamPrediction.confidenceInterval[0]}-{teamPrediction.confidenceInterval[1]}
+				{/* Historial de Puntos */}
+				{pointsHistory && (
+					<View style={styles.chartSection}>
+						<LineChartComponent 
+							data={pointsHistory} 
+							title="Evolución de Puntos" 
+						/>
+					</View>
+				)}
+
+				{/* Predicción ML del Equipo */}
+				{(teamPrediction || loadingPrediction) && (
+					<View style={styles.predictionSection}>
+						{loadingPrediction ? (
+							<View style={styles.loadingContainer}>
+								<ActivityIndicator size="small" color="#1a5c3a" />
+								<Text style={styles.loadingText}>Cargando predicción del equipo...</Text>
+							</View>
+						) : (
+							<ScrollView horizontal showsHorizontalScrollIndicator={false}>
+								<View style={styles.predictionContent}>
+									{/* Total Predicho */}
+									<View style={styles.totalPredictionCard}>
+										<Text style={styles.predictionCardTitle}>🔮 Predicción Próxima J.</Text>
+										<Text style={styles.totalPredictionValue}>
+											{teamPrediction.totalPredictedPoints?.toFixed(1) || '0.0'}
 										</Text>
+										<Text style={styles.predictionLabel}>PUNTOS ESPERADOS</Text>
+									</View>
+
+									{/* Top 3 Jugadores */}
+									{teamPrediction.players && teamPrediction.players.length > 0 && (
+										<View style={styles.topPlayersCard}>
+											<Text style={styles.predictionCardTitle}>⭐ Top Rendimiento</Text>
+											{teamPrediction.players
+												.sort((a, b) => (b.predictedPoints || 0) - (a.predictedPoints || 0))
+												.slice(0, 3)
+												.map((player, index) => (
+													<View key={player.playerId} style={styles.playerPredictionRow}>
+														<View style={styles.playerRank}>
+															<Text style={styles.rankNumber}>{index + 1}</Text>
+														</View>
+														<View style={styles.playerInfo}>
+															<Text style={styles.playerPredictionName} numberOfLines={1}>
+																{player.playerName}
+															</Text>
+															<Text style={styles.playerPosition}>{player.position}</Text>
+														</View>
+														<View style={styles.playerPredictionPoints}>
+															<Text style={styles.pointsValue}>
+																{player.predictedPoints?.toFixed(1) || '0.0'}
+															</Text>
+															<Text style={styles.pointsLabel}>pts</Text>
+														</View>
+													</View>
+												))}
+										</View>
 									)}
 								</View>
-
-								{/* Top 3 Jugadores */}
-								{teamPrediction.players && teamPrediction.players.length > 0 && (
-									<View style={styles.topPlayersCard}>
-										<Text style={styles.predictionCardTitle}>⭐ Top Predicciones</Text>
-										{teamPrediction.players
-											.sort((a, b) => (b.predictedPoints || 0) - (a.predictedPoints || 0))
-											.slice(0, 3)
-											.map((player, index) => (
-												<View key={player.playerId} style={styles.playerPredictionRow}>
-													<View style={styles.playerRank}>
-														<Text style={styles.rankNumber}>{index + 1}</Text>
-													</View>
-													<View style={styles.playerInfo}>
-														<Text style={styles.playerPredictionName} numberOfLines={1}>
-															{player.name}
-														</Text>
-														<Text style={styles.playerPosition}>{player.position}</Text>
-													</View>
-													<View style={styles.playerPredictionPoints}>
-														<Text style={styles.pointsValue}>
-															{player.predictedPoints?.toFixed(1) || '0.0'}
-														</Text>
-														<Text style={styles.pointsLabel}>pts</Text>
-													</View>
-												</View>
-											))}
-									</View>
-								)}
-
-								{/* Breakdown por Posición */}
-								{teamPrediction.players && teamPrediction.players.length > 0 && (
-									<View style={styles.breakdownCard}>
-										<Text style={styles.predictionCardTitle}>📊 Por Posición</Text>
-										{['POR', 'DEF', 'MID', 'DEL'].map(pos => {
-											const posPlayers = teamPrediction.players.filter(p => p.position === pos);
-											if (posPlayers.length === 0) return null;
-											const totalPos = posPlayers.reduce((sum, p) => sum + (p.predictedPoints || 0), 0);
-											return (
-												<View key={pos} style={styles.positionRow}>
-													<Text style={styles.positionLabel}>{pos}</Text>
-													<Text style={styles.positionValue}>{totalPos.toFixed(1)} pts</Text>
-												</View>
-											);
-										})}
-									</View>
-								)}
-							</View>
-						</ScrollView>
-					)}
-				</View>
-			)}
+							</ScrollView>
+						)}
+					</View>
+				)}
+			</ScrollView>
 
 			{!readOnly && (
 				<Modal visible={pickerVisible} transparent animationType="fade" onRequestClose={() => setPickerVisible(false)}>
@@ -779,7 +782,9 @@ const styles = StyleSheet.create({
 	saveBtnText: { color: '#fff', fontWeight: '700', fontSize: 14 },
 	backBtn: { backgroundColor: '#111827', paddingVertical: 8, paddingHorizontal: 16, borderRadius: 8 },
 	backBtnText: { color: '#fff', fontWeight: '700', fontSize: 14 },
-	fieldContainer: { flex: 1, position: 'relative' },
+	scrollView: { flex: 1 },
+	scrollContent: { paddingBottom: 20 },
+	fieldContainer: { height: 500, position: 'relative' },
 	fieldImage: { width: '100%', height: '100%' },
 	spot: { position: 'absolute', transform: [{ translateX: -25 }, { translateY: -25 }], alignItems: 'center' },
 	spotBtn: { width: 50, height: 50, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.2)', borderWidth: 2, borderColor: '#000000ff', alignItems: 'center', justifyContent: 'center' },
@@ -796,6 +801,7 @@ const styles = StyleSheet.create({
 	closeText: { fontSize: 12, fontWeight: '700' },
 	buyBtn: { marginTop: 4, backgroundColor: '#1d4ed8', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
 	buyTxt: { color: '#fff', fontSize: 10, fontWeight: '700' },
+	chartSection: { padding: 16, backgroundColor: '#f9fafb' },
 	// Estilos para predicción ML del equipo
 	predictionSection: {
 		backgroundColor: '#f9fafb',

@@ -6,6 +6,7 @@ import com.DraftLeague.models.Statistics.*;
 import com.DraftLeague.models.Match.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
 import lombok.RequiredArgsConstructor;
 
 import java.util.*;
@@ -22,15 +23,12 @@ public class FantasyPointsService {
     private final PlayerRepository playerRepository;
     private final TeamPlayerGameweekPointsRepository tpgwPointsRepository;
 
-    /**
-     * Calcula y guarda los puntos de un equipo para una jornada específica
-     */
+ 
     @Transactional
     public TeamGameweekPoints calculateTeamPointsForGameweek(Integer teamId, Integer gameweek) {
         Team team = teamRepository.findById(teamId)
             .orElseThrow(() -> new RuntimeException("Team not found"));
 
-        // Buscar o crear registro de puntos
         TeamGameweekPoints gwPoints = gwPointsRepository
             .findByTeamAndGameweek(team, gameweek)
             .orElse(new TeamGameweekPoints());
@@ -38,7 +36,6 @@ public class FantasyPointsService {
         gwPoints.setTeam(team);
         gwPoints.setGameweek(gameweek);
 
-        // Obtener partidos de la jornada
         List<Match> matches = matchRepository.findByRound(gameweek);
         Set<Integer> matchIds = matches.stream()
             .map(Match::getId)
@@ -51,18 +48,15 @@ public class FantasyPointsService {
         String topScorerId = null;
         int topScorerPoints = 0;
 
-        // ⭐ NUEVO: Limpiar snapshots antiguos de esta jornada (si recalculamos)
         List<TeamPlayerGameweekPoints> existingSnapshots =
             tpgwPointsRepository.findByTeamAndGameweek(team, gameweek);
         if (!existingSnapshots.isEmpty()) {
             tpgwPointsRepository.deleteAll(existingSnapshots);
         }
 
-        // Iterar sobre jugadores del equipo
         for (PlayerTeam pt : team.getPlayerTeams()) {
             Player player = pt.getPlayer();
 
-            // Buscar estadística del jugador en algún partido de la jornada
             PlayerStatistic stat = null;
             List<PlayerStatistic> playerStats = statisticRepository.findByPlayerId(player.getId());
             for (PlayerStatistic s : playerStats) {
@@ -86,7 +80,6 @@ public class FantasyPointsService {
                 minutesPlayed = stat.getMinutesPlayed() != null ? stat.getMinutesPlayed() : 0;
                 played = true;
 
-                // Aplicar multiplicador de CAPITÁN (2x)
                 if (pt.getIsCaptain() != null && pt.getIsCaptain()) {
                     finalPlayerPoints *= 2;
                     captainBonus = basePlayerPoints;
@@ -94,7 +87,6 @@ public class FantasyPointsService {
                 }
             }
 
-            // ⭐ NUEVO: Guardar snapshot inmutable (TODOS los jugadores del equipo, no solo titulares)
             TeamPlayerGameweekPoints snapshot = new TeamPlayerGameweekPoints();
             snapshot.setTeam(team);
             snapshot.setPlayerId(player.getId());
@@ -111,11 +103,9 @@ public class FantasyPointsService {
 
             tpgwPointsRepository.save(snapshot);
 
-            // Solo sumar puntos de TITULARES al total del equipo
             if (pt.getLined() != null && pt.getLined()) {
                 totalPoints += finalPlayerPoints;
 
-                // Desglosar por posición
                 Position position = player.getPosition();
                 if (Position.POR.equals(position)) {
                     gkPoints += finalPlayerPoints;
@@ -127,7 +117,6 @@ public class FantasyPointsService {
                     fwdPoints += finalPlayerPoints;
                 }
 
-                // Tracking del top scorer
                 if (finalPlayerPoints > topScorerPoints) {
                     topScorerId = player.getId();
                     topScorerPoints = finalPlayerPoints;
@@ -135,7 +124,6 @@ public class FantasyPointsService {
             }
         }
 
-        // Guardar resultados agregados
         gwPoints.setPoints(totalPoints);
         gwPoints.setGoalkeeperPoints(gkPoints);
         gwPoints.setDefenderPoints(defPoints);
@@ -151,9 +139,6 @@ public class FantasyPointsService {
         return gwPointsRepository.save(gwPoints);
     }
 
-    /**
-     * Actualiza Team.totalPoints sumando todos los gameweeks
-     */
     @Transactional
     public void updateTeamTotalPoints(Integer teamId) {
         Team team = teamRepository.findById(teamId)
@@ -169,9 +154,6 @@ public class FantasyPointsService {
         teamRepository.save(team);
     }
 
-    /**
-     * Actualiza Player.totalPoints sumando todas sus estadísticas
-     */
     @Transactional
     public void updatePlayerTotalPoints(String playerId) {
         Player player = playerRepository.findById(playerId)
@@ -187,19 +169,14 @@ public class FantasyPointsService {
         playerRepository.save(player);
     }
 
-    /**
-     * Actualiza los totalPoints de todos los jugadores únicos en un partido
-     */
     @Transactional
     public void updatePlayerPointsForMatch(Integer matchId) {
         List<PlayerStatistic> stats = statisticRepository.findByMatchId(matchId);
 
-        // Obtener IDs únicos de jugadores
         Set<String> playerIds = stats.stream()
             .map(PlayerStatistic::getPlayerId)
             .collect(Collectors.toSet());
 
-        // Actualizar totalPoints de cada jugador
         for (String playerId : playerIds) {
             try {
                 updatePlayerTotalPoints(playerId);
@@ -209,14 +186,10 @@ public class FantasyPointsService {
         }
     }
 
-    /**
-     * Recalcula puntos para TODOS los equipos en una jornada
-     */
     @Transactional
     public void recalculateGameweekPoints(Integer gameweek) {
         List<Team> teams = teamRepository.findAll();
 
-        // Primero actualizar puntos de jugadores
         List<Match> matches = matchRepository.findByRound(gameweek);
         for (Match match : matches) {
             try {
@@ -226,31 +199,37 @@ public class FantasyPointsService {
             }
         }
 
-        // Luego actualizar puntos de equipos
         for (Team team : teams) {
             try {
                 calculateTeamPointsForGameweek(team.getId(), gameweek);
                 updateTeamTotalPoints(team.getId());
             } catch (Exception e) {
-                // Log error pero continuar con otros equipos
                 System.err.println("Error calculating points for team " + team.getId() + ": " + e.getMessage());
             }
         }
     }
 
-    /**
-     * Trigger para actualizar puntos cuando se guardan estadísticas
-     */
     @Transactional
+    public void updateAllPlayerPoints() {
+        List<Player> players = playerRepository.findAll();
+        for (Player player : players) {
+            try {
+                updatePlayerTotalPoints(player.getId());
+            } catch (Exception e) {
+                System.err.println("Error updating player " + player.getId() + ": " + e.getMessage());
+            }
+        }
+    }
+
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void triggerPointsUpdateForMatch(Integer matchId) {
         Match match = matchRepository.findById(matchId)
             .orElseThrow(() -> new RuntimeException("Match not found"));
 
         Integer gameweek = match.getRound();
         if (gameweek != null) {
-            // Actualizar puntos de jugadores primero
             updatePlayerPointsForMatch(matchId);
-            // Luego recalcular puntos de equipos
             recalculateGameweekPoints(gameweek);
         }
     }

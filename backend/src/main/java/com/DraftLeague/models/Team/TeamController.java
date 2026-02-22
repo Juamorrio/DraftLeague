@@ -93,4 +93,20 @@ public class TeamController {
             return ResponseEntity.badRequest().body(java.util.Map.of("error", e.getMessage()));
         }
     }
+
+    @PostMapping("/league/{leagueId}/sell-player")
+    public ResponseEntity<?> sellPlayer(
+            @PathVariable Integer leagueId,
+            @RequestBody java.util.Map<String, String> body) {
+        try {
+            String playerId = body.get("playerId");
+            if (playerId == null) {
+                return ResponseEntity.badRequest().body(java.util.Map.of("error", "playerId requerido"));
+            }
+            java.util.Map<String, Object> result = teamService.sellPlayer(leagueId, playerId);
+            return ResponseEntity.ok(result);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("error", e.getMessage()));
+        }
+    }
 }

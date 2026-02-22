@@ -71,4 +71,11 @@ public class Team {
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlayerTeam> playerTeams = new ArrayList<>();
+
+    public String getName() {
+        if (user != null && user.getUsername() != null) {
+            return user.getUsername() + "'s Team";
+        }
+        return "Team #" + (id != null ? id : "Unknown");
+    }
 }

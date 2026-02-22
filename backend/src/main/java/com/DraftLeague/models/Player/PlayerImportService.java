@@ -5,13 +5,16 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +26,9 @@ public class PlayerImportService {
 	@PersistenceContext
 	private EntityManager entityManager;
 
+	@Value("${scripts.path}")
+	private String scriptsPath;
+
 	public PlayerImportService(PlayerRepository repo, ObjectMapper objectMapper) {
 		this.repo = repo;
 		this.objectMapper = objectMapper;
@@ -30,9 +36,9 @@ public class PlayerImportService {
 
 	@Transactional
 	public int importFromJsonResource() throws Exception {
-		ClassPathResource resource = new ClassPathResource("scraping/players_data.json");
+		Path path = Paths.get(scriptsPath, "players_data.json");
 
-		try (InputStream is = resource.getInputStream()) {
+		try (InputStream is = Files.newInputStream(path)) {
 			List<PlayerImportDto> dtos = objectMapper.readValue(is, new TypeReference<>() {});
 			int updated = 0;
 			int created = 0;
@@ -106,12 +112,11 @@ public class PlayerImportService {
 
 
 	public String syncPlayers() throws Exception {
-		ClassPathResource resource = new ClassPathResource("scraping/players.py");
-		String scriptPath = resource.getFile().getAbsolutePath();
+		Path scriptPath = Paths.get(scriptsPath, "players.py").toAbsolutePath();
 		
 		List<String> command = new ArrayList<>();
 		command.add("python");
-		command.add(scriptPath);
+		command.add(scriptPath.toString());
 		
 		ProcessBuilder processBuilder = new ProcessBuilder(command);
 		processBuilder.redirectErrorStream(true);

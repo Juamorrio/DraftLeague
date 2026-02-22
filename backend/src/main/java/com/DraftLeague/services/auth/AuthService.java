@@ -9,9 +9,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.DraftLeague.models.user.User;
-import com.DraftLeague.models.user.UserRepository;
+import com.DraftLeague.repositories.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+import com.DraftLeague.models.user.User;
+import com.DraftLeague.repositories.UserRepository;
 
 @Service
 @RequiredArgsConstructor

@@ -11,6 +11,8 @@ import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.PastOrPresent;
 import lombok.Getter;
 import lombok.Setter;
+import com.DraftLeague.models.Player.Player;
+import com.DraftLeague.models.Player.PlayerTeam;
 
 @Getter
 @Setter

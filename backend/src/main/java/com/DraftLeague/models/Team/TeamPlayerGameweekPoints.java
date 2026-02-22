@@ -1,9 +1,12 @@
 package com.DraftLeague.models.Team;
+import com.DraftLeague.models.Team.TeamPlayerGameweekPoints;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.Date;
+import com.DraftLeague.models.Team.Team;
+import com.DraftLeague.models.Player.Position;
 
 @Getter
 @Setter
@@ -25,16 +28,16 @@ public class TeamPlayerGameweekPoints {
     @Column(name = "gameweek", nullable = false)
     private Integer gameweek;
 
-    // Datos del jugador (denormalizados para queries rápidas)
+    // Datos del jugador (denormalizados para queries rÃƒÆ’Ã‚Â¡pidas)
     @Column(name = "player_name", nullable = false)
     private String playerName;
 
     @Column(name = "position", nullable = false)
     private String position; // POR, DEF, MID, DEL
 
-    // Puntuación
+    // PuntuaciÃƒÆ’Ã‚Â³n
     @Column(name = "points")
-    private Integer points = 0; // Con multiplicador de capitán
+    private Integer points = 0; // Con multiplicador de capitÃƒÆ’Ã‚Â¡n
 
     @Column(name = "base_points")
     private Integer basePoints = 0; // Sin multiplicador

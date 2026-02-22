@@ -1,4 +1,6 @@
 package com.DraftLeague.services;
+import com.DraftLeague.models.Team.TeamGameweekPoints;
+import com.DraftLeague.models.Team.TeamPlayerGameweekPoints;
 
 import com.DraftLeague.models.Team.*;
 import com.DraftLeague.models.Player.*;
@@ -11,6 +13,18 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import com.DraftLeague.models.Player.Player;
+import com.DraftLeague.models.Team.Team;
+import com.DraftLeague.models.Match.Match;
+import com.DraftLeague.models.Statistics.PlayerStatistic;
+import com.DraftLeague.models.Player.Position;
+import com.DraftLeague.models.Player.PlayerTeam;
+import com.DraftLeague.repositories.PlayerRepository;
+import com.DraftLeague.repositories.TeamRepository;
+import com.DraftLeague.repositories.MatchRepository;
+import com.DraftLeague.repositories.PlayerStatisticRepository;
+import com.DraftLeague.repositories.TeamGameweekPointsRepository;
+import com.DraftLeague.repositories.TeamPlayerGameweekPointsRepository;
 
 @Service
 @RequiredArgsConstructor

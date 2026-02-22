@@ -1,9 +1,11 @@
 package com.DraftLeague.models.Team;
+import com.DraftLeague.models.Team.TeamGameweekPoints;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.Date;
+import com.DraftLeague.models.Team.Team;
 
 @Getter
 @Setter

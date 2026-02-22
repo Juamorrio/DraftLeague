@@ -1,7 +1,7 @@
 package com.DraftLeague.services;
 
 import com.DraftLeague.models.Match.Match;
-import com.DraftLeague.models.Match.MatchRepository;
+import com.DraftLeague.repositories.MatchRepository;
 import com.DraftLeague.models.Match.MatchStatus;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import com.DraftLeague.models.Match.Match;
+import com.DraftLeague.models.Match.MatchStatus;
+import com.DraftLeague.repositories.MatchRepository;
 
 
 @Service

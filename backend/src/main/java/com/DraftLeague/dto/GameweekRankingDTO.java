@@ -1,6 +1,7 @@
 package com.DraftLeague.dto;
 
 import lombok.Data;
+import com.DraftLeague.models.Player.Position;
 
 @Data
 public class GameweekRankingDTO {

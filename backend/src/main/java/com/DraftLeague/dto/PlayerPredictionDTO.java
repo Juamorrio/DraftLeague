@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Map;
+import com.DraftLeague.models.Player.Player;
+import com.DraftLeague.models.Match.Match;
+import com.DraftLeague.models.Player.Position;
 
 /**
  * DTO for individual player prediction response

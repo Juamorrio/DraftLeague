@@ -1,4 +1,5 @@
 package com.DraftLeague.models.Market;
+import com.DraftLeague.models.Market.StatusMarketPlayer;
 
 import com.DraftLeague.models.League.League;
 import com.DraftLeague.models.Player.Player;
@@ -17,6 +18,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.DraftLeague.models.user.User;
+import com.DraftLeague.models.Player.Player;
+import com.DraftLeague.models.League.League;
+import com.DraftLeague.models.Market.MarketPlayer;
 
 @Entity
 @Getter

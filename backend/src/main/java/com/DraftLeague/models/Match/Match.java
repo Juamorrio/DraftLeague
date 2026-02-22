@@ -12,6 +12,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import com.DraftLeague.models.Match.Match;
+import com.DraftLeague.models.Match.MatchStatus;
 
 @Getter
 @Setter

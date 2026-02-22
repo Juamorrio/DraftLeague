@@ -1,0 +1,2201 @@
+{
+  "jornada_1": [
+    {
+      "fixtureId": 1390824,
+      "homeTeamId": 547,
+      "awayTeamId": 728,
+      "homeClub": "Girona",
+      "awayClub": "Rayo Vallecano",
+      "homeScore": 1,
+      "awayScore": 3
+    },
+    {
+      "fixtureId": 1390828,
+      "homeTeamId": 533,
+      "awayTeamId": 718,
+      "homeClub": "Villarreal",
+      "awayClub": "Oviedo",
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390825,
+      "homeTeamId": 798,
+      "awayTeamId": 529,
+      "homeClub": "Mallorca",
+      "awayClub": "Barcelona",
+      "homeScore": 0,
+      "awayScore": 3
+    },
+    {
+      "fixtureId": 1390827,
+      "homeTeamId": 532,
+      "awayTeamId": 548,
+      "homeClub": "Valencia",
+      "awayClub": "Real Sociedad",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390819,
+      "homeTeamId": 542,
+      "awayTeamId": 539,
+      "homeClub": "Alaves",
+      "awayClub": "Levante",
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390821,
+      "homeTeamId": 538,
+      "awayTeamId": 546,
+      "homeClub": "Celta Vigo",
+      "awayClub": "Getafe",
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390820,
+      "homeTeamId": 531,
+      "awayTeamId": 536,
+      "homeClub": "Athletic Club",
+      "awayClub": "Sevilla",
+      "homeScore": 3,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390823,
+      "homeTeamId": 540,
+      "awayTeamId": 530,
+      "homeClub": "Espanyol",
+      "awayClub": "Atletico Madrid",
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390822,
+      "homeTeamId": 797,
+      "awayTeamId": 543,
+      "homeClub": "Elche",
+      "awayClub": "Real Betis",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390826,
+      "homeTeamId": 541,
+      "awayTeamId": 727,
+      "homeClub": "Real Madrid",
+      "awayClub": "Osasuna",
+      "homeScore": 1,
+      "awayScore": 0
+    }
+  ],
+  "jornada_2": [
+    {
+      "fixtureId": 1390831,
+      "homeTeamId": 543,
+      "awayTeamId": 542,
+      "homeClub": "Real Betis",
+      "awayClub": "Alaves",
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390833,
+      "homeTeamId": 798,
+      "awayTeamId": 538,
+      "homeClub": "Mallorca",
+      "awayClub": "Celta Vigo",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390830,
+      "homeTeamId": 530,
+      "awayTeamId": 797,
+      "homeClub": "Atletico Madrid",
+      "awayClub": "Elche",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390832,
+      "homeTeamId": 539,
+      "awayTeamId": 529,
+      "homeClub": "Levante",
+      "awayClub": "Barcelona",
+      "homeScore": 2,
+      "awayScore": 3
+    },
+    {
+      "fixtureId": 1390834,
+      "homeTeamId": 727,
+      "awayTeamId": 532,
+      "homeClub": "Osasuna",
+      "awayClub": "Valencia",
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390838,
+      "homeTeamId": 533,
+      "awayTeamId": 547,
+      "homeClub": "Villarreal",
+      "awayClub": "Girona",
+      "homeScore": 5,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390835,
+      "homeTeamId": 548,
+      "awayTeamId": 540,
+      "homeClub": "Real Sociedad",
+      "awayClub": "Espanyol",
+      "homeScore": 2,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390836,
+      "homeTeamId": 718,
+      "awayTeamId": 541,
+      "homeClub": "Oviedo",
+      "awayClub": "Real Madrid",
+      "homeScore": 0,
+      "awayScore": 3
+    },
+    {
+      "fixtureId": 1390829,
+      "homeTeamId": 531,
+      "awayTeamId": 728,
+      "homeClub": "Athletic Club",
+      "awayClub": "Rayo Vallecano",
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390837,
+      "homeTeamId": 536,
+      "awayTeamId": 546,
+      "homeClub": "Sevilla",
+      "awayClub": "Getafe",
+      "homeScore": 1,
+      "awayScore": 2
+    }
+  ],
+  "jornada_6": [
+    {
+      "fixtureId": 1390871,
+      "homeTeamId": 538,
+      "awayTeamId": 543,
+      "homeClub": "Celta Vigo",
+      "awayClub": "Real Betis",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390869,
+      "homeTeamId": 531,
+      "awayTeamId": 547,
+      "homeClub": "Athletic Club",
+      "awayClub": "Girona",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390872,
+      "homeTeamId": 540,
+      "awayTeamId": 532,
+      "homeClub": "Espanyol",
+      "awayClub": "Valencia",
+      "homeScore": 2,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390878,
+      "homeTeamId": 536,
+      "awayTeamId": 533,
+      "homeClub": "Sevilla",
+      "awayClub": "Villarreal",
+      "homeScore": 1,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390874,
+      "homeTeamId": 539,
+      "awayTeamId": 541,
+      "homeClub": "Levante",
+      "awayClub": "Real Madrid",
+      "homeScore": 1,
+      "awayScore": 4
+    },
+    {
+      "fixtureId": 1390873,
+      "homeTeamId": 546,
+      "awayTeamId": 542,
+      "homeClub": "Getafe",
+      "awayClub": "Alaves",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390870,
+      "homeTeamId": 530,
+      "awayTeamId": 728,
+      "homeClub": "Atletico Madrid",
+      "awayClub": "Rayo Vallecano",
+      "homeScore": 3,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390876,
+      "homeTeamId": 548,
+      "awayTeamId": 798,
+      "homeClub": "Real Sociedad",
+      "awayClub": "Mallorca",
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390875,
+      "homeTeamId": 727,
+      "awayTeamId": 797,
+      "homeClub": "Osasuna",
+      "awayClub": "Elche",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390877,
+      "homeTeamId": 718,
+      "awayTeamId": 529,
+      "homeClub": "Oviedo",
+      "awayClub": "Barcelona",
+      "homeScore": 1,
+      "awayScore": 3
+    }
+  ],
+  "jornada_3": [
+    {
+      "fixtureId": 1390842,
+      "homeTeamId": 797,
+      "awayTeamId": 539,
+      "homeClub": "Elche",
+      "awayClub": "Levante",
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390848,
+      "homeTeamId": 532,
+      "awayTeamId": 546,
+      "homeClub": "Valencia",
+      "awayClub": "Getafe",
+      "homeScore": 3,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390839,
+      "homeTeamId": 542,
+      "awayTeamId": 530,
+      "homeClub": "Alaves",
+      "awayClub": "Atletico Madrid",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390847,
+      "homeTeamId": 718,
+      "awayTeamId": 548,
+      "homeClub": "Oviedo",
+      "awayClub": "Real Sociedad",
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390844,
+      "homeTeamId": 547,
+      "awayTeamId": 536,
+      "homeClub": "Girona",
+      "awayClub": "Sevilla",
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390846,
+      "homeTeamId": 541,
+      "awayTeamId": 798,
+      "homeClub": "Real Madrid",
+      "awayClub": "Mallorca",
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390841,
+      "homeTeamId": 538,
+      "awayTeamId": 533,
+      "homeClub": "Celta Vigo",
+      "awayClub": "Villarreal",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390840,
+      "homeTeamId": 543,
+      "awayTeamId": 531,
+      "homeClub": "Real Betis",
+      "awayClub": "Athletic Club",
+      "homeScore": 1,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390843,
+      "homeTeamId": 540,
+      "awayTeamId": 727,
+      "homeClub": "Espanyol",
+      "awayClub": "Osasuna",
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390845,
+      "homeTeamId": 728,
+      "awayTeamId": 529,
+      "homeClub": "Rayo Vallecano",
+      "awayClub": "Barcelona",
+      "homeScore": 1,
+      "awayScore": 1
+    }
+  ],
+  "jornada_4": [
+    {
+      "fixtureId": 1390858,
+      "homeTeamId": 536,
+      "awayTeamId": 797,
+      "homeClub": "Sevilla",
+      "awayClub": "Elche",
+      "homeScore": 2,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390854,
+      "homeTeamId": 546,
+      "awayTeamId": 718,
+      "homeClub": "Getafe",
+      "awayClub": "Oviedo",
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390857,
+      "homeTeamId": 548,
+      "awayTeamId": 541,
+      "homeClub": "Real Sociedad",
+      "awayClub": "Real Madrid",
+      "homeScore": 1,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390849,
+      "homeTeamId": 531,
+      "awayTeamId": 542,
+      "homeClub": "Athletic Club",
+      "awayClub": "Alaves",
+      "homeScore": 0,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390850,
+      "homeTeamId": 530,
+      "awayTeamId": 533,
+      "homeClub": "Atletico Madrid",
+      "awayClub": "Villarreal",
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390852,
+      "homeTeamId": 538,
+      "awayTeamId": 547,
+      "homeClub": "Celta Vigo",
+      "awayClub": "Girona",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390855,
+      "homeTeamId": 539,
+      "awayTeamId": 543,
+      "homeClub": "Levante",
+      "awayClub": "Real Betis",
+      "homeScore": 2,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390856,
+      "homeTeamId": 727,
+      "awayTeamId": 728,
+      "homeClub": "Osasuna",
+      "awayClub": "Rayo Vallecano",
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390851,
+      "homeTeamId": 529,
+      "awayTeamId": 532,
+      "homeClub": "Barcelona",
+      "awayClub": "Valencia",
+      "homeScore": 6,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390853,
+      "homeTeamId": 540,
+      "awayTeamId": 798,
+      "homeClub": "Espanyol",
+      "awayClub": "Mallorca",
+      "homeScore": 3,
+      "awayScore": 2
+    }
+  ],
+  "jornada_5": [
+    {
+      "fixtureId": 1390861,
+      "homeTeamId": 543,
+      "awayTeamId": 548,
+      "homeClub": "Real Betis",
+      "awayClub": "Real Sociedad",
+      "homeScore": 3,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390863,
+      "homeTeamId": 547,
+      "awayTeamId": 539,
+      "homeClub": "Girona",
+      "awayClub": "Levante",
+      "homeScore": 0,
+      "awayScore": 4
+    },
+    {
+      "fixtureId": 1390866,
+      "homeTeamId": 541,
+      "awayTeamId": 540,
+      "homeClub": "Real Madrid",
+      "awayClub": "Espanyol",
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390868,
+      "homeTeamId": 533,
+      "awayTeamId": 727,
+      "homeClub": "Villarreal",
+      "awayClub": "Osasuna",
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390859,
+      "homeTeamId": 542,
+      "awayTeamId": 536,
+      "homeClub": "Alaves",
+      "awayClub": "Sevilla",
+      "homeScore": 1,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390867,
+      "homeTeamId": 532,
+      "awayTeamId": 531,
+      "homeClub": "Valencia",
+      "awayClub": "Athletic Club",
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390865,
+      "homeTeamId": 728,
+      "awayTeamId": 538,
+      "homeClub": "Rayo Vallecano",
+      "awayClub": "Celta Vigo",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390864,
+      "homeTeamId": 798,
+      "awayTeamId": 530,
+      "homeClub": "Mallorca",
+      "awayClub": "Atletico Madrid",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390862,
+      "homeTeamId": 797,
+      "awayTeamId": 718,
+      "homeClub": "Elche",
+      "awayClub": "Oviedo",
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390860,
+      "homeTeamId": 529,
+      "awayTeamId": 546,
+      "homeClub": "Barcelona",
+      "awayClub": "Getafe",
+      "homeScore": 3,
+      "awayScore": 0
+    }
+  ],
+  "jornada_7": [
+    {
+      "fixtureId": 1390884,
+      "homeTeamId": 547,
+      "awayTeamId": 540,
+      "homeClub": "Girona",
+      "awayClub": "Espanyol",
+      "homeScore": 0,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390883,
+      "homeTeamId": 546,
+      "awayTeamId": 539,
+      "homeClub": "Getafe",
+      "awayClub": "Levante",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390879,
+      "homeTeamId": 530,
+      "awayTeamId": 541,
+      "homeClub": "Atletico Madrid",
+      "awayClub": "Real Madrid",
+      "homeScore": 5,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390885,
+      "homeTeamId": 798,
+      "awayTeamId": 542,
+      "homeClub": "Mallorca",
+      "awayClub": "Alaves",
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390888,
+      "homeTeamId": 533,
+      "awayTeamId": 531,
+      "homeClub": "Villarreal",
+      "awayClub": "Athletic Club",
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390886,
+      "homeTeamId": 728,
+      "awayTeamId": 536,
+      "homeClub": "Rayo Vallecano",
+      "awayClub": "Sevilla",
+      "homeScore": 0,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390882,
+      "homeTeamId": 797,
+      "awayTeamId": 538,
+      "homeClub": "Elche",
+      "awayClub": "Celta Vigo",
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390880,
+      "homeTeamId": 529,
+      "awayTeamId": 548,
+      "homeClub": "Barcelona",
+      "awayClub": "Real Sociedad",
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390881,
+      "homeTeamId": 543,
+      "awayTeamId": 727,
+      "homeClub": "Real Betis",
+      "awayClub": "Osasuna",
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390887,
+      "homeTeamId": 532,
+      "awayTeamId": 718,
+      "homeClub": "Valencia",
+      "awayClub": "Oviedo",
+      "homeScore": 1,
+      "awayScore": 2
+    }
+  ],
+  "jornada_8": [
+    {
+      "fixtureId": 1390894,
+      "homeTeamId": 727,
+      "awayTeamId": 546,
+      "homeClub": "Osasuna",
+      "awayClub": "Getafe",
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390897,
+      "homeTeamId": 718,
+      "awayTeamId": 539,
+      "homeClub": "Oviedo",
+      "awayClub": "Levante",
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390893,
+      "homeTeamId": 547,
+      "awayTeamId": 532,
+      "homeClub": "Girona",
+      "awayClub": "Valencia",
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390890,
+      "homeTeamId": 531,
+      "awayTeamId": 798,
+      "homeClub": "Athletic Club",
+      "awayClub": "Mallorca",
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390895,
+      "homeTeamId": 541,
+      "awayTeamId": 533,
+      "homeClub": "Real Madrid",
+      "awayClub": "Villarreal",
+      "homeScore": 3,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390889,
+      "homeTeamId": 542,
+      "awayTeamId": 797,
+      "homeClub": "Alaves",
+      "awayClub": "Elche",
+      "homeScore": 3,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390898,
+      "homeTeamId": 536,
+      "awayTeamId": 529,
+      "homeClub": "Sevilla",
+      "awayClub": "Barcelona",
+      "homeScore": 4,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390892,
+      "homeTeamId": 540,
+      "awayTeamId": 543,
+      "homeClub": "Espanyol",
+      "awayClub": "Real Betis",
+      "homeScore": 1,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390896,
+      "homeTeamId": 548,
+      "awayTeamId": 728,
+      "homeClub": "Real Sociedad",
+      "awayClub": "Rayo Vallecano",
+      "homeScore": 0,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390891,
+      "homeTeamId": 538,
+      "awayTeamId": 530,
+      "homeClub": "Celta Vigo",
+      "awayClub": "Atletico Madrid",
+      "homeScore": 1,
+      "awayScore": 1
+    }
+  ],
+  "jornada_9": [
+    {
+      "fixtureId": 1390906,
+      "homeTeamId": 718,
+      "awayTeamId": 540,
+      "homeClub": "Oviedo",
+      "awayClub": "Espanyol",
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390907,
+      "homeTeamId": 536,
+      "awayTeamId": 798,
+      "homeClub": "Sevilla",
+      "awayClub": "Mallorca",
+      "homeScore": 1,
+      "awayScore": 3
+    },
+    {
+      "fixtureId": 1390901,
+      "homeTeamId": 529,
+      "awayTeamId": 547,
+      "homeClub": "Barcelona",
+      "awayClub": "Girona",
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390908,
+      "homeTeamId": 533,
+      "awayTeamId": 543,
+      "homeClub": "Villarreal",
+      "awayClub": "Real Betis",
+      "homeScore": 2,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390900,
+      "homeTeamId": 530,
+      "awayTeamId": 727,
+      "homeClub": "Atletico Madrid",
+      "awayClub": "Osasuna",
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390903,
+      "homeTeamId": 797,
+      "awayTeamId": 531,
+      "homeClub": "Elche",
+      "awayClub": "Athletic Club",
+      "homeScore": 0,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390902,
+      "homeTeamId": 538,
+      "awayTeamId": 548,
+      "homeClub": "Celta Vigo",
+      "awayClub": "Real Sociedad",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390905,
+      "homeTeamId": 539,
+      "awayTeamId": 728,
+      "homeClub": "Levante",
+      "awayClub": "Rayo Vallecano",
+      "homeScore": 0,
+      "awayScore": 3
+    },
+    {
+      "fixtureId": 1390904,
+      "homeTeamId": 546,
+      "awayTeamId": 541,
+      "homeClub": "Getafe",
+      "awayClub": "Real Madrid",
+      "homeScore": 0,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390899,
+      "homeTeamId": 542,
+      "awayTeamId": 532,
+      "homeClub": "Alaves",
+      "awayClub": "Valencia",
+      "homeScore": 0,
+      "awayScore": 0
+    }
+  ],
+  "jornada_10": [
+    {
+      "fixtureId": 1390917,
+      "homeTeamId": 548,
+      "awayTeamId": 536,
+      "homeClub": "Real Sociedad",
+      "awayClub": "Sevilla",
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390912,
+      "homeTeamId": 547,
+      "awayTeamId": 718,
+      "homeClub": "Girona",
+      "awayClub": "Oviedo",
+      "homeScore": 3,
+      "awayScore": 3
+    },
+    {
+      "fixtureId": 1390911,
+      "homeTeamId": 540,
+      "awayTeamId": 797,
+      "homeClub": "Espanyol",
+      "awayClub": "Elche",
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390909,
+      "homeTeamId": 531,
+      "awayTeamId": 546,
+      "homeClub": "Athletic Club",
+      "awayClub": "Getafe",
+      "homeScore": 0,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390918,
+      "homeTeamId": 532,
+      "awayTeamId": 533,
+      "homeClub": "Valencia",
+      "awayClub": "Villarreal",
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390913,
+      "homeTeamId": 798,
+      "awayTeamId": 539,
+      "homeClub": "Mallorca",
+      "awayClub": "Levante",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390916,
+      "homeTeamId": 541,
+      "awayTeamId": 529,
+      "homeClub": "Real Madrid",
+      "awayClub": "Barcelona",
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390914,
+      "homeTeamId": 727,
+      "awayTeamId": 538,
+      "homeClub": "Osasuna",
+      "awayClub": "Celta Vigo",
+      "homeScore": 2,
+      "awayScore": 3
+    },
+    {
+      "fixtureId": 1390915,
+      "homeTeamId": 728,
+      "awayTeamId": 542,
+      "homeClub": "Rayo Vallecano",
+      "awayClub": "Alaves",
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390910,
+      "homeTeamId": 543,
+      "awayTeamId": 530,
+      "homeClub": "Real Betis",
+      "awayClub": "Atletico Madrid",
+      "homeScore": 0,
+      "awayScore": 2
+    }
+  ],
+  "jornada_11": [
+    {
+      "fixtureId": 1390923,
+      "homeTeamId": 546,
+      "awayTeamId": 547,
+      "homeClub": "Getafe",
+      "awayClub": "Girona",
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390928,
+      "homeTeamId": 533,
+      "awayTeamId": 728,
+      "homeClub": "Villarreal",
+      "awayClub": "Rayo Vallecano",
+      "homeScore": 4,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390920,
+      "homeTeamId": 530,
+      "awayTeamId": 536,
+      "homeClub": "Atletico Madrid",
+      "awayClub": "Sevilla",
+      "homeScore": 3,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390926,
+      "homeTeamId": 548,
+      "awayTeamId": 531,
+      "homeClub": "Real Sociedad",
+      "awayClub": "Athletic Club",
+      "homeScore": 3,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390925,
+      "homeTeamId": 541,
+      "awayTeamId": 532,
+      "homeClub": "Real Madrid",
+      "awayClub": "Valencia",
+      "homeScore": 4,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390924,
+      "homeTeamId": 539,
+      "awayTeamId": 538,
+      "homeClub": "Levante",
+      "awayClub": "Celta Vigo",
+      "homeScore": 1,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390919,
+      "homeTeamId": 542,
+      "awayTeamId": 540,
+      "homeClub": "Alaves",
+      "awayClub": "Espanyol",
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390921,
+      "homeTeamId": 529,
+      "awayTeamId": 797,
+      "homeClub": "Barcelona",
+      "awayClub": "Elche",
+      "homeScore": 3,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390922,
+      "homeTeamId": 543,
+      "awayTeamId": 798,
+      "homeClub": "Real Betis",
+      "awayClub": "Mallorca",
+      "homeScore": 3,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390927,
+      "homeTeamId": 718,
+      "awayTeamId": 727,
+      "homeClub": "Oviedo",
+      "awayClub": "Osasuna",
+      "homeScore": 0,
+      "awayScore": 0
+    }
+  ],
+  "jornada_12": [
+    {
+      "fixtureId": 1390932,
+      "homeTeamId": 797,
+      "awayTeamId": 548,
+      "homeClub": "Elche",
+      "awayClub": "Real Sociedad",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390934,
+      "homeTeamId": 547,
+      "awayTeamId": 542,
+      "homeClub": "Girona",
+      "awayClub": "Alaves",
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390937,
+      "homeTeamId": 536,
+      "awayTeamId": 727,
+      "homeClub": "Sevilla",
+      "awayClub": "Osasuna",
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390930,
+      "homeTeamId": 530,
+      "awayTeamId": 539,
+      "homeClub": "Atletico Madrid",
+      "awayClub": "Levante",
+      "homeScore": 3,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390933,
+      "homeTeamId": 540,
+      "awayTeamId": 533,
+      "homeClub": "Espanyol",
+      "awayClub": "Villarreal",
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390929,
+      "homeTeamId": 531,
+      "awayTeamId": 718,
+      "homeClub": "Athletic Club",
+      "awayClub": "Oviedo",
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390936,
+      "homeTeamId": 728,
+      "awayTeamId": 541,
+      "homeClub": "Rayo Vallecano",
+      "awayClub": "Real Madrid",
+      "homeScore": 0,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390938,
+      "homeTeamId": 532,
+      "awayTeamId": 543,
+      "homeClub": "Valencia",
+      "awayClub": "Real Betis",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390935,
+      "homeTeamId": 798,
+      "awayTeamId": 546,
+      "homeClub": "Mallorca",
+      "awayClub": "Getafe",
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390931,
+      "homeTeamId": 538,
+      "awayTeamId": 529,
+      "homeClub": "Celta Vigo",
+      "awayClub": "Barcelona",
+      "homeScore": 2,
+      "awayScore": 4
+    }
+  ],
+  "jornada_13": [
+    {
+      "fixtureId": 1390947,
+      "homeTeamId": 532,
+      "awayTeamId": 539,
+      "homeClub": "Valencia",
+      "awayClub": "Levante",
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390939,
+      "homeTeamId": 542,
+      "awayTeamId": 538,
+      "homeClub": "Alaves",
+      "awayClub": "Celta Vigo",
+      "homeScore": 0,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390940,
+      "homeTeamId": 529,
+      "awayTeamId": 531,
+      "homeClub": "Barcelona",
+      "awayClub": "Athletic Club",
+      "homeScore": 4,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390945,
+      "homeTeamId": 727,
+      "awayTeamId": 548,
+      "homeClub": "Osasuna",
+      "awayClub": "Real Sociedad",
+      "homeScore": 1,
+      "awayScore": 3
+    },
+    {
+      "fixtureId": 1390948,
+      "homeTeamId": 533,
+      "awayTeamId": 798,
+      "homeClub": "Villarreal",
+      "awayClub": "Mallorca",
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390946,
+      "homeTeamId": 718,
+      "awayTeamId": 728,
+      "homeClub": "Oviedo",
+      "awayClub": "Rayo Vallecano",
+      "homeScore": 0,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390941,
+      "homeTeamId": 543,
+      "awayTeamId": 547,
+      "homeClub": "Real Betis",
+      "awayClub": "Girona",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390944,
+      "homeTeamId": 546,
+      "awayTeamId": 530,
+      "homeClub": "Getafe",
+      "awayClub": "Atletico Madrid",
+      "homeScore": 0,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390942,
+      "homeTeamId": 797,
+      "awayTeamId": 541,
+      "homeClub": "Elche",
+      "awayClub": "Real Madrid",
+      "homeScore": 2,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390943,
+      "homeTeamId": 540,
+      "awayTeamId": 536,
+      "homeClub": "Espanyol",
+      "awayClub": "Sevilla",
+      "homeScore": 2,
+      "awayScore": 1
+    }
+  ],
+  "jornada_14": [
+    {
+      "fixtureId": 1390952,
+      "homeTeamId": 546,
+      "awayTeamId": 797,
+      "homeClub": "Getafe",
+      "awayClub": "Elche",
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390955,
+      "homeTeamId": 798,
+      "awayTeamId": 727,
+      "homeClub": "Mallorca",
+      "awayClub": "Osasuna",
+      "homeScore": 2,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390950,
+      "homeTeamId": 529,
+      "awayTeamId": 542,
+      "homeClub": "Barcelona",
+      "awayClub": "Alaves",
+      "homeScore": 3,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390954,
+      "homeTeamId": 539,
+      "awayTeamId": 531,
+      "homeClub": "Levante",
+      "awayClub": "Athletic Club",
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390949,
+      "homeTeamId": 530,
+      "awayTeamId": 718,
+      "homeClub": "Atletico Madrid",
+      "awayClub": "Oviedo",
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390957,
+      "homeTeamId": 548,
+      "awayTeamId": 533,
+      "homeClub": "Real Sociedad",
+      "awayClub": "Villarreal",
+      "homeScore": 2,
+      "awayScore": 3
+    },
+    {
+      "fixtureId": 1390958,
+      "homeTeamId": 536,
+      "awayTeamId": 543,
+      "homeClub": "Sevilla",
+      "awayClub": "Real Betis",
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390951,
+      "homeTeamId": 538,
+      "awayTeamId": 540,
+      "homeClub": "Celta Vigo",
+      "awayClub": "Espanyol",
+      "homeScore": 0,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390953,
+      "homeTeamId": 547,
+      "awayTeamId": 541,
+      "homeClub": "Girona",
+      "awayClub": "Real Madrid",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390956,
+      "homeTeamId": 728,
+      "awayTeamId": 532,
+      "homeClub": "Rayo Vallecano",
+      "awayClub": "Valencia",
+      "homeScore": 1,
+      "awayScore": 1
+    }
+  ],
+  "jornada_19": [
+    {
+      "fixtureId": 1391000,
+      "homeTeamId": 529,
+      "awayTeamId": 530,
+      "homeClub": "Barcelona",
+      "awayClub": "Atletico Madrid",
+      "homeScore": 3,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390999,
+      "homeTeamId": 531,
+      "awayTeamId": 541,
+      "homeClub": "Athletic Club",
+      "awayClub": "Real Madrid",
+      "homeScore": 0,
+      "awayScore": 3
+    },
+    {
+      "fixtureId": 1391001,
+      "homeTeamId": 546,
+      "awayTeamId": 548,
+      "homeClub": "Getafe",
+      "awayClub": "Real Sociedad",
+      "homeScore": 1,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1391005,
+      "homeTeamId": 718,
+      "awayTeamId": 543,
+      "homeClub": "Oviedo",
+      "awayClub": "Real Betis",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1391008,
+      "homeTeamId": 533,
+      "awayTeamId": 542,
+      "homeClub": "Villarreal",
+      "awayClub": "Alaves",
+      "homeScore": 3,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1391002,
+      "homeTeamId": 547,
+      "awayTeamId": 727,
+      "homeClub": "Girona",
+      "awayClub": "Osasuna",
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1391007,
+      "homeTeamId": 532,
+      "awayTeamId": 797,
+      "homeClub": "Valencia",
+      "awayClub": "Elche",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1391004,
+      "homeTeamId": 728,
+      "awayTeamId": 798,
+      "homeClub": "Rayo Vallecano",
+      "awayClub": "Mallorca",
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1391003,
+      "homeTeamId": 539,
+      "awayTeamId": 540,
+      "homeClub": "Levante",
+      "awayClub": "Espanyol",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1391006,
+      "homeTeamId": 536,
+      "awayTeamId": 538,
+      "homeClub": "Sevilla",
+      "awayClub": "Celta Vigo",
+      "homeScore": 0,
+      "awayScore": 1
+    }
+  ],
+  "jornada_15": [
+    {
+      "fixtureId": 1390966,
+      "homeTeamId": 718,
+      "awayTeamId": 798,
+      "homeClub": "Oviedo",
+      "awayClub": "Mallorca",
+      "homeScore": 0,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390968,
+      "homeTeamId": 533,
+      "awayTeamId": 546,
+      "homeClub": "Villarreal",
+      "awayClub": "Getafe",
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390959,
+      "homeTeamId": 542,
+      "awayTeamId": 548,
+      "homeClub": "Alaves",
+      "awayClub": "Real Sociedad",
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390961,
+      "homeTeamId": 543,
+      "awayTeamId": 529,
+      "homeClub": "Real Betis",
+      "awayClub": "Barcelona",
+      "homeScore": 3,
+      "awayScore": 5
+    },
+    {
+      "fixtureId": 1390960,
+      "homeTeamId": 531,
+      "awayTeamId": 530,
+      "homeClub": "Athletic Club",
+      "awayClub": "Atletico Madrid",
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390962,
+      "homeTeamId": 797,
+      "awayTeamId": 547,
+      "homeClub": "Elche",
+      "awayClub": "Girona",
+      "homeScore": 3,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390967,
+      "homeTeamId": 532,
+      "awayTeamId": 536,
+      "homeClub": "Valencia",
+      "awayClub": "Sevilla",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390963,
+      "homeTeamId": 540,
+      "awayTeamId": 728,
+      "homeClub": "Espanyol",
+      "awayClub": "Rayo Vallecano",
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390965,
+      "homeTeamId": 541,
+      "awayTeamId": 538,
+      "homeClub": "Real Madrid",
+      "awayClub": "Celta Vigo",
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390964,
+      "homeTeamId": 727,
+      "awayTeamId": 539,
+      "homeClub": "Osasuna",
+      "awayClub": "Levante",
+      "homeScore": 2,
+      "awayScore": 0
+    }
+  ],
+  "jornada_16": [
+    {
+      "fixtureId": 1390977,
+      "homeTeamId": 548,
+      "awayTeamId": 547,
+      "homeClub": "Real Sociedad",
+      "awayClub": "Girona",
+      "homeScore": 1,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390970,
+      "homeTeamId": 530,
+      "awayTeamId": 532,
+      "homeClub": "Atletico Madrid",
+      "awayClub": "Valencia",
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390975,
+      "homeTeamId": 798,
+      "awayTeamId": 797,
+      "homeClub": "Mallorca",
+      "awayClub": "Elche",
+      "homeScore": 3,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390971,
+      "homeTeamId": 529,
+      "awayTeamId": 727,
+      "homeClub": "Barcelona",
+      "awayClub": "Osasuna",
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390973,
+      "homeTeamId": 546,
+      "awayTeamId": 540,
+      "homeClub": "Getafe",
+      "awayClub": "Espanyol",
+      "homeScore": 0,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390978,
+      "homeTeamId": 536,
+      "awayTeamId": 718,
+      "homeClub": "Sevilla",
+      "awayClub": "Oviedo",
+      "homeScore": 4,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390972,
+      "homeTeamId": 538,
+      "awayTeamId": 531,
+      "homeClub": "Celta Vigo",
+      "awayClub": "Athletic Club",
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390969,
+      "homeTeamId": 542,
+      "awayTeamId": 541,
+      "homeClub": "Alaves",
+      "awayClub": "Real Madrid",
+      "homeScore": 1,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390976,
+      "homeTeamId": 728,
+      "awayTeamId": 543,
+      "homeClub": "Rayo Vallecano",
+      "awayClub": "Real Betis",
+      "homeScore": 0,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390974,
+      "homeTeamId": 539,
+      "awayTeamId": 533,
+      "homeClub": "Levante",
+      "awayClub": "Villarreal",
+      "homeScore": 0,
+      "awayScore": 1
+    }
+  ],
+  "jornada_17": [
+    {
+      "fixtureId": 1390987,
+      "homeTeamId": 532,
+      "awayTeamId": 798,
+      "homeClub": "Valencia",
+      "awayClub": "Mallorca",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390986,
+      "homeTeamId": 718,
+      "awayTeamId": 538,
+      "homeClub": "Oviedo",
+      "awayClub": "Celta Vigo",
+      "homeScore": 0,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390983,
+      "homeTeamId": 539,
+      "awayTeamId": 548,
+      "homeClub": "Levante",
+      "awayClub": "Real Sociedad",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390984,
+      "homeTeamId": 727,
+      "awayTeamId": 542,
+      "homeClub": "Osasuna",
+      "awayClub": "Alaves",
+      "homeScore": 3,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390985,
+      "homeTeamId": 541,
+      "awayTeamId": 536,
+      "homeClub": "Real Madrid",
+      "awayClub": "Sevilla",
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390982,
+      "homeTeamId": 547,
+      "awayTeamId": 530,
+      "homeClub": "Girona",
+      "awayClub": "Atletico Madrid",
+      "homeScore": 0,
+      "awayScore": 3
+    },
+    {
+      "fixtureId": 1390988,
+      "homeTeamId": 533,
+      "awayTeamId": 529,
+      "homeClub": "Villarreal",
+      "awayClub": "Barcelona",
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390981,
+      "homeTeamId": 797,
+      "awayTeamId": 728,
+      "homeClub": "Elche",
+      "awayClub": "Rayo Vallecano",
+      "homeScore": 4,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390980,
+      "homeTeamId": 543,
+      "awayTeamId": 546,
+      "homeClub": "Real Betis",
+      "awayClub": "Getafe",
+      "homeScore": 4,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1390979,
+      "homeTeamId": 531,
+      "awayTeamId": 540,
+      "homeClub": "Athletic Club",
+      "awayClub": "Espanyol",
+      "homeScore": 1,
+      "awayScore": 2
+    }
+  ],
+  "jornada_18": [
+    {
+      "fixtureId": 1390995,
+      "homeTeamId": 728,
+      "awayTeamId": 546,
+      "homeClub": "Rayo Vallecano",
+      "awayClub": "Getafe",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390990,
+      "homeTeamId": 538,
+      "awayTeamId": 532,
+      "homeClub": "Celta Vigo",
+      "awayClub": "Valencia",
+      "homeScore": 4,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390994,
+      "homeTeamId": 727,
+      "awayTeamId": 531,
+      "homeClub": "Osasuna",
+      "awayClub": "Athletic Club",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390991,
+      "homeTeamId": 797,
+      "awayTeamId": 533,
+      "homeClub": "Elche",
+      "awayClub": "Villarreal",
+      "homeScore": 1,
+      "awayScore": 3
+    },
+    {
+      "fixtureId": 1390992,
+      "homeTeamId": 540,
+      "awayTeamId": 529,
+      "homeClub": "Espanyol",
+      "awayClub": "Barcelona",
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390998,
+      "homeTeamId": 536,
+      "awayTeamId": 539,
+      "homeClub": "Sevilla",
+      "awayClub": "Levante",
+      "homeScore": 0,
+      "awayScore": 3
+    },
+    {
+      "fixtureId": 1390996,
+      "homeTeamId": 541,
+      "awayTeamId": 543,
+      "homeClub": "Real Madrid",
+      "awayClub": "Real Betis",
+      "homeScore": 5,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390989,
+      "homeTeamId": 542,
+      "awayTeamId": 718,
+      "homeClub": "Alaves",
+      "awayClub": "Oviedo",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1390993,
+      "homeTeamId": 798,
+      "awayTeamId": 547,
+      "homeClub": "Mallorca",
+      "awayClub": "Girona",
+      "homeScore": 1,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1390997,
+      "homeTeamId": 548,
+      "awayTeamId": 530,
+      "homeClub": "Real Sociedad",
+      "awayClub": "Atletico Madrid",
+      "homeScore": 1,
+      "awayScore": 1
+    }
+  ],
+  "jornada_20": [
+    {
+      "fixtureId": 1391013,
+      "homeTeamId": 540,
+      "awayTeamId": 547,
+      "homeClub": "Espanyol",
+      "awayClub": "Girona",
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1391017,
+      "homeTeamId": 541,
+      "awayTeamId": 539,
+      "homeClub": "Real Madrid",
+      "awayClub": "Levante",
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1391015,
+      "homeTeamId": 798,
+      "awayTeamId": 531,
+      "homeClub": "Mallorca",
+      "awayClub": "Athletic Club",
+      "homeScore": 3,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1391016,
+      "homeTeamId": 727,
+      "awayTeamId": 718,
+      "homeClub": "Osasuna",
+      "awayClub": "Oviedo",
+      "homeScore": 3,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1391010,
+      "homeTeamId": 543,
+      "awayTeamId": 533,
+      "homeClub": "Real Betis",
+      "awayClub": "Villarreal",
+      "homeScore": 2,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1391014,
+      "homeTeamId": 546,
+      "awayTeamId": 532,
+      "homeClub": "Getafe",
+      "awayClub": "Valencia",
+      "homeScore": 0,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1391009,
+      "homeTeamId": 530,
+      "awayTeamId": 542,
+      "homeClub": "Atletico Madrid",
+      "awayClub": "Alaves",
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1391011,
+      "homeTeamId": 538,
+      "awayTeamId": 728,
+      "homeClub": "Celta Vigo",
+      "awayClub": "Rayo Vallecano",
+      "homeScore": 3,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1391018,
+      "homeTeamId": 548,
+      "awayTeamId": 529,
+      "homeClub": "Real Sociedad",
+      "awayClub": "Barcelona",
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1391012,
+      "homeTeamId": 797,
+      "awayTeamId": 536,
+      "homeClub": "Elche",
+      "awayClub": "Sevilla",
+      "homeScore": 2,
+      "awayScore": 2
+    }
+  ],
+  "jornada_21": [
+    {
+      "fixtureId": 1391023,
+      "homeTeamId": 539,
+      "awayTeamId": 797,
+      "homeClub": "Levante",
+      "awayClub": "Elche",
+      "homeScore": 3,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1391024,
+      "homeTeamId": 728,
+      "awayTeamId": 727,
+      "homeClub": "Rayo Vallecano",
+      "awayClub": "Osasuna",
+      "homeScore": 1,
+      "awayScore": 3
+    },
+    {
+      "fixtureId": 1391027,
+      "homeTeamId": 532,
+      "awayTeamId": 540,
+      "homeClub": "Valencia",
+      "awayClub": "Espanyol",
+      "homeScore": 3,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1391026,
+      "homeTeamId": 536,
+      "awayTeamId": 531,
+      "homeClub": "Sevilla",
+      "awayClub": "Athletic Club",
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1391028,
+      "homeTeamId": 533,
+      "awayTeamId": 541,
+      "homeClub": "Villarreal",
+      "awayClub": "Real Madrid",
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1391020,
+      "homeTeamId": 530,
+      "awayTeamId": 798,
+      "homeClub": "Atletico Madrid",
+      "awayClub": "Mallorca",
+      "homeScore": 3,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1391021,
+      "homeTeamId": 529,
+      "awayTeamId": 718,
+      "homeClub": "Barcelona",
+      "awayClub": "Oviedo",
+      "homeScore": 3,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1391025,
+      "homeTeamId": 548,
+      "awayTeamId": 538,
+      "homeClub": "Real Sociedad",
+      "awayClub": "Celta Vigo",
+      "homeScore": 3,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1391019,
+      "homeTeamId": 542,
+      "awayTeamId": 543,
+      "homeClub": "Alaves",
+      "awayClub": "Real Betis",
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1391022,
+      "homeTeamId": 547,
+      "awayTeamId": 546,
+      "homeClub": "Girona",
+      "awayClub": "Getafe",
+      "homeScore": 1,
+      "awayScore": 1
+    }
+  ],
+  "jornada_22": [
+    {
+      "fixtureId": 1391032,
+      "homeTeamId": 540,
+      "awayTeamId": 542,
+      "homeClub": "Espanyol",
+      "awayClub": "Alaves",
+      "homeScore": 1,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1391038,
+      "homeTeamId": 718,
+      "awayTeamId": 547,
+      "homeClub": "Oviedo",
+      "awayClub": "Girona",
+      "homeScore": 1,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1391036,
+      "homeTeamId": 727,
+      "awayTeamId": 533,
+      "homeClub": "Osasuna",
+      "awayClub": "Villarreal",
+      "homeScore": 2,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1391034,
+      "homeTeamId": 539,
+      "awayTeamId": 530,
+      "homeClub": "Levante",
+      "awayClub": "Atletico Madrid",
+      "homeScore": 0,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1391031,
+      "homeTeamId": 797,
+      "awayTeamId": 529,
+      "homeClub": "Elche",
+      "awayClub": "Barcelona",
+      "homeScore": 1,
+      "awayScore": 3
+    },
+    {
+      "fixtureId": 1391037,
+      "homeTeamId": 541,
+      "awayTeamId": 728,
+      "homeClub": "Real Madrid",
+      "awayClub": "Rayo Vallecano",
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1391030,
+      "homeTeamId": 543,
+      "awayTeamId": 532,
+      "homeClub": "Real Betis",
+      "awayClub": "Valencia",
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1391033,
+      "homeTeamId": 546,
+      "awayTeamId": 538,
+      "homeClub": "Getafe",
+      "awayClub": "Celta Vigo",
+      "homeScore": 0,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1391029,
+      "homeTeamId": 531,
+      "awayTeamId": 548,
+      "homeClub": "Athletic Club",
+      "awayClub": "Real Sociedad",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1391035,
+      "homeTeamId": 798,
+      "awayTeamId": 536,
+      "homeClub": "Mallorca",
+      "awayClub": "Sevilla",
+      "homeScore": 4,
+      "awayScore": 1
+    }
+  ],
+  "jornada_23": [
+    {
+      "fixtureId": 1391043,
+      "homeTeamId": 538,
+      "awayTeamId": 727,
+      "homeClub": "Celta Vigo",
+      "awayClub": "Osasuna",
+      "homeScore": 1,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1391042,
+      "homeTeamId": 529,
+      "awayTeamId": 798,
+      "homeClub": "Barcelona",
+      "awayClub": "Mallorca",
+      "homeScore": 3,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1391045,
+      "homeTeamId": 548,
+      "awayTeamId": 797,
+      "homeClub": "Real Sociedad",
+      "awayClub": "Elche",
+      "homeScore": 3,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1391039,
+      "homeTeamId": 542,
+      "awayTeamId": 546,
+      "homeClub": "Alaves",
+      "awayClub": "Getafe",
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1391040,
+      "homeTeamId": 531,
+      "awayTeamId": 539,
+      "homeClub": "Athletic Club",
+      "awayClub": "Levante",
+      "homeScore": 4,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1391046,
+      "homeTeamId": 536,
+      "awayTeamId": 547,
+      "homeClub": "Sevilla",
+      "awayClub": "Girona",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1391041,
+      "homeTeamId": 530,
+      "awayTeamId": 543,
+      "homeClub": "Atletico Madrid",
+      "awayClub": "Real Betis",
+      "homeScore": 0,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1391047,
+      "homeTeamId": 532,
+      "awayTeamId": 541,
+      "homeClub": "Valencia",
+      "awayClub": "Real Madrid",
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1391048,
+      "homeTeamId": 533,
+      "awayTeamId": 540,
+      "homeClub": "Villarreal",
+      "awayClub": "Espanyol",
+      "homeScore": 4,
+      "awayScore": 1
+    }
+  ],
+  "jornada_24": [
+    {
+      "fixtureId": 1391049,
+      "homeTeamId": 797,
+      "awayTeamId": 727,
+      "homeClub": "Elche",
+      "awayClub": "Osasuna",
+      "homeScore": 0,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1391050,
+      "homeTeamId": 540,
+      "awayTeamId": 538,
+      "homeClub": "Espanyol",
+      "awayClub": "Celta Vigo",
+      "homeScore": 2,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1391051,
+      "homeTeamId": 546,
+      "awayTeamId": 533,
+      "homeClub": "Getafe",
+      "awayClub": "Villarreal",
+      "homeScore": 2,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1391058,
+      "homeTeamId": 536,
+      "awayTeamId": 542,
+      "homeClub": "Sevilla",
+      "awayClub": "Alaves",
+      "homeScore": 1,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1391056,
+      "homeTeamId": 541,
+      "awayTeamId": 548,
+      "homeClub": "Real Madrid",
+      "awayClub": "Real Sociedad",
+      "homeScore": 4,
+      "awayScore": 1
+    },
+    {
+      "fixtureId": 1391057,
+      "homeTeamId": 718,
+      "awayTeamId": 531,
+      "homeClub": "Oviedo",
+      "awayClub": "Athletic Club",
+      "homeScore": 1,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1391055,
+      "homeTeamId": 728,
+      "awayTeamId": 530,
+      "homeClub": "Rayo Vallecano",
+      "awayClub": "Atletico Madrid",
+      "homeScore": 3,
+      "awayScore": 0
+    },
+    {
+      "fixtureId": 1391053,
+      "homeTeamId": 539,
+      "awayTeamId": 532,
+      "homeClub": "Levante",
+      "awayClub": "Valencia",
+      "homeScore": 0,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1391054,
+      "homeTeamId": 798,
+      "awayTeamId": 543,
+      "homeClub": "Mallorca",
+      "awayClub": "Real Betis",
+      "homeScore": 1,
+      "awayScore": 2
+    },
+    {
+      "fixtureId": 1391052,
+      "homeTeamId": 547,
+      "awayTeamId": 529,
+      "homeClub": "Girona",
+      "awayClub": "Barcelona",
+      "homeScore": 2,
+      "awayScore": 1
+    }
+  ]
+}

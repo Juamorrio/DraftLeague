@@ -10,7 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.DraftLeague.models.jwt.jwtAuthenticationFilter;
+import com.DraftLeague.config.jwt.jwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
 import org.springframework.web.cors.CorsConfiguration;

@@ -1,9 +1,12 @@
-package com.DraftLeague.controllers;
+﻿package com.DraftLeague.controllers;
 
 import com.DraftLeague.models.League.League;
+import com.DraftLeague.models.user.User;
 import com.DraftLeague.repositories.LeagueRepository;
 import com.DraftLeague.services.PlayerImportService;
+import com.DraftLeague.services.UserService;
 import com.DraftLeague.repositories.PlayerRepository;
+import com.DraftLeague.repositories.UserRepository;
 import com.DraftLeague.services.MarketService;
 import com.DraftLeague.services.MatchService;
 
@@ -14,15 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.DraftLeague.models.user.User;
-import com.DraftLeague.models.League.League;
-import com.DraftLeague.repositories.UserRepository;
-import com.DraftLeague.repositories.PlayerRepository;
-import com.DraftLeague.repositories.LeagueRepository;
-import com.DraftLeague.services.UserService;
-import com.DraftLeague.services.MatchService;
-import com.DraftLeague.services.MarketService;
-import com.DraftLeague.services.PlayerImportService;
 
 @RestController
 @RequestMapping("/api/v1/admin")
@@ -102,7 +96,7 @@ public class AdminController {
         
         String newRole = body.get("role");
         if (!"USER".equals(newRole) && !"ADMIN".equals(newRole)) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Rol invÃƒÆ’Ã‚Â¡lido"));
+            return ResponseEntity.badRequest().body(Map.of("error", "Rol invÃ¡lido"));
         }
 
         user.setRole(newRole);
@@ -173,7 +167,7 @@ public class AdminController {
             
             Throwable cause = e.getCause();
             if (cause != null) {
-                System.err.println("Causa raÃƒÆ’Ã‚Â­z: " + cause.getMessage());
+                System.err.println("Causa raÃ­z: " + cause.getMessage());
                 System.err.println("Tipo causa: " + cause.getClass().getName());
             }
             

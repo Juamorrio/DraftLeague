@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpcomingMatchDTO {
-    private Integer matchId;
+    private Integer fixtureId;
     private Integer homeTeamId;
     private Integer awayTeamId;
     private String matchDate;

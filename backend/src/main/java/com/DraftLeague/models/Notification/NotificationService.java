@@ -105,4 +105,37 @@ public class NotificationService {
     public List<Notification> getNewNotifications(Integer leagueId, Integer lastId) {
         return notificationRepository.findNewNotificationsByLeagueId(leagueId, lastId);
     }
+
+    @Transactional
+    public void createSellNotification(Integer leagueId, User seller, Player player, int price) {
+        League league = leagueRepository.findById(Long.valueOf(leagueId))
+            .orElseThrow(() -> new RuntimeException("Liga no encontrada"));
+
+        NotificationLeague notificationLeague = notificationLeagueRepository.findByLeagueId(leagueId)
+            .orElseGet(() -> {
+                NotificationLeague nl = new NotificationLeague();
+                nl.setLeague(league);
+                return notificationLeagueRepository.save(nl);
+            });
+
+        Notification notification = new Notification();
+        notification.setType(NotificationType.SELL);
+        notification.setCreatedAt(new Date());
+        notification.setNotificationLeague(notificationLeague);
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("sellerUsername", seller.getUsername());
+        payload.put("sellerId", seller.getId());
+        payload.put("playerName", player.getFullName());
+        payload.put("playerId", player.getId());
+        payload.put("price", price);
+
+        try {
+            notification.setPayload(objectMapper.writeValueAsString(payload));
+        } catch (Exception e) {
+            throw new RuntimeException("Error al crear payload de notificación", e);
+        }
+
+        notificationRepository.save(notification);
+    }
 }

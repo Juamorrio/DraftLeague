@@ -1,4 +1,5 @@
 package com.DraftLeague.models.Notification;
+import com.DraftLeague.models.Notification.NotificationLeague;
 
 import com.DraftLeague.models.League.League;
 
@@ -12,6 +13,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import com.DraftLeague.models.League.League;
+import com.DraftLeague.models.Notification.Notification;
 
 @Entity
 @Getter

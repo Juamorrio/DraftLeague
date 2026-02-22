@@ -12,5 +12,5 @@ public class TokenView {
     private Instant createdAt;
     private Instant expiresAt;
     private boolean revoked;
-    private String fingerprint; // últimos 6 chars del hash
+    private String fingerprint; // ÃƒÂºltimos 6 chars del hash
 }

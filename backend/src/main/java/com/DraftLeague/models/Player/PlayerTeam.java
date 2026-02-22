@@ -10,6 +10,9 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import com.DraftLeague.models.Player.Player;
+import com.DraftLeague.models.Team.Team;
+import com.DraftLeague.models.Player.PlayerTeam;
 
 @Getter
 @Setter

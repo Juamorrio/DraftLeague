@@ -17,6 +17,8 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import com.DraftLeague.models.user.User;
+import com.DraftLeague.models.Notification.Notification;
 
 @Getter
 @Setter

@@ -1,11 +1,14 @@
 package com.DraftLeague.services;
 
 import com.DraftLeague.models.Statistics.PlayerStatistic;
-import com.DraftLeague.models.Statistics.PlayerStatisticRepository;
+import com.DraftLeague.repositories.PlayerStatisticRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import com.DraftLeague.models.Player.Player;
+import com.DraftLeague.models.Statistics.PlayerStatistic;
+import com.DraftLeague.repositories.PlayerStatisticRepository;
 
 
 @Service

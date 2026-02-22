@@ -11,6 +11,9 @@ import lombok.Setter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import com.DraftLeague.models.Player.Player;
+import com.DraftLeague.models.Match.Match;
+import com.DraftLeague.models.Statistics.PlayerStatistic;
 
 @Getter
 @Setter

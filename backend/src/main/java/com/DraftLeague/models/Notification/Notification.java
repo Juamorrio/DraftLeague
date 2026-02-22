@@ -1,4 +1,6 @@
 package com.DraftLeague.models.Notification;
+import com.DraftLeague.models.Notification.NotificationType;
+import com.DraftLeague.models.Notification.NotificationLeague;
 import java.util.Date;
 
 import jakarta.persistence.*;
@@ -8,6 +10,7 @@ import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import com.DraftLeague.models.Notification.Notification;
 
 @Getter
 @Setter

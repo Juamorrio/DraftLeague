@@ -52,7 +52,7 @@ public class jwtAuthenticationFilter extends OncePerRequestFilter {
             } catch (ExpiredJwtException ex) {
                 // Token expirado: no autenticamos, permitimos que fluya para que se devuelva 401 y el frontend refresque.
             } catch (JwtException ex) {
-                // Cualquier otro problema con el token: ignorar autenticación.
+                // Cualquier otro problema con el token: ignorar autenticaciÃƒÂ³n.
             }
         }
 

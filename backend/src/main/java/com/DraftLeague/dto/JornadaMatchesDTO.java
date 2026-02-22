@@ -1,6 +1,6 @@
 package com.DraftLeague.dto;
 
-import com.DraftLeague.models.Statistics.dto.PlayerMatchSummaryDTO;
+import com.DraftLeague.dto.PlayerMatchSummaryDTO;
 import java.util.List;
 
 public class JornadaMatchesDTO {

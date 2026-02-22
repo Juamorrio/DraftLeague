@@ -19,6 +19,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.beans.factory.annotation.Value;
+import com.DraftLeague.models.user.User;
 
 @Service
 public class JwtService {
@@ -30,7 +31,7 @@ public class JwtService {
 
     public String getToken(User user) {
         HashMap<String,Object> claims = new HashMap<>();
-        // Claims básicos para lectura rápida en frontend
+        // Claims bÃƒÆ’Ã‚Â¡sicos para lectura rÃƒÆ’Ã‚Â¡pida en frontend
         claims.put("uid", user.getId());
         claims.put("displayName", user.getDisplayName());
         claims.put("email", user.getEmail());

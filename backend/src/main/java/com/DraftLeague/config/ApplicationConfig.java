@@ -12,9 +12,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.RestTemplate;
 
-import com.DraftLeague.models.user.UserRepository;
+import com.DraftLeague.repositories.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+import com.DraftLeague.models.user.User;
+import com.DraftLeague.repositories.UserRepository;
 
 @Configuration
 @RequiredArgsConstructor

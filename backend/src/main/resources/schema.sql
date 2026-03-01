@@ -1,33 +1,189 @@
+-- Tabla de clubs reales de futbol (La Liga)
+CREATE TABLE IF NOT EXISTS `football_club` (
+    `id` INT PRIMARY KEY,
+    `name` VARCHAR(255) NOT NULL,
+    `short_name` VARCHAR(50),
+    `tla` VARCHAR(10),
+    `crest` VARCHAR(500)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-ALTER TABLE `leagues` MODIFY COLUMN `chat_id` INT NULL;
-ALTER TABLE `leagues` MODIFY COLUMN `notification_league_id` INT NULL;
-ALTER TABLE `team` MODIFY COLUMN `player_team_id` INT NULL;
-ALTER TABLE player_team DROP COLUMN IF EXISTS player_league_id;
-DROP TABLE IF EXISTS `player_league`;
-ALTER TABLE `leagues` ADD COLUMN IF NOT EXISTS `created_by_user_id` INT NULL;
-ALTER TABLE `leagues` ADD CONSTRAINT `fk_league_created_by` FOREIGN KEY (`created_by_user_id`) REFERENCES `users`(`id`) ON DELETE SET NULL;
-ALTER TABLE `market_player` ADD COLUMN IF NOT EXISTS `bids` TEXT NULL;
+-- Tabla de partidos
+CREATE TABLE IF NOT EXISTS `matches` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `api_football_fixture_id` INT UNIQUE,
+    `round` INT,
+    `home_team_id` INT,
+    `away_team_id` INT,
+    `home_club` VARCHAR(255) NOT NULL,
+    `away_club` VARCHAR(255) NOT NULL,
+    `status` VARCHAR(50) NOT NULL,
+    `home_goals` INT DEFAULT 0,
+    `away_goals` INT DEFAULT 0,
+    `home_xg` DOUBLE,
+    `away_xg` DOUBLE,
+    `match_date` VARCHAR(255),
+    INDEX `idx_api_football_fixture_id` (`api_football_fixture_id`),
+    INDEX `idx_round` (`round`),
+    INDEX `idx_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Limpiar referencias huérfanas ANTES de cualquier operación
-DELETE FROM player_team WHERE player_id NOT IN (SELECT id FROM player);
-DELETE FROM market_player WHERE player_id NOT IN (SELECT id FROM player);
+-- Tabla base para estadisticas detalladas de jugadores por partido (JOINED inheritance)
+CREATE TABLE IF NOT EXISTS `player_statistic` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `player_id` VARCHAR(255) NOT NULL,
+    `match_id` INT NOT NULL,
+    `is_home_team` BOOLEAN NOT NULL,
+    `role` VARCHAR(50),
+    `player_type` VARCHAR(20) NOT NULL,
 
-ALTER TABLE player MODIFY COLUMN position VARCHAR(10) NOT NULL;
+    -- Common stats (all players)
+    `rating` DOUBLE,
+    `minutes_played` INT,
+    `accurate_passes` INT,
+    `total_passes` INT,
+    `duels_won` INT,
+    `duels_lost` INT,
+    `was_fouled` INT,
+    `fouls_committed` INT,
+    `yellow_cards` INT DEFAULT 0,
+    `red_cards` INT DEFAULT 0,
+    `total_fantasy_points` INT DEFAULT 0,
 
-UPDATE player SET position='POR' WHERE position IN ('GK');
-UPDATE player SET position='DEF' WHERE position IN ('LB','RB','CB');
-UPDATE player SET position='MID' WHERE position IN ('CM','CAM');
-UPDATE player SET position='DEL' WHERE position IN ('LW','RW','ST');
+    -- Offensive stats
+    `goals` INT,
+    `assists` INT,
+    `total_shots` INT,
+    `shots_on_target` INT,
+    `chances_created` INT,
+    `successful_dribbles` INT,
+    `total_dribbles` INT,
+    `dribbled_past` INT,
+    `offsides` INT DEFAULT 0,
 
-INSERT INTO player_statistic (minutes_played, goals, assists, shots, shots_on_target, fouls_drawn, fouls_committed, own_goals, yellow_cards, red_cards, rating_avg, total_fantasy_points)
-VALUES (0,0,0,0,0,0,0,0,0,0,0,0);
-INSERT INTO player_score (minutes_played, goals, assists, shots, shots_on_target, key_passes, dribbles_completed, fouls_drawn, fouls_committed, big_chances_created, duels_won, tackles, interceptions, clearances, blocks, own_goals, penalties_saved, saves, goals_conceded, clean_sheet, yellow_cards, red_cards)
-VALUES (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,false,0,0);
+    -- Passing stats
+    `accurate_crosses` INT,
+    `total_crosses` INT,
 
-ALTER TABLE player MODIFY COLUMN player_score_id INT NULL;
+    -- Defensive stats
+    `tackles` INT,
+    `blocks` INT,
+    `interceptions` INT,
 
--- Asegurar integridad referencial para evitar nuevos huérfanos
-ALTER TABLE player_team
-	ADD CONSTRAINT fk_playerteam_player FOREIGN KEY (player_id) REFERENCES player(id) ON DELETE CASCADE;
-ALTER TABLE market_player
-	ADD CONSTRAINT fk_marketplayer_player FOREIGN KEY (player_id) REFERENCES player(id) ON DELETE CASCADE;
+    -- Penalty stats
+    `penalties_won` INT,
+    `penalty_scored` INT DEFAULT 0,
+    `penalty_missed` INT DEFAULT 0,
+
+    -- Goalkeeper specific
+    `saves` INT,
+    `penalties_saved` INT,
+    `clean_sheet` BOOLEAN,
+    `goals_conceded` INT,
+
+    -- Metadata
+    `is_substitute` BOOLEAN DEFAULT FALSE,
+    `is_captain` BOOLEAN DEFAULT FALSE,
+    `shirt_number` INT,
+    `penalty_committed` INT DEFAULT 0,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    UNIQUE KEY `unique_player_match` (`player_id`, `match_id`),
+    INDEX `idx_player_id` (`player_id`),
+    INDEX `idx_match_id` (`match_id`),
+    INDEX `idx_player_type` (`player_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabla para porteros (JOINED inheritance)
+CREATE TABLE IF NOT EXISTS `goalkeeper_statistic` (
+    `id` INT PRIMARY KEY,
+    `saves` INT,
+    `goals_conceded` INT,
+    FOREIGN KEY (`id`) REFERENCES `player_statistic`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabla para defensas (JOINED inheritance)
+CREATE TABLE IF NOT EXISTS `defender_statistic` (
+    `id` INT PRIMARY KEY,
+    `penalties_won` INT,
+    `successful_dribbles` INT,
+    `total_dribbles` INT,
+    FOREIGN KEY (`id`) REFERENCES `player_statistic`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabla para centrocampistas (JOINED inheritance)
+CREATE TABLE IF NOT EXISTS `midfielder_statistic` (
+    `id` INT PRIMARY KEY,
+    `successful_dribbles` INT,
+    `total_dribbles` INT,
+    `penalties_won` INT,
+    FOREIGN KEY (`id`) REFERENCES `player_statistic`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabla para delanteros (JOINED inheritance)
+CREATE TABLE IF NOT EXISTS `forward_statistic` (
+    `id` INT PRIMARY KEY,
+    `successful_dribbles` INT,
+    `total_dribbles` INT,
+    `penalties_won` INT,
+    `offsides` INT,
+    FOREIGN KEY (`id`) REFERENCES `player_statistic`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabla de puntos por equipo y por jornada
+CREATE TABLE IF NOT EXISTS `team_gameweek_points` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `team_id` INT NOT NULL,
+    `gameweek` INT NOT NULL,
+    `points` INT DEFAULT 0,
+    `goalkeeper_points` INT DEFAULT 0,
+    `defender_points` INT DEFAULT 0,
+    `midfielder_points` INT DEFAULT 0,
+    `forward_points` INT DEFAULT 0,
+    `captain_id` VARCHAR(255),
+    `captain_bonus` INT DEFAULT 0,
+    `bench_points` INT DEFAULT 0,
+    `top_scorer_id` VARCHAR(255),
+    `top_scorer_points` INT,
+    `calculated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY `unique_team_gameweek` (`team_id`, `gameweek`),
+    FOREIGN KEY (`team_id`) REFERENCES `team`(`id`) ON DELETE CASCADE,
+    INDEX `idx_gameweek` (`gameweek`),
+    INDEX `idx_team_gameweek` (`team_id`, `gameweek`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabla para guardar snapshots inmutables de alineaciones por jornada
+CREATE TABLE IF NOT EXISTS `team_player_gameweek_points` (
+    -- Identificadores
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `team_id` INT NOT NULL,
+    `player_id` VARCHAR(255) NOT NULL,
+    `gameweek` INT NOT NULL,
+
+    -- Relaciones
+    FOREIGN KEY (`team_id`) REFERENCES `team`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`player_id`) REFERENCES `player`(`id`) ON DELETE CASCADE,
+
+    -- Datos del jugador en esta jornada
+    `player_name` VARCHAR(255) NOT NULL,
+    `position` VARCHAR(10) NOT NULL, -- POR, DEF, MID, DEL
+    `points` INT DEFAULT 0, -- Puntos obtenidos (ya con multiplicador de capitan)
+    `base_points` INT DEFAULT 0, -- Puntos base sin multiplicador
+    `minutes_played` INT DEFAULT 0,
+    `match_id` INT,
+
+    -- Estado en el equipo
+    `is_in_lineup` BOOLEAN DEFAULT 0,
+    `is_captain` BOOLEAN DEFAULT 0,
+    `is_benched` BOOLEAN DEFAULT 0,
+
+    -- Timestamps
+    `calculated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    -- Constraints
+    UNIQUE KEY `unique_team_player_gameweek` (`team_id`, `player_id`, `gameweek`),
+    INDEX `idx_gameweek` (`gameweek`),
+    INDEX `idx_team_gameweek` (`team_id`, `gameweek`),
+    INDEX `idx_player_gameweek` (`player_id`, `gameweek`),
+    INDEX `idx_team_player` (`team_id`, `player_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

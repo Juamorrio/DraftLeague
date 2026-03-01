@@ -120,7 +120,7 @@ public class TeamService {
         League league = leagueRepository.findById(leagueId.longValue())
             .orElseThrow(() -> new RuntimeException("Liga no encontrada"));
         
-        // Usar el mÃƒÆ’Ã‚Â©todo del repository que ya existe y hace el JOIN correctamente
+        // Usar el mÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©todo del repository que ya existe y hace el JOIN correctamente
         Team team = teamRepository.findByLeagueAndUser(league, user);
         
         if (team == null) {

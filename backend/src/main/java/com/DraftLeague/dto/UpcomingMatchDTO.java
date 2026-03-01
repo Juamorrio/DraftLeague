@@ -1,6 +1,5 @@
 package com.DraftLeague.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,10 +12,6 @@ public class UpcomingMatchDTO {
     private Integer homeTeamId;
     private Integer awayTeamId;
     private String matchDate;
-    
-    @JsonProperty("homeClub")
     private String homeTeamName;
-    
-    @JsonProperty("awayClub")
     private String awayTeamName;
 }

@@ -20,7 +20,6 @@ import java.util.List;
 import com.DraftLeague.models.Player.Player;
 import com.DraftLeague.models.Player.Position;
 import com.DraftLeague.repositories.PlayerRepository;
-import com.DraftLeague.services.PlayerImportService;
 
 @Service
 public class PlayerImportService {
@@ -56,7 +55,7 @@ public class PlayerImportService {
 						p.setFullName(dto.getFullName());
 						p.setPosition(mapPosition(dto.getPosition()));
 						p.setAvatarUrl(dto.getAvatarUrl());
-						p.setTeamId(dto.getTeamId());
+						p.setClubId(dto.getTeamId());
 						p.setMarketValue(dto.getMarketValue() != null ? dto.getMarketValue() : 100000);
 						updated++;
 					} else {
@@ -65,7 +64,7 @@ public class PlayerImportService {
 						p.setFullName(dto.getFullName());
 						p.setPosition(mapPosition(dto.getPosition()));
 						p.setAvatarUrl(dto.getAvatarUrl());
-						p.setTeamId(dto.getTeamId());
+						p.setClubId(dto.getTeamId());
 						p.setMarketValue(dto.getMarketValue() != null ? dto.getMarketValue() : 100000);
 						p.setActive(Boolean.TRUE);
 						p.setTotalPoints(0);
@@ -81,7 +80,6 @@ public class PlayerImportService {
 				}
 			}
 			
-			System.out.println("ImportaciÃƒÆ’Ã‚Â³n completada: " + created + " jugadores creados, " + updated + " jugadores actualizados");
 			return dtos.size();
 		}
 	}
@@ -138,7 +136,7 @@ public class PlayerImportService {
 		int exitCode = process.waitFor();
 		
 		if (exitCode != 0) {
-			throw new RuntimeException("Error al ejecutar script de Python. CÃƒÆ’Ã‚Â³digo de salida: " + exitCode + "\n" + output.toString());
+			throw new RuntimeException("Error al ejecutar script de Python. Código de salida: " + exitCode + "\n" + output.toString());
 		}
 		
 		return output.toString();

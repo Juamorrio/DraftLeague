@@ -105,10 +105,10 @@ public class MarketService {
         logger.info("Jugadores disponibles en mercado: {}", availablePlayers.size());
         
         if (availablePlayers.isEmpty()) {
-            logger.info("Mercado vacÃƒÆ’Ã‚Â­o, inicializando automÃƒÆ’Ã‚Â¡ticamente...");
+            logger.info("Mercado vacÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­o, inicializando automÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ticamente...");
             initializeMarket(leagueId);
             availablePlayers = marketPlayerRepository.findByLeagueAndStatus(league, StatusMarketPlayer.AVAILABLE);
-            logger.info("DespuÃƒÆ’Ã‚Â©s de inicializar, jugadores disponibles: {}", availablePlayers.size());
+            logger.info("DespuÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©s de inicializar, jugadores disponibles: {}", availablePlayers.size());
         }
         
         return availablePlayers;

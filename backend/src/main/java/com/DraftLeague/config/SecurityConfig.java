@@ -10,7 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.DraftLeague.config.jwt.jwtAuthenticationFilter;
+import com.DraftLeague.config.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
 import org.springframework.web.cors.CorsConfiguration;
@@ -22,7 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final jwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationProvider authProvider;
 
     @Bean
@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 .requestMatchers("/api/statistics/**").permitAll()
                 .requestMatchers("/api/v1/matches/**").permitAll()
+                .requestMatchers("/api/v1/players/load-image-team-player").permitAll()
                 .requestMatchers("/api/v1/fantasy-points/**").authenticated()
                 .requestMatchers("/api/ml/**").permitAll()
                 .requestMatchers("/api/v1/admin/**").authenticated()

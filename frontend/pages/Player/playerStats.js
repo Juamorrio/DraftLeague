@@ -5,8 +5,8 @@ import { useLeague } from '../../context/LeagueContext';
 import { authenticatedFetch } from '../../services/authService';
 import withAuth from '../../components/withAuth';
 
-function PlayerStats() {
-	const { selectedPlayer, setNavTarget, selectedLeague } = useLeague();
+function PlayerStats({ navigation }) {
+	const { selectedPlayer, selectedLeague } = useLeague();
 	const [playerPrediction, setPlayerPrediction] = useState(null);
 	const [loadingPrediction, setLoadingPrediction] = useState(false);
 	const [statistics, setStatistics] = useState([]);
@@ -145,7 +145,7 @@ function PlayerStats() {
 				</Text>
 				<TouchableOpacity
 					style={styles.backBtn}
-					onPress={() => setNavTarget('team')}
+					onPress={() => navigation.goBack()}
 				>
 					<Text style={styles.backBtnText}>Volver</Text>
 				</TouchableOpacity>

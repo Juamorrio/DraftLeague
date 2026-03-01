@@ -15,7 +15,7 @@ const Header = ({ userIcon, logoIcon, notificationIcon, settingsIcon, onLogout }
   return (
     <>
       <LinearGradient
-        colors={['#197319ff', '#013055']}
+        colors={['#197319', '#013055']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
         style={styles.headerContainer}
@@ -72,10 +72,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    pointerEvents: 'none',
   },
   logoIconTouchable: {
-    pointerEvents: 'auto',
   },
 });
 

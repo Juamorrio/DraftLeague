@@ -10,8 +10,8 @@ import { LineChartComponent } from '../../components/StatisticsChart';
 import withAuth from '../../components/withAuth';
 
 
-function Team({ userId: viewUserId = null, readOnly = false }) {
-	const { selectedLeague, viewUser, setViewUser, setNavTarget, setSelectedPlayer } = useLeague();
+function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
+	const { selectedLeague, viewUser, setViewUser, setSelectedPlayer } = useLeague();
 	const [players, setPlayers] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [assigned, setAssigned] = useState({});
@@ -350,7 +350,7 @@ function Team({ userId: viewUserId = null, readOnly = false }) {
 		if (!player?.id) return;
 		setSelectedPlayer(player);
 		setOptionsVisible(false);
-		setNavTarget('playerStats');
+		navigation.navigate('PlayerStats');
 	};
 
 	const buyout = async (pt) => {
@@ -774,7 +774,7 @@ function Team({ userId: viewUserId = null, readOnly = false }) {
 export default withAuth(Team);
 
 const styles = StyleSheet.create({
-	container: { flex: 1, backgroundColor: '#ffffffff' },
+	container: { flex: 1, backgroundColor: '#ffffff' },
 	topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, backgroundColor: '#1a5c3a' },
 	header: { color: '#fff', fontWeight: '800', fontSize: 18 },
 	saveBtn: { backgroundColor: '#4CAF50', paddingVertical: 8, paddingHorizontal: 16, borderRadius: 8 },
@@ -787,9 +787,9 @@ const styles = StyleSheet.create({
 	fieldContainer: { height: 500, position: 'relative' },
 	fieldImage: { width: '100%', height: '100%' },
 	spot: { position: 'absolute', transform: [{ translateX: -25 }, { translateY: -25 }], alignItems: 'center' },
-	spotBtn: { width: 50, height: 50, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.2)', borderWidth: 2, borderColor: '#000000ff', alignItems: 'center', justifyContent: 'center' },
-	plus: { color: '#000000ff', fontWeight: '800', fontSize: 20, lineHeight: 22 },
-	spotLabel: { marginTop: 4, color: '#000000ff', fontSize: 10, fontWeight: '700' },
+	spotBtn: { width: 50, height: 50, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.2)', borderWidth: 2, borderColor: '#000000', alignItems: 'center', justifyContent: 'center' },
+	plus: { color: '#000000', fontWeight: '800', fontSize: 20, lineHeight: 22 },
+	spotLabel: { marginTop: 4, color: '#000000', fontSize: 10, fontWeight: '700' },
 	playerCard: { minWidth: 140 },
 	modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', alignItems: 'center', justifyContent: 'center' },
 	modalCard: { width: '86%', maxHeight: '70%', backgroundColor: '#fff', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#222' },

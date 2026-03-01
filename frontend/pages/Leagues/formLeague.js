@@ -17,8 +17,6 @@ export default function FormLeague({
 	setMarketEndHour,
 	captainEnable,
 	setCaptainEnable,
-	wildCardsEnable,
-	setWildCardsEnable,
 	canSubmit,
 	loading,
 	error,
@@ -68,10 +66,6 @@ export default function FormLeague({
 								<Switch value={captainEnable} onValueChange={setCaptainEnable} />
 							</View>
 
-							<View style={styles.rowSwitch}>
-								<Text style={styles.label}>Wildcards habilitados</Text>
-								<Switch value={wildCardsEnable} onValueChange={setWildCardsEnable} />
-							</View>
 						</>
 					)}
 

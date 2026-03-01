@@ -1,4 +1,4 @@
-﻿package com.DraftLeague.controllers;
+package com.DraftLeague.controllers;
 
 import com.DraftLeague.models.League.League;
 import com.DraftLeague.models.user.User;
@@ -96,7 +96,7 @@ public class AdminController {
         
         String newRole = body.get("role");
         if (!"USER".equals(newRole) && !"ADMIN".equals(newRole)) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Rol invÃ¡lido"));
+            return ResponseEntity.badRequest().body(Map.of("error", "Rol invÃƒÂ¡lido"));
         }
 
         user.setRole(newRole);
@@ -167,7 +167,7 @@ public class AdminController {
             
             Throwable cause = e.getCause();
             if (cause != null) {
-                System.err.println("Causa raÃ­z: " + cause.getMessage());
+                System.err.println("Causa raÃƒÂ­z: " + cause.getMessage());
                 System.err.println("Tipo causa: " + cause.getClass().getName());
             }
             

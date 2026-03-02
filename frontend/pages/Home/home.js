@@ -40,12 +40,18 @@ export default function Home() {
 		}
 
 		if (selectedJornada) {
-			const upcomingData = allUpcomingData[selectedJornada] || [];
-        	const sortedUpcoming = [...upcomingData].sort((a, b) => {
-            if (!a.matchDate || !b.matchDate) return 0;
-            return new Date(a.matchDate) - new Date(b.matchDate);
-        });
-			setPlayedMatches(allPlayedData[selectedJornada] || []);
+			const played = allPlayedData[selectedJornada] || [];
+			const playedKeys = new Set(
+				played.map(m => `${m.homeTeamId}_${m.awayTeamId}`)
+			);
+			const upcomingData = (allUpcomingData[selectedJornada] || []).filter(
+				m => !playedKeys.has(`${m.homeTeamId}_${m.awayTeamId}`)
+			);
+			const sortedUpcoming = [...upcomingData].sort((a, b) => {
+				if (!a.matchDate || !b.matchDate) return 0;
+				return new Date(a.matchDate) - new Date(b.matchDate);
+			});
+			setPlayedMatches(played);
 			setUpcomingMatches(sortedUpcoming);
 		}
 	}, [allPlayedData, allUpcomingData, selectedJornada]);

@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import com.DraftLeague.models.Team.Team;
+import com.DraftLeague.models.Player.Position;
 
 /**
  * DTO for team prediction response

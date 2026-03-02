@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
 	},
 	footer: {
 		height: 72,
-		backgroundColor: '#156215ff',
+		backgroundColor: '#156215',
 		borderRadius: 18,
 		flexDirection: 'row',
 		alignItems: 'center',
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
 		opacity: 0.9,
 	},
 	labelActive: {
-		color: '#ffffffff',
+		color: '#ffffff',
 		fontWeight: '600',
 	},
 });

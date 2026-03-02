@@ -22,7 +22,7 @@ import JoinLeagueModal from './joinLeagueModal';
 
 const DRAFT_KEY = 'leagues.createDraft';
 
-function Leagues() {
+function Leagues({ navigation }) {
 	const [creating, setCreating] = useState(false);
 	const [editing, setEditing] = useState(false);
 	const [editingLeague, setEditingLeague] = useState(null);
@@ -36,7 +36,6 @@ function Leagues() {
 	const [initialBudget, setInitialBudget] = useState('100000000');
 	const [marketEndHour, setMarketEndHour] = useState('20:00');
 	const [captainEnable, setCaptainEnable] = useState(true);
-	const [wildCardsEnable, setWildCardsEnable] = useState(false);
 	const [leagues, setLeagues] = useState([]);
 	const [fieldErrors, setFieldErrors] = useState({});
 
@@ -48,7 +47,13 @@ function Leagues() {
 	const [assignedPlayers, setAssignedPlayers] = useState([]);
 	const [assignedLeagueName, setAssignedLeagueName] = useState('');
 
-	const { selectedLeague, setSelectedLeague } = useLeague();
+	const { selectedLeague, setSelectedLeague, viewUser } = useLeague();
+
+	useEffect(() => {
+		if (viewUser && navigation) {
+			navigation.navigate('Team');
+		}
+	}, [viewUser]);
 
 	useEffect(() => {
 		(async () => {
@@ -63,7 +68,6 @@ function Leagues() {
 					if (typeof d.initialBudget !== 'undefined') setInitialBudget(String(d.initialBudget));
 					if (typeof d.marketEndHour === 'string') setMarketEndHour(d.marketEndHour);
 					if (typeof d.captainEnable === 'boolean') setCaptainEnable(d.captainEnable);
-					if (typeof d.wildCardsEnable === 'boolean') setWildCardsEnable(d.wildCardsEnable);
 				}
 			} catch {}
 		})();
@@ -78,12 +82,11 @@ function Leagues() {
 				initialBudget: Number(initialBudget || 0),
 				marketEndHour: marketEndHour || '20:00',
 				captainEnable: !!captainEnable,
-				wildCardsEnable: !!wildCardsEnable,
 			};
 			try { await AsyncStorage.setItem(DRAFT_KEY, JSON.stringify(draft)); } catch {}
 		};
 		save();
-	}, [name, description, maxTeams, initialBudget, marketEndHour, captainEnable, wildCardsEnable]);
+	}, [name, description, maxTeams, initialBudget, marketEndHour, captainEnable]);
 
 	useEffect(() => {
 		getLeagues();
@@ -108,7 +111,6 @@ function Leagues() {
 		setInitialBudget('100000000');
 		setMarketEndHour('20:00');
 		setCaptainEnable(true);
-		setWildCardsEnable(false);
 		setError('');
 	};
 
@@ -138,7 +140,6 @@ function Leagues() {
 				initialBudget: parseInt(initialBudget || '0', 10),
 				marketEndHour: (marketEndHour || '20:00'), 
 				captainEnable: !!captainEnable,
-				wildCardsEnable: !!wildCardsEnable,
                 chat: null,
                 notificationLeague: null,
 			};
@@ -240,7 +241,6 @@ function Leagues() {
 		setInitialBudget(String(league.initialBudget || '100000000'));
 		setMarketEndHour(league.marketEndHour || '20:00');
 		setCaptainEnable(league.captainEnable ?? true);
-		setWildCardsEnable(league.wildCardsEnable ?? false);
 		setEditing(true);
 	};
 
@@ -381,8 +381,6 @@ function Leagues() {
 				setMarketEndHour={setMarketEndHour}
 				captainEnable={captainEnable}
 				setCaptainEnable={setCaptainEnable}
-				wildCardsEnable={wildCardsEnable}
-				setWildCardsEnable={setWildCardsEnable}
 				canSubmit={canSubmit}
 				loading={loading}
 				error={error}
@@ -405,8 +403,6 @@ function Leagues() {
 				setMarketEndHour={setMarketEndHour}
 				captainEnable={captainEnable}
 				setCaptainEnable={setCaptainEnable}
-				wildCardsEnable={wildCardsEnable}
-				setWildCardsEnable={setWildCardsEnable}
 				canSubmit={canSubmit}
 				loading={loading}
 				error={error}

@@ -12,7 +12,7 @@ import com.DraftLeague.models.Statistics.PlayerStatistic;
 public abstract class BasePlayerStatisticDTO {
 
     private Integer id;
-    private Integer playerId;
+    private String playerId;
     private Integer matchId;
     private Boolean isHomeTeam;
     private PlayerType playerType;

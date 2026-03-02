@@ -262,7 +262,7 @@ public class PlayerStatisticService {
 
     private void mapBaseFields(BasePlayerStatisticDTO dto, Map<String, Object> data) {
         dto.setId(getIntegerValue(data, "id"));
-        dto.setPlayerId(getIntegerValue(data, "player_id"));
+        dto.setPlayerId(getString(data, "player_id"));
         dto.setMatchId(getIntegerValue(data, "match_id"));
         dto.setIsHomeTeam(getBooleanValue(data, "is_home_team"));
 

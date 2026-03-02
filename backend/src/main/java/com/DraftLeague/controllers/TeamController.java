@@ -86,7 +86,7 @@ public class TeamController {
             Integer sellerUserId = (Integer) body.get("sellerUserId");
             String playerId = (String) body.get("playerId");
             if (sellerUserId == null || playerId == null) {
-                return ResponseEntity.badRequest().body(java.util.Map.of("error", "ParÃƒÆ’Ã‚Â¡metros invÃƒÆ’Ã‚Â¡lidos"));
+                return ResponseEntity.badRequest().body(java.util.Map.of("error", "ParÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡metros invÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡lidos"));
             }
             Team buyerTeam = teamService.buyoutPlayer(leagueId, sellerUserId, playerId);
             return ResponseEntity.ok(java.util.Map.of(

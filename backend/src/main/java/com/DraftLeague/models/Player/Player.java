@@ -1,6 +1,6 @@
 package com.DraftLeague.models.Player;
 
-import com.DraftLeague.models.Team.Team;
+import com.DraftLeague.models.Team.FootballClub;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
@@ -52,13 +52,13 @@ public class Player {
     private String avatarUrl;
 
     @NotNull
-    @Column(name = "team_id", nullable = false)
-    private Integer teamId;
+    @Column(name = "club_id", nullable = false)
+    private Integer clubId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "team_id", insertable = false, updatable = false)
+    @JoinColumn(name = "club_id", insertable = false, updatable = false)
     @JsonIgnore
-    private Team team;
+    private FootballClub club;
 
     public String getName() {
         return this.fullName;

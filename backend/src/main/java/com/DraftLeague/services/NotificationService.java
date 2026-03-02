@@ -55,7 +55,7 @@ public class NotificationService {
         notification.setCreatedAt(new Date());
         notification.setNotificationLeague(notificationLeague);
         
-        // Crear payload con informaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n del clausulazo
+        // Crear payload con informaciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n del clausulazo
         Map<String, Object> payload = new HashMap<>();
         payload.put("buyerUsername", buyer.getUsername());
         payload.put("buyerId", buyer.getId());
@@ -68,7 +68,7 @@ public class NotificationService {
         try {
             notification.setPayload(objectMapper.writeValueAsString(payload));
         } catch (Exception e) {
-            throw new RuntimeException("Error al crear payload de notificaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n", e);
+            throw new RuntimeException("Error al crear payload de notificaciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n", e);
         }
         
         notificationRepository.save(notification);
@@ -91,7 +91,7 @@ public class NotificationService {
         notification.setCreatedAt(new Date());
         notification.setNotificationLeague(notificationLeague);
         
-        // Crear payload con informaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de la compra
+        // Crear payload con informaciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n de la compra
         Map<String, Object> payload = new HashMap<>();
         payload.put("buyerUsername", buyer.getUsername());
         payload.put("buyerId", buyer.getId());
@@ -102,7 +102,7 @@ public class NotificationService {
         try {
             notification.setPayload(objectMapper.writeValueAsString(payload));
         } catch (Exception e) {
-            throw new RuntimeException("Error al crear payload de notificaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n", e);
+            throw new RuntimeException("Error al crear payload de notificaciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n", e);
         }
         
         notificationRepository.save(notification);
@@ -143,7 +143,7 @@ public class NotificationService {
         try {
             notification.setPayload(objectMapper.writeValueAsString(payload));
         } catch (Exception e) {
-            throw new RuntimeException("Error al crear payload de notificaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n", e);
+            throw new RuntimeException("Error al crear payload de notificaciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n", e);
         }
 
         notificationRepository.save(notification);

@@ -24,18 +24,21 @@ function Admin() {
 	const [activeTab, setActiveTab] = useState('stats');
 	const [editingUser, setEditingUser] = useState(null);
 	const [selectedRole, setSelectedRole] = useState('USER');
-	const [importingPlayers, setImportingPlayers] = useState(false);
 	const [syncingMatches, setSyncingMatches] = useState(false);
 	const [syncingPlayers, setSyncingPlayers] = useState(false);
 	const [selectedGameweek, setSelectedGameweek] = useState(1);
-	const [recalculating, setRecalculating] = useState(false);
-	const [updatingPlayerPoints, setUpdatingPlayerPoints] = useState(false);
+	// Gameweek state
+	const [gameweekStatus, setGameweekStatus] = useState({ activeGameweek: null, teamsLocked: false });
+	const [activatingGameweek, setActivatingGameweek] = useState(false);
+	const [calculatingPoints, setCalculatingPoints] = useState(false);
+	const [unlockingTeams, setUnlockingTeams] = useState(false);
 	const { loadMatches } = useMatches();
 
 	useEffect(() => {
 		loadStats();
 		loadUsers();
 		loadLeagues();
+		loadGameweekStatus();
 	}, []);
 
 	const loadStats = async () => {
@@ -176,39 +179,6 @@ function Admin() {
 		}
 	};
 
-	const importPlayers = async () => {
-		Alert.alert(
-			'Importar Jugadores',
-			'¿Estás seguro de importar/actualizar los jugadores desde el JSON? Esta operación puede tardar varios segundos.',
-			[
-				{ text: 'Cancelar', style: 'cancel' },
-				{
-					text: 'Importar',
-					onPress: async () => {
-						setImportingPlayers(true);
-						try {
-							const res = await authenticatedFetch('/api/v1/admin/import-players', {
-								method: 'POST'
-							});
-							if (res.ok) {
-								const message = await res.text();
-								Alert.alert('Éxito', message);
-								loadStats(); 
-							} else {
-								const error = await res.text();
-								Alert.alert('Error', error || 'No se pudieron importar los jugadores');
-							}
-						} catch (e) {
-							Alert.alert('Error', 'Error al importar jugadores: ' + e.message);
-						} finally {
-							setImportingPlayers(false);
-						}
-					}
-				}
-			]
-		);
-	};
-
 	const syncMatches = async () => {
 		Alert.alert(
 			'Sincronizar Partidos',
@@ -245,7 +215,7 @@ function Admin() {
 	const syncPlayers = async () => {
 		Alert.alert(
 			'Sincronizar Jugadores',
-			'¿Estás seguro de sincronizar los jugadores desde API-Football? Esta operación puede tardar varios segundos.',
+			'¿Sincronizar jugadores desde API-Football y añadir los nuevos a la base de datos? Esta operación puede tardar varios segundos.',
 			[
 				{ text: 'Cancelar', style: 'cancel' },
 				{
@@ -259,7 +229,7 @@ function Admin() {
 							if (res.ok) {
 								const data = await res.json();
 								Alert.alert('Éxito', data.message);
-								loadStats(); 
+								loadStats();
 							} else {
 								const error = await res.json();
 								Alert.alert('Error', error.error || 'No se pudieron sincronizar los jugadores');
@@ -275,31 +245,47 @@ function Admin() {
 		);
 	};
 
-	const recalculateGameweek = async () => {
+	const loadGameweekStatus = async () => {
+		try {
+			const res = await authenticatedFetch('/api/v1/admin/gameweek/status');
+			if (res.ok) {
+				const data = await res.json();
+				setGameweekStatus(data);
+			}
+		} catch (e) {
+			console.error('Error cargando estado de jornada:', e);
+		}
+	};
+
+	const activateGameweek = async () => {
 		Alert.alert(
-			'Recalcular Puntos',
-			`¿Recalcular los puntos de la jornada ${selectedGameweek} para todos los equipos?`,
+			'Activar Jornada',
+			`¿Activar la jornada ${selectedGameweek}? Los equipos quedarán BLOQUEADOS y los usuarios no podrán modificarlos.`,
 			[
 				{ text: 'Cancelar', style: 'cancel' },
 				{
-					text: 'Recalcular',
+					text: 'Activar y Bloquear',
+					style: 'destructive',
 					onPress: async () => {
-						setRecalculating(true);
+						setActivatingGameweek(true);
 						try {
-							const res = await authenticatedFetch(`/api/v1/fantasy-points/gameweek/${selectedGameweek}/recalculate`, {
-								method: 'POST'
+							const res = await authenticatedFetch('/api/v1/admin/gameweek/activate', {
+								method: 'POST',
+								headers: { 'Content-Type': 'application/json' },
+								body: JSON.stringify({ gameweek: selectedGameweek })
 							});
 							if (res.ok) {
 								const data = await res.json();
-								Alert.alert('Completado', data.message || `Puntos de la jornada ${selectedGameweek} recalculados correctamente`);
+								Alert.alert('✅ Jornada Activada', data.message);
+								await loadGameweekStatus();
 							} else {
 								const error = await res.json().catch(() => ({}));
-								Alert.alert('Error', error.error || 'No se pudieron recalcular los puntos');
+								Alert.alert('Error', error.error || 'No se pudo activar la jornada');
 							}
 						} catch (e) {
-							Alert.alert('Error', 'Error al recalcular puntos: ' + e.message);
+							Alert.alert('Error', 'Error al activar jornada: ' + e.message);
 						} finally {
-							setRecalculating(false);
+							setActivatingGameweek(false);
 						}
 					}
 				}
@@ -307,31 +293,68 @@ function Admin() {
 		);
 	};
 
-	const updateAllPlayerPoints = async () => {
+	const unlockTeams = async () => {
 		Alert.alert(
-			'Actualizar Puntos de Jugadores',
-			'¿Actualizar los puntos totales de TODOS los jugadores?',
+			'Desbloquear Equipos',
+			'¿Desbloquear los equipos? Los usuarios podrán volver a modificar sus plantillas.',
 			[
 				{ text: 'Cancelar', style: 'cancel' },
 				{
-					text: 'Actualizar',
+					text: 'Desbloquear',
 					onPress: async () => {
-						setUpdatingPlayerPoints(true);
+						setUnlockingTeams(true);
 						try {
-							const res = await authenticatedFetch('/api/v1/fantasy-points/players/update-all', {
+							const res = await authenticatedFetch('/api/v1/admin/gameweek/unlock', {
 								method: 'POST'
 							});
 							if (res.ok) {
 								const data = await res.json();
-								Alert.alert('Completado', data.message || 'Puntos de jugadores actualizados correctamente');
+								Alert.alert('✅ Equipos Desbloqueados', data.message);
+								await loadGameweekStatus();
 							} else {
 								const error = await res.json().catch(() => ({}));
-								Alert.alert('Error', error.error || 'No se pudieron actualizar los puntos');
+								Alert.alert('Error', error.error || 'No se pudo desbloquear');
 							}
 						} catch (e) {
-							Alert.alert('Error', 'Error al actualizar puntos: ' + e.message);
+							Alert.alert('Error', 'Error al desbloquear: ' + e.message);
 						} finally {
-							setUpdatingPlayerPoints(false);
+							setUnlockingTeams(false);
+						}
+					}
+				}
+			]
+		);
+	};
+
+	const calculateActiveGameweekPoints = async () => {
+		if (!gameweekStatus.activeGameweek) {
+			Alert.alert('Sin jornada activa', 'Activa una jornada primero.');
+			return;
+		}
+		Alert.alert(
+			'Calcular Puntos',
+			`¿Obtener estadísticas de la jornada ${gameweekStatus.activeGameweek} desde API-Football y calcular los puntos fantasy de todos los equipos? Esta operación puede tardar varios minutos.`,
+			[
+				{ text: 'Cancelar', style: 'cancel' },
+				{
+					text: 'Calcular',
+					onPress: async () => {
+						setCalculatingPoints(true);
+						try {
+							const res = await authenticatedFetch('/api/v1/admin/gameweek/calculate-points', {
+								method: 'POST'
+							});
+							if (res.ok) {
+								const data = await res.json();
+								Alert.alert('✅ Completado', data.message);
+							} else {
+								const error = await res.json().catch(() => ({}));
+								Alert.alert('Error', error.error || 'No se pudieron calcular los puntos');
+							}
+						} catch (e) {
+							Alert.alert('Error', 'Error al calcular puntos: ' + e.message);
+						} finally {
+							setCalculatingPoints(false);
 						}
 					}
 				}
@@ -397,7 +420,7 @@ function Admin() {
 				</TouchableOpacity>
 				<TouchableOpacity
 					style={[styles.tab, activeTab === 'points' && styles.tabActive]}
-					onPress={() => setActiveTab('points')}
+					onPress={() => { setActiveTab('points'); loadGameweekStatus(); }}
 				>
 					<Text style={[styles.tabText, activeTab === 'points' && styles.tabTextActive]}>
 						Puntos
@@ -498,8 +521,8 @@ function Admin() {
 						<View style={styles.playersContainer}>
 							<Text style={styles.playersTitle}>Sincronización de Jugadores</Text>
 							<Text style={styles.playersDescription}>
-								Sincroniza los jugadores desde API-Football API. Esta operación actualizará el archivo 
-								players_data.json con los datos más recientes de LaLiga.
+								Obtiene los planteles actuales de LaLiga desde API-Football y añade a la base de datos
+								los jugadores que aún no existen. Los jugadores ya registrados no se modifican.
 							</Text>
 							<TouchableOpacity
 								style={[styles.btnImport, syncingPlayers && styles.btnImportDisabled]}
@@ -513,28 +536,6 @@ function Admin() {
 									</>
 								) : (
 									<Text style={styles.btnImportText}>Sincronizar Jugadores</Text>
-								)}
-							</TouchableOpacity>
-
-							<View style={{ height: 20 }} />
-
-							<Text style={styles.playersTitle}>Importar a Base de Datos</Text>
-							<Text style={styles.playersDescription}>
-								Importa o actualiza jugadores desde el archivo JSON a la base de datos.
-								Si un jugador ya existe, se actualizará su información.
-							</Text>
-							<TouchableOpacity
-								style={[styles.btnImport, importingPlayers && styles.btnImportDisabled]}
-								onPress={importPlayers}
-								disabled={importingPlayers}
-							>
-								{importingPlayers ? (
-									<>
-										<ActivityIndicator size="small" color="#fff" />
-										<Text style={styles.btnImportText}>Importando...</Text>
-									</>
-								) : (
-									<Text style={styles.btnImportText}>Importar/Actualizar Jugadores</Text>
 								)}
 							</TouchableOpacity>
 							{stats && (
@@ -552,8 +553,8 @@ function Admin() {
 						<View style={styles.playersContainer}>
 							<Text style={styles.playersTitle}>Sincronización de Partidos</Text>
 							<Text style={styles.playersDescription}>
-								Sincroniza los partidos desde API-Football API. Esta operación actualizará los archivos 
-								matches.json y upcoming_matches.json con los datos más recientes de LaLiga.
+							Obtiene los resultados de LaLiga desde API-Football y añade a la base de datos
+							los partidos y jornadas que aún no estén registrados.
 							</Text>
 							<TouchableOpacity
 								style={[styles.btnImport, syncingMatches && styles.btnImportDisabled]}
@@ -575,18 +576,33 @@ function Admin() {
 
 				{activeTab === 'points' && (
 					<ScrollView contentContainerStyle={{ padding: 16 }}>
-						<View style={styles.playersContainer}>
-							<Text style={styles.playersTitle}>Recalcular Puntos por Jornada</Text>
-							<Text style={styles.playersDescription}>
-								Recalcula los puntos fantasy de todos los equipos para la jornada seleccionada.
-								Esto actualiza los puntos individuales por jugador, los puntos totales del equipo
-								y el ranking de la liga.
-							</Text>
 
-							<Text style={{ fontSize: 14, fontWeight: '600', color: '#333', marginBottom: 8 }}>
-								Seleccionar Jornada:
+						{/* ── Estado actual de la jornada ── */}
+						<View style={[styles.playersContainer, { marginBottom: 16 }]}>
+							<Text style={styles.playersTitle}>Estado de la Jornada</Text>
+
+							<View style={styles.statusRow}>
+								<View style={styles.statusItem}>
+									<Text style={styles.statusLabel}>Jornada activa</Text>
+									<Text style={styles.statusValue}>
+										{gameweekStatus.activeGameweek ?? '—'}
+									</Text>
+								</View>
+								<View style={[
+									styles.lockBadge,
+									gameweekStatus.teamsLocked ? styles.lockBadgeLocked : styles.lockBadgeOpen
+								]}>
+									<Text style={styles.lockBadgeText}>
+										{gameweekStatus.teamsLocked ? '🔒 EQUIPOS BLOQUEADOS' : '🔓 EQUIPOS ABIERTOS'}
+									</Text>
+								</View>
+							</View>
+
+							{/* Activar jornada */}
+							<Text style={{ fontSize: 14, fontWeight: '600', color: '#333', marginTop: 16, marginBottom: 8 }}>
+								Seleccionar jornada a activar:
 							</Text>
-							<View style={{ borderWidth: 1, borderColor: '#ddd', borderRadius: 8, marginBottom: 16, backgroundColor: '#fff' }}>
+							<View style={{ borderWidth: 1, borderColor: '#ddd', borderRadius: 8, marginBottom: 12, backgroundColor: '#fff' }}>
 								<Picker
 									selectedValue={selectedGameweek}
 									onValueChange={(value) => setSelectedGameweek(value)}
@@ -596,43 +612,65 @@ function Admin() {
 									))}
 								</Picker>
 							</View>
-
 							<TouchableOpacity
-								style={[styles.btnImport, recalculating && styles.btnImportDisabled]}
-								onPress={recalculateGameweek}
-								disabled={recalculating}
+								style={[styles.btnImport, { backgroundColor: '#b45309' }, activatingGameweek && styles.btnImportDisabled]}
+								onPress={activateGameweek}
+								disabled={activatingGameweek}
 							>
-								{recalculating ? (
+								{activatingGameweek ? (
 									<>
 										<ActivityIndicator size="small" color="#fff" />
-										<Text style={styles.btnImportText}>Recalculando...</Text>
+										<Text style={styles.btnImportText}>Activando...</Text>
 									</>
 								) : (
-									<Text style={styles.btnImportText}>Recalcular Jornada {selectedGameweek}</Text>
+									<Text style={styles.btnImportText}>🔒 Activar Jornada {selectedGameweek}</Text>
 								)}
 							</TouchableOpacity>
 
-							<View style={{ height: 24 }} />
+							<View style={{ height: 12 }} />
+						{/* Desbloquear equipos */}
+						<TouchableOpacity
+							style={[
+								styles.btnImport,
+								{ backgroundColor: '#2563eb' },
+								(!gameweekStatus.teamsLocked || unlockingTeams) && styles.btnImportDisabled
+							]}
+							onPress={unlockTeams}
+							disabled={!gameweekStatus.teamsLocked || unlockingTeams}
+						>
+							{unlockingTeams ? (
+								<>
+									<ActivityIndicator size="small" color="#fff" />
+									<Text style={styles.btnImportText}>Desbloqueando...</Text>
+								</>
+							) : (
+								<Text style={styles.btnImportText}>🔓 Desbloquear Equipos</Text>
+							)}
+						</TouchableOpacity>
 
-							<Text style={styles.playersTitle}>Actualizar Puntos de Jugadores</Text>
-							<Text style={styles.playersDescription}>
-								Recalcula los puntos totales acumulados de todos los jugadores
-								sumando los puntos fantasy de todas sus estadisticas de cada partido.
-							</Text>
+						<View style={{ height: 12 }} />
+							{/* Calcular puntos de la jornada activa */}
 							<TouchableOpacity
-								style={[styles.btnImport, updatingPlayerPoints && styles.btnImportDisabled, { backgroundColor: '#2563eb' }]}
-								onPress={updateAllPlayerPoints}
-								disabled={updatingPlayerPoints}
+								style={[
+									styles.btnImport,
+									{ backgroundColor: '#1a5c3a' },
+									(!gameweekStatus.activeGameweek || calculatingPoints) && styles.btnImportDisabled
+								]}
+								onPress={calculateActiveGameweekPoints}
+								disabled={!gameweekStatus.activeGameweek || calculatingPoints}
 							>
-								{updatingPlayerPoints ? (
+								{calculatingPoints ? (
 									<>
 										<ActivityIndicator size="small" color="#fff" />
-										<Text style={styles.btnImportText}>Actualizando...</Text>
+										<Text style={styles.btnImportText}>Calculando...</Text>
 									</>
 								) : (
-									<Text style={styles.btnImportText}>Actualizar Puntos de Jugadores</Text>
+									<Text style={styles.btnImportText}>
+										⚡ Calcular Puntos{gameweekStatus.activeGameweek ? ` — J${gameweekStatus.activeGameweek}` : ''}
+									</Text>
 								)}
 							</TouchableOpacity>
+
 						</View>
 					</ScrollView>
 				)}
@@ -882,5 +920,14 @@ const styles = StyleSheet.create({
 		alignItems: 'center'
 	},
 	playersStatLabel: { fontSize: 14, color: '#2e7d32', fontWeight: '600' },
-	playersStatValue: { fontSize: 24, fontWeight: '800', color: '#1b5e20' }
+	playersStatValue: { fontSize: 24, fontWeight: '800', color: '#1b5e20' },
+	// Gameweek status
+	statusRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
+	statusItem: {},
+	statusLabel: { fontSize: 12, color: '#666', fontWeight: '600', textTransform: 'uppercase' },
+	statusValue: { fontSize: 32, fontWeight: '800', color: '#1a5c3a' },
+	lockBadge: { paddingVertical: 6, paddingHorizontal: 12, borderRadius: 20 },
+	lockBadgeLocked: { backgroundColor: '#fef2f2', borderWidth: 1, borderColor: '#fca5a5' },
+	lockBadgeOpen: { backgroundColor: '#f0fdf4', borderWidth: 1, borderColor: '#86efac' },
+	lockBadgeText: { fontSize: 12, fontWeight: '700' },
 });

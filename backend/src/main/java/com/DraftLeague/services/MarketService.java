@@ -49,6 +49,7 @@ public class MarketService {
     private final TeamRepository teamRepository;
     private final PlayerTeamRepository playerTeamRepository;
     private final NotificationService notificationService;
+    private final GameweekStateService gameweekStateService;
 
     public MarketService(MarketPlayerRepository marketPlayerRepository, 
                         PlayerRepository playerRepository,
@@ -56,7 +57,8 @@ public class MarketService {
                         UserRepository userRepository,
                         TeamRepository teamRepository,
                         PlayerTeamRepository playerTeamRepository,
-                        NotificationService notificationService) {
+                        NotificationService notificationService,
+                        GameweekStateService gameweekStateService) {
         this.marketPlayerRepository = marketPlayerRepository;
         this.playerRepository = playerRepository;
         this.leagueRepository = leagueRepository;
@@ -64,6 +66,7 @@ public class MarketService {
         this.teamRepository = teamRepository;
         this.playerTeamRepository = playerTeamRepository;
         this.notificationService = notificationService;
+        this.gameweekStateService = gameweekStateService;
     }
 
     @Transactional
@@ -105,10 +108,10 @@ public class MarketService {
         logger.info("Jugadores disponibles en mercado: {}", availablePlayers.size());
         
         if (availablePlayers.isEmpty()) {
-            logger.info("Mercado vacÃƒÆ’Ã‚Â­o, inicializando automÃƒÆ’Ã‚Â¡ticamente...");
+            logger.info("Mercado vacÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­o, inicializando automÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ticamente...");
             initializeMarket(leagueId);
             availablePlayers = marketPlayerRepository.findByLeagueAndStatus(league, StatusMarketPlayer.AVAILABLE);
-            logger.info("DespuÃƒÆ’Ã‚Â©s de inicializar, jugadores disponibles: {}", availablePlayers.size());
+            logger.info("DespuÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©s de inicializar, jugadores disponibles: {}", availablePlayers.size());
         }
         
         return availablePlayers;
@@ -145,6 +148,10 @@ public class MarketService {
 
     @Transactional
     public void placeBid(Integer marketPlayerId, String username, Long bidAmount) {
+        if (gameweekStateService.isTeamsLocked()) {
+            throw new IllegalStateException("El mercado está cerrado durante la jornada activa");
+        }
+
         MarketPlayer marketPlayer = marketPlayerRepository.findById(marketPlayerId)
                 .orElseThrow(() -> new IllegalStateException("Jugador de mercado no encontrado"));
 

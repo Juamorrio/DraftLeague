@@ -7,7 +7,9 @@
       "homeClub": "Girona",
       "awayClub": "Rayo Vallecano",
       "homeScore": 1,
-      "awayScore": 3
+      "awayScore": 3,
+      "homeXg": 0.56,
+      "awayXg": 3.43
     },
     {
       "fixtureId": 1390828,
@@ -16,7 +18,9 @@
       "homeClub": "Villarreal",
       "awayClub": "Oviedo",
       "homeScore": 2,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 2.44,
+      "awayXg": 0.93
     },
     {
       "fixtureId": 1390825,
@@ -25,7 +29,9 @@
       "homeClub": "Mallorca",
       "awayClub": "Barcelona",
       "homeScore": 0,
-      "awayScore": 3
+      "awayScore": 3,
+      "homeXg": 0.21,
+      "awayXg": 2.13
     },
     {
       "fixtureId": 1390827,
@@ -34,7 +40,9 @@
       "homeClub": "Valencia",
       "awayClub": "Real Sociedad",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 2.04,
+      "awayXg": 0.81
     },
     {
       "fixtureId": 1390819,
@@ -43,7 +51,9 @@
       "homeClub": "Alaves",
       "awayClub": "Levante",
       "homeScore": 2,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.29,
+      "awayXg": 0.87
     },
     {
       "fixtureId": 1390821,
@@ -52,7 +62,9 @@
       "homeClub": "Celta Vigo",
       "awayClub": "Getafe",
       "homeScore": 0,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 0.73,
+      "awayXg": 1.43
     },
     {
       "fixtureId": 1390820,
@@ -61,7 +73,9 @@
       "homeClub": "Athletic Club",
       "awayClub": "Sevilla",
       "homeScore": 3,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 2.89,
+      "awayXg": 1.01
     },
     {
       "fixtureId": 1390823,
@@ -70,7 +84,9 @@
       "homeClub": "Espanyol",
       "awayClub": "Atletico Madrid",
       "homeScore": 2,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.26,
+      "awayXg": 1.1
     },
     {
       "fixtureId": 1390822,
@@ -79,7 +95,9 @@
       "homeClub": "Elche",
       "awayClub": "Real Betis",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.64,
+      "awayXg": 1.86
     },
     {
       "fixtureId": 1390826,
@@ -88,7 +106,9 @@
       "homeClub": "Real Madrid",
       "awayClub": "Osasuna",
       "homeScore": 1,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.64,
+      "awayXg": 0.36
     }
   ],
   "jornada_2": [
@@ -99,7 +119,9 @@
       "homeClub": "Real Betis",
       "awayClub": "Alaves",
       "homeScore": 1,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.95,
+      "awayXg": 1.12
     },
     {
       "fixtureId": 1390833,
@@ -108,7 +130,9 @@
       "homeClub": "Mallorca",
       "awayClub": "Celta Vigo",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.68,
+      "awayXg": 0.74
     },
     {
       "fixtureId": 1390830,
@@ -117,7 +141,9 @@
       "homeClub": "Atletico Madrid",
       "awayClub": "Elche",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.74,
+      "awayXg": 0.57
     },
     {
       "fixtureId": 1390832,
@@ -126,7 +152,9 @@
       "homeClub": "Levante",
       "awayClub": "Barcelona",
       "homeScore": 2,
-      "awayScore": 3
+      "awayScore": 3,
+      "homeXg": 2.14,
+      "awayXg": 1.93
     },
     {
       "fixtureId": 1390834,
@@ -135,7 +163,9 @@
       "homeClub": "Osasuna",
       "awayClub": "Valencia",
       "homeScore": 1,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 0.83,
+      "awayXg": 0.41
     },
     {
       "fixtureId": 1390838,
@@ -144,7 +174,9 @@
       "homeClub": "Villarreal",
       "awayClub": "Girona",
       "homeScore": 5,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 2.3,
+      "awayXg": 0.14
     },
     {
       "fixtureId": 1390835,
@@ -153,7 +185,9 @@
       "homeClub": "Real Sociedad",
       "awayClub": "Espanyol",
       "homeScore": 2,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 1.09,
+      "awayXg": 1.81
     },
     {
       "fixtureId": 1390836,
@@ -162,7 +196,9 @@
       "homeClub": "Oviedo",
       "awayClub": "Real Madrid",
       "homeScore": 0,
-      "awayScore": 3
+      "awayScore": 3,
+      "homeXg": 0.5,
+      "awayXg": 2.68
     },
     {
       "fixtureId": 1390829,
@@ -171,7 +207,9 @@
       "homeClub": "Athletic Club",
       "awayClub": "Rayo Vallecano",
       "homeScore": 1,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.51,
+      "awayXg": 0.29
     },
     {
       "fixtureId": 1390837,
@@ -180,7 +218,9 @@
       "homeClub": "Sevilla",
       "awayClub": "Getafe",
       "homeScore": 1,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 0.51,
+      "awayXg": 0.71
     }
   ],
   "jornada_6": [
@@ -191,7 +231,9 @@
       "homeClub": "Celta Vigo",
       "awayClub": "Real Betis",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.83,
+      "awayXg": 0.33
     },
     {
       "fixtureId": 1390869,
@@ -200,7 +242,9 @@
       "homeClub": "Athletic Club",
       "awayClub": "Girona",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.46,
+      "awayXg": 0.78
     },
     {
       "fixtureId": 1390872,
@@ -209,7 +253,9 @@
       "homeClub": "Espanyol",
       "awayClub": "Valencia",
       "homeScore": 2,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 2.57,
+      "awayXg": 0.74
     },
     {
       "fixtureId": 1390878,
@@ -218,7 +264,9 @@
       "homeClub": "Sevilla",
       "awayClub": "Villarreal",
       "homeScore": 1,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 0.97,
+      "awayXg": 1.95
     },
     {
       "fixtureId": 1390874,
@@ -227,7 +275,9 @@
       "homeClub": "Levante",
       "awayClub": "Real Madrid",
       "homeScore": 1,
-      "awayScore": 4
+      "awayScore": 4,
+      "homeXg": 1.6,
+      "awayXg": 3.94
     },
     {
       "fixtureId": 1390873,
@@ -236,7 +286,9 @@
       "homeClub": "Getafe",
       "awayClub": "Alaves",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.24,
+      "awayXg": 0.57
     },
     {
       "fixtureId": 1390870,
@@ -245,7 +297,9 @@
       "homeClub": "Atletico Madrid",
       "awayClub": "Rayo Vallecano",
       "homeScore": 3,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 3.61,
+      "awayXg": 1.6
     },
     {
       "fixtureId": 1390876,
@@ -254,7 +308,9 @@
       "homeClub": "Real Sociedad",
       "awayClub": "Mallorca",
       "homeScore": 1,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 2.76,
+      "awayXg": 0.76
     },
     {
       "fixtureId": 1390875,
@@ -263,7 +319,9 @@
       "homeClub": "Osasuna",
       "awayClub": "Elche",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.9,
+      "awayXg": 0.82
     },
     {
       "fixtureId": 1390877,
@@ -272,7 +330,9 @@
       "homeClub": "Oviedo",
       "awayClub": "Barcelona",
       "homeScore": 1,
-      "awayScore": 3
+      "awayScore": 3,
+      "homeXg": 1.04,
+      "awayXg": 2.07
     }
   ],
   "jornada_3": [
@@ -283,7 +343,9 @@
       "homeClub": "Elche",
       "awayClub": "Levante",
       "homeScore": 2,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.11,
+      "awayXg": 1.01
     },
     {
       "fixtureId": 1390848,
@@ -292,7 +354,9 @@
       "homeClub": "Valencia",
       "awayClub": "Getafe",
       "homeScore": 3,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.13,
+      "awayXg": 0.66
     },
     {
       "fixtureId": 1390839,
@@ -301,7 +365,9 @@
       "homeClub": "Alaves",
       "awayClub": "Atletico Madrid",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.92,
+      "awayXg": 1.09
     },
     {
       "fixtureId": 1390847,
@@ -310,7 +376,9 @@
       "homeClub": "Oviedo",
       "awayClub": "Real Sociedad",
       "homeScore": 1,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 0.45,
+      "awayXg": 1.1
     },
     {
       "fixtureId": 1390844,
@@ -319,7 +387,9 @@
       "homeClub": "Girona",
       "awayClub": "Sevilla",
       "homeScore": 0,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 2.12,
+      "awayXg": 1.26
     },
     {
       "fixtureId": 1390846,
@@ -328,7 +398,9 @@
       "homeClub": "Real Madrid",
       "awayClub": "Mallorca",
       "homeScore": 2,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.82,
+      "awayXg": 0.72
     },
     {
       "fixtureId": 1390841,
@@ -337,7 +409,9 @@
       "homeClub": "Celta Vigo",
       "awayClub": "Villarreal",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.96,
+      "awayXg": 1.04
     },
     {
       "fixtureId": 1390840,
@@ -346,7 +420,9 @@
       "homeClub": "Real Betis",
       "awayClub": "Athletic Club",
       "homeScore": 1,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 0.62,
+      "awayXg": 1.11
     },
     {
       "fixtureId": 1390843,
@@ -355,7 +431,9 @@
       "homeClub": "Espanyol",
       "awayClub": "Osasuna",
       "homeScore": 1,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.21,
+      "awayXg": 1.37
     },
     {
       "fixtureId": 1390845,
@@ -364,7 +442,9 @@
       "homeClub": "Rayo Vallecano",
       "awayClub": "Barcelona",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.85,
+      "awayXg": 1.83
     }
   ],
   "jornada_4": [
@@ -375,7 +455,9 @@
       "homeClub": "Sevilla",
       "awayClub": "Elche",
       "homeScore": 2,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 0.4,
+      "awayXg": 0.95
     },
     {
       "fixtureId": 1390854,
@@ -384,7 +466,9 @@
       "homeClub": "Getafe",
       "awayClub": "Oviedo",
       "homeScore": 2,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 0.75,
+      "awayXg": 0.46
     },
     {
       "fixtureId": 1390857,
@@ -393,7 +477,9 @@
       "homeClub": "Real Sociedad",
       "awayClub": "Real Madrid",
       "homeScore": 1,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 2.23,
+      "awayXg": 2.42
     },
     {
       "fixtureId": 1390849,
@@ -402,7 +488,9 @@
       "homeClub": "Athletic Club",
       "awayClub": "Alaves",
       "homeScore": 0,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.08,
+      "awayXg": 0.09
     },
     {
       "fixtureId": 1390850,
@@ -411,7 +499,9 @@
       "homeClub": "Atletico Madrid",
       "awayClub": "Villarreal",
       "homeScore": 2,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.01,
+      "awayXg": 1.03
     },
     {
       "fixtureId": 1390852,
@@ -420,7 +510,9 @@
       "homeClub": "Celta Vigo",
       "awayClub": "Girona",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 2.5,
+      "awayXg": 0.64
     },
     {
       "fixtureId": 1390855,
@@ -429,7 +521,9 @@
       "homeClub": "Levante",
       "awayClub": "Real Betis",
       "homeScore": 2,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 0.73,
+      "awayXg": 2.12
     },
     {
       "fixtureId": 1390856,
@@ -438,7 +532,9 @@
       "homeClub": "Osasuna",
       "awayClub": "Rayo Vallecano",
       "homeScore": 2,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.59,
+      "awayXg": 1.09
     },
     {
       "fixtureId": 1390851,
@@ -447,7 +543,9 @@
       "homeClub": "Barcelona",
       "awayClub": "Valencia",
       "homeScore": 6,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 4.02,
+      "awayXg": 0.18
     },
     {
       "fixtureId": 1390853,
@@ -456,7 +554,9 @@
       "homeClub": "Espanyol",
       "awayClub": "Mallorca",
       "homeScore": 3,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 2.46,
+      "awayXg": 2.23
     }
   ],
   "jornada_5": [
@@ -467,7 +567,9 @@
       "homeClub": "Real Betis",
       "awayClub": "Real Sociedad",
       "homeScore": 3,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 2.25,
+      "awayXg": 0.67
     },
     {
       "fixtureId": 1390863,
@@ -476,7 +578,9 @@
       "homeClub": "Girona",
       "awayClub": "Levante",
       "homeScore": 0,
-      "awayScore": 4
+      "awayScore": 4,
+      "homeXg": 0.5,
+      "awayXg": 2.88
     },
     {
       "fixtureId": 1390866,
@@ -485,7 +589,9 @@
       "homeClub": "Real Madrid",
       "awayClub": "Espanyol",
       "homeScore": 2,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.18,
+      "awayXg": 0.96
     },
     {
       "fixtureId": 1390868,
@@ -494,7 +600,9 @@
       "homeClub": "Villarreal",
       "awayClub": "Osasuna",
       "homeScore": 2,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 2.55,
+      "awayXg": 1.8
     },
     {
       "fixtureId": 1390859,
@@ -503,7 +611,9 @@
       "homeClub": "Alaves",
       "awayClub": "Sevilla",
       "homeScore": 1,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 0.95,
+      "awayXg": 0.48
     },
     {
       "fixtureId": 1390867,
@@ -512,7 +622,9 @@
       "homeClub": "Valencia",
       "awayClub": "Athletic Club",
       "homeScore": 2,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.88,
+      "awayXg": 0.49
     },
     {
       "fixtureId": 1390865,
@@ -521,7 +633,9 @@
       "homeClub": "Rayo Vallecano",
       "awayClub": "Celta Vigo",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.08,
+      "awayXg": 0.81
     },
     {
       "fixtureId": 1390864,
@@ -530,7 +644,9 @@
       "homeClub": "Mallorca",
       "awayClub": "Atletico Madrid",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.6,
+      "awayXg": 2.26
     },
     {
       "fixtureId": 1390862,
@@ -539,7 +655,9 @@
       "homeClub": "Elche",
       "awayClub": "Oviedo",
       "homeScore": 1,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.55,
+      "awayXg": 1.09
     },
     {
       "fixtureId": 1390860,
@@ -548,7 +666,9 @@
       "homeClub": "Barcelona",
       "awayClub": "Getafe",
       "homeScore": 3,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.97,
+      "awayXg": 0.27
     }
   ],
   "jornada_7": [
@@ -559,7 +679,9 @@
       "homeClub": "Girona",
       "awayClub": "Espanyol",
       "homeScore": 0,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.08,
+      "awayXg": 1.08
     },
     {
       "fixtureId": 1390883,
@@ -568,7 +690,9 @@
       "homeClub": "Getafe",
       "awayClub": "Levante",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.55,
+      "awayXg": 1.24
     },
     {
       "fixtureId": 1390879,
@@ -577,7 +701,9 @@
       "homeClub": "Atletico Madrid",
       "awayClub": "Real Madrid",
       "homeScore": 5,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 2.34,
+      "awayXg": 0.66
     },
     {
       "fixtureId": 1390885,
@@ -586,7 +712,9 @@
       "homeClub": "Mallorca",
       "awayClub": "Alaves",
       "homeScore": 1,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 0.74,
+      "awayXg": 0.78
     },
     {
       "fixtureId": 1390888,
@@ -595,7 +723,9 @@
       "homeClub": "Villarreal",
       "awayClub": "Athletic Club",
       "homeScore": 1,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.22,
+      "awayXg": 1.44
     },
     {
       "fixtureId": 1390886,
@@ -604,7 +734,9 @@
       "homeClub": "Rayo Vallecano",
       "awayClub": "Sevilla",
       "homeScore": 0,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.89,
+      "awayXg": 0.63
     },
     {
       "fixtureId": 1390882,
@@ -613,7 +745,9 @@
       "homeClub": "Elche",
       "awayClub": "Celta Vigo",
       "homeScore": 2,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 3.58,
+      "awayXg": 0.77
     },
     {
       "fixtureId": 1390880,
@@ -622,7 +756,9 @@
       "homeClub": "Barcelona",
       "awayClub": "Real Sociedad",
       "homeScore": 2,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 2.22,
+      "awayXg": 0.97
     },
     {
       "fixtureId": 1390881,
@@ -631,7 +767,9 @@
       "homeClub": "Real Betis",
       "awayClub": "Osasuna",
       "homeScore": 2,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 0.76,
+      "awayXg": 0.7
     },
     {
       "fixtureId": 1390887,
@@ -640,7 +778,9 @@
       "homeClub": "Valencia",
       "awayClub": "Oviedo",
       "homeScore": 1,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 1.51,
+      "awayXg": 0.77
     }
   ],
   "jornada_8": [
@@ -651,7 +791,9 @@
       "homeClub": "Osasuna",
       "awayClub": "Getafe",
       "homeScore": 2,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.43,
+      "awayXg": 0.82
     },
     {
       "fixtureId": 1390897,
@@ -660,7 +802,9 @@
       "homeClub": "Oviedo",
       "awayClub": "Levante",
       "homeScore": 0,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 1.31,
+      "awayXg": 1.94
     },
     {
       "fixtureId": 1390893,
@@ -669,7 +813,9 @@
       "homeClub": "Girona",
       "awayClub": "Valencia",
       "homeScore": 2,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.02,
+      "awayXg": 1.14
     },
     {
       "fixtureId": 1390890,
@@ -678,7 +824,9 @@
       "homeClub": "Athletic Club",
       "awayClub": "Mallorca",
       "homeScore": 2,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 2.05,
+      "awayXg": 0.32
     },
     {
       "fixtureId": 1390895,
@@ -687,7 +835,9 @@
       "homeClub": "Real Madrid",
       "awayClub": "Villarreal",
       "homeScore": 3,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 3.52,
+      "awayXg": 1.0
     },
     {
       "fixtureId": 1390889,
@@ -696,7 +846,9 @@
       "homeClub": "Alaves",
       "awayClub": "Elche",
       "homeScore": 3,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 2.42,
+      "awayXg": 0.38
     },
     {
       "fixtureId": 1390898,
@@ -705,7 +857,9 @@
       "homeClub": "Sevilla",
       "awayClub": "Barcelona",
       "homeScore": 4,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 2.8,
+      "awayXg": 2.25
     },
     {
       "fixtureId": 1390892,
@@ -714,7 +868,9 @@
       "homeClub": "Espanyol",
       "awayClub": "Real Betis",
       "homeScore": 1,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 2.28,
+      "awayXg": 1.4
     },
     {
       "fixtureId": 1390896,
@@ -723,7 +879,9 @@
       "homeClub": "Real Sociedad",
       "awayClub": "Rayo Vallecano",
       "homeScore": 0,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.79,
+      "awayXg": 0.8
     },
     {
       "fixtureId": 1390891,
@@ -732,7 +890,9 @@
       "homeClub": "Celta Vigo",
       "awayClub": "Atletico Madrid",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.92,
+      "awayXg": 0.3
     }
   ],
   "jornada_9": [
@@ -743,7 +903,9 @@
       "homeClub": "Oviedo",
       "awayClub": "Espanyol",
       "homeScore": 0,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 0.77,
+      "awayXg": 3.74
     },
     {
       "fixtureId": 1390907,
@@ -752,7 +914,9 @@
       "homeClub": "Sevilla",
       "awayClub": "Mallorca",
       "homeScore": 1,
-      "awayScore": 3
+      "awayScore": 3,
+      "homeXg": 1.26,
+      "awayXg": 1.85
     },
     {
       "fixtureId": 1390901,
@@ -761,7 +925,9 @@
       "homeClub": "Barcelona",
       "awayClub": "Girona",
       "homeScore": 2,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.61,
+      "awayXg": 1.55
     },
     {
       "fixtureId": 1390908,
@@ -770,7 +936,9 @@
       "homeClub": "Villarreal",
       "awayClub": "Real Betis",
       "homeScore": 2,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 0.66,
+      "awayXg": 1.18
     },
     {
       "fixtureId": 1390900,
@@ -779,7 +947,9 @@
       "homeClub": "Atletico Madrid",
       "awayClub": "Osasuna",
       "homeScore": 1,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 2.58,
+      "awayXg": 1.14
     },
     {
       "fixtureId": 1390903,
@@ -788,7 +958,9 @@
       "homeClub": "Elche",
       "awayClub": "Athletic Club",
       "homeScore": 0,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.08,
+      "awayXg": 0.25
     },
     {
       "fixtureId": 1390902,
@@ -797,7 +969,9 @@
       "homeClub": "Celta Vigo",
       "awayClub": "Real Sociedad",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.95,
+      "awayXg": 1.55
     },
     {
       "fixtureId": 1390905,
@@ -806,7 +980,9 @@
       "homeClub": "Levante",
       "awayClub": "Rayo Vallecano",
       "homeScore": 0,
-      "awayScore": 3
+      "awayScore": 3,
+      "homeXg": 0.91,
+      "awayXg": 1.55
     },
     {
       "fixtureId": 1390904,
@@ -815,7 +991,9 @@
       "homeClub": "Getafe",
       "awayClub": "Real Madrid",
       "homeScore": 0,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.52,
+      "awayXg": 2.3
     },
     {
       "fixtureId": 1390899,
@@ -824,7 +1002,9 @@
       "homeClub": "Alaves",
       "awayClub": "Valencia",
       "homeScore": 0,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 0.74,
+      "awayXg": 0.45
     }
   ],
   "jornada_10": [
@@ -835,7 +1015,9 @@
       "homeClub": "Real Sociedad",
       "awayClub": "Sevilla",
       "homeScore": 2,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.61,
+      "awayXg": 0.23
     },
     {
       "fixtureId": 1390912,
@@ -844,7 +1026,9 @@
       "homeClub": "Girona",
       "awayClub": "Oviedo",
       "homeScore": 3,
-      "awayScore": 3
+      "awayScore": 3,
+      "homeXg": 2.03,
+      "awayXg": 1.79
     },
     {
       "fixtureId": 1390911,
@@ -853,7 +1037,9 @@
       "homeClub": "Espanyol",
       "awayClub": "Elche",
       "homeScore": 1,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.93,
+      "awayXg": 0.86
     },
     {
       "fixtureId": 1390909,
@@ -862,7 +1048,9 @@
       "homeClub": "Athletic Club",
       "awayClub": "Getafe",
       "homeScore": 0,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.39,
+      "awayXg": 0.93
     },
     {
       "fixtureId": 1390918,
@@ -871,7 +1059,9 @@
       "homeClub": "Valencia",
       "awayClub": "Villarreal",
       "homeScore": 0,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 0.8,
+      "awayXg": 2.18
     },
     {
       "fixtureId": 1390913,
@@ -880,7 +1070,9 @@
       "homeClub": "Mallorca",
       "awayClub": "Levante",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.58,
+      "awayXg": 2.08
     },
     {
       "fixtureId": 1390916,
@@ -889,7 +1081,9 @@
       "homeClub": "Real Madrid",
       "awayClub": "Barcelona",
       "homeScore": 2,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 3.63,
+      "awayXg": 1.03
     },
     {
       "fixtureId": 1390914,
@@ -898,7 +1092,9 @@
       "homeClub": "Osasuna",
       "awayClub": "Celta Vigo",
       "homeScore": 2,
-      "awayScore": 3
+      "awayScore": 3,
+      "homeXg": 2.31,
+      "awayXg": 1.96
     },
     {
       "fixtureId": 1390915,
@@ -907,7 +1103,9 @@
       "homeClub": "Rayo Vallecano",
       "awayClub": "Alaves",
       "homeScore": 1,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.18,
+      "awayXg": 0.84
     },
     {
       "fixtureId": 1390910,
@@ -916,7 +1114,9 @@
       "homeClub": "Real Betis",
       "awayClub": "Atletico Madrid",
       "homeScore": 0,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 1.07,
+      "awayXg": 0.6
     }
   ],
   "jornada_11": [
@@ -927,7 +1127,9 @@
       "homeClub": "Getafe",
       "awayClub": "Girona",
       "homeScore": 2,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.88,
+      "awayXg": 1.43
     },
     {
       "fixtureId": 1390928,
@@ -936,7 +1138,9 @@
       "homeClub": "Villarreal",
       "awayClub": "Rayo Vallecano",
       "homeScore": 4,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 3.02,
+      "awayXg": 1.02
     },
     {
       "fixtureId": 1390920,
@@ -945,7 +1149,9 @@
       "homeClub": "Atletico Madrid",
       "awayClub": "Sevilla",
       "homeScore": 3,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 3.53,
+      "awayXg": 0.46
     },
     {
       "fixtureId": 1390926,
@@ -954,7 +1160,9 @@
       "homeClub": "Real Sociedad",
       "awayClub": "Athletic Club",
       "homeScore": 3,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 1.52,
+      "awayXg": 0.83
     },
     {
       "fixtureId": 1390925,
@@ -963,7 +1171,9 @@
       "homeClub": "Real Madrid",
       "awayClub": "Valencia",
       "homeScore": 4,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 2.71,
+      "awayXg": 0.49
     },
     {
       "fixtureId": 1390924,
@@ -972,7 +1182,9 @@
       "homeClub": "Levante",
       "awayClub": "Celta Vigo",
       "homeScore": 1,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 1.2,
+      "awayXg": 2.0
     },
     {
       "fixtureId": 1390919,
@@ -981,7 +1193,9 @@
       "homeClub": "Alaves",
       "awayClub": "Espanyol",
       "homeScore": 2,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.22,
+      "awayXg": 1.06
     },
     {
       "fixtureId": 1390921,
@@ -990,7 +1204,9 @@
       "homeClub": "Barcelona",
       "awayClub": "Elche",
       "homeScore": 3,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.88,
+      "awayXg": 0.66
     },
     {
       "fixtureId": 1390922,
@@ -999,7 +1215,9 @@
       "homeClub": "Real Betis",
       "awayClub": "Mallorca",
       "homeScore": 3,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 2.36,
+      "awayXg": 0.62
     },
     {
       "fixtureId": 1390927,
@@ -1008,7 +1226,9 @@
       "homeClub": "Oviedo",
       "awayClub": "Osasuna",
       "homeScore": 0,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 0.96,
+      "awayXg": 0.82
     }
   ],
   "jornada_12": [
@@ -1019,7 +1239,9 @@
       "homeClub": "Elche",
       "awayClub": "Real Sociedad",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.8,
+      "awayXg": 1.36
     },
     {
       "fixtureId": 1390934,
@@ -1028,7 +1250,9 @@
       "homeClub": "Girona",
       "awayClub": "Alaves",
       "homeScore": 1,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 0.85,
+      "awayXg": 1.84
     },
     {
       "fixtureId": 1390937,
@@ -1037,7 +1261,9 @@
       "homeClub": "Sevilla",
       "awayClub": "Osasuna",
       "homeScore": 1,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.7,
+      "awayXg": 1.29
     },
     {
       "fixtureId": 1390930,
@@ -1046,7 +1272,9 @@
       "homeClub": "Atletico Madrid",
       "awayClub": "Levante",
       "homeScore": 3,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 2.92,
+      "awayXg": 1.19
     },
     {
       "fixtureId": 1390933,
@@ -1055,7 +1283,9 @@
       "homeClub": "Espanyol",
       "awayClub": "Villarreal",
       "homeScore": 0,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 0.5,
+      "awayXg": 1.61
     },
     {
       "fixtureId": 1390929,
@@ -1064,7 +1294,9 @@
       "homeClub": "Athletic Club",
       "awayClub": "Oviedo",
       "homeScore": 1,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.7,
+      "awayXg": 0.22
     },
     {
       "fixtureId": 1390936,
@@ -1073,7 +1305,9 @@
       "homeClub": "Rayo Vallecano",
       "awayClub": "Real Madrid",
       "homeScore": 0,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.2,
+      "awayXg": 0.98
     },
     {
       "fixtureId": 1390938,
@@ -1082,7 +1316,9 @@
       "homeClub": "Valencia",
       "awayClub": "Real Betis",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.94,
+      "awayXg": 1.6
     },
     {
       "fixtureId": 1390935,
@@ -1091,7 +1327,9 @@
       "homeClub": "Mallorca",
       "awayClub": "Getafe",
       "homeScore": 1,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.11,
+      "awayXg": 0.75
     },
     {
       "fixtureId": 1390931,
@@ -1100,7 +1338,9 @@
       "homeClub": "Celta Vigo",
       "awayClub": "Barcelona",
       "homeScore": 2,
-      "awayScore": 4
+      "awayScore": 4,
+      "homeXg": 0.58,
+      "awayXg": 3.31
     }
   ],
   "jornada_13": [
@@ -1111,7 +1351,9 @@
       "homeClub": "Valencia",
       "awayClub": "Levante",
       "homeScore": 1,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.49,
+      "awayXg": 0.72
     },
     {
       "fixtureId": 1390939,
@@ -1120,7 +1362,9 @@
       "homeClub": "Alaves",
       "awayClub": "Celta Vigo",
       "homeScore": 0,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.67,
+      "awayXg": 1.37
     },
     {
       "fixtureId": 1390940,
@@ -1129,7 +1373,9 @@
       "homeClub": "Barcelona",
       "awayClub": "Athletic Club",
       "homeScore": 4,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 2.0,
+      "awayXg": 0.8
     },
     {
       "fixtureId": 1390945,
@@ -1138,7 +1384,9 @@
       "homeClub": "Osasuna",
       "awayClub": "Real Sociedad",
       "homeScore": 1,
-      "awayScore": 3
+      "awayScore": 3,
+      "homeXg": 1.34,
+      "awayXg": 1.63
     },
     {
       "fixtureId": 1390948,
@@ -1147,7 +1395,9 @@
       "homeClub": "Villarreal",
       "awayClub": "Mallorca",
       "homeScore": 2,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 2.23,
+      "awayXg": 1.02
     },
     {
       "fixtureId": 1390946,
@@ -1156,7 +1406,9 @@
       "homeClub": "Oviedo",
       "awayClub": "Rayo Vallecano",
       "homeScore": 0,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 0.43,
+      "awayXg": 1.74
     },
     {
       "fixtureId": 1390941,
@@ -1165,7 +1417,9 @@
       "homeClub": "Real Betis",
       "awayClub": "Girona",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.42,
+      "awayXg": 1.46
     },
     {
       "fixtureId": 1390944,
@@ -1174,7 +1428,9 @@
       "homeClub": "Getafe",
       "awayClub": "Atletico Madrid",
       "homeScore": 0,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.7,
+      "awayXg": 0.99
     },
     {
       "fixtureId": 1390942,
@@ -1183,7 +1439,9 @@
       "homeClub": "Elche",
       "awayClub": "Real Madrid",
       "homeScore": 2,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 1.44,
+      "awayXg": 3.49
     },
     {
       "fixtureId": 1390943,
@@ -1192,7 +1450,9 @@
       "homeClub": "Espanyol",
       "awayClub": "Sevilla",
       "homeScore": 2,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.09,
+      "awayXg": 1.82
     }
   ],
   "jornada_14": [
@@ -1203,7 +1463,9 @@
       "homeClub": "Getafe",
       "awayClub": "Elche",
       "homeScore": 1,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.06,
+      "awayXg": 0.51
     },
     {
       "fixtureId": 1390955,
@@ -1212,7 +1474,9 @@
       "homeClub": "Mallorca",
       "awayClub": "Osasuna",
       "homeScore": 2,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 1.49,
+      "awayXg": 1.09
     },
     {
       "fixtureId": 1390950,
@@ -1221,7 +1485,9 @@
       "homeClub": "Barcelona",
       "awayClub": "Alaves",
       "homeScore": 3,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 2.24,
+      "awayXg": 1.59
     },
     {
       "fixtureId": 1390954,
@@ -1230,7 +1496,9 @@
       "homeClub": "Levante",
       "awayClub": "Athletic Club",
       "homeScore": 0,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 1.3,
+      "awayXg": 2.9
     },
     {
       "fixtureId": 1390949,
@@ -1239,7 +1507,9 @@
       "homeClub": "Atletico Madrid",
       "awayClub": "Oviedo",
       "homeScore": 2,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.93,
+      "awayXg": 0.93
     },
     {
       "fixtureId": 1390957,
@@ -1248,7 +1518,9 @@
       "homeClub": "Real Sociedad",
       "awayClub": "Villarreal",
       "homeScore": 2,
-      "awayScore": 3
+      "awayScore": 3,
+      "homeXg": 1.02,
+      "awayXg": 1.51
     },
     {
       "fixtureId": 1390958,
@@ -1257,7 +1529,9 @@
       "homeClub": "Sevilla",
       "awayClub": "Real Betis",
       "homeScore": 0,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 0.35,
+      "awayXg": 1.1
     },
     {
       "fixtureId": 1390951,
@@ -1266,7 +1540,9 @@
       "homeClub": "Celta Vigo",
       "awayClub": "Espanyol",
       "homeScore": 0,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.63,
+      "awayXg": 0.38
     },
     {
       "fixtureId": 1390953,
@@ -1275,7 +1551,9 @@
       "homeClub": "Girona",
       "awayClub": "Real Madrid",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.79,
+      "awayXg": 2.53
     },
     {
       "fixtureId": 1390956,
@@ -1284,7 +1562,9 @@
       "homeClub": "Rayo Vallecano",
       "awayClub": "Valencia",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.57,
+      "awayXg": 0.63
     }
   ],
   "jornada_19": [
@@ -1295,7 +1575,9 @@
       "homeClub": "Barcelona",
       "awayClub": "Atletico Madrid",
       "homeScore": 3,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 3.6,
+      "awayXg": 0.98
     },
     {
       "fixtureId": 1390999,
@@ -1304,7 +1586,9 @@
       "homeClub": "Athletic Club",
       "awayClub": "Real Madrid",
       "homeScore": 0,
-      "awayScore": 3
+      "awayScore": 3,
+      "homeXg": 0.84,
+      "awayXg": 2.21
     },
     {
       "fixtureId": 1391001,
@@ -1313,7 +1597,9 @@
       "homeClub": "Getafe",
       "awayClub": "Real Sociedad",
       "homeScore": 1,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 0.24,
+      "awayXg": 1.11
     },
     {
       "fixtureId": 1391005,
@@ -1322,7 +1608,9 @@
       "homeClub": "Oviedo",
       "awayClub": "Real Betis",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.24,
+      "awayXg": 2.24
     },
     {
       "fixtureId": 1391008,
@@ -1331,7 +1619,9 @@
       "homeClub": "Villarreal",
       "awayClub": "Alaves",
       "homeScore": 3,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.5,
+      "awayXg": 0.94
     },
     {
       "fixtureId": 1391002,
@@ -1340,7 +1630,9 @@
       "homeClub": "Girona",
       "awayClub": "Osasuna",
       "homeScore": 1,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 0.65,
+      "awayXg": 1.41
     },
     {
       "fixtureId": 1391007,
@@ -1349,7 +1641,9 @@
       "homeClub": "Valencia",
       "awayClub": "Elche",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.96,
+      "awayXg": 0.16
     },
     {
       "fixtureId": 1391004,
@@ -1358,7 +1652,9 @@
       "homeClub": "Rayo Vallecano",
       "awayClub": "Mallorca",
       "homeScore": 2,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 2.37,
+      "awayXg": 0.72
     },
     {
       "fixtureId": 1391003,
@@ -1367,7 +1663,9 @@
       "homeClub": "Levante",
       "awayClub": "Espanyol",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.11,
+      "awayXg": 1.36
     },
     {
       "fixtureId": 1391006,
@@ -1376,7 +1674,9 @@
       "homeClub": "Sevilla",
       "awayClub": "Celta Vigo",
       "homeScore": 0,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.27,
+      "awayXg": 1.63
     }
   ],
   "jornada_15": [
@@ -1387,7 +1687,9 @@
       "homeClub": "Oviedo",
       "awayClub": "Mallorca",
       "homeScore": 0,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.18,
+      "awayXg": 0.68
     },
     {
       "fixtureId": 1390968,
@@ -1396,7 +1698,9 @@
       "homeClub": "Villarreal",
       "awayClub": "Getafe",
       "homeScore": 2,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 0.61,
+      "awayXg": 0.22
     },
     {
       "fixtureId": 1390959,
@@ -1405,7 +1709,9 @@
       "homeClub": "Alaves",
       "awayClub": "Real Sociedad",
       "homeScore": 1,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.39,
+      "awayXg": 1.17
     },
     {
       "fixtureId": 1390961,
@@ -1414,7 +1720,9 @@
       "homeClub": "Real Betis",
       "awayClub": "Barcelona",
       "homeScore": 3,
-      "awayScore": 5
+      "awayScore": 5,
+      "homeXg": 2.51,
+      "awayXg": 2.83
     },
     {
       "fixtureId": 1390960,
@@ -1423,7 +1731,9 @@
       "homeClub": "Athletic Club",
       "awayClub": "Atletico Madrid",
       "homeScore": 1,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.15,
+      "awayXg": 0.69
     },
     {
       "fixtureId": 1390962,
@@ -1432,7 +1742,9 @@
       "homeClub": "Elche",
       "awayClub": "Girona",
       "homeScore": 3,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 2.03,
+      "awayXg": 0.94
     },
     {
       "fixtureId": 1390967,
@@ -1441,7 +1753,9 @@
       "homeClub": "Valencia",
       "awayClub": "Sevilla",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.19,
+      "awayXg": 0.32
     },
     {
       "fixtureId": 1390963,
@@ -1450,7 +1764,9 @@
       "homeClub": "Espanyol",
       "awayClub": "Rayo Vallecano",
       "homeScore": 1,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.33,
+      "awayXg": 0.25
     },
     {
       "fixtureId": 1390965,
@@ -1459,7 +1775,9 @@
       "homeClub": "Real Madrid",
       "awayClub": "Celta Vigo",
       "homeScore": 0,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 2.46,
+      "awayXg": 1.55
     },
     {
       "fixtureId": 1390964,
@@ -1468,7 +1786,9 @@
       "homeClub": "Osasuna",
       "awayClub": "Levante",
       "homeScore": 2,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.05,
+      "awayXg": 0.48
     }
   ],
   "jornada_16": [
@@ -1479,7 +1799,9 @@
       "homeClub": "Real Sociedad",
       "awayClub": "Girona",
       "homeScore": 1,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 0.95,
+      "awayXg": 1.43
     },
     {
       "fixtureId": 1390970,
@@ -1488,7 +1810,9 @@
       "homeClub": "Atletico Madrid",
       "awayClub": "Valencia",
       "homeScore": 2,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.01,
+      "awayXg": 1.17
     },
     {
       "fixtureId": 1390975,
@@ -1497,7 +1821,9 @@
       "homeClub": "Mallorca",
       "awayClub": "Elche",
       "homeScore": 3,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 2.44,
+      "awayXg": 0.29
     },
     {
       "fixtureId": 1390971,
@@ -1506,7 +1832,9 @@
       "homeClub": "Barcelona",
       "awayClub": "Osasuna",
       "homeScore": 2,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 2.41,
+      "awayXg": 0.37
     },
     {
       "fixtureId": 1390973,
@@ -1515,7 +1843,9 @@
       "homeClub": "Getafe",
       "awayClub": "Espanyol",
       "homeScore": 0,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.26,
+      "awayXg": 0.5
     },
     {
       "fixtureId": 1390978,
@@ -1524,7 +1854,9 @@
       "homeClub": "Sevilla",
       "awayClub": "Oviedo",
       "homeScore": 4,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 2.03,
+      "awayXg": 0.64
     },
     {
       "fixtureId": 1390972,
@@ -1533,7 +1865,9 @@
       "homeClub": "Celta Vigo",
       "awayClub": "Athletic Club",
       "homeScore": 2,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.35,
+      "awayXg": 1.61
     },
     {
       "fixtureId": 1390969,
@@ -1542,7 +1876,9 @@
       "homeClub": "Alaves",
       "awayClub": "Real Madrid",
       "homeScore": 1,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 1.36,
+      "awayXg": 1.83
     },
     {
       "fixtureId": 1390976,
@@ -1551,7 +1887,9 @@
       "homeClub": "Rayo Vallecano",
       "awayClub": "Real Betis",
       "homeScore": 0,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.86,
+      "awayXg": 0.81
     },
     {
       "fixtureId": 1390974,
@@ -1560,7 +1898,9 @@
       "homeClub": "Levante",
       "awayClub": "Villarreal",
       "homeScore": 0,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.92,
+      "awayXg": 2.4
     }
   ],
   "jornada_17": [
@@ -1571,7 +1911,9 @@
       "homeClub": "Valencia",
       "awayClub": "Mallorca",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.42,
+      "awayXg": 0.19
     },
     {
       "fixtureId": 1390986,
@@ -1580,7 +1922,9 @@
       "homeClub": "Oviedo",
       "awayClub": "Celta Vigo",
       "homeScore": 0,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 0.63,
+      "awayXg": 0.66
     },
     {
       "fixtureId": 1390983,
@@ -1589,7 +1933,9 @@
       "homeClub": "Levante",
       "awayClub": "Real Sociedad",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.29,
+      "awayXg": 1.38
     },
     {
       "fixtureId": 1390984,
@@ -1598,7 +1944,9 @@
       "homeClub": "Osasuna",
       "awayClub": "Alaves",
       "homeScore": 3,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 2.21,
+      "awayXg": 0.57
     },
     {
       "fixtureId": 1390985,
@@ -1607,7 +1955,9 @@
       "homeClub": "Real Madrid",
       "awayClub": "Sevilla",
       "homeScore": 2,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 2.33,
+      "awayXg": 1.56
     },
     {
       "fixtureId": 1390982,
@@ -1616,7 +1966,9 @@
       "homeClub": "Girona",
       "awayClub": "Atletico Madrid",
       "homeScore": 0,
-      "awayScore": 3
+      "awayScore": 3,
+      "homeXg": 1.06,
+      "awayXg": 0.9
     },
     {
       "fixtureId": 1390988,
@@ -1625,7 +1977,9 @@
       "homeClub": "Villarreal",
       "awayClub": "Barcelona",
       "homeScore": 0,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 1.66,
+      "awayXg": 2.72
     },
     {
       "fixtureId": 1390981,
@@ -1634,7 +1988,9 @@
       "homeClub": "Elche",
       "awayClub": "Rayo Vallecano",
       "homeScore": 4,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 2.41,
+      "awayXg": 0.95
     },
     {
       "fixtureId": 1390980,
@@ -1643,7 +1999,9 @@
       "homeClub": "Real Betis",
       "awayClub": "Getafe",
       "homeScore": 4,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 3.3,
+      "awayXg": 1.42
     },
     {
       "fixtureId": 1390979,
@@ -1652,7 +2010,9 @@
       "homeClub": "Athletic Club",
       "awayClub": "Espanyol",
       "homeScore": 1,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 1.59,
+      "awayXg": 0.9
     }
   ],
   "jornada_18": [
@@ -1663,7 +2023,9 @@
       "homeClub": "Rayo Vallecano",
       "awayClub": "Getafe",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.89,
+      "awayXg": 0.77
     },
     {
       "fixtureId": 1390990,
@@ -1672,7 +2034,9 @@
       "homeClub": "Celta Vigo",
       "awayClub": "Valencia",
       "homeScore": 4,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 2.7,
+      "awayXg": 1.94
     },
     {
       "fixtureId": 1390994,
@@ -1681,7 +2045,9 @@
       "homeClub": "Osasuna",
       "awayClub": "Athletic Club",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.67,
+      "awayXg": 1.46
     },
     {
       "fixtureId": 1390991,
@@ -1690,7 +2056,9 @@
       "homeClub": "Elche",
       "awayClub": "Villarreal",
       "homeScore": 1,
-      "awayScore": 3
+      "awayScore": 3,
+      "homeXg": 1.31,
+      "awayXg": 1.52
     },
     {
       "fixtureId": 1390992,
@@ -1699,7 +2067,9 @@
       "homeClub": "Espanyol",
       "awayClub": "Barcelona",
       "homeScore": 0,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 1.43,
+      "awayXg": 1.67
     },
     {
       "fixtureId": 1390998,
@@ -1708,7 +2078,9 @@
       "homeClub": "Sevilla",
       "awayClub": "Levante",
       "homeScore": 0,
-      "awayScore": 3
+      "awayScore": 3,
+      "homeXg": 1.7,
+      "awayXg": 1.03
     },
     {
       "fixtureId": 1390996,
@@ -1717,7 +2089,9 @@
       "homeClub": "Real Madrid",
       "awayClub": "Real Betis",
       "homeScore": 5,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 2.94,
+      "awayXg": 1.06
     },
     {
       "fixtureId": 1390989,
@@ -1726,7 +2100,9 @@
       "homeClub": "Alaves",
       "awayClub": "Oviedo",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.72,
+      "awayXg": 2.44
     },
     {
       "fixtureId": 1390993,
@@ -1735,7 +2111,9 @@
       "homeClub": "Mallorca",
       "awayClub": "Girona",
       "homeScore": 1,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 1.26,
+      "awayXg": 1.51
     },
     {
       "fixtureId": 1390997,
@@ -1744,7 +2122,9 @@
       "homeClub": "Real Sociedad",
       "awayClub": "Atletico Madrid",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.73,
+      "awayXg": 1.25
     }
   ],
   "jornada_20": [
@@ -1755,7 +2135,9 @@
       "homeClub": "Espanyol",
       "awayClub": "Girona",
       "homeScore": 0,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 1.07,
+      "awayXg": 1.95
     },
     {
       "fixtureId": 1391017,
@@ -1764,7 +2146,9 @@
       "homeClub": "Real Madrid",
       "awayClub": "Levante",
       "homeScore": 2,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 2.88,
+      "awayXg": 0.8
     },
     {
       "fixtureId": 1391015,
@@ -1773,7 +2157,9 @@
       "homeClub": "Mallorca",
       "awayClub": "Athletic Club",
       "homeScore": 3,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 2.79,
+      "awayXg": 2.11
     },
     {
       "fixtureId": 1391016,
@@ -1782,7 +2168,9 @@
       "homeClub": "Osasuna",
       "awayClub": "Oviedo",
       "homeScore": 3,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 1.37,
+      "awayXg": 1.34
     },
     {
       "fixtureId": 1391010,
@@ -1791,7 +2179,9 @@
       "homeClub": "Real Betis",
       "awayClub": "Villarreal",
       "homeScore": 2,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.22,
+      "awayXg": 0.99
     },
     {
       "fixtureId": 1391014,
@@ -1800,7 +2190,9 @@
       "homeClub": "Getafe",
       "awayClub": "Valencia",
       "homeScore": 0,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.62,
+      "awayXg": 0.89
     },
     {
       "fixtureId": 1391009,
@@ -1809,7 +2201,9 @@
       "homeClub": "Atletico Madrid",
       "awayClub": "Alaves",
       "homeScore": 1,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.78,
+      "awayXg": 0.85
     },
     {
       "fixtureId": 1391011,
@@ -1818,7 +2212,9 @@
       "homeClub": "Celta Vigo",
       "awayClub": "Rayo Vallecano",
       "homeScore": 3,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.87,
+      "awayXg": 1.11
     },
     {
       "fixtureId": 1391018,
@@ -1827,7 +2223,9 @@
       "homeClub": "Real Sociedad",
       "awayClub": "Barcelona",
       "homeScore": 2,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.01,
+      "awayXg": 3.68
     },
     {
       "fixtureId": 1391012,
@@ -1836,7 +2234,9 @@
       "homeClub": "Elche",
       "awayClub": "Sevilla",
       "homeScore": 2,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 1.54,
+      "awayXg": 3.0
     }
   ],
   "jornada_21": [
@@ -1847,7 +2247,9 @@
       "homeClub": "Levante",
       "awayClub": "Elche",
       "homeScore": 3,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 2.61,
+      "awayXg": 0.65
     },
     {
       "fixtureId": 1391024,
@@ -1856,7 +2258,9 @@
       "homeClub": "Rayo Vallecano",
       "awayClub": "Osasuna",
       "homeScore": 1,
-      "awayScore": 3
+      "awayScore": 3,
+      "homeXg": 0.77,
+      "awayXg": 1.22
     },
     {
       "fixtureId": 1391027,
@@ -1865,7 +2269,9 @@
       "homeClub": "Valencia",
       "awayClub": "Espanyol",
       "homeScore": 3,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 2.55,
+      "awayXg": 1.35
     },
     {
       "fixtureId": 1391026,
@@ -1874,7 +2280,9 @@
       "homeClub": "Sevilla",
       "awayClub": "Athletic Club",
       "homeScore": 2,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 2.07,
+      "awayXg": 2.14
     },
     {
       "fixtureId": 1391028,
@@ -1883,7 +2291,9 @@
       "homeClub": "Villarreal",
       "awayClub": "Real Madrid",
       "homeScore": 0,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 0.58,
+      "awayXg": 1.58
     },
     {
       "fixtureId": 1391020,
@@ -1892,7 +2302,9 @@
       "homeClub": "Atletico Madrid",
       "awayClub": "Mallorca",
       "homeScore": 3,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.48,
+      "awayXg": 0.46
     },
     {
       "fixtureId": 1391021,
@@ -1901,7 +2313,9 @@
       "homeClub": "Barcelona",
       "awayClub": "Oviedo",
       "homeScore": 3,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 2.09,
+      "awayXg": 0.48
     },
     {
       "fixtureId": 1391025,
@@ -1910,7 +2324,9 @@
       "homeClub": "Real Sociedad",
       "awayClub": "Celta Vigo",
       "homeScore": 3,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.61,
+      "awayXg": 1.6
     },
     {
       "fixtureId": 1391019,
@@ -1919,7 +2335,9 @@
       "homeClub": "Alaves",
       "awayClub": "Real Betis",
       "homeScore": 2,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.27,
+      "awayXg": 1.38
     },
     {
       "fixtureId": 1391022,
@@ -1928,7 +2346,9 @@
       "homeClub": "Girona",
       "awayClub": "Getafe",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.75,
+      "awayXg": 0.8
     }
   ],
   "jornada_22": [
@@ -1939,7 +2359,9 @@
       "homeClub": "Espanyol",
       "awayClub": "Alaves",
       "homeScore": 1,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 0.69,
+      "awayXg": 1.24
     },
     {
       "fixtureId": 1391038,
@@ -1948,7 +2370,9 @@
       "homeClub": "Oviedo",
       "awayClub": "Girona",
       "homeScore": 1,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.4,
+      "awayXg": 0.65
     },
     {
       "fixtureId": 1391036,
@@ -1957,7 +2381,9 @@
       "homeClub": "Osasuna",
       "awayClub": "Villarreal",
       "homeScore": 2,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 1.37,
+      "awayXg": 0.92
     },
     {
       "fixtureId": 1391034,
@@ -1966,7 +2392,9 @@
       "homeClub": "Levante",
       "awayClub": "Atletico Madrid",
       "homeScore": 0,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 0.37,
+      "awayXg": 0.86
     },
     {
       "fixtureId": 1391031,
@@ -1975,7 +2403,9 @@
       "homeClub": "Elche",
       "awayClub": "Barcelona",
       "homeScore": 1,
-      "awayScore": 3
+      "awayScore": 3,
+      "homeXg": 1.0,
+      "awayXg": 6.44
     },
     {
       "fixtureId": 1391037,
@@ -1984,7 +2414,9 @@
       "homeClub": "Real Madrid",
       "awayClub": "Rayo Vallecano",
       "homeScore": 2,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 2.21,
+      "awayXg": 1.03
     },
     {
       "fixtureId": 1391030,
@@ -1993,7 +2425,9 @@
       "homeClub": "Real Betis",
       "awayClub": "Valencia",
       "homeScore": 2,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.87,
+      "awayXg": 1.9
     },
     {
       "fixtureId": 1391033,
@@ -2002,7 +2436,9 @@
       "homeClub": "Getafe",
       "awayClub": "Celta Vigo",
       "homeScore": 0,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 0.35,
+      "awayXg": 0.18
     },
     {
       "fixtureId": 1391029,
@@ -2011,7 +2447,9 @@
       "homeClub": "Athletic Club",
       "awayClub": "Real Sociedad",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.97,
+      "awayXg": 1.66
     },
     {
       "fixtureId": 1391035,
@@ -2020,7 +2458,9 @@
       "homeClub": "Mallorca",
       "awayClub": "Sevilla",
       "homeScore": 4,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 2.63,
+      "awayXg": 1.13
     }
   ],
   "jornada_23": [
@@ -2031,7 +2471,9 @@
       "homeClub": "Celta Vigo",
       "awayClub": "Osasuna",
       "homeScore": 1,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 2.16,
+      "awayXg": 0.66
     },
     {
       "fixtureId": 1391042,
@@ -2040,7 +2482,9 @@
       "homeClub": "Barcelona",
       "awayClub": "Mallorca",
       "homeScore": 3,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 2.63,
+      "awayXg": 0.8
     },
     {
       "fixtureId": 1391045,
@@ -2049,7 +2493,9 @@
       "homeClub": "Real Sociedad",
       "awayClub": "Elche",
       "homeScore": 3,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 2.63,
+      "awayXg": 1.27
     },
     {
       "fixtureId": 1391039,
@@ -2058,7 +2504,9 @@
       "homeClub": "Alaves",
       "awayClub": "Getafe",
       "homeScore": 0,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 2.02,
+      "awayXg": 1.91
     },
     {
       "fixtureId": 1391040,
@@ -2067,7 +2515,9 @@
       "homeClub": "Athletic Club",
       "awayClub": "Levante",
       "homeScore": 4,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 2.08,
+      "awayXg": 0.51
     },
     {
       "fixtureId": 1391046,
@@ -2076,7 +2526,9 @@
       "homeClub": "Sevilla",
       "awayClub": "Girona",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.78,
+      "awayXg": 2.56
     },
     {
       "fixtureId": 1391041,
@@ -2085,7 +2537,9 @@
       "homeClub": "Atletico Madrid",
       "awayClub": "Real Betis",
       "homeScore": 0,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.67,
+      "awayXg": 0.7
     },
     {
       "fixtureId": 1391047,
@@ -2094,7 +2548,9 @@
       "homeClub": "Valencia",
       "awayClub": "Real Madrid",
       "homeScore": 0,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 0.44,
+      "awayXg": 0.96
     },
     {
       "fixtureId": 1391048,
@@ -2103,7 +2559,9 @@
       "homeClub": "Villarreal",
       "awayClub": "Espanyol",
       "homeScore": 4,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.76,
+      "awayXg": 0.43
     }
   ],
   "jornada_24": [
@@ -2114,7 +2572,9 @@
       "homeClub": "Elche",
       "awayClub": "Osasuna",
       "homeScore": 0,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.7,
+      "awayXg": 0.77
     },
     {
       "fixtureId": 1391050,
@@ -2123,7 +2583,9 @@
       "homeClub": "Espanyol",
       "awayClub": "Celta Vigo",
       "homeScore": 2,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 0.77,
+      "awayXg": 2.36
     },
     {
       "fixtureId": 1391051,
@@ -2132,7 +2594,9 @@
       "homeClub": "Getafe",
       "awayClub": "Villarreal",
       "homeScore": 2,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 1.48,
+      "awayXg": 0.6
     },
     {
       "fixtureId": 1391058,
@@ -2141,7 +2605,9 @@
       "homeClub": "Sevilla",
       "awayClub": "Alaves",
       "homeScore": 1,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 0.27,
+      "awayXg": 1.13
     },
     {
       "fixtureId": 1391056,
@@ -2150,7 +2616,9 @@
       "homeClub": "Real Madrid",
       "awayClub": "Real Sociedad",
       "homeScore": 4,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 3.12,
+      "awayXg": 1.73
     },
     {
       "fixtureId": 1391057,
@@ -2159,7 +2627,9 @@
       "homeClub": "Oviedo",
       "awayClub": "Athletic Club",
       "homeScore": 1,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 0.34,
+      "awayXg": 1.29
     },
     {
       "fixtureId": 1391055,
@@ -2168,7 +2638,9 @@
       "homeClub": "Rayo Vallecano",
       "awayClub": "Atletico Madrid",
       "homeScore": 3,
-      "awayScore": 0
+      "awayScore": 0,
+      "homeXg": 1.61,
+      "awayXg": 0.7
     },
     {
       "fixtureId": 1391053,
@@ -2177,7 +2649,9 @@
       "homeClub": "Levante",
       "awayClub": "Valencia",
       "homeScore": 0,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 0.63,
+      "awayXg": 0.68
     },
     {
       "fixtureId": 1391054,
@@ -2186,7 +2660,9 @@
       "homeClub": "Mallorca",
       "awayClub": "Real Betis",
       "homeScore": 1,
-      "awayScore": 2
+      "awayScore": 2,
+      "homeXg": 1.01,
+      "awayXg": 2.12
     },
     {
       "fixtureId": 1391052,
@@ -2195,7 +2671,189 @@
       "homeClub": "Girona",
       "awayClub": "Barcelona",
       "homeScore": 2,
-      "awayScore": 1
+      "awayScore": 1,
+      "homeXg": 2.86,
+      "awayXg": 2.72
+    }
+  ],
+  "jornada_25": [
+    {
+      "fixtureId": 1391060,
+      "homeTeamId": 531,
+      "awayTeamId": 797,
+      "homeClub": "Athletic Club",
+      "awayClub": "Elche",
+      "homeScore": 2,
+      "awayScore": 1,
+      "homeXg": 2.97,
+      "awayXg": 0.82
+    },
+    {
+      "fixtureId": 1391067,
+      "homeTeamId": 548,
+      "awayTeamId": 718,
+      "homeClub": "Real Sociedad",
+      "awayClub": "Oviedo",
+      "homeScore": 3,
+      "awayScore": 3,
+      "homeXg": 2.0,
+      "awayXg": 1.68
+    },
+    {
+      "fixtureId": 1391063,
+      "homeTeamId": 543,
+      "awayTeamId": 728,
+      "homeClub": "Real Betis",
+      "awayClub": "Rayo Vallecano",
+      "homeScore": 1,
+      "awayScore": 1,
+      "homeXg": 1.86,
+      "awayXg": 0.88
+    },
+    {
+      "fixtureId": 1391066,
+      "homeTeamId": 727,
+      "awayTeamId": 541,
+      "homeClub": "Osasuna",
+      "awayClub": "Real Madrid",
+      "homeScore": 2,
+      "awayScore": 1,
+      "homeXg": 2.29,
+      "awayXg": 1.7
+    },
+    {
+      "fixtureId": 1391061,
+      "homeTeamId": 530,
+      "awayTeamId": 540,
+      "homeClub": "Atletico Madrid",
+      "awayClub": "Espanyol",
+      "homeScore": 4,
+      "awayScore": 2,
+      "homeXg": 3.12,
+      "awayXg": 1.06
+    },
+    {
+      "fixtureId": 1391065,
+      "homeTeamId": 546,
+      "awayTeamId": 536,
+      "homeClub": "Getafe",
+      "awayClub": "Sevilla",
+      "homeScore": 0,
+      "awayScore": 1,
+      "homeXg": 0.32,
+      "awayXg": 0.32
+    },
+    {
+      "fixtureId": 1391062,
+      "homeTeamId": 529,
+      "awayTeamId": 539,
+      "homeClub": "Barcelona",
+      "awayClub": "Levante",
+      "homeScore": 3,
+      "awayScore": 0,
+      "homeXg": 2.88,
+      "awayXg": 0.53
+    },
+    {
+      "fixtureId": 1391064,
+      "homeTeamId": 538,
+      "awayTeamId": 798,
+      "homeClub": "Celta Vigo",
+      "awayClub": "Mallorca",
+      "homeScore": 2,
+      "awayScore": 0,
+      "homeXg": 2.51,
+      "awayXg": 0.04
+    },
+    {
+      "fixtureId": 1391068,
+      "homeTeamId": 533,
+      "awayTeamId": 532,
+      "homeClub": "Villarreal",
+      "awayClub": "Valencia",
+      "homeScore": 2,
+      "awayScore": 1,
+      "homeXg": 2.06,
+      "awayXg": 1.55
+    },
+    {
+      "fixtureId": 1391059,
+      "homeTeamId": 542,
+      "awayTeamId": 547,
+      "homeClub": "Alaves",
+      "awayClub": "Girona",
+      "homeScore": 2,
+      "awayScore": 2,
+      "homeXg": 1.87,
+      "awayXg": 2.22
+    }
+  ],
+  "jornada_26": [
+    {
+      "fixtureId": 1391073,
+      "homeTeamId": 539,
+      "awayTeamId": 542,
+      "homeClub": "Levante",
+      "awayClub": "Alaves",
+      "homeScore": 2,
+      "awayScore": 0,
+      "homeXg": 2.48,
+      "awayXg": 1.31
+    },
+    {
+      "fixtureId": 1391075,
+      "homeTeamId": 728,
+      "awayTeamId": 531,
+      "homeClub": "Rayo Vallecano",
+      "awayClub": "Athletic Club",
+      "homeScore": 1,
+      "awayScore": 1,
+      "homeXg": 1.33,
+      "awayXg": 0.54
+    },
+    {
+      "fixtureId": 1391069,
+      "homeTeamId": 529,
+      "awayTeamId": 533,
+      "homeClub": "Barcelona",
+      "awayClub": "Villarreal",
+      "homeScore": 4,
+      "awayScore": 1,
+      "homeXg": 2.96,
+      "awayXg": 1.29
+    },
+    {
+      "fixtureId": 1391074,
+      "homeTeamId": 798,
+      "awayTeamId": 548,
+      "homeClub": "Mallorca",
+      "awayClub": "Real Sociedad",
+      "homeScore": 0,
+      "awayScore": 1,
+      "homeXg": 0.68,
+      "awayXg": 0.46
+    },
+    {
+      "fixtureId": 1391077,
+      "homeTeamId": 718,
+      "awayTeamId": 530,
+      "homeClub": "Oviedo",
+      "awayClub": "Atletico Madrid",
+      "homeScore": 0,
+      "awayScore": 1,
+      "homeXg": 1.1,
+      "awayXg": 0.97
+    },
+    {
+      "fixtureId": 1391071,
+      "homeTeamId": 797,
+      "awayTeamId": 540,
+      "homeClub": "Elche",
+      "awayClub": "Espanyol",
+      "homeScore": 2,
+      "awayScore": 2,
+      "homeXg": 1.9,
+      "awayXg": 0.73
     }
   ]
 }

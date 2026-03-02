@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class jwtAuthenticationFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
@@ -52,7 +52,7 @@ public class jwtAuthenticationFilter extends OncePerRequestFilter {
             } catch (ExpiredJwtException ex) {
                 // Token expirado: no autenticamos, permitimos que fluya para que se devuelva 401 y el frontend refresque.
             } catch (JwtException ex) {
-                // Cualquier otro problema con el token: ignorar autenticaciÃƒÂ³n.
+                // Cualquier otro problema con el token: ignorar autenticaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n.
             }
         }
 

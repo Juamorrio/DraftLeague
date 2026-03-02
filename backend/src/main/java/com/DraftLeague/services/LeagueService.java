@@ -24,19 +24,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Collections;
 import java.util.Set;
-import com.DraftLeague.models.user.User;
-import com.DraftLeague.models.Player.Player;
-import com.DraftLeague.models.Team.Team;
-import com.DraftLeague.models.League.League;
-import com.DraftLeague.models.Player.Position;
-import com.DraftLeague.models.Player.PlayerTeam;
-import com.DraftLeague.repositories.UserRepository;
-import com.DraftLeague.repositories.PlayerRepository;
-import com.DraftLeague.repositories.TeamRepository;
-import com.DraftLeague.repositories.LeagueRepository;
-import com.DraftLeague.repositories.PlayerTeamRepository;
-import com.DraftLeague.services.LeagueService;
-import com.DraftLeague.dto.CreateLeagueRequest;
 
 @Service
 public class LeagueService {
@@ -64,7 +51,6 @@ public class LeagueService {
         league.setInitialBudget(req.getInitialBudget());
         league.setCaptainEnable(Boolean.TRUE.equals(req.getCaptainEnable()));
         league.setMarketEndHour(req.getMarketEndHour());
-        league.setWildCardsEnable(Boolean.TRUE.equals(req.getWildCardsEnable()));
         league.setCreatedAt(new Date(System.currentTimeMillis() - 1000));
         league.setCode(generateUniqueCode());
         
@@ -211,7 +197,7 @@ public class LeagueService {
     }
 
     public League joinLeagueByCode(String code) {
-        if (code == null || code.trim().isEmpty()) throw new RuntimeException("CÃƒÆ’Ã‚Â³digo invÃƒÆ’Ã‚Â¡lido");
+        if (code == null || code.trim().isEmpty()) throw new RuntimeException("CÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³digo invÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡lido");
         League league = leagueRepository.findByCode(code.trim().toUpperCase())
             .orElseThrow(() -> new RuntimeException("Liga no encontrada"));
         var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
@@ -220,11 +206,11 @@ public class LeagueService {
         User user = userRepository.findUserByUsername(username).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         Team existingTeam = teamRepository.findByLeagueAndUser(league, user);
         if (existingTeam != null) {
-            throw new RuntimeException("Ya estÃƒÆ’Ã‚Â¡s en esta liga");
+            throw new RuntimeException("Ya estÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡s en esta liga");
         }
         long count = teamRepository.countByLeague(league);
         if (league.getMaxTeams() != null && count >= league.getMaxTeams()) {
-            throw new RuntimeException("La liga estÃƒÆ’Ã‚Â¡ completa");
+            throw new RuntimeException("La liga estÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ completa");
         }
         Team team = new Team();
         team.setLeague(league);

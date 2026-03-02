@@ -31,6 +31,4 @@ public class CreateLeagueRequest {
     @NotNull
     private Boolean captainEnable;
 
-    @NotNull
-    private Boolean wildCardsEnable;
 }

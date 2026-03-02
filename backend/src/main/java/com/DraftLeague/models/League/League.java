@@ -69,9 +69,6 @@ public class League {
     @Column(name = "captain_enable", nullable = false)
     private Boolean captainEnable;
 
-    @NotNull
-    @Column(name = "wildcards_enable", nullable = false)
-    private Boolean wildCardsEnable;
 
     @ManyToOne(optional = true)
     @Valid

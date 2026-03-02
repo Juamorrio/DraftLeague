@@ -31,7 +31,7 @@ public class JwtService {
 
     public String getToken(User user) {
         HashMap<String,Object> claims = new HashMap<>();
-        // Claims bÃƒÆ’Ã‚Â¡sicos para lectura rÃƒÆ’Ã‚Â¡pida en frontend
+        // Claims bÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡sicos para lectura rÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡pida en frontend
         claims.put("uid", user.getId());
         claims.put("displayName", user.getDisplayName());
         claims.put("email", user.getEmail());

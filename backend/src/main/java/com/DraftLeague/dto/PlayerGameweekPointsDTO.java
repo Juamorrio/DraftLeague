@@ -14,9 +14,9 @@ public class PlayerGameweekPointsDTO {
     private String playerId;
     private String playerName;
     private String position; // POR, DEF, MID, DEL
-    private Integer gameweekPoints; // Puntos en esta jornada (con x2 si es capitÃƒÆ’Ã‚Â¡n)
-    private Integer matchId; // ID del partido donde jugÃƒÆ’Ã‚Â³
-    private Boolean played; // Si jugÃƒÆ’Ã‚Â³ o no
-    private Boolean isCaptain; // Si es capitÃƒÆ’Ã‚Â¡n
+    private Integer gameweekPoints; // Puntos en esta jornada (con x2 si es capitÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡n)
+    private Integer matchId; // ID del partido donde jugÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³
+    private Boolean played; // Si jugÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³ o no
+    private Boolean isCaptain; // Si es capitÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡n
     private String avatarUrl; // URL del avatar del jugador
 }

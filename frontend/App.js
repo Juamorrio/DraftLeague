@@ -1,29 +1,24 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import Layout from './components/layout';
-import { LeagueProvider, useLeague } from './context/LeagueContext';
-import { MatchesProvider } from './context/MatchesContext';
 import React from 'react';
-import Header from './components/header';
-import Register from './pages/auth/register';
-import Login from './pages/auth/login';
-import authService from './services/authService';
-import Leagues from './pages/Leagues/leagues';
-import Team from './pages/Teams/team';
-import Market from './pages/Market/market';
-import Admin from './pages/Admin/admin';
-import Home from './pages/Home/home';
-import PlayerStats from './pages/Player/playerStats';
-import AIInsights from './pages/AI/aiInsights';
+import { NavigationContainer } from '@react-navigation/native';
+import { StyleSheet, View, Text } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 
+// Contexts
+import { LeagueProvider } from './context/LeagueContext';
+import { MatchesProvider } from './context/MatchesContext';
+
+// Components
+import Header from './components/header';
+import RootNavigator from './navigation/RootNavigator';
+
+// Services
+import authService from './services/authService';
 
 export default function App() {
-  const [active, setActive] = React.useState('home');
   const [authed, setAuthed] = React.useState(false);
   const [checking, setChecking] = React.useState(true);
   const [authMode, setAuthMode] = React.useState('login');
-  const [user, setUser] = React.useState(null); 
-  
+  const [user, setUser] = React.useState(null);
 
   React.useEffect(() => {
     (async () => {
@@ -42,37 +37,23 @@ export default function App() {
     })();
   }, []);
 
+  const handleLogin = async () => {
+    setAuthed(true);
+    const currentUser = await authService.getCurrentUser();
+    setUser(currentUser);
+  };
+
+  const handleLogout = async () => {
+    await authService.logout();
+    setAuthed(false);
+    setUser(null);
+  };
+
   if (checking) {
     return (
-      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+      <View style={styles.loadingContainer}>
         <StatusBar style="auto" />
         <Text>Cargando...</Text>
-      </View>
-    );
-  }
-
-  if (!authed) {
-    return (
-      <View style={styles.container}>
-        <StatusBar style="auto" />
-        {authMode === 'register' ? (
-          <Register
-            onRegistered={async () => {
-              setAuthed(true);
-              const currentUser = await authService.getCurrentUser();
-              setUser(currentUser);
-            }}
-          />
-        ) : (
-          <Login
-            onLoggedIn={async () => {
-              setAuthed(true);
-              const currentUser = await authService.getCurrentUser();
-              setUser(currentUser);
-            }}
-            onSwitchToRegister={() => setAuthMode('register')}
-          />
-        )}
       </View>
     );
   }
@@ -80,25 +61,21 @@ export default function App() {
   return (
     <LeagueProvider>
       <MatchesProvider>
-        <Header onLogout={async () => { await authService.logout(); setAuthed(false); }} />
-        <Layout
-          activeKey={active}
-          onNavigate={(key) => {
-            setActive(key);
-          }}
-          isAdmin={user?.role === 'ADMIN'}
-        >
-          {active === 'league' && <Leagues />}
-          {active === 'home' && <Home />}
-          {active === 'team' && <Team />}
-          {active === 'market' && <Market />}
-          {active === 'robot' && <AIInsights />}
-          {active === 'admin' && <Admin />}
-          {active === 'playerStats' && <PlayerStats />}
-          {!['home','league','team','market','robot','admin','playerStats'].includes(active) && (
-            <View style={styles.container}><Text>Pantalla no definida</Text></View>
-          )}
-        </Layout>
+        <NavigationContainer>
+          <View style={styles.container}>
+            <StatusBar style="auto" />
+            {authed && <Header onLogout={handleLogout} />}
+            <RootNavigator 
+              authed={authed} 
+              authMode={authMode}
+              user={user}
+              onLoggedIn={handleLogin}
+              onRegistered={handleLogin}
+              onSwitchToRegister={() => setAuthMode('register')}
+              onSwitchToLogin={() => setAuthMode('login')}
+            />
+          </View>
+        </NavigationContainer>
       </MatchesProvider>
     </LeagueProvider>
   );
@@ -107,8 +84,12 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffffff',
+    backgroundColor: '#fff',
+  },
+  loadingContainer: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
+    backgroundColor: '#fff',
+  }
 });

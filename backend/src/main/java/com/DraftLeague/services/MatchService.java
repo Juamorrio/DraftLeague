@@ -22,7 +22,6 @@ import java.util.Map;
 import com.DraftLeague.models.Match.Match;
 import com.DraftLeague.models.Match.MatchStatus;
 import com.DraftLeague.repositories.MatchRepository;
-import com.DraftLeague.services.MatchService;
 
 @Service
 public class MatchService {
@@ -87,7 +86,7 @@ public class MatchService {
         int exitCode = process.waitFor();
         
         if (exitCode != 0) {
-            throw new RuntimeException("Error al ejecutar script de Python. CÃƒÆ’Ã‚Â³digo de salida: " + exitCode + "\n" + output.toString());
+            throw new RuntimeException("Error al ejecutar script de Python. Código de salida: " + exitCode + "\n" + output.toString());
         }
         
         return output.toString();

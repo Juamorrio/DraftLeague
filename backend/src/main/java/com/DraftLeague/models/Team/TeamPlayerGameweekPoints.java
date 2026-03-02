@@ -28,16 +28,16 @@ public class TeamPlayerGameweekPoints {
     @Column(name = "gameweek", nullable = false)
     private Integer gameweek;
 
-    // Datos del jugador (denormalizados para queries rÃƒÆ’Ã‚Â¡pidas)
+    // Datos del jugador (denormalizados para queries rÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡pidas)
     @Column(name = "player_name", nullable = false)
     private String playerName;
 
     @Column(name = "position", nullable = false)
     private String position; // POR, DEF, MID, DEL
 
-    // PuntuaciÃƒÆ’Ã‚Â³n
+    // PuntuaciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n
     @Column(name = "points")
-    private Integer points = 0; // Con multiplicador de capitÃƒÆ’Ã‚Â¡n
+    private Integer points = 0; // Con multiplicador de capitÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡n
 
     @Column(name = "base_points")
     private Integer basePoints = 0; // Sin multiplicador

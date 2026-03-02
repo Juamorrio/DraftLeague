@@ -11,10 +11,10 @@ import com.DraftLeague.repositories.TeamPlayerGameweekPointsRepository;
 @Repository
 public interface TeamPlayerGameweekPointsRepository extends JpaRepository<TeamPlayerGameweekPoints, Integer> {
 
-    // Obtener todos los jugadores de un equipo en una jornada especÃƒÆ’Ã‚Â­fica
+    // Obtener todos los jugadores de un equipo en una jornada especÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­fica
     List<TeamPlayerGameweekPoints> findByTeamAndGameweek(Team team, Integer gameweek);
 
-    // Obtener histÃƒÆ’Ã‚Â³rico de un jugador en un equipo
+    // Obtener histÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³rico de un jugador en un equipo
     List<TeamPlayerGameweekPoints> findByTeamAndPlayerId(Team team, String playerId);
 
     // Verificar si ya existe registro

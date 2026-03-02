@@ -1,9 +1,15 @@
 package com.DraftLeague.controllers;
 
 import com.DraftLeague.models.League.League;
+import com.DraftLeague.models.user.User;
+import com.DraftLeague.models.Gameweek.GameweekState;
 import com.DraftLeague.repositories.LeagueRepository;
 import com.DraftLeague.services.PlayerImportService;
+import com.DraftLeague.services.UserService;
+import com.DraftLeague.services.GameweekStateService;
+import com.DraftLeague.services.FantasyPointsService;
 import com.DraftLeague.repositories.PlayerRepository;
+import com.DraftLeague.repositories.UserRepository;
 import com.DraftLeague.services.MarketService;
 import com.DraftLeague.services.MatchService;
 
@@ -14,15 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.DraftLeague.models.user.User;
-import com.DraftLeague.models.League.League;
-import com.DraftLeague.repositories.UserRepository;
-import com.DraftLeague.repositories.PlayerRepository;
-import com.DraftLeague.repositories.LeagueRepository;
-import com.DraftLeague.services.UserService;
-import com.DraftLeague.services.MatchService;
-import com.DraftLeague.services.MarketService;
-import com.DraftLeague.services.PlayerImportService;
 
 @RestController
 @RequestMapping("/api/v1/admin")
@@ -35,6 +32,8 @@ public class AdminController {
     private final PlayerImportService importService;
     private final UserService userService;
     private final MatchService matchService;
+    private final GameweekStateService gameweekStateService;
+    private final FantasyPointsService fantasyPointsService;
 
     public AdminController(UserRepository userRepository, 
                           LeagueRepository leagueRepository,
@@ -42,7 +41,9 @@ public class AdminController {
                           MarketService marketService,
                           PlayerImportService importService,
                           UserService userService,
-                          MatchService matchService) {
+                          MatchService matchService,
+                          GameweekStateService gameweekStateService,
+                          FantasyPointsService fantasyPointsService) {
         this.userRepository = userRepository;
         this.leagueRepository = leagueRepository;
         this.playerRepository = playerRepository;
@@ -50,6 +51,8 @@ public class AdminController {
         this.importService = importService;
         this.userService = userService;
         this.matchService = matchService;
+        this.gameweekStateService = gameweekStateService;
+        this.fantasyPointsService = fantasyPointsService;
     }
 
     private boolean isAdmin(Authentication auth) {
@@ -102,7 +105,7 @@ public class AdminController {
         
         String newRole = body.get("role");
         if (!"USER".equals(newRole) && !"ADMIN".equals(newRole)) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Rol invÃƒÆ’Ã‚Â¡lido"));
+            return ResponseEntity.badRequest().body(Map.of("error", "Rol invÃƒÂ¡lido"));
         }
 
         user.setRole(newRole);
@@ -173,7 +176,7 @@ public class AdminController {
             
             Throwable cause = e.getCause();
             if (cause != null) {
-                System.err.println("Causa raÃƒÆ’Ã‚Â­z: " + cause.getMessage());
+                System.err.println("Causa raÃƒÂ­z: " + cause.getMessage());
                 System.err.println("Tipo causa: " + cause.getClass().getName());
             }
             
@@ -192,7 +195,11 @@ public class AdminController {
 
         try {
             String output = matchService.syncMatches();
-            return ResponseEntity.ok(Map.of("message", "Partidos sincronizados exitosamente", "output", output));
+            String importResult = matchService.importMatchesFromJson();
+            return ResponseEntity.ok(Map.of(
+                "message", "Partidos sincronizados e importados correctamente. " + importResult,
+                "output", output
+            ));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", "Error al sincronizar partidos: " + e.getMessage()));
         }
@@ -206,9 +213,110 @@ public class AdminController {
 
         try {
             String output = importService.syncPlayers();
-            return ResponseEntity.ok(Map.of("message", "Jugadores sincronizados exitosamente", "output", output));
+            int newPlayers = importService.importNewPlayersOnly();
+            return ResponseEntity.ok(Map.of(
+                "message", "Jugadores sincronizados. " + newPlayers + " nuevos jugadores añadidos a la base de datos.",
+                "output", output,
+                "newPlayers", newPlayers
+            ));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", "Error al sincronizar jugadores: " + e.getMessage()));
+        }
+    }
+
+    // ─── Gameweek State Management ────────────────────────────────────────────────
+
+    /**
+     * Returns the current global gameweek state (active gameweek and lock status).
+     * GET /api/v1/admin/gameweek/status
+     */
+    @GetMapping("/gameweek/status")
+    public ResponseEntity<?> getGameweekStatus(Authentication auth) {
+        if (!isAdmin(auth)) {
+            return ResponseEntity.status(403).body(Map.of("error", "Acceso denegado"));
+        }
+        GameweekState state = gameweekStateService.getState();
+        Map<String, Object> response = new HashMap<>();
+        response.put("activeGameweek", state.getActiveGameweek());
+        response.put("teamsLocked", state.getTeamsLocked());
+        response.put("lockedAt", state.getLockedAt());
+        response.put("unlockedAt", state.getUnlockedAt());
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Activates a gameweek for scoring and locks team modifications.
+     * POST /api/v1/admin/gameweek/activate
+     * Body: { "gameweek": 5 }
+     */
+    @PostMapping("/gameweek/activate")
+    public ResponseEntity<?> activateGameweek(@RequestBody Map<String, Integer> body,
+                                              Authentication auth) {
+        if (!isAdmin(auth)) {
+            return ResponseEntity.status(403).body(Map.of("error", "Acceso denegado"));
+        }
+        Integer gameweek = body.get("gameweek");
+        if (gameweek == null || gameweek < 1) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Jornada inv\u00e1lida"));
+        }
+        try {
+            GameweekState state = gameweekStateService.activateGameweek(gameweek);
+            return ResponseEntity.ok(Map.of(
+                "message", "Jornada " + gameweek + " activada. Equipos bloqueados.",
+                "activeGameweek", state.getActiveGameweek(),
+                "teamsLocked", state.getTeamsLocked()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * Unlocks team modifications after a gameweek scoring round.
+     * POST /api/v1/admin/gameweek/unlock
+     */
+    @PostMapping("/gameweek/unlock")
+    public ResponseEntity<?> unlockTeams(Authentication auth) {
+        if (!isAdmin(auth)) {
+            return ResponseEntity.status(403).body(Map.of("error", "Acceso denegado"));
+        }
+        try {
+            GameweekState state = gameweekStateService.unlockTeams();
+            return ResponseEntity.ok(Map.of(
+                "message", "Equipos desbloqueados. Los usuarios pueden modificar sus equipos.",
+                "teamsLocked", state.getTeamsLocked()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * Calculates fantasy points for all teams for the active gameweek.
+     * Can be called multiple times as match data arrives.
+     * POST /api/v1/admin/gameweek/calculate-points
+     */
+    @PostMapping("/gameweek/calculate-points")
+    public ResponseEntity<?> calculateGameweekPoints(Authentication auth) {
+        if (!isAdmin(auth)) {
+            return ResponseEntity.status(403).body(Map.of("error", "Acceso denegado"));
+        }
+        Integer activeGameweek = gameweekStateService.getActiveGameweek();
+        if (activeGameweek == null) {
+            return ResponseEntity.badRequest()
+                .body(Map.of("error", "No hay ninguna jornada activa. Activa una jornada primero."));
+        }
+        try {
+            // Step 1: fetch stats from API-Football and save to DB
+            importService.syncGameweekStats(activeGameweek);
+            // Step 2: calculate fantasy points for all teams
+            fantasyPointsService.recalculateGameweekPoints(activeGameweek);
+            return ResponseEntity.ok(Map.of(
+                "message", "Estad\u00edsticas obtenidas y puntos de la jornada " + activeGameweek + " calculados correctamente.",
+                "gameweek", activeGameweek
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", "Error al calcular puntos: " + e.getMessage()));
         }
     }
 }

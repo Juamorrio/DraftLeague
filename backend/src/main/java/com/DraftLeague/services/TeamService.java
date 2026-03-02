@@ -35,6 +35,7 @@ import com.DraftLeague.repositories.PlayerTeamRepository;
 import com.DraftLeague.services.PlayerService;
 import com.DraftLeague.services.TeamService;
 import com.DraftLeague.services.NotificationService;
+import com.DraftLeague.services.GameweekStateService;
 
 @Service
 public class TeamService {
@@ -45,16 +46,18 @@ public class TeamService {
     private final PlayerTeamRepository playerTeamRepository;
     private final NotificationService notificationService;
     private final LeagueRepository leagueRepository;
+    private final GameweekStateService gameweekStateService;
 
     @Autowired
     public TeamService(TeamRepository teamRepository, PlayerRepository playerRepository, 
-                      PlayerTeamRepository playerTeamRepository, UserRepository userRepository, PlayerService playerService, NotificationService notificationService, LeagueRepository leagueRepository) {
+                      PlayerTeamRepository playerTeamRepository, UserRepository userRepository, PlayerService playerService, NotificationService notificationService, LeagueRepository leagueRepository, GameweekStateService gameweekStateService) {
         this.teamRepository = teamRepository;
         this.userRepository = userRepository;
         this.playerService = playerService;
         this.playerTeamRepository = playerTeamRepository;
         this.notificationService = notificationService;
         this.leagueRepository = leagueRepository;
+        this.gameweekStateService = gameweekStateService;
     }
 
     @Transactional
@@ -120,7 +123,7 @@ public class TeamService {
         League league = leagueRepository.findById(leagueId.longValue())
             .orElseThrow(() -> new RuntimeException("Liga no encontrada"));
         
-        // Usar el mÃƒÆ’Ã‚Â©todo del repository que ya existe y hace el JOIN correctamente
+        // Usar el mÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©todo del repository que ya existe y hace el JOIN correctamente
         Team team = teamRepository.findByLeagueAndUser(league, user);
         
         if (team == null) {
@@ -132,6 +135,9 @@ public class TeamService {
 
     @Transactional
     public Team updateTeamPlayers(Integer leagueId, Integer userId, UpdateTeamPlayersRequest request) {
+        if (gameweekStateService.isTeamsLocked()) {
+            throw new RuntimeException("Las modificaciones de equipo están bloqueadas durante la jornada activa");
+        }
         Team team = getTeamByUserAndLeague(leagueId, userId);
         
         team.getPlayerTeams().clear();
@@ -163,6 +169,9 @@ public class TeamService {
 
     @Transactional
     public Team buyoutPlayer(Integer leagueId, Integer sellerUserId, String playerId) {
+        if (gameweekStateService.isTeamsLocked()) {
+            throw new RuntimeException("Las modificaciones de equipo están bloqueadas durante la jornada activa");
+        }
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) throw new RuntimeException("No autenticado");
         String buyerUsername = auth.getName();
@@ -204,6 +213,9 @@ public class TeamService {
 
     @Transactional
     public Map<String, Object> sellPlayer(Integer leagueId, String playerId) {
+        if (gameweekStateService.isTeamsLocked()) {
+            throw new RuntimeException("Las modificaciones de equipo están bloqueadas durante la jornada activa");
+        }
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) throw new RuntimeException("No autenticado");
         String username = auth.getName();

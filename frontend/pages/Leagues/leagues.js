@@ -22,7 +22,7 @@ import JoinLeagueModal from './joinLeagueModal';
 
 const DRAFT_KEY = 'leagues.createDraft';
 
-function Leagues() {
+function Leagues({ navigation }) {
 	const [creating, setCreating] = useState(false);
 	const [editing, setEditing] = useState(false);
 	const [editingLeague, setEditingLeague] = useState(null);
@@ -47,7 +47,13 @@ function Leagues() {
 	const [assignedPlayers, setAssignedPlayers] = useState([]);
 	const [assignedLeagueName, setAssignedLeagueName] = useState('');
 
-	const { selectedLeague, setSelectedLeague } = useLeague();
+	const { selectedLeague, setSelectedLeague, viewUser } = useLeague();
+
+	useEffect(() => {
+		if (viewUser && navigation) {
+			navigation.navigate('Team');
+		}
+	}, [viewUser]);
 
 	useEffect(() => {
 		(async () => {

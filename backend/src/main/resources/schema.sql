@@ -187,3 +187,13 @@ CREATE TABLE IF NOT EXISTS `team_player_gameweek_points` (
     INDEX `idx_player_gameweek` (`player_id`, `gameweek`),
     INDEX `idx_team_player` (`team_id`, `player_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Singleton table that holds the global gameweek state managed by the admin
+-- id is always 1 (enforced at application level)
+CREATE TABLE IF NOT EXISTS `gameweek_state` (
+    `id` INT PRIMARY KEY DEFAULT 1,
+    `active_gameweek` INT,
+    `teams_locked` BOOLEAN NOT NULL DEFAULT FALSE,
+    `locked_at` TIMESTAMP NULL,
+    `unlocked_at` TIMESTAMP NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

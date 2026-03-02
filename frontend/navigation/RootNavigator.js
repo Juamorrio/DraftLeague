@@ -107,18 +107,7 @@ function CustomTabBar({ state, descriptors, navigation, isAdmin }) {
     );
 }
 
-import { useNavigation } from '@react-navigation/native';
-
 function MainTabNavigator({ isAdmin }) {
-    const { viewUser, setViewUser } = useLeague();
-    const navigation = useNavigation();
-
-    React.useEffect(() => {
-        if (viewUser) {
-            navigation.navigate('Team');
-        }
-    }, [viewUser]);
-
     return (
         <Tab.Navigator 
             tabBar={props => <CustomTabBar {...props} isAdmin={isAdmin} />}

@@ -49,6 +49,7 @@ public class MarketService {
     private final TeamRepository teamRepository;
     private final PlayerTeamRepository playerTeamRepository;
     private final NotificationService notificationService;
+    private final GameweekStateService gameweekStateService;
 
     public MarketService(MarketPlayerRepository marketPlayerRepository, 
                         PlayerRepository playerRepository,
@@ -56,7 +57,8 @@ public class MarketService {
                         UserRepository userRepository,
                         TeamRepository teamRepository,
                         PlayerTeamRepository playerTeamRepository,
-                        NotificationService notificationService) {
+                        NotificationService notificationService,
+                        GameweekStateService gameweekStateService) {
         this.marketPlayerRepository = marketPlayerRepository;
         this.playerRepository = playerRepository;
         this.leagueRepository = leagueRepository;
@@ -64,6 +66,7 @@ public class MarketService {
         this.teamRepository = teamRepository;
         this.playerTeamRepository = playerTeamRepository;
         this.notificationService = notificationService;
+        this.gameweekStateService = gameweekStateService;
     }
 
     @Transactional
@@ -145,6 +148,10 @@ public class MarketService {
 
     @Transactional
     public void placeBid(Integer marketPlayerId, String username, Long bidAmount) {
+        if (gameweekStateService.isTeamsLocked()) {
+            throw new IllegalStateException("El mercado está cerrado durante la jornada activa");
+        }
+
         MarketPlayer marketPlayer = marketPlayerRepository.findById(marketPlayerId)
                 .orElseThrow(() -> new IllegalStateException("Jugador de mercado no encontrado"));
 

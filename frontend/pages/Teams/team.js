@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Modal, FlatList, Alert, ScrollView, ActivityIndicator } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { AppState, View, Text, StyleSheet, TouchableOpacity, Image, Modal, FlatList, Alert, ScrollView, ActivityIndicator } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useLeague } from '../../context/LeagueContext';
 import pitch from '../../assets/Team/pitch.png';
@@ -33,6 +33,14 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 	const [loadingPoints, setLoadingPoints] = useState(false);
 	const [captainPlayerId, setCaptainPlayerId] = useState(null);
 	const [pointsHistory, setPointsHistory] = useState(null);
+	const [teamsLocked, setTeamsLocked] = useState(false);
+	const [activeGameweek, setActiveGameweek] = useState(null);
+
+	// Refs for auto-refresh (avoid stale closures in intervals)
+	const teamIdRef = useRef(null);
+	const selectedGameweekRef = useRef(selectedGameweek);
+	selectedGameweekRef.current = selectedGameweek;
+	const viewUserIdRef = useRef(null);
 
 
 	const formations = {
@@ -103,6 +111,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 		viewUserId = viewUser.id;
 		readOnly = true;
 	}
+	viewUserIdRef.current = viewUserId;
 
 	useEffect(() => {
 		let mounted = true;
@@ -136,7 +145,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 		if (!selectedLeague?.id) return;
 		let mounted = true;
 		try {
-			let userIdToUse = viewUserId;
+			let userIdToUse = viewUserIdRef.current;
 			if (!userIdToUse) {
 				const user = await authService.getCurrentUser();
 				if (!user?.id) return;
@@ -190,6 +199,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 					setAssigned(newAssigned);
 
 					if (team.id) {
+						teamIdRef.current = team.id;
 						predictionService.getTeamPointsHistory(team.id)
 							.then(history => {
 								if (history && history.history?.length > 0) {
@@ -210,6 +220,46 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 			console.error('Error cargando equipo:', e);
 		}
 	};
+
+	const loadGameweekStatus = async () => {
+		try {
+			const res = await authenticatedFetch('/api/v1/fantasy-points/gameweek/status');
+			if (res.ok) {
+				const data = await res.json();
+				setTeamsLocked(!!data.teamsLocked);
+				setActiveGameweek(data.activeGameweek ?? null);
+			}
+		} catch (e) {
+			console.log('Error cargando estado de jornada:', e);
+		}
+	};
+
+	// Auto-refresh: polling every 15s + refresh when app comes to foreground
+	useEffect(() => {
+		loadGameweekStatus();
+		if (!selectedLeague?.id) return;
+
+		const doRefresh = async () => {
+			await Promise.all([
+				loadTeam(),
+				loadGameweekStatus(),
+			]);
+			if (selectedGameweekRef.current !== 'total' && teamIdRef.current) {
+				await loadPlayerGameweekPoints(teamIdRef.current, selectedGameweekRef.current);
+			}
+		};
+
+		const interval = setInterval(doRefresh, 15000);
+
+		const subscription = AppState.addEventListener('change', state => {
+			if (state === 'active') doRefresh();
+		});
+
+		return () => {
+			clearInterval(interval);
+			subscription.remove();
+		};
+	}, [selectedLeague?.id, viewUser?.id]);
 
 	const loadPlayerGameweekPoints = async (teamId, gameweek) => {
 		if (gameweek === 'total') {
@@ -243,7 +293,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 
 	useEffect(() => {
 		loadTeam();
-	}, [selectedLeague?.id, formation]);
+	}, [selectedLeague?.id, formation, viewUser?.id]);
 
 	useEffect(() => {
 		if (selectedGameweek === 'total') {
@@ -332,7 +382,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 		}
 	};
 
-	const openPicker = (key) => { if (readOnly) return; setCurrentKey(key); setPickerVisible(true); };
+	const openPicker = (key) => { if (readOnly || teamsLocked) return; setCurrentKey(key); setPickerVisible(true); };
 
 	const getAssignedPlayer = (slotValue) => {
 		if (!slotValue) return null;
@@ -473,21 +523,28 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 				{readOnly && (
 					<TouchableOpacity 
 						style={styles.backBtn}
-						onPress={() => { setViewUser(null); setNavTarget('league'); }}
+						onPress={() => { setViewUser(null); navigation.navigate('Leagues'); }}
 					>
 						<Text style={styles.backBtnText}>Volver</Text>
 					</TouchableOpacity>
 				)}
 				{!readOnly && (
 					<TouchableOpacity 
-						style={[styles.saveBtn, saving && styles.saveBtnDisabled]} 
+						style={[styles.saveBtn, (saving || teamsLocked) && styles.saveBtnDisabled]} 
 						onPress={saveTeam}
-						disabled={saving}
+						disabled={saving || teamsLocked}
 					>
-						<Text style={styles.saveBtnText}>{saving ? 'Guardando...' : 'Guardar'}</Text>
+						<Text style={styles.saveBtnText}>{saving ? 'Guardando...' : teamsLocked ? '🔒 Bloqueado' : 'Guardar'}</Text>
 					</TouchableOpacity>
 				)}
 			</View>
+			{teamsLocked && !readOnly && (
+				<View style={styles.lockBanner}>
+					<Text style={styles.lockBannerText}>
+						🔒 Jornada {activeGameweek} activa — los equipos están bloqueados
+					</Text>
+				</View>
+			)}
 
 			{!readOnly && (
 				<View style={styles.pickerContainer}>
@@ -540,7 +597,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 								);
 							})()
 						) : (
-							readOnly || isHistorical ? null : (
+							readOnly || isHistorical || teamsLocked ? null : (
 								<TouchableOpacity style={styles.spotBtn} activeOpacity={0.7} onPress={() => openPicker(p.key)}>
 									<Text style={styles.plus}>+</Text>
 								</TouchableOpacity>
@@ -657,7 +714,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 								>
 									<Text style={styles.saveBtnText}>Ver Estadísticas</Text>
 								</TouchableOpacity>
-								{!readOnly && selectedPlayerSlot && (
+								{!readOnly && selectedPlayerSlot && !teamsLocked && (
 									<TouchableOpacity
 										style={[styles.saveBtn, { backgroundColor: '#16a34a' }]}
 										onPress={() => {
@@ -801,6 +858,8 @@ const styles = StyleSheet.create({
 	closeText: { fontSize: 12, fontWeight: '700' },
 	buyBtn: { marginTop: 4, backgroundColor: '#1d4ed8', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
 	buyTxt: { color: '#fff', fontSize: 10, fontWeight: '700' },
+	lockBanner: { backgroundColor: '#dc2626', paddingVertical: 8, paddingHorizontal: 16, alignItems: 'center' },
+	lockBannerText: { color: '#fff', fontWeight: '700', fontSize: 13 },
 	chartSection: { padding: 16, backgroundColor: '#f9fafb' },
 	// Estilos para predicción ML del equipo
 	predictionSection: {

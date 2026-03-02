@@ -4,6 +4,7 @@ import com.DraftLeague.models.Team.TeamPlayerGameweekPoints;
 
 import com.DraftLeague.dto.*;
 import com.DraftLeague.services.FantasyPointsService;
+import com.DraftLeague.services.GameweekStateService;
 import com.DraftLeague.models.Team.*;
 import com.DraftLeague.models.League.*;
 import com.DraftLeague.models.Player.Player;
@@ -49,8 +50,22 @@ public class FantasyPointsController {
     private final PlayerStatisticRepository statisticRepository;
     private final MatchRepository matchRepository;
     private final TeamPlayerGameweekPointsRepository tpgwPointsRepository;
+    private final GameweekStateService gameweekStateService;
 
   
+    /**
+     * Public endpoint – returns the active gameweek and lock status so the frontend
+     * can disable team-editing UI when a gameweek is being scored.
+     * GET /api/v1/fantasy-points/gameweek/status
+     */
+    @GetMapping("/gameweek/status")
+    public ResponseEntity<Map<String, Object>> getGameweekStatus() {
+        Map<String, Object> status = new java.util.LinkedHashMap<>();
+        status.put("activeGameweek", gameweekStateService.getActiveGameweek());
+        status.put("teamsLocked", gameweekStateService.isTeamsLocked());
+        return ResponseEntity.ok(status);
+    }
+
     @GetMapping("/leagues/{leagueId}/gameweek/{gameweek}/ranking")
     public ResponseEntity<List<GameweekRankingDTO>> getGameweekRanking(
             @PathVariable Long leagueId,

@@ -16,14 +16,14 @@
       "android": { "buildType": "apk" },
       "env": {
         "APP_VARIANT": "preview",
-        "EXPO_PUBLIC_API_BASE": "https://TU_BACKEND.up.railway.app"
+        "EXPO_PUBLIC_API_BASE": "https://draftleague-production.up.railway.app"
       }
     },
     "production": {
       "android": { "buildType": "app-bundle" },
       "env": {
         "APP_VARIANT": "production",
-        "EXPO_PUBLIC_API_BASE": "https://TU_BACKEND.up.railway.app"
+        "EXPO_PUBLIC_API_BASE": "https://draftleague-production.up.railway.app"
       }
     }
   },

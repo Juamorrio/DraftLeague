@@ -1,0 +1,79 @@
+services:
+
+  # ── Base de datos MariaDB ───────────────────────────────────────────────────
+  db:
+    image: mariadb:11
+    container_name: draftleague-db
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-changeme}
+      MARIADB_DATABASE: ${DB_NAME:-draftleague}
+      MARIADB_USER: ${DB_USER:-draftuser}
+      MARIADB_PASSWORD: ${DB_PASSWORD:-draftpass}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./draftleague_data.sql:/docker-entrypoint-initdb.d/draftleague_data.sql:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 20s
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - draftleague-net
+
+  # ── Backend Spring Boot ─────────────────────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    image: ghcr.io/${GITHUB_REPOSITORY:-draftleague/draftleague}/backend:${IMAGE_TAG:-latest}
+    container_name: draftleague-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:mariadb://db:3306/${DB_NAME:-draftleague}?tinyInt1isBit=false
+      SPRING_DATASOURCE_USERNAME: ${DB_USER:-draftuser}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-draftpass}
+      JWT_SECRET: ${JWT_SECRET:-supersecretjwtkey512bitslong_pleasechangeme}
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:8080/actuator/health | grep -q UP || exit 1"]
+      start_period: 40s
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks:
+      - draftleague-net
+
+  # ── Frontend Expo Web ───────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      args:
+        EXPO_PUBLIC_API_URL: ${API_URL:-http://localhost:8080}
+    image: ghcr.io/${GITHUB_REPOSITORY:-draftleague/draftleague}/frontend:${IMAGE_TAG:-latest}
+    container_name: draftleague-frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+    networks:
+      - draftleague-net
+
+volumes:
+  mariadb_data:
+    driver: local
+
+networks:
+  draftleague-net:
+    driver: bridge

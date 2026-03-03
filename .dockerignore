@@ -1,0 +1,38 @@
+# ── Git ──────────────────────────────────────────────────────────────────────
+.git
+.github
+.gitignore
+
+# ── Maven build output ────────────────────────────────────────────────────────
+target/
+
+# ── Node / Expo ───────────────────────────────────────────────────────────────
+frontend/node_modules/
+frontend/.expo/
+frontend/dist/
+frontend/web-build/
+node_modules/
+
+# ── IDE / OS ──────────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# ── Entornos Python ───────────────────────────────────────────────────────────
+.venv/
+__pycache__/
+*.pyc
+
+# ── Variables de entorno locales ──────────────────────────────────────────────
+.env
+.env.local
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+logs/
+
+# ── Reports / Scripts de scraping ────────────────────────────────────────────
+reports/
+scripts/

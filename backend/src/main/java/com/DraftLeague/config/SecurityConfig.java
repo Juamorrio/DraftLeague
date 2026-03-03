@@ -33,6 +33,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/api/statistics/**").permitAll()
                 .requestMatchers("/api/v1/matches/**").permitAll()
                 .requestMatchers("/api/v1/players/load-image-team-player").permitAll()

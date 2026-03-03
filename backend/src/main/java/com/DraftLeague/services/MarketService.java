@@ -83,7 +83,7 @@ public class MarketService {
                         .noneMatch(pt -> pt.getPlayer().getId().equals(p.getId()))).toList());
         
         Collections.shuffle(allPlayers);
-        List<Player> selectedPlayers = allPlayers.subList(0, 10);
+        List<Player> selectedPlayers = allPlayers.subList(0, Math.min(10, allPlayers.size()));
 
         for (Player player : selectedPlayers) {
             MarketPlayer marketPlayer = new MarketPlayer();

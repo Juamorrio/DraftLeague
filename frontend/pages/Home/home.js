@@ -35,6 +35,14 @@ export default function Home() {
 					return numA - numB;
 				});
 				setSelectedJornada(sortedUpcoming[0]);
+			} else if (playedJornadas.length > 0) {
+				// No upcoming matches – default to the most recent played jornada
+				const sortedPlayed = [...playedJornadas].sort((a, b) => {
+					const numA = parseInt(a.split('_')[1]);
+					const numB = parseInt(b.split('_')[1]);
+					return numB - numA;
+				});
+				setSelectedJornada(sortedPlayed[0]);
 			}
 			return;
 		}

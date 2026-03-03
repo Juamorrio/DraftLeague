@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, StyleSheet, Alert, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, StyleSheet, Alert, Platform, KeyboardAvoidingView, ScrollView, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import authService from '../../../services/authService';
 import { validateRegister } from '../../../services/validation/registerValidation';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 
 
@@ -51,7 +53,15 @@ export default function Register({ onRegistered, onSwitchToLogin }) {
 	};
 
 	return (
-		<View style={styles.screenWrap}>
+		<KeyboardAvoidingView
+			style={styles.screenWrap}
+			behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+		>
+			<ScrollView
+				contentContainerStyle={styles.scrollContent}
+				keyboardShouldPersistTaps="handled"
+				showsVerticalScrollIndicator={false}
+			>
 			<LinearGradient
 				colors={['#197319', '#013055']}
 				start={{ x: 0, y: 0 }}
@@ -139,24 +149,29 @@ export default function Register({ onRegistered, onSwitchToLogin }) {
 					<Text style={styles.linkText}>¿Ya tienes cuenta? Inicia sesión</Text>
 				</TouchableOpacity>
 			</LinearGradient>
-		</View>
+			</ScrollView>
+		</KeyboardAvoidingView>
 	);
 }
 
 const styles = StyleSheet.create({
 	screenWrap: {
 		flex: 1,
+		backgroundColor: '#fff',
+	},
+	scrollContent: {
+		flexGrow: 1,
 		alignItems: 'center',
 		justifyContent: 'center',
-		backgroundColor: '#fff',
 		padding: 16,
+		paddingVertical: 32,
 	},
 	card: {
-		width: '90%',
+		width: '100%',
 		maxWidth: 420,
 		borderRadius: 18,
-		paddingVertical: 20,
-		paddingHorizontal: 40,
+		paddingVertical: 28,
+		paddingHorizontal: SCREEN_WIDTH < 380 ? 20 : 32,
 		shadowColor: '#000',
 		shadowOffset: { width: 0, height: 8 },
 		shadowOpacity: 0.15,
@@ -164,7 +179,7 @@ const styles = StyleSheet.create({
 		elevation: 6,
 	},
 	title: {
-		fontSize: 32,
+		fontSize: SCREEN_WIDTH < 380 ? 26 : 32,
 		fontWeight: '800',
 		color: '#fff',
 		textAlign: 'center',
@@ -182,20 +197,20 @@ const styles = StyleSheet.create({
 	input: {
 		backgroundColor: '#ffffff',
 		borderRadius: 22,
-		paddingHorizontal: 40,
-		height: 42,
-		width: 280,
+		paddingHorizontal: 16,
+		height: 46,
+		width: '100%',
 		fontSize: 16,
 		color: '#0f172a',
 	},
-    inputError: {
-      borderWidth: 1,
-      borderColor: '#ef4444',
-    },
+	inputError: {
+		borderWidth: 1,
+		borderColor: '#ef4444',
+	},
 	button: {
-		marginTop: 16,
+		marginTop: 20,
 		backgroundColor: '#1d4ed8',
-		paddingVertical: 12,
+		paddingVertical: 14,
 		borderRadius: 22,
 		alignItems: 'center',
 	},
@@ -213,14 +228,14 @@ const styles = StyleSheet.create({
 		marginTop: 8,
 		fontWeight: '600',
 	},
-    errorText: {
-      color: '#fecaca',
-      marginTop: 6,
-      fontSize: 12,
-      fontWeight: '600',
-    },
+	errorText: {
+		color: '#fecaca',
+		marginTop: 6,
+		fontSize: 12,
+		fontWeight: '600',
+	},
 	linkButton: {
-		marginTop: 12,
+		marginTop: 14,
 		alignItems: 'center',
 	},
 	linkText: {

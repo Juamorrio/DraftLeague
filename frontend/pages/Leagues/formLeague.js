@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, Switch, ActivityIndicator } from 'react-native';
+import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, Switch, ActivityIndicator, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 export default function FormLeague({
@@ -28,8 +28,8 @@ export default function FormLeague({
 		<Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
 			<View style={styles.modalBackdrop}>
 				<LinearGradient colors={["#197319", "#013055"]} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={styles.modalCard}>
-					<Text style={styles.title}>{isEditing ? 'Editar Liga' : 'Nueva Liga'}</Text>
-
+					<Text style={styles.title}>{isEditing ? 'Editar Liga' : 'Nueva Liga'}</Text>				<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+				<ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
 					<View style={styles.row}>
 						<Text style={styles.label}>Nombre:</Text>
 						<TextInput value={name} onChangeText={setName} style={[styles.input, fieldErrors.name ? styles.inputError : null]} />
@@ -82,8 +82,8 @@ export default function FormLeague({
 						>
 							{loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.actionText}>Guardar</Text>}
 						</TouchableOpacity>
-					</View>
-				</LinearGradient>
+					</View>				</ScrollView>
+				</KeyboardAvoidingView>				</LinearGradient>
 			</View>
 		</Modal>
 	);

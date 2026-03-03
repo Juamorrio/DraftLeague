@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, TextInput } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, TextInput, Dimensions } from 'react-native';
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 import { useLeague } from '../../context/LeagueContext';
 import authService, { authenticatedFetch } from '../../services/authService';
 import withAuth from '../../components/withAuth';
@@ -221,9 +222,9 @@ function Market() {
 export default withAuth(Market);
 
 const styles = StyleSheet.create({
-	container: { flex: 1, backgroundColor: '#fff', padding: 16 },
+	container: { flex: 1, backgroundColor: '#fff', padding: 12 },
 	headerContainer: { marginBottom: 16 },
-	header: { fontSize: 24, fontWeight: '800', color: '#1a5c3a' },
+	header: { fontSize: SCREEN_WIDTH < 380 ? 18 : 22, fontWeight: '800', color: '#1a5c3a' },
 	budgetContainer: { 
 		marginTop: 12, 
 		padding: 14, 
@@ -260,12 +261,12 @@ const styles = StyleSheet.create({
 		borderColor: '#ddd',
 		backgroundColor: '#f9f9f9'
 	},
-	playerInfo: { flex: 1, marginLeft: 12 },
-	playerName: { fontSize: 16, fontWeight: '700' },
-	playerMeta: { fontSize: 12, color: '#555', marginTop: 4 },
+	playerInfo: { flex: 1, marginLeft: 8, flexShrink: 1 },
+	playerName: { fontSize: SCREEN_WIDTH < 380 ? 13 : 15, fontWeight: '700' },
+	playerMeta: { fontSize: 11, color: '#555', marginTop: 2 },
 	bidderText: { fontSize: 11, color: '#4CAF50', marginTop: 2 },
 	timeText: { fontSize: 10, color: '#999', marginTop: 2 },
-	bidContainer: { flexDirection: 'column', alignItems: 'flex-end', minWidth: 100 },
+	bidContainer: { flexDirection: 'column', alignItems: 'flex-end', minWidth: SCREEN_WIDTH < 380 ? 80 : 100 },
 	activeBidContainer: {
 		alignItems: 'center',
 		padding: 8,
@@ -283,7 +284,7 @@ const styles = StyleSheet.create({
 		borderRadius: 6,
 		paddingHorizontal: 8,
 		paddingVertical: 4,
-		width: 80,
+		width: SCREEN_WIDTH < 380 ? 64 : 80,
 		marginBottom: 6,
 		textAlign: 'center'
 	},

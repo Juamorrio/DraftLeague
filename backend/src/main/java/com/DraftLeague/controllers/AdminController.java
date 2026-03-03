@@ -8,6 +8,7 @@ import com.DraftLeague.services.PlayerImportService;
 import com.DraftLeague.services.UserService;
 import com.DraftLeague.services.GameweekStateService;
 import com.DraftLeague.services.FantasyPointsService;
+import com.DraftLeague.services.MarketValueUpdateService;
 import com.DraftLeague.repositories.PlayerRepository;
 import com.DraftLeague.repositories.UserRepository;
 import com.DraftLeague.services.MarketService;
@@ -34,6 +35,7 @@ public class AdminController {
     private final MatchService matchService;
     private final GameweekStateService gameweekStateService;
     private final FantasyPointsService fantasyPointsService;
+    private final MarketValueUpdateService marketValueUpdateService;
 
     public AdminController(UserRepository userRepository, 
                           LeagueRepository leagueRepository,
@@ -43,7 +45,8 @@ public class AdminController {
                           UserService userService,
                           MatchService matchService,
                           GameweekStateService gameweekStateService,
-                          FantasyPointsService fantasyPointsService) {
+                          FantasyPointsService fantasyPointsService,
+                          MarketValueUpdateService marketValueUpdateService) {
         this.userRepository = userRepository;
         this.leagueRepository = leagueRepository;
         this.playerRepository = playerRepository;
@@ -53,6 +56,7 @@ public class AdminController {
         this.matchService = matchService;
         this.gameweekStateService = gameweekStateService;
         this.fantasyPointsService = fantasyPointsService;
+        this.marketValueUpdateService = marketValueUpdateService;
     }
 
     private boolean isAdmin(Authentication auth) {
@@ -221,6 +225,59 @@ public class AdminController {
             ));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", "Error al sincronizar jugadores: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Manually triggers a full market value recalculation for all players.
+     * POST /api/v1/admin/market/recalculate-prices
+     */
+    @PostMapping("/market/recalculate-prices")
+    public ResponseEntity<?> recalculateMarketPrices(Authentication auth) {
+        if (!isAdmin(auth)) {
+            return ResponseEntity.status(403).body(Map.of("error", "Acceso denegado"));
+        }
+        try {
+            Map<String, Integer> result = marketValueUpdateService.recalculateAllMarketValues();
+            return ResponseEntity.ok(Map.of(
+                "message", "Precios de mercado recalculados correctamente.",
+                "updatedCount", result.getOrDefault("updatedCount", 0),
+                "skippedCount", result.getOrDefault("skippedCount", 0),
+                "errorCount",   result.getOrDefault("errorCount",   0)
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Map.of("error", "Error al recalcular precios: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Manually triggers a market value recalculation for a single player.
+     * POST /api/v1/admin/market/recalculate-prices/{playerId}
+     */
+    @PostMapping("/market/recalculate-prices/{playerId}")
+    public ResponseEntity<?> recalculateMarketPriceForPlayer(
+            @PathVariable String playerId, Authentication auth) {
+        if (!isAdmin(auth)) {
+            return ResponseEntity.status(403).body(Map.of("error", "Acceso denegado"));
+        }
+        try {
+            com.DraftLeague.models.Player.Player player = playerRepository.findById(playerId)
+                    .orElseThrow(() -> new RuntimeException("Jugador no encontrado: " + playerId));
+            int oldValue = player.getMarketValue();
+            boolean changed = marketValueUpdateService.recalculateForPlayer(player);
+            int newValue = playerRepository.findById(playerId)
+                    .map(com.DraftLeague.models.Player.Player::getMarketValue)
+                    .orElse(oldValue);
+            return ResponseEntity.ok(Map.of(
+                "playerId",  playerId,
+                "oldValue",  oldValue,
+                "newValue",  newValue,
+                "changed",   changed
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Map.of("error", "Error: " + e.getMessage()));
         }
     }
 

@@ -1,5 +1,6 @@
 package com.DraftLeague.repositories;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -101,6 +102,28 @@ public interface PlayerStatisticRepository extends JpaRepository<PlayerStatistic
         ORDER BY m.round DESC
         """, nativeQuery = true)
     List<Map<String, Object>> getPlayerMatchesSummary(@Param("playerId") String playerId);
+
+    /**
+     * Returns the most recent {@code N} statistics for a player, ordered by most recent match first.
+     * Used by MarketValueUpdateService to assess short-term form.
+     */
+    @Query("SELECT ps FROM PlayerStatistic ps WHERE ps.playerId = :playerId ORDER BY ps.matchId DESC")
+    List<PlayerStatistic> findRecentStatsByPlayerId(@Param("playerId") String playerId, Pageable pageable);
+
+    /**
+     * Returns aggregate discipline data (yellow/red cards) for a player across their last N match IDs.
+     */
+    @Query(value = """
+        SELECT
+            COALESCE(SUM(yellow_cards), 0) AS total_yellow_cards,
+            COALESCE(SUM(red_cards), 0)    AS total_red_cards
+        FROM player_statistic
+        WHERE player_id = :playerId
+        ORDER BY match_id DESC
+        LIMIT :limit
+        """, nativeQuery = true)
+    Map<String, Object> findRecentDisciplineByPlayerId(@Param("playerId") String playerId,
+                                                       @Param("limit") int limit);
 
     @Query(value = """
         SELECT

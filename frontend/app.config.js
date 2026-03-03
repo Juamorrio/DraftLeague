@@ -29,7 +29,7 @@ export default {
   extra: {
     EXPO_PUBLIC_API_BASE: process.env.EXPO_PUBLIC_API_BASE || 'http://localhost:8080',
     eas: {
-      projectId: process.env.EAS_PROJECT_ID || '',
+      projectId: '0624c8da-b38f-4629-895c-b22eee1200cc',
     },
   },
 };

@@ -1,0 +1,147 @@
+name: CD – Build & Push Docker Images
+
+on:
+  push:
+    branches: [ main, trunk ]
+  # También se puede disparar manualmente
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag de imagen personalizado (ej: v1.2.3)'
+        required: false
+        default: latest
+
+env:
+  REGISTRY: ghcr.io
+  # GITHUB_REPOSITORY = owner/repo  (ej: jmore/DraftLeague)
+  IMAGE_BACKEND: ghcr.io/${{ github.repository }}/backend
+  IMAGE_FRONTEND: ghcr.io/${{ github.repository }}/frontend
+
+jobs:
+  # ── 1. Tests antes de publicar ─────────────────────────────────────────────
+  test-backend:
+    name: Test Backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run Maven tests
+        run: mvn verify -B
+
+  # ── 2. Build y push de imágenes Docker ────────────────────────────────────
+  build-and-push:
+    name: Build & Push
+    runs-on: ubuntu-latest
+    needs: test-backend
+    permissions:
+      contents: read
+      packages: write   # necesario para push a GHCR
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Calcula la etiqueta: usa el input manual, o 'latest' + el SHA corto
+      - name: Compute image tag
+        id: tag
+        run: |
+          if [ -n "${{ github.event.inputs.tag }}" ]; then
+            echo "TAG=${{ github.event.inputs.tag }}" >> $GITHUB_ENV
+          else
+            SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+            echo "TAG=latest" >> $GITHUB_ENV
+            echo "SHA_TAG=${SHORT_SHA}" >> $GITHUB_ENV
+          fi
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Habilita caché de capas entre ejecuciones (BuildKit)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # ── Backend ────────────────────────────────────────────────────────────
+      - name: Build & push backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.backend
+          push: true
+          tags: |
+            ${{ env.IMAGE_BACKEND }}:${{ env.TAG }}
+            ${{ env.IMAGE_BACKEND }}:${{ env.SHA_TAG || env.TAG }}
+          cache-from: type=gha,scope=backend
+          cache-to:   type=gha,scope=backend,mode=max
+
+      # ── Frontend ───────────────────────────────────────────────────────────
+      - name: Build & push frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.frontend
+          push: true
+          tags: |
+            ${{ env.IMAGE_FRONTEND }}:${{ env.TAG }}
+            ${{ env.IMAGE_FRONTEND }}:${{ env.SHA_TAG || env.TAG }}
+          cache-from: type=gha,scope=frontend
+          cache-to:   type=gha,scope=frontend,mode=max
+
+  # ── 3. Deploy en servidor remoto (opcional) ───────────────────────────────
+  # Descomenta y configura este job cuando tengas un servidor de despliegue.
+  # Requiere añadir estos Secrets en GitHub:
+  #   DEPLOY_HOST        → IP o dominio del servidor
+  #   DEPLOY_USER        → usuario SSH
+  #   DEPLOY_SSH_KEY     → clave privada SSH (sin passphrase)
+  #   DB_ROOT_PASSWORD   → contraseña root MariaDB
+  #   DB_USER            → usuario MariaDB
+  #   DB_PASSWORD        → contraseña MariaDB
+  #   JWT_SECRET         → secret JWT (mín. 512 bits)
+  #
+  # deploy:
+  #   name: Deploy to server
+  #   runs-on: ubuntu-latest
+  #   needs: build-and-push
+  #   environment: production
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Copy docker-compose to server
+  #       uses: appleboy/scp-action@v0.1.7
+  #       with:
+  #         host:     ${{ secrets.DEPLOY_HOST }}
+  #         username: ${{ secrets.DEPLOY_USER }}
+  #         key:      ${{ secrets.DEPLOY_SSH_KEY }}
+  #         source:   docker-compose.yml
+  #         target:   ~/draftleague
+  #
+  #     - name: Deploy via SSH
+  #       uses: appleboy/ssh-action@v1.0.3
+  #       with:
+  #         host:     ${{ secrets.DEPLOY_HOST }}
+  #         username: ${{ secrets.DEPLOY_USER }}
+  #         key:      ${{ secrets.DEPLOY_SSH_KEY }}
+  #         script: |
+  #           cd ~/draftleague
+  #           echo "GITHUB_REPOSITORY=${{ github.repository }}" >> .env
+  #           echo "IMAGE_TAG=latest"                          >> .env
+  #           echo "DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}" >> .env
+  #           echo "DB_USER=${{ secrets.DB_USER }}"           >> .env
+  #           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}"   >> .env
+  #           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}"     >> .env
+  #           docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+  #           docker compose pull
+  #           docker compose up -d --remove-orphans
+  #           docker image prune -f

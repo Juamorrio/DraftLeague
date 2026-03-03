@@ -1,0 +1,34 @@
+# ── Stage 1: Build ──────────────────────────────────────────────────────────
+FROM maven:3.9.9-eclipse-temurin-21 AS build
+
+WORKDIR /app
+
+# Copiamos primero solo el pom.xml para aprovechar el caché de capas de Maven
+COPY pom.xml .
+
+# Descarga de dependencias (cacheado mientras pom.xml no cambie)
+RUN mvn dependency:go-offline -B
+
+# Copiamos el código fuente
+COPY backend/src backend/src
+
+# Build sin tests (los tests se ejecutan en la pipeline CI)
+RUN mvn clean package -DskipTests -B
+
+# ── Stage 2: Run ─────────────────────────────────────────────────────────────
+FROM eclipse-temurin:21-jre-alpine
+
+WORKDIR /app
+
+# curl para el healthcheck + usuario no-root
+RUN apk add --no-cache curl \
+ && addgroup -S draftleague && adduser -S draftleague -G draftleague
+USER draftleague
+
+COPY --from=build /app/target/*.jar app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", \
+            "-Djava.security.egd=file:/dev/./urandom", \
+            "-jar", "app.jar"]

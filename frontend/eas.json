@@ -7,19 +7,23 @@
       "distribution": "internal",
       "android": { "buildType": "apk" },
       "env": {
-        "EXPO_PUBLIC_API_URL": "http://localhost:8080"
+        "APP_VARIANT": "development",
+        "EXPO_PUBLIC_API_BASE": "http://localhost:8080"
       }
     },
     "preview": {
       "distribution": "internal",
       "android": { "buildType": "apk" },
       "env": {
-        "EXPO_PUBLIC_API_URL": "http://TU_IP_SERVIDOR:8080"
+        "APP_VARIANT": "preview",
+        "EXPO_PUBLIC_API_BASE": "https://TU_BACKEND.up.railway.app"
       }
     },
     "production": {
+      "android": { "buildType": "app-bundle" },
       "env": {
-        "EXPO_PUBLIC_API_URL": "http://TU_IP_SERVIDOR:8080"
+        "APP_VARIANT": "production",
+        "EXPO_PUBLIC_API_BASE": "https://TU_BACKEND.up.railway.app"
       }
     }
   },

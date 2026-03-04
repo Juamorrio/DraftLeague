@@ -33,6 +33,9 @@ __pycache__/
 *.log
 logs/
 
-# ── Reports / Scripts de scraping ────────────────────────────────────────────
+# ── Reports ───────────────────────────────────────────────────────────────────
 reports/
-scripts/
+
+# ── Scripts: se incluyen .py y .json en la imagen; .env ya excluido arriba ───
+scripts/__pycache__/
+scripts/*.pyc

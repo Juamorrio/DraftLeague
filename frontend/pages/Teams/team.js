@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { AppState, View, Text, StyleSheet, TouchableOpacity, Image, Modal, FlatList, Alert, ScrollView, ActivityIndicator } from 'react-native';
+import { AppState, View, Text, StyleSheet, TouchableOpacity, Image, Modal, FlatList, Alert, ScrollView, ActivityIndicator, TextInput } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useLeague } from '../../context/LeagueContext';
 import pitch from '../../assets/Team/pitch.png';
@@ -8,6 +8,7 @@ import authService, { authenticatedFetch } from '../../services/authService';
 import predictionService from '../../services/predictionService';
 import { LineChartComponent } from '../../components/StatisticsChart';
 import withAuth from '../../components/withAuth';
+import { createOffer } from '../../services/tradeOfferService';
 
 
 function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
@@ -35,6 +36,12 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 	const [pointsHistory, setPointsHistory] = useState(null);
 	const [teamsLocked, setTeamsLocked] = useState(false);
 	const [activeGameweek, setActiveGameweek] = useState(null);
+
+	// Trade offer state
+	const [offerModalVisible, setOfferModalVisible] = useState(false);
+	const [offerPriceText, setOfferPriceText] = useState('');
+	const [offerPlayer, setOfferPlayer] = useState(null);
+	const [offerSubmitting, setOfferSubmitting] = useState(false);
 
 	// Refs for auto-refresh (avoid stale closures in intervals)
 	const teamIdRef = useRef(null);
@@ -401,6 +408,26 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 		setSelectedPlayer(player);
 		setOptionsVisible(false);
 		navigation.navigate('PlayerStats');
+	};
+
+	const sendTradeOffer = async () => {
+		if (!offerPlayer || !selectedLeague?.id || !teamIdRef.current) return;
+		const price = parseInt(offerPriceText, 10);
+		if (isNaN(price) || price <= 0) {
+			Alert.alert('Error', 'Introduce un precio válido');
+			return;
+		}
+		setOfferSubmitting(true);
+		try {
+			await createOffer(teamIdRef.current, offerPlayer.id, price, selectedLeague.id);
+			setOfferModalVisible(false);
+			setOfferPriceText('');
+			Alert.alert('Oferta enviada', `Tu oferta de €${price.toLocaleString('es-ES')} por ${offerPlayer.fullName || offerPlayer.name} ha sido enviada.`);
+		} catch (e) {
+			Alert.alert('Error', e?.message || 'No se pudo enviar la oferta');
+		} finally {
+			setOfferSubmitting(false);
+		}
 	};
 
 	const buyout = async (pt) => {
@@ -813,6 +840,17 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 												<TouchableOpacity style={[styles.saveBtn]} onPress={handleClausulazoPress}>
 													<Text style={styles.saveBtnText}>Clausulazo</Text>
 												</TouchableOpacity>
+												<TouchableOpacity
+													style={[styles.saveBtn, { backgroundColor: '#7c3aed' }]}
+													onPress={() => {
+														setOfferPlayer(selectedPT.player);
+														setOfferPriceText(String(selectedPT.player?.marketValue || ''));
+														setOptionsVisible(false);
+														setOfferModalVisible(true);
+													}}
+												>
+													<Text style={styles.saveBtnText}>Hacer oferta</Text>
+												</TouchableOpacity>
 											</View>
 										);
 									})())
@@ -825,6 +863,43 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 					</View>
 				</View>
 			</Modal>
+
+		{/* Trade Offer Price Modal */}
+		<Modal visible={offerModalVisible} transparent animationType="fade" onRequestClose={() => setOfferModalVisible(false)}>
+			<View style={styles.modalBackdrop}>
+				<View style={styles.modalCard}>
+					<Text style={styles.modalTitle}>Hacer oferta por {offerPlayer?.fullName || offerPlayer?.name}</Text>
+					<Text style={{ fontSize: 12, color: '#555', marginBottom: 8 }}>
+						Valor de mercado: €{(offerPlayer?.marketValue || 0).toLocaleString('es-ES')}
+					</Text>
+					<Text style={{ fontSize: 12, fontWeight: '700', marginBottom: 4 }}>Tu oferta (€)</Text>
+					<TextInput
+						style={{ borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 10, fontSize: 16, marginBottom: 12 }}
+						placeholder="Introduce el precio"
+						keyboardType="numeric"
+						value={offerPriceText}
+						onChangeText={setOfferPriceText}
+					/>
+					<View style={{ flexDirection: 'row', gap: 8 }}>
+						<TouchableOpacity
+							style={[styles.saveBtn, { flex: 1, backgroundColor: '#7c3aed', opacity: offerSubmitting ? 0.6 : 1 }]}
+							onPress={sendTradeOffer}
+							disabled={offerSubmitting}
+						>
+							<Text style={[styles.saveBtnText, { textAlign: 'center' }]}>
+								{offerSubmitting ? 'Enviando...' : 'Enviar oferta'}
+							</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							style={[styles.closeBtn, { flex: 1, alignSelf: 'stretch', justifyContent: 'center', alignItems: 'center' }]}
+							onPress={() => setOfferModalVisible(false)}
+						>
+							<Text style={styles.closeText}>Cancelar</Text>
+						</TouchableOpacity>
+					</View>
+				</View>
+			</View>
+		</Modal>
 		</View>
 	);
 }

@@ -152,7 +152,7 @@ public class PlayerImportService {
 		Path scriptPath = Paths.get(scriptsPath, "players.py").toAbsolutePath();
 		
 		List<String> command = new ArrayList<>();
-		command.add("python");
+		command.add("python3");
 		command.add(scriptPath.toString());
 		
 		ProcessBuilder processBuilder = new ProcessBuilder(command);
@@ -186,7 +186,7 @@ public class PlayerImportService {
 		Path scriptPath = Paths.get(scriptsPath, "players_data.py").toAbsolutePath();
 
 		List<String> command = new ArrayList<>();
-		command.add("python");
+		command.add("python3");
 		command.add(scriptPath.toString());
 		command.add(String.valueOf(gameweek));
 

@@ -34,6 +34,9 @@ public class PlayerImportService {
 	@Value("${scripts.path}")
 	private String scriptsPath;
 
+	@Value("${scripts.python:/usr/bin/python3}")
+	private String pythonExecutable;
+
 	public PlayerImportService(PlayerRepository repo, ObjectMapper objectMapper,
 			                       PlayerStatisticService playerStatisticService) {
 		this.repo = repo;
@@ -152,7 +155,7 @@ public class PlayerImportService {
 		Path scriptPath = Paths.get(scriptsPath, "players.py").toAbsolutePath();
 		
 		List<String> command = new ArrayList<>();
-		command.add("python3");
+		command.add(pythonExecutable);
 		command.add(scriptPath.toString());
 		
 		ProcessBuilder processBuilder = new ProcessBuilder(command);
@@ -186,7 +189,7 @@ public class PlayerImportService {
 		Path scriptPath = Paths.get(scriptsPath, "players_data.py").toAbsolutePath();
 
 		List<String> command = new ArrayList<>();
-		command.add("python3");
+		command.add(pythonExecutable);
 		command.add(scriptPath.toString());
 		command.add(String.valueOf(gameweek));
 

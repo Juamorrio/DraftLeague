@@ -32,6 +32,9 @@ public class MatchService {
     @Value("${scripts.path}")
     private String scriptsPath;
 
+    @Value("${scripts.python:/usr/bin/python3}")
+    private String pythonExecutable;
+
     public MatchService(ObjectMapper objectMapper, MatchRepository matchRepository) {
         this.objectMapper = objectMapper;
         this.matchRepository = matchRepository;
@@ -67,8 +70,7 @@ public class MatchService {
         Path scriptPath = Paths.get(scriptsPath, "home.py").toAbsolutePath();
         
         List<String> command = new ArrayList<>();
-        command.add("python3");
-        command.add(scriptPath.toString());
+        command.add(pythonExecutable);
         
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         processBuilder.redirectErrorStream(true);

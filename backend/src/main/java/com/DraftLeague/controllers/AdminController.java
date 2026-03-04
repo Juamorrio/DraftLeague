@@ -199,9 +199,8 @@ public class AdminController {
 
         try {
             String output = matchService.syncMatches();
-            String importResult = matchService.importMatchesFromJson();
             return ResponseEntity.ok(Map.of(
-                "message", "Partidos sincronizados e importados correctamente. " + importResult,
+                "message", "Partidos sincronizados correctamente.",
                 "output", output
             ));
         } catch (Exception e) {
@@ -217,11 +216,9 @@ public class AdminController {
 
         try {
             String output = importService.syncPlayers();
-            int newPlayers = importService.importNewPlayersOnly();
             return ResponseEntity.ok(Map.of(
-                "message", "Jugadores sincronizados. " + newPlayers + " nuevos jugadores añadidos a la base de datos.",
-                "output", output,
-                "newPlayers", newPlayers
+                "message", "Jugadores sincronizados correctamente.",
+                "output", output
             ));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", "Error al sincronizar jugadores: " + e.getMessage()));

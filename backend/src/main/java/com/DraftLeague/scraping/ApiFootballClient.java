@@ -2,6 +2,7 @@ package com.DraftLeague.scraping;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
@@ -27,9 +28,13 @@ public class ApiFootballClient {
     private final WebClient webClient;
 
     public ApiFootballClient(@Value("${api.football.key}") String apiKey) {
+        ExchangeStrategies strategies = ExchangeStrategies.builder()
+                .codecs(config -> config.defaultCodecs().maxInMemorySize(10 * 1024 * 1024)) 
+                .build();
         this.webClient = WebClient.builder()
                 .baseUrl(BASE_URL)
                 .defaultHeader("x-apisports-key", apiKey)
+                .exchangeStrategies(strategies)
                 .build();
     }
 

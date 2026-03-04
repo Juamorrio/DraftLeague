@@ -55,7 +55,7 @@ jobs:
             -Dsonar.organization="$SONAR_ORGANIZATION" \
             -Dsonar.host.url="https://sonarcloud.io" \
             -Dsonar.token="$SONAR_TOKEN" \
-            -Dsonar.java.binaries=backend/target/classes \
+            -Dsonar.java.binaries=target/classes \
             -Dsonar.sources=backend/src/main/java \
             -Dsonar.tests=backend/src/test/java \
             -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml

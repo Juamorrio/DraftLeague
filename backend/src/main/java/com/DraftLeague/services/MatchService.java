@@ -67,7 +67,7 @@ public class MatchService {
         Path scriptPath = Paths.get(scriptsPath, "home.py").toAbsolutePath();
         
         List<String> command = new ArrayList<>();
-        command.add("python");
+        command.add("python3");
         command.add(scriptPath.toString());
         
         ProcessBuilder processBuilder = new ProcessBuilder(command);

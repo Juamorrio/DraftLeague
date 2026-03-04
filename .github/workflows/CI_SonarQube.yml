@@ -41,20 +41,21 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
+          key: ${{ runner.os }}-sonar-${{ hashFiles('**/pom.xml') }}
 
       - name: Build, Test and Analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: >
-          mvn clean verify sonar:sonar
-          -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
-          -Dsonar.projectName=DraftLeague
-          -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
-          -Dsonar.token=${{ secrets.SONAR_TOKEN }}
-          -Dsonar.java.binaries=backend/target/classes
-          -Dsonar.sources=backend/src/main/java
-          -Dsonar.tests=backend/src/test/java
-          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+          SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
+        run: |
+          mvn clean verify sonar:sonar \
+            -Dsonar.projectKey="$SONAR_PROJECT_KEY" \
+            -Dsonar.projectName=DraftLeague \
+            -Dsonar.organization="$SONAR_ORGANIZATION" \
+            -Dsonar.host.url="https://sonarcloud.io" \
+            -Dsonar.token="$SONAR_TOKEN" \
+            -Dsonar.java.binaries=target/classes \
+            -Dsonar.sources=backend/src/main/java \
+            -Dsonar.tests=backend/src/test/java \
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml

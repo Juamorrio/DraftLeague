@@ -36,6 +36,7 @@ public class FantasyPointsService {
     private final MatchRepository matchRepository;
     private final PlayerRepository playerRepository;
     private final TeamPlayerGameweekPointsRepository tpgwPointsRepository;
+    private final PlayerPredictionService playerPredictionService;
 
  
     @Transactional
@@ -221,6 +222,9 @@ public class FantasyPointsService {
                 System.err.println("Error calculating points for team " + team.getId() + ": " + e.getMessage());
             }
         }
+
+        // Invalidate prediction cache so the next GET returns fresh predictions
+        playerPredictionService.invalidateCache();
     }
 
     @Transactional

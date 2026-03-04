@@ -1,4 +1,4 @@
-﻿package com.DraftLeague.services;
+package com.DraftLeague.services;
 
 import com.DraftLeague.dto.PlayerImportDto;
 import com.DraftLeague.scraping.GameweekStatsSyncService;

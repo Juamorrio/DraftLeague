@@ -1,26 +1,47 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { authenticatedFetch } from '../services/authService';
 import { useLeague } from '../context/LeagueContext';
 
-export default function NotificationBell({ onPress }) {
+const STORAGE_KEY = 'notif_last_seen_id';
+
+export default function NotificationBell({ onPress, onRequestSync }) {
 	const { selectedLeague } = useLeague();
 	const [unreadCount, setUnreadCount] = useState(0);
 	const [lastNotificationId, setLastNotificationId] = useState(0);
+	const [ready, setReady] = useState(false);
+
+	// Load persisted lastNotificationId on mount
+	useEffect(() => {
+		AsyncStorage.getItem(STORAGE_KEY).then(val => {
+			if (val) setLastNotificationId(parseInt(val, 10));
+			setReady(true);
+		}).catch(() => setReady(true));
+	}, []);
+
+	// Persist whenever lastNotificationId changes
+	useEffect(() => {
+		if (!ready) return;
+		AsyncStorage.setItem(STORAGE_KEY, String(lastNotificationId)).catch(() => {});
+	}, [lastNotificationId, ready]);
 
 	useEffect(() => {
-		if (!selectedLeague?.id) return;
-		
+		if (!selectedLeague?.id || !ready) return;
+
+		let currentLastId = lastNotificationId;
+
 		const checkNewNotifications = async () => {
 			try {
 				const res = await authenticatedFetch(
-					`/api/v1/notifications/league/${selectedLeague.id}/new?lastId=${lastNotificationId}`
+					`/api/v1/notifications/league/${selectedLeague.id}/new?lastId=${currentLastId}`
 				);
 				if (res.ok) {
 					const newNotifications = await res.json();
 					if (newNotifications.length > 0) {
 						setUnreadCount(prev => prev + newNotifications.length);
 						const maxId = Math.max(...newNotifications.map(n => n.id));
+						currentLastId = maxId;
 						setLastNotificationId(maxId);
 					}
 				}
@@ -29,17 +50,23 @@ export default function NotificationBell({ onPress }) {
 			}
 		};
 
-		// Cargar notificaciones iniciales
 		checkNewNotifications();
-
-		// Verificar cada 30 segundos
 		const interval = setInterval(checkNewNotifications, 30000);
 		return () => clearInterval(interval);
-	}, [selectedLeague, lastNotificationId]);
+	}, [selectedLeague?.id, ready]);
+
+	// Called by parent when modal is closed, with the max notification id seen in the modal
+	const syncMaxSeen = useCallback((maxId) => {
+		if (typeof maxId === 'number' && maxId > lastNotificationId) {
+			setLastNotificationId(maxId);
+		}
+		setUnreadCount(0);
+	}, [lastNotificationId]);
 
 	const handlePress = () => {
 		setUnreadCount(0);
 		if (onPress) onPress();
+		if (onRequestSync) onRequestSync(syncMaxSeen);
 	};
 
 	return (

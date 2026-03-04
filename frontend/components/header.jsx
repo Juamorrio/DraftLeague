@@ -11,6 +11,15 @@ import NotificationModal from './NotificationModal';
 
 const Header = ({ userIcon, logoIcon, notificationIcon, settingsIcon, onLogout }) => {
   const [notificationModalVisible, setNotificationModalVisible] = useState(false);
+  const [bellSyncCallback, setBellSyncCallback] = useState(null);
+
+  const handleModalClose = (maxSeenId) => {
+    setNotificationModalVisible(false);
+    if (bellSyncCallback && typeof bellSyncCallback === 'function') {
+      bellSyncCallback(maxSeenId);
+      setBellSyncCallback(null);
+    }
+  };
 
   return (
     <>
@@ -29,7 +38,10 @@ const Header = ({ userIcon, logoIcon, notificationIcon, settingsIcon, onLogout }
         </View>
 
         <View style={styles.iconContainer}>
-          <NotificationBell onPress={() => setNotificationModalVisible(true)} />
+          <NotificationBell
+            onPress={() => setNotificationModalVisible(true)}
+            onRequestSync={(syncFn) => setBellSyncCallback(() => syncFn)}
+          />
         </View>
 
         <TouchableOpacity style={styles.iconContainer} onPress={onLogout}>
@@ -39,7 +51,7 @@ const Header = ({ userIcon, logoIcon, notificationIcon, settingsIcon, onLogout }
 
       <NotificationModal
         visible={notificationModalVisible}
-        onClose={() => setNotificationModalVisible(false)}
+        onClose={handleModalClose}
       />
     </>
   );

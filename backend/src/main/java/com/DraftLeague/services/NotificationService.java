@@ -117,6 +117,78 @@ public class NotificationService {
     }
 
     @Transactional
+    public void createTradeOfferNotification(Integer leagueId, User buyer, User seller, Player player, Integer offerPrice, Long offerId) {
+        League league = leagueRepository.findById(Long.valueOf(leagueId))
+            .orElseThrow(() -> new RuntimeException("Liga no encontrada"));
+
+        NotificationLeague notificationLeague = notificationLeagueRepository.findByLeagueId(leagueId)
+            .orElseGet(() -> {
+                NotificationLeague nl = new NotificationLeague();
+                nl.setLeague(league);
+                return notificationLeagueRepository.save(nl);
+            });
+
+        Notification notification = new Notification();
+        notification.setType(NotificationType.TRADE_OFFER);
+        notification.setCreatedAt(new Date());
+        notification.setNotificationLeague(notificationLeague);
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("offerId", offerId);
+        payload.put("buyerUsername", buyer.getUsername());
+        payload.put("buyerId", buyer.getId());
+        payload.put("sellerUsername", seller.getUsername());
+        payload.put("sellerId", seller.getId());
+        payload.put("playerName", player.getFullName());
+        payload.put("playerId", player.getId());
+        payload.put("price", offerPrice);
+
+        try {
+            notification.setPayload(objectMapper.writeValueAsString(payload));
+        } catch (Exception e) {
+            throw new RuntimeException("Error al crear payload de notificación de oferta", e);
+        }
+
+        notificationRepository.save(notification);
+    }
+
+    @Transactional
+    public void createTradeResultNotification(Integer leagueId, User buyer, User seller, Player player, Integer price, Long offerId, boolean accepted) {
+        League league = leagueRepository.findById(Long.valueOf(leagueId))
+            .orElseThrow(() -> new RuntimeException("Liga no encontrada"));
+
+        NotificationLeague notificationLeague = notificationLeagueRepository.findByLeagueId(leagueId)
+            .orElseGet(() -> {
+                NotificationLeague nl = new NotificationLeague();
+                nl.setLeague(league);
+                return notificationLeagueRepository.save(nl);
+            });
+
+        Notification notification = new Notification();
+        notification.setType(accepted ? NotificationType.TRADE_ACCEPTED : NotificationType.TRADE_REJECTED);
+        notification.setCreatedAt(new Date());
+        notification.setNotificationLeague(notificationLeague);
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("offerId", offerId);
+        payload.put("buyerUsername", buyer.getUsername());
+        payload.put("buyerId", buyer.getId());
+        payload.put("sellerUsername", seller.getUsername());
+        payload.put("sellerId", seller.getId());
+        payload.put("playerName", player.getFullName());
+        payload.put("playerId", player.getId());
+        payload.put("price", price);
+
+        try {
+            notification.setPayload(objectMapper.writeValueAsString(payload));
+        } catch (Exception e) {
+            throw new RuntimeException("Error al crear payload de resultado de oferta", e);
+        }
+
+        notificationRepository.save(notification);
+    }
+
+    @Transactional
     public void createSellNotification(Integer leagueId, User seller, Player player, int price) {
         League league = leagueRepository.findById(Long.valueOf(leagueId))
             .orElseThrow(() -> new RuntimeException("Liga no encontrada"));

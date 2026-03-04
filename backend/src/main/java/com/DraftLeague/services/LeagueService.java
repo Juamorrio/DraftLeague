@@ -20,6 +20,8 @@ import com.DraftLeague.repositories.PlayerTeamRepository;
 import com.DraftLeague.models.Player.Position;
 import com.DraftLeague.models.League.League;
 import com.DraftLeague.repositories.LeagueRepository;
+import com.DraftLeague.repositories.MarketPlayerRepository;
+import com.DraftLeague.repositories.NotificationLeagueRepository;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Collections;
@@ -33,14 +35,20 @@ public class LeagueService {
     private final TeamRepository teamRepository;
     private final PlayerRepository playerRepository;
     private final PlayerTeamRepository playerTeamRepository;
+    private final NotificationLeagueRepository notificationLeagueRepository;
+    private final MarketPlayerRepository marketPlayerRepository;
 
     public LeagueService(LeagueRepository leagueRepository, UserRepository userRepository, TeamRepository teamRepository,
-                         PlayerRepository playerRepository, PlayerTeamRepository playerTeamRepository) {
+                         PlayerRepository playerRepository, PlayerTeamRepository playerTeamRepository,
+                         NotificationLeagueRepository notificationLeagueRepository,
+                         MarketPlayerRepository marketPlayerRepository) {
         this.leagueRepository = leagueRepository;
         this.userRepository = userRepository;
         this.teamRepository = teamRepository;
         this.playerRepository = playerRepository;
         this.playerTeamRepository = playerTeamRepository;
+        this.notificationLeagueRepository = notificationLeagueRepository;
+        this.marketPlayerRepository = marketPlayerRepository;
     }
 
     public League createLeague(CreateLeagueRequest req) {
@@ -136,6 +144,12 @@ public class LeagueService {
             throw new RuntimeException("Usuario no autenticado");
         }
         
+        // Delete notification_league rows first (FK constraint)
+        notificationLeagueRepository.deleteAllByLeagueId(league.getId());
+
+        // Delete market players (FK to league)
+        marketPlayerRepository.deleteAll(marketPlayerRepository.findByLeague(league));
+
         List<Team> teams = teamRepository.findByLeague(league);
         if (teams != null && !teams.isEmpty()) {
             for(Team t : teams) {

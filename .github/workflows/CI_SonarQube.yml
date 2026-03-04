@@ -41,7 +41,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
+          key: ${{ runner.os }}-sonar-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-sonar
 
       - name: Build, Test and Analyze
@@ -50,6 +50,8 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
           SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
         run: |
+          # Strip trailing slash from host URL to avoid double-slash in API calls
+          SONAR_HOST_URL="${SONAR_HOST_URL%/}"
           mvn clean verify sonar:sonar \
             -Dsonar.projectKey="$SONAR_PROJECT_KEY" \
             -Dsonar.projectName=DraftLeague \

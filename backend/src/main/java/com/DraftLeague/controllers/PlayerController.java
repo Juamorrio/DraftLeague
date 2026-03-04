@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.DraftLeague.models.Player.PlayerMarketValueHistory;
 import com.DraftLeague.models.user.User;
+import com.DraftLeague.repositories.PlayerMarketValueHistoryRepository;
 import com.DraftLeague.repositories.UserRepository;
-import com.DraftLeague.models.user.User;
 import com.DraftLeague.models.Player.Player;
 import com.DraftLeague.models.Team.Team;
-import com.DraftLeague.repositories.UserRepository;
 import com.DraftLeague.services.PlayerService;
 
 @RestController
@@ -30,10 +30,13 @@ public class PlayerController {
     
     private final PlayerService playerService;
     private final UserRepository userRepository;
+    private final PlayerMarketValueHistoryRepository marketValueHistoryRepository;
 
-    public PlayerController(PlayerService playerService, UserRepository userRepository) {
+    public PlayerController(PlayerService playerService, UserRepository userRepository,
+                            PlayerMarketValueHistoryRepository marketValueHistoryRepository) {
         this.playerService = playerService;
         this.userRepository = userRepository;
+        this.marketValueHistoryRepository = marketValueHistoryRepository;
     }
 
     @GetMapping
@@ -118,6 +121,22 @@ public class PlayerController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Error al cargar imagen: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Returns the market value evolution history for a player, sorted by gameweek ascending.
+     * GET /api/v1/players/{playerId}/market-value-history
+     */
+    @GetMapping("/{playerId}/market-value-history")
+    public ResponseEntity<?> getMarketValueHistory(@PathVariable String playerId) {
+        try {
+            List<PlayerMarketValueHistory> history =
+                    marketValueHistoryRepository.findByPlayerIdOrderByGameweekAsc(playerId);
+            return ResponseEntity.ok(history);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error al obtener historial de valor: " + e.getMessage()));
         }
     }
 

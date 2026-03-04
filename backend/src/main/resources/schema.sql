@@ -188,6 +188,21 @@ CREATE TABLE IF NOT EXISTS `team_player_gameweek_points` (
     INDEX `idx_team_player` (`team_id`, `player_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Historial de variaciones del valor de mercado de jugadores por jornada
+CREATE TABLE IF NOT EXISTS `player_market_value_history` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `player_id` VARCHAR(255) NOT NULL,
+    `gameweek` INT NOT NULL,
+    `previous_value` INT NOT NULL,
+    `new_value` INT NOT NULL,
+    `change_amount` INT NOT NULL,
+    `change_percentage` DOUBLE NOT NULL,
+    `recorded_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY `unique_player_gameweek_history` (`player_id`, `gameweek`),
+    INDEX `idx_player_history` (`player_id`),
+    INDEX `idx_gameweek_history` (`gameweek`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Singleton table that holds the global gameweek state managed by the admin
 -- id is always 1 (enforced at application level)
 CREATE TABLE IF NOT EXISTS `gameweek_state` (

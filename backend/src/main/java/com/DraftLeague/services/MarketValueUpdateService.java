@@ -1,8 +1,10 @@
 package com.DraftLeague.services;
 
 import com.DraftLeague.models.Player.Player;
+import com.DraftLeague.models.Player.PlayerMarketValueHistory;
 import com.DraftLeague.models.Player.Position;
 import com.DraftLeague.models.Statistics.PlayerStatistic;
+import com.DraftLeague.repositories.PlayerMarketValueHistoryRepository;
 import com.DraftLeague.repositories.PlayerRepository;
 import com.DraftLeague.repositories.PlayerStatisticRepository;
 import com.DraftLeague.repositories.PlayerTeamRepository;
@@ -12,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -66,6 +69,7 @@ public class MarketValueUpdateService {
     private final PlayerRepository playerRepository;
     private final PlayerStatisticRepository playerStatisticRepository;
     private final PlayerTeamRepository playerTeamRepository;
+    private final PlayerMarketValueHistoryRepository marketValueHistoryRepository;
 
     // ── Public API ────────────────────────────────────────────────────────────
 
@@ -77,14 +81,28 @@ public class MarketValueUpdateService {
      */
     @Transactional
     public Map<String, Integer> recalculateAllMarketValues() {
-        log.info("[MarketValueUpdate] Starting full market value recalculation…");
+        return recalculateAllMarketValuesForGameweek(null);
+    }
+
+    /**
+     * Recalculates and persists market values for every player and records a
+     * price-history snapshot for the given gameweek.
+     *
+     * @param gameweek the gameweek number to associate with the history record,
+     *                 or {@code null} to skip history recording.
+     * @return A summary map containing {@code updatedCount}, {@code skippedCount},
+     *         and {@code errorCount}.
+     */
+    @Transactional
+    public Map<String, Integer> recalculateAllMarketValuesForGameweek(Integer gameweek) {
+        log.info("[MarketValueUpdate] Starting full market value recalculation (gameweek={})…", gameweek);
 
         List<Player> players = playerRepository.findAll();
         int updated = 0, skipped = 0, errors = 0;
 
         for (Player player : players) {
             try {
-                boolean changed = recalculateForPlayer(player);
+                boolean changed = recalculateForPlayer(player, gameweek);
                 if (changed) updated++; else skipped++;
             } catch (Exception e) {
                 errors++;
@@ -100,15 +118,30 @@ public class MarketValueUpdateService {
 
     /**
      * Recalculates and persists the market value for a single player.
-     * Also updates the {@code sellPrice} in every {@code PlayerTeam} row that
-     * references this player, proportionally tracking the price change.
+     * Delegates to {@link #recalculateForPlayer(Player, Integer)} with no gameweek.
      *
      * @param player the player to update
+     * @return {@code true} if the price was actually changed.
+     */
+    @Transactional
+    public boolean recalculateForPlayer(Player player) {
+        return recalculateForPlayer(player, null);
+    }
+
+    /**
+     * Recalculates and persists the market value for a single player.
+     * Also updates the {@code sellPrice} in every {@code PlayerTeam} row that
+     * references this player, proportionally tracking the price change.
+     * If {@code gameweek} is non-null, a {@link PlayerMarketValueHistory} record
+     * is upserted so the evolution can be charted per jornada.
+     *
+     * @param player   the player to update
+     * @param gameweek the active gameweek number, or {@code null} to skip history
      * @return {@code true} if the price was actually changed, {@code false} when
      *         there is not enough data to justify a change.
      */
     @Transactional
-    public boolean recalculateForPlayer(Player player) {
+    public boolean recalculateForPlayer(Player player, Integer gameweek) {
         int baseValue = player.getMarketValue();
 
         // ── 1. Form factor ──────────────────────────────────────────────────────
@@ -176,6 +209,27 @@ public class MarketValueUpdateService {
         // Update sell prices in all PlayerTeam rows that hold this player so that
         // the new market signal is immediately visible in the fantasy market.
         playerTeamRepository.updateSellPriceByPlayerId(player.getId(), newValue);
+
+        // ── 8. Record history snapshot (if gameweek is known) ──────────────────
+        if (gameweek != null) {
+            int changeAmount = newValue - baseValue;
+            double changePercentage = baseValue > 0
+                    ? ((double) changeAmount / baseValue) * 100.0
+                    : 0.0;
+
+            PlayerMarketValueHistory history = marketValueHistoryRepository
+                    .findByPlayerIdAndGameweek(player.getId(), gameweek)
+                    .orElse(new PlayerMarketValueHistory());
+
+            history.setPlayerId(player.getId());
+            history.setGameweek(gameweek);
+            history.setPreviousValue(baseValue);
+            history.setNewValue(newValue);
+            history.setChangeAmount(changeAmount);
+            history.setChangePercentage(Math.round(changePercentage * 100.0) / 100.0);
+            history.setRecordedAt(new Date());
+            marketValueHistoryRepository.save(history);
+        }
 
         return true;
     }

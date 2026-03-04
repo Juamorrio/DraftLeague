@@ -48,13 +48,13 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: >
-          mvn clean verify sonar:sonar
-          -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
-          -Dsonar.projectName=DraftLeague
-          -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
-          -Dsonar.token=${{ secrets.SONAR_TOKEN }}
-          -Dsonar.java.binaries=backend/target/classes
-          -Dsonar.sources=backend/src/main/java
-          -Dsonar.tests=backend/src/test/java
-          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+        run: |
+          mvn clean verify sonar:sonar \
+            -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }} \
+            -Dsonar.projectName=DraftLeague \
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.java.binaries=backend/target/classes \
+            -Dsonar.sources=backend/src/main/java \
+            -Dsonar.tests=backend/src/test/java \
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml

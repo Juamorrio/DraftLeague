@@ -24,8 +24,10 @@ import com.DraftLeague.models.Player.Player;
 import com.DraftLeague.models.Match.Match;
 import com.DraftLeague.models.Statistics.PlayerStatistic;
 import com.DraftLeague.repositories.MatchRepository;
+import com.DraftLeague.repositories.PlayerRepository;
 import com.DraftLeague.repositories.PlayerStatisticRepository;
 import com.DraftLeague.services.PlayerStatisticService;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +37,7 @@ public class PlayerStatisticService {
     private final PlayerStatisticFactory playerStatisticFactory;
     private final FantasyPointsService fantasyPointsService;
     private final MatchRepository matchRepository;
+    private final PlayerRepository playerRepository;
 
     @Transactional
     public PlayerStatistic saveStatistic(PlayerStatistic statistic) {
@@ -48,9 +51,18 @@ public class PlayerStatisticService {
 
     @Transactional
     public List<PlayerStatistic> saveBulkFromJson(List<Map<String, Object>> jsonData) {
+        // Pre-load existing player IDs to avoid FK violations for unknown players
+        Set<String> existingPlayerIds = new java.util.HashSet<>(playerRepository.findAllIds());
+
         List<PlayerStatistic> statistics = new ArrayList<>();
 
         for (Map<String, Object> data : jsonData) {
+            String playerId = data.get("playerId") instanceof String s ? s : String.valueOf(data.get("playerId"));
+            if (!existingPlayerIds.contains(playerId)) {
+                System.out.println("saveBulkFromJson: skipping unknown player " + playerId);
+                continue;
+            }
+
             String playerType = (String) data.get("playerType");
             PlayerStatistic statistic = playerStatisticFactory.createStatistic(playerType);
 

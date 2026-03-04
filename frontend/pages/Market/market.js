@@ -6,8 +6,8 @@ import authService, { authenticatedFetch } from '../../services/authService';
 import withAuth from '../../components/withAuth';
 import Player from '../../components/player';
 
-function Market() {
-	const { selectedLeague } = useLeague();
+function Market({ navigation }) {
+	const { selectedLeague, setSelectedPlayer } = useLeague();
 	const [marketPlayers, setMarketPlayers] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [bidAmounts, setBidAmounts] = useState({});
@@ -163,12 +163,14 @@ function Market() {
 				keyExtractor={(item) => String(item.id)}
 				renderItem={({ item }) => (
 					<View style={styles.playerRow}>
-						<Player
-							name={item.player.fullName ?? item.player.name}
-							avatar={item.player.avatarUrl ? { uri: item.player.avatarUrl } : null}
-							teamId ={item.player.teamId}
-							size={60}
-						/>
+					<TouchableOpacity onPress={() => { setSelectedPlayer(item.player); navigation.navigate('PlayerStats'); }} activeOpacity={0.7}>
+					<Player
+						name={item.player.fullName ?? item.player.name}
+						avatar={item.player.avatarUrl ? { uri: item.player.avatarUrl } : null}
+						teamId ={item.player.teamId}
+						size={60}
+					/>
+					</TouchableOpacity>
 						<View style={styles.playerInfo}>
 							<Text style={styles.playerName}>{item.player.fullName ?? item.player.name}</Text>
 							<Text style={styles.playerMeta}>

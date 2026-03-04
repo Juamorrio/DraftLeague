@@ -4,6 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import { useLeague } from '../../context/LeagueContext';
 import { authenticatedFetch } from '../../services/authService';
 import withAuth from '../../components/withAuth';
+import { LineChartComponent } from '../../components/StatisticsChart';
 
 function PlayerStats({ navigation }) {
 	const { selectedPlayer, selectedLeague } = useLeague();
@@ -13,6 +14,8 @@ function PlayerStats({ navigation }) {
 	const [loadingStats, setLoadingStats] = useState(false);
 	const [activeTab, setActiveTab] = useState('stats');
 	const [selectedRound, setSelectedRound] = useState(null);
+	const [marketValueHistory, setMarketValueHistory] = useState([]);
+	const [loadingMarketValue, setLoadingMarketValue] = useState(false);
 
 	useEffect(() => {
 		if (!selectedPlayer?.id) {
@@ -91,6 +94,36 @@ function PlayerStats({ navigation }) {
 		loadStatistics();
 	}, [selectedPlayer?.id, selectedLeague?.id]);
 
+	// Cargar historial de valor de mercado del jugador
+	useEffect(() => {
+		if (!selectedPlayer?.id) {
+			setMarketValueHistory([]);
+			return;
+		}
+
+		const loadMarketHistory = async () => {
+			setLoadingMarketValue(true);
+			try {
+				const response = await authenticatedFetch(
+					`/api/v1/players/${selectedPlayer.id}/market-value-history`
+				);
+				if (response.ok) {
+					const data = await response.json();
+					setMarketValueHistory(Array.isArray(data) ? data : []);
+				} else {
+					setMarketValueHistory([]);
+				}
+			} catch (e) {
+				console.error('Error cargando historial de valor de mercado:', e);
+				setMarketValueHistory([]);
+			} finally {
+				setLoadingMarketValue(false);
+			}
+		};
+
+		loadMarketHistory();
+	}, [selectedPlayer?.id]);
+
 	const translateFeature = (featureName) => {
 		const translations = {
 			avgRatingLast3: 'Rating ultimos 3',
@@ -159,6 +192,14 @@ function PlayerStats({ navigation }) {
 				>
 					<Text style={[styles.tabText, activeTab === 'stats' && styles.tabTextActive]}>
 						📊 Estadísticas
+					</Text>
+				</TouchableOpacity>
+				<TouchableOpacity
+					style={[styles.tab, activeTab === 'market' && styles.tabActive]}
+					onPress={() => setActiveTab('market')}
+				>
+					<Text style={[styles.tabText, activeTab === 'market' && styles.tabTextActive]}>
+						💰 Valor
 					</Text>
 				</TouchableOpacity>
 				<TouchableOpacity
@@ -593,6 +634,99 @@ function PlayerStats({ navigation }) {
 									<Text style={styles.warningTitle}>ℹ️ Sin datos disponibles</Text>
 									<Text style={styles.warningText}>
 										No hay estadísticas disponibles para este jugador en las jornadas registradas.
+									</Text>
+								</View>
+							</View>
+						)}
+					</>
+				)}
+
+				{/* TAB: VALOR DE MERCADO */}
+				{activeTab === 'market' && (
+					<>
+						{loadingMarketValue ? (
+							<View style={styles.section}>
+								<View style={styles.loadingContainer}>
+									<ActivityIndicator size="small" color="#1a5c3a" />
+									<Text style={styles.loadingText}>Cargando historial de valor...</Text>
+								</View>
+							</View>
+						) : marketValueHistory.length > 0 ? (
+							<>
+								{/* Valor actual y variación total */}
+								<View style={styles.section}>
+									<View style={styles.playerInfoCard}>
+										<View style={styles.infoRow}>
+											<Text style={styles.infoLabel}>Valor actual:</Text>
+											<Text style={styles.infoValue}>
+												€{(marketValueHistory[marketValueHistory.length - 1].newValue / 1_000_000).toFixed(2)}M
+											</Text>
+										</View>
+										<View style={styles.infoRow}>
+											<Text style={styles.infoLabel}>Variación total:</Text>
+											{(() => {
+												const totalChange = marketValueHistory[marketValueHistory.length - 1].newValue
+													- marketValueHistory[0].previousValue;
+												return (
+													<Text style={[
+														styles.infoValue,
+														totalChange >= 0 ? styles.mvPositive : styles.mvNegative
+													]}>
+														{totalChange >= 0 ? '+' : ''}{(totalChange / 1_000_000).toFixed(2)}M
+													</Text>
+												);
+											})()}
+										</View>
+									</View>
+								</View>
+
+								{/* Gráfica de línea */}
+								<View style={styles.section}>
+									<Text style={styles.sectionTitle}>📈 Evolución del Valor de Mercado</Text>
+									<LineChartComponent
+										title="Valor de mercado por jornada (M€)"
+										data={{
+											labels: marketValueHistory.map(h => `J${h.gameweek}`),
+											datasets: [{
+												data: marketValueHistory.map(h =>
+													parseFloat((h.newValue / 1_000_000).toFixed(2))
+												)
+											}]
+										}}
+									/>
+								</View>
+
+								{/* Lista detallada por jornada */}
+								<View style={styles.section}>
+									<Text style={styles.sectionTitle}>🗒️ Detalle por Jornada</Text>
+									{[...marketValueHistory].reverse().map(h => {
+										const isPositive = h.changeAmount >= 0;
+										return (
+											<View key={h.gameweek} style={styles.mvHistoryRow}>
+												<Text style={styles.mvHistoryGameweek}>Jornada {h.gameweek}</Text>
+												<Text style={styles.mvHistoryValue}>
+													€{(h.newValue / 1_000_000).toFixed(2)}M
+												</Text>
+												<Text style={[
+													styles.mvHistoryDelta,
+													isPositive ? styles.mvPositive : styles.mvNegative
+												]}>
+													{isPositive ? '▲' : '▼'} {isPositive ? '+' : ''}
+													{(h.changeAmount / 1_000_000).toFixed(2)}M
+													({isPositive ? '+' : ''}{h.changePercentage.toFixed(2)}%)
+												</Text>
+											</View>
+										);
+									})}
+								</View>
+							</>
+						) : (
+							<View style={styles.section}>
+								<View style={styles.warningCard}>
+									<Text style={styles.warningTitle}>ℹ️ Sin historial disponible</Text>
+									<Text style={styles.warningText}>
+										El historial de valor de mercado se genera automáticamente al calcular
+										los puntos de cada jornada desde el panel de administración.
 									</Text>
 								</View>
 							</View>
@@ -1120,5 +1254,40 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		color: '#6b7280',
 		textAlign: 'center'
+	},
+	// Market value history
+	mvHistoryRow: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		paddingVertical: 10,
+		paddingHorizontal: 4,
+		borderBottomWidth: 1,
+		borderBottomColor: '#e5e7eb'
+	},
+	mvHistoryGameweek: {
+		fontSize: 13,
+		fontWeight: '700',
+		color: '#374151',
+		flex: 1
+	},
+	mvHistoryValue: {
+		fontSize: 13,
+		fontWeight: '700',
+		color: '#111827',
+		width: 80,
+		textAlign: 'right'
+	},
+	mvHistoryDelta: {
+		fontSize: 13,
+		fontWeight: '700',
+		width: 110,
+		textAlign: 'right'
+	},
+	mvPositive: {
+		color: '#16a34a'
+	},
+	mvNegative: {
+		color: '#dc2626'
 	}
 });

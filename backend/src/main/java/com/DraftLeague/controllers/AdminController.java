@@ -365,9 +365,14 @@ public class AdminController {
             importService.syncGameweekStats(activeGameweek);
             // Step 2: calculate fantasy points for all teams
             fantasyPointsService.recalculateGameweekPoints(activeGameweek);
+            // Step 3: recalculate market values and record per-gameweek history
+            Map<String, Integer> mvResult = marketValueUpdateService.recalculateAllMarketValuesForGameweek(activeGameweek);
             return ResponseEntity.ok(Map.of(
-                "message", "Estad\u00edsticas obtenidas y puntos de la jornada " + activeGameweek + " calculados correctamente.",
-                "gameweek", activeGameweek
+                "message", "Estad\u00edsticas obtenidas, puntos y valores de mercado de la jornada " + activeGameweek + " calculados correctamente.",
+                "gameweek", activeGameweek,
+                "marketValueUpdated", mvResult.getOrDefault("updatedCount", 0),
+                "marketValueSkipped", mvResult.getOrDefault("skippedCount", 0),
+                "marketValueErrors",  mvResult.getOrDefault("errorCount", 0)
             ));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", "Error al calcular puntos: " + e.getMessage()));

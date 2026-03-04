@@ -20,13 +20,11 @@ FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
-# curl para el healthcheck + python3 para los scripts + usuario no-root
-RUN apk add --no-cache curl python3 py3-pip py3-requests \
- && ln -sf /usr/bin/python3 /usr/bin/python \
+# curl para el healthcheck + usuario no-root
+RUN apk add --no-cache curl \
  && addgroup -S draftleague && adduser -S draftleague -G draftleague
 
-# Copiamos los scripts (sin .env para no exponer credenciales)
-COPY --chown=draftleague:draftleague scripts/*.py   /app/scripts/
+# Copiamos los JSON estáticos (fallback para importación manual)
 COPY --chown=draftleague:draftleague scripts/*.json /app/scripts/
 
 USER draftleague

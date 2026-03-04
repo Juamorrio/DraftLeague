@@ -2,16 +2,14 @@ package com.DraftLeague.services;
 
 import com.DraftLeague.dto.MatchDTO;
 import com.DraftLeague.dto.UpcomingMatchDTO;
+import com.DraftLeague.scraping.FixtureSyncService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,16 +26,16 @@ public class MatchService {
 
     private final ObjectMapper objectMapper;
     private final MatchRepository matchRepository;
+    private final FixtureSyncService fixtureSyncService;
 
     @Value("${scripts.path}")
     private String scriptsPath;
 
-    @Value("${scripts.python:/usr/bin/python3}")
-    private String pythonExecutable;
-
-    public MatchService(ObjectMapper objectMapper, MatchRepository matchRepository) {
+    public MatchService(ObjectMapper objectMapper, MatchRepository matchRepository,
+                        FixtureSyncService fixtureSyncService) {
         this.objectMapper = objectMapper;
         this.matchRepository = matchRepository;
+        this.fixtureSyncService = fixtureSyncService;
     }
 
     public Map<String, List<MatchDTO>> getPlayedMatches() {
@@ -67,42 +65,20 @@ public class MatchService {
     }
 
     public String syncMatches() throws Exception {
-        Path scriptPath = Paths.get(scriptsPath, "home.py").toAbsolutePath();
-        
-        List<String> command = new ArrayList<>();
-        command.add(pythonExecutable);
-        
-        ProcessBuilder processBuilder = new ProcessBuilder(command);
-        processBuilder.redirectErrorStream(true);
-        
-        Process process = processBuilder.start();
-        
-        StringBuilder output = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                output.append(line).append("\n");
-            }
-        }
-        
-        int exitCode = process.waitFor();
-        
-        if (exitCode != 0) {
-            throw new RuntimeException("Error al ejecutar script de Python. Código de salida: " + exitCode + "\n" + output.toString());
-        }
-        
-        return output.toString();
+        Map<String, List<MatchDTO>> played = fixtureSyncService.fetchPlayedMatches();
+        Map<String, List<UpcomingMatchDTO>> upcoming = fixtureSyncService.fetchUpcomingMatches();
+        return importMatchesFromData(played, upcoming);
     }
 
-    public String importMatchesFromJson() {
+    public String importMatchesFromData(Map<String, List<MatchDTO>> matchesByRound,
+                                        Map<String, List<UpcomingMatchDTO>> upcomingByRound) {
         try {
             int importedCount = 0;
-            
-            Map<String, List<MatchDTO>> matchesByRound = getPlayedMatches();
+
             for (Map.Entry<String, List<MatchDTO>> entry : matchesByRound.entrySet()) {
                 String roundKey = entry.getKey();
                 Integer roundNumber = Integer.parseInt(roundKey.replace("jornada_", ""));
-                
+
                 for (MatchDTO matchDTO : entry.getValue()) {
                     if (matchDTO.getFixtureId() != null &&
                         matchRepository.findByApiFootballFixtureId(matchDTO.getFixtureId()).isPresent()) {
@@ -121,23 +97,22 @@ public class MatchService {
                     match.setHomeXg(matchDTO.getHomeXg());
                     match.setAwayXg(matchDTO.getAwayXg());
                     match.setStatus(MatchStatus.FINISHED);
-                    
+
                     matchRepository.save(match);
                     importedCount++;
                 }
             }
-            
-            Map<String, List<UpcomingMatchDTO>> upcomingByRound = getUpcomingMatches();
+
             for (Map.Entry<String, List<UpcomingMatchDTO>> entry : upcomingByRound.entrySet()) {
                 String roundKey = entry.getKey();
                 Integer roundNumber = Integer.parseInt(roundKey.replace("jornada_", ""));
-                
+
                 for (UpcomingMatchDTO upcomingDTO : entry.getValue()) {
                     if (matchRepository.findByRoundAndHomeTeamIdAndAwayTeamId(
                             roundNumber, upcomingDTO.getHomeTeamId(), upcomingDTO.getAwayTeamId()).isPresent()) {
                         continue;
                     }
-                    
+
                     Match match = new Match();
                     match.setRound(roundNumber);
                     match.setHomeTeamId(upcomingDTO.getHomeTeamId());
@@ -148,15 +123,25 @@ public class MatchService {
                     match.setStatus(MatchStatus.UPCOMING);
                     match.setHomeGoals(0);
                     match.setAwayGoals(0);
-                    
+
                     matchRepository.save(match);
                     importedCount++;
                 }
             }
-            
+
             return "Imported " + importedCount + " matches successfully";
         } catch (Exception e) {
             throw new RuntimeException("Error importing matches: " + e.getMessage(), e);
+        }
+    }
+
+    public String importMatchesFromJson() {
+        try {
+            Map<String, List<MatchDTO>> played = getPlayedMatches();
+            Map<String, List<UpcomingMatchDTO>> upcoming = getUpcomingMatches();
+            return importMatchesFromData(played, upcoming);
+        } catch (Exception e) {
+            throw new RuntimeException("Error importing matches from JSON: " + e.getMessage(), e);
         }
     }
 

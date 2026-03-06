@@ -225,6 +225,9 @@ public class FantasyPointsService {
 
         // Invalidate prediction cache so the next GET returns fresh predictions
         playerPredictionService.invalidateCache();
+        // Pre-warm the cache for every player with enough data so that the
+        // AI-Insights page responds instantly without on-demand computation.
+        playerPredictionService.warmCacheForEligiblePlayers();
     }
 
     @Transactional

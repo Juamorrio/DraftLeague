@@ -31,6 +31,8 @@ public class PlayerPredictionService {
     private final PlayerTeamRepository playerTeamRepository;
     private final TeamRepository teamRepository;
 
+    private static final int MIN_STATS_FOR_PREDICTION = 2;
+
     private final Map<String, PlayerPredictionDTO> predictionCache = new ConcurrentHashMap<>();
 
     /**
@@ -38,6 +40,35 @@ public class PlayerPredictionService {
      */
     public PlayerPredictionDTO predictForPlayer(String playerId) {
         return predictionCache.computeIfAbsent(playerId, this::buildPlayerPrediction);
+    }
+
+    /**
+     * Pre-warms the prediction cache for every player that has at least
+     * MIN_STATS_FOR_PREDICTION recorded match statistics.
+     * Called automatically after gameweek points are recalculated so that
+     * the AI-Insights page gets instant cache hits on the next request.
+     */
+    public void warmCacheForEligiblePlayers() {
+        List<com.DraftLeague.models.Player.Player> allPlayers = playerRepository.findAll();
+        int warmed = 0;
+        for (com.DraftLeague.models.Player.Player player : allPlayers) {
+            try {
+                long statCount = statisticRepository
+                        .findByPlayerIdOrderByMatchIdDesc(player.getId())
+                        .stream()
+                        .limit(MIN_STATS_FOR_PREDICTION)
+                        .count();
+                if (statCount >= MIN_STATS_FOR_PREDICTION) {
+                    predictionCache.put(player.getId(), buildPlayerPrediction(player.getId()));
+                    warmed++;
+                }
+            } catch (Exception e) {
+                System.err.println("[PredictionCache] Could not pre-warm player "
+                        + player.getId() + ": " + e.getMessage());
+            }
+        }
+        System.out.println("[PredictionCache] Pre-warmed " + warmed
+                + " / " + allPlayers.size() + " player predictions after gameweek recalculation.");
     }
 
     @Transactional(readOnly = true)
@@ -77,7 +108,7 @@ public class PlayerPredictionService {
         String playerType = stats.isEmpty() ? "UNKNOWN" : stats.get(0).getPlayerType().name();
 
         // Not enough history to produce a meaningful prediction
-        if (stats.size() < 2) {
+        if (stats.size() < MIN_STATS_FOR_PREDICTION) {
             return PlayerPredictionDTO.builder()
                     .playerId(playerId)
                     .playerName(playerName)

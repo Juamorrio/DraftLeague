@@ -7,12 +7,15 @@ import java.util.Random;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.DraftLeague.dto.CreateLeagueRequest;
 import com.DraftLeague.models.Team.Team;
 import com.DraftLeague.repositories.TeamRepository;
+import com.DraftLeague.repositories.TeamGameweekPointsRepository;
+import com.DraftLeague.repositories.TeamPlayerGameweekPointsRepository;
 import com.DraftLeague.models.user.User;
 import com.DraftLeague.repositories.UserRepository;
 import com.DraftLeague.models.Player.Player;
@@ -41,11 +44,15 @@ public class LeagueService {
     private final PlayerTeamRepository playerTeamRepository;
     private final NotificationLeagueRepository notificationLeagueRepository;
     private final MarketPlayerRepository marketPlayerRepository;
+    private final TeamGameweekPointsRepository teamGameweekPointsRepository;
+    private final TeamPlayerGameweekPointsRepository teamPlayerGameweekPointsRepository;
 
     public LeagueService(LeagueRepository leagueRepository, UserRepository userRepository, TeamRepository teamRepository,
                          PlayerRepository playerRepository, PlayerTeamRepository playerTeamRepository,
                          NotificationLeagueRepository notificationLeagueRepository,
-                         MarketPlayerRepository marketPlayerRepository) {
+                         MarketPlayerRepository marketPlayerRepository,
+                         TeamGameweekPointsRepository teamGameweekPointsRepository,
+                         TeamPlayerGameweekPointsRepository teamPlayerGameweekPointsRepository) {
         this.leagueRepository = leagueRepository;
         this.userRepository = userRepository;
         this.teamRepository = teamRepository;
@@ -53,6 +60,8 @@ public class LeagueService {
         this.playerTeamRepository = playerTeamRepository;
         this.notificationLeagueRepository = notificationLeagueRepository;
         this.marketPlayerRepository = marketPlayerRepository;
+        this.teamGameweekPointsRepository = teamGameweekPointsRepository;
+        this.teamPlayerGameweekPointsRepository = teamPlayerGameweekPointsRepository;
     }
 
     public League createLeague(CreateLeagueRequest req) {
@@ -130,26 +139,27 @@ public class LeagueService {
         return leagueRepository.save(existingLeague);
     }
 
+    @Transactional
     public void deleteLeague(Long id) {
         League league = getLeagueById(id);
-        
+
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated()) {
             String username = auth.getName();
             User currentUser = userRepository.findUserByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-            
-            boolean isCreator = league.getCreatedBy() != null && 
+
+            boolean isCreator = league.getCreatedBy() != null &&
                                league.getCreatedBy().getId().equals(currentUser.getId());
             boolean isAdmin = "ADMIN".equals(currentUser.getRole());
-            
+
             if (!isCreator && !isAdmin) {
                 throw new RuntimeException("No tienes permisos para eliminar esta liga");
             }
         } else {
             throw new RuntimeException("Usuario no autenticado");
         }
-        
+
         // Delete notification_league rows first (FK constraint)
         notificationLeagueRepository.deleteAllByLeagueId(league.getId());
 
@@ -158,11 +168,12 @@ public class LeagueService {
 
         List<Team> teams = teamRepository.findByLeague(league);
         if (teams != null && !teams.isEmpty()) {
-            for(Team t : teams) {
-                List<PlayerTeam> pts = playerTeamRepository.findByTeam(t);
-                if (pts != null && !pts.isEmpty()) {
-                    playerTeamRepository.deleteAll(pts);
-                }
+            for (Team t : teams) {
+                // Delete gameweek history rows that FK-reference the team
+                teamPlayerGameweekPointsRepository.deleteAllByTeam(t);
+                teamGameweekPointsRepository.deleteAllByTeam(t);
+                // Delete player-team assignments
+                playerTeamRepository.deleteAll(playerTeamRepository.findByTeam(t));
             }
             teamRepository.deleteAll(teams);
         }

@@ -163,8 +163,18 @@ public class AdminController {
             return ResponseEntity.status(403).body(Map.of("error", "Acceso denegado"));
         }
 
-        List<League> leagues = leagueRepository.findAll();
-        return ResponseEntity.ok(leagues);
+        List<Map<String, Object>> result = leagueRepository.findAll().stream()
+            .map(l -> {
+                Map<String, Object> m = new HashMap<>();
+                m.put("id", l.getId());
+                m.put("name", l.getName());
+                m.put("code", l.getCode());
+                m.put("maxTeams", l.getMaxTeams());
+                m.put("initialBudget", l.getInitialBudget());
+                return m;
+            })
+            .toList();
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/import-players")

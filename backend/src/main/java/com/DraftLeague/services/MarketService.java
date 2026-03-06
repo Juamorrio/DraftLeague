@@ -1,19 +1,19 @@
 package com.DraftLeague.services;
-import com.DraftLeague.models.Market.StatusMarketPlayer;
+
 import com.DraftLeague.dto.MarketPlayerDTO;
-
 import com.DraftLeague.models.League.League;
-import com.DraftLeague.repositories.LeagueRepository;
-import com.DraftLeague.services.NotificationService;
+import com.DraftLeague.models.Market.MarketPlayer;
+import com.DraftLeague.models.Market.StatusMarketPlayer;
 import com.DraftLeague.models.Player.Player;
-import com.DraftLeague.repositories.PlayerRepository;
 import com.DraftLeague.models.Player.PlayerTeam;
-import com.DraftLeague.repositories.PlayerTeamRepository;
 import com.DraftLeague.models.Team.Team;
-import com.DraftLeague.repositories.TeamRepository;
 import com.DraftLeague.models.user.User;
+import com.DraftLeague.repositories.LeagueRepository;
+import com.DraftLeague.repositories.MarketPlayerRepository;
+import com.DraftLeague.repositories.PlayerRepository;
+import com.DraftLeague.repositories.PlayerTeamRepository;
+import com.DraftLeague.repositories.TeamRepository;
 import com.DraftLeague.repositories.UserRepository;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -21,21 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import com.DraftLeague.models.user.User;
-import com.DraftLeague.models.Player.Player;
-import com.DraftLeague.models.Team.Team;
-import com.DraftLeague.models.League.League;
-import com.DraftLeague.models.Player.PlayerTeam;
-import com.DraftLeague.models.Market.MarketPlayer;
-import com.DraftLeague.repositories.UserRepository;
-import com.DraftLeague.repositories.PlayerRepository;
-import com.DraftLeague.repositories.TeamRepository;
-import com.DraftLeague.repositories.LeagueRepository;
-import com.DraftLeague.repositories.PlayerTeamRepository;
-import com.DraftLeague.repositories.MarketPlayerRepository;
-import com.DraftLeague.services.MarketService;
-import com.DraftLeague.services.NotificationService;
-import com.DraftLeague.dto.MarketPlayerDTO;
 
 @Service
 public class MarketService {
@@ -71,7 +56,7 @@ public class MarketService {
 
     @Transactional
     public void initializeMarket(Integer leagueId) {
-        
+
         League league = leagueRepository.findById(Long.valueOf(leagueId))
                 .orElseThrow(() -> new IllegalStateException("Liga no encontrada"));
 
@@ -81,10 +66,11 @@ public class MarketService {
         List<Player> allPlayers = new ArrayList<>(playerRepository.findAll().stream()
                 .filter(p -> playerTeamRepository.findPlayerTeamsByTeamIdIn(teamIds).stream()
                         .noneMatch(pt -> pt.getPlayer().getId().equals(p.getId()))).toList());
-        
+
         Collections.shuffle(allPlayers);
         List<Player> selectedPlayers = allPlayers.subList(0, Math.min(10, allPlayers.size()));
 
+        List<MarketPlayer> newMarketPlayers = new ArrayList<>();
         for (Player player : selectedPlayers) {
             MarketPlayer marketPlayer = new MarketPlayer();
             marketPlayer.setPlayer(player);
@@ -92,10 +78,11 @@ public class MarketService {
             marketPlayer.setCurrentBid(player.getMarketValue().longValue());
             marketPlayer.setStatus(StatusMarketPlayer.AVAILABLE);
             marketPlayer.setAuctionEndTime(LocalDateTime.now().plusHours(24));
-            marketPlayerRepository.save(marketPlayer);
+            newMarketPlayers.add(marketPlayer);
         }
-        
-        logger.info("Mercado inicializado con {} jugadores", selectedPlayers.size());
+        marketPlayerRepository.saveAll(newMarketPlayers);
+
+        logger.info("Mercado inicializado con {} jugadores", newMarketPlayers.size());
     }
 
     public List<MarketPlayer> getAvailableMarketPlayers(Integer leagueId) {
@@ -217,20 +204,22 @@ public class MarketService {
         User winner = userRepository.findById(winnerId)
                 .orElseThrow(() -> new IllegalStateException("Usuario ganador no encontrado"));
         League league = marketPlayer.getLeague();
-        
+
         List<Map<String, Object>> allBids = marketPlayer.getBidsList();
+        List<Team> teamsToUpdate = new ArrayList<>();
         for (Map<String, Object> bid : allBids) {
             Integer bidderId = (Integer) bid.get("userId");
             Long bidAmount = ((Number) bid.get("amount")).longValue();
-            
+
             if (!bidderId.equals(winnerId)) {
                 User bidder = userRepository.findById(bidderId)
                         .orElseThrow(() -> new IllegalStateException("Usuario no encontrado"));
                 Team bidderTeam = teamRepository.findByLeagueAndUser(league, bidder);
                 bidderTeam.setBudget(bidderTeam.getBudget() + bidAmount.intValue());
-                teamRepository.save(bidderTeam);
+                teamsToUpdate.add(bidderTeam);
             }
         }
+        teamRepository.saveAll(teamsToUpdate);
 
         Team winnerTeam = teamRepository.findByLeagueAndUser(league, winner);
         
@@ -286,6 +275,7 @@ public class MarketService {
         Collections.shuffle(allPlayers);
         List<Player> selectedPlayers = allPlayers.subList(0, Math.min(10, allPlayers.size()));
 
+        List<MarketPlayer> newMarketPlayers = new ArrayList<>();
         for (Player player : selectedPlayers) {
             MarketPlayer marketPlayer = new MarketPlayer();
             marketPlayer.setPlayer(player);
@@ -293,10 +283,11 @@ public class MarketService {
             marketPlayer.setCurrentBid(0L);
             marketPlayer.setStatus(StatusMarketPlayer.AVAILABLE);
             marketPlayer.setAuctionEndTime(LocalDateTime.now().plusHours(24));
-            marketPlayerRepository.save(marketPlayer);
+            newMarketPlayers.add(marketPlayer);
         }
-        
-        logger.info("Mercado refrescado con {} jugadores", selectedPlayers.size());
+        marketPlayerRepository.saveAll(newMarketPlayers);
+
+        logger.info("Mercado refrescado con {} jugadores", newMarketPlayers.size());
     }
     @Transactional
     public void cancelBid(Integer marketPlayerId, User user) {

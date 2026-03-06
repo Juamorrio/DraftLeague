@@ -13,6 +13,7 @@ import com.DraftLeague.repositories.PlayerRepository;
 import com.DraftLeague.repositories.UserRepository;
 import com.DraftLeague.services.MarketService;
 import com.DraftLeague.services.MatchService;
+import com.DraftLeague.services.LeagueService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -36,8 +37,9 @@ public class AdminController {
     private final GameweekStateService gameweekStateService;
     private final FantasyPointsService fantasyPointsService;
     private final MarketValueUpdateService marketValueUpdateService;
+    private final LeagueService leagueService;
 
-    public AdminController(UserRepository userRepository, 
+    public AdminController(UserRepository userRepository,
                           LeagueRepository leagueRepository,
                           PlayerRepository playerRepository,
                           MarketService marketService,
@@ -46,7 +48,8 @@ public class AdminController {
                           MatchService matchService,
                           GameweekStateService gameweekStateService,
                           FantasyPointsService fantasyPointsService,
-                          MarketValueUpdateService marketValueUpdateService) {
+                          MarketValueUpdateService marketValueUpdateService,
+                          LeagueService leagueService) {
         this.userRepository = userRepository;
         this.leagueRepository = leagueRepository;
         this.playerRepository = playerRepository;
@@ -57,6 +60,7 @@ public class AdminController {
         this.gameweekStateService = gameweekStateService;
         this.fantasyPointsService = fantasyPointsService;
         this.marketValueUpdateService = marketValueUpdateService;
+        this.leagueService = leagueService;
     }
 
     private boolean isAdmin(Authentication auth) {
@@ -134,7 +138,7 @@ public class AdminController {
             return ResponseEntity.status(403).body(Map.of("error", "Acceso denegado"));
         }
 
-        leagueRepository.deleteById(id);
+        leagueService.deleteLeague(id);
         return ResponseEntity.ok(Map.of("message", "Liga eliminada"));
     }
 

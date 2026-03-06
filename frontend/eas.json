@@ -1,11 +1,11 @@
 {
   "cli": {
-    "version": ">= 12.0.0"
+    "version": ">= 18.0.6"
   },
   "build": {
     "development": {
       "distribution": "internal",
-      "android": { "buildType": "apk" },
+      "android": { "buildType": "apk", "image": "latest" },
       "env": {
         "APP_VARIANT": "development",
         "EXPO_PUBLIC_API_BASE": "http://localhost:8080"
@@ -13,14 +13,14 @@
     },
     "preview": {
       "distribution": "internal",
-      "android": { "buildType": "apk" },
+      "android": { "buildType": "apk", "image": "latest" },
       "env": {
         "APP_VARIANT": "preview",
         "EXPO_PUBLIC_API_BASE": "https://draftleague-production.up.railway.app"
       }
     },
     "production": {
-      "android": { "buildType": "app-bundle" },
+      "android": { "buildType": "app-bundle", "image": "latest" },
       "env": {
         "APP_VARIANT": "production",
         "EXPO_PUBLIC_API_BASE": "https://draftleague-production.up.railway.app"

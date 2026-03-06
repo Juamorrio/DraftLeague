@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -70,10 +71,11 @@ public class MatchService {
         return importMatchesFromData(played, upcoming);
     }
 
+    @Transactional
     public String importMatchesFromData(Map<String, List<MatchDTO>> matchesByRound,
                                         Map<String, List<UpcomingMatchDTO>> upcomingByRound) {
         try {
-            int importedCount = 0;
+            List<Match> toSave = new ArrayList<>();
 
             for (Map.Entry<String, List<MatchDTO>> entry : matchesByRound.entrySet()) {
                 String roundKey = entry.getKey();
@@ -97,9 +99,7 @@ public class MatchService {
                     match.setHomeXg(matchDTO.getHomeXg());
                     match.setAwayXg(matchDTO.getAwayXg());
                     match.setStatus(MatchStatus.FINISHED);
-
-                    matchRepository.save(match);
-                    importedCount++;
+                    toSave.add(match);
                 }
             }
 
@@ -123,13 +123,12 @@ public class MatchService {
                     match.setStatus(MatchStatus.UPCOMING);
                     match.setHomeGoals(0);
                     match.setAwayGoals(0);
-
-                    matchRepository.save(match);
-                    importedCount++;
+                    toSave.add(match);
                 }
             }
 
-            return "Imported " + importedCount + " matches successfully";
+            matchRepository.saveAll(toSave);
+            return "Imported " + toSave.size() + " matches successfully";
         } catch (Exception e) {
             throw new RuntimeException("Error importing matches: " + e.getMessage(), e);
         }

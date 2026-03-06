@@ -1,33 +1,29 @@
 package com.DraftLeague.services;
+
 import com.DraftLeague.models.Statistics.GoalkeeperStatistic;
 import com.DraftLeague.models.Statistics.DefenderStatistic;
 import com.DraftLeague.models.Statistics.MidfielderStatistic;
 import com.DraftLeague.models.Statistics.ForwardStatistic;
-import com.DraftLeague.services.PlayerStatisticFactory;
-
-import com.DraftLeague.dto.JornadaMatchesDTO;
-import com.DraftLeague.repositories.MatchRepository;
+import com.DraftLeague.models.Statistics.PlayerStatistic;
 import com.DraftLeague.models.Match.Match;
+import com.DraftLeague.models.Player.Player;
 import com.DraftLeague.dto.*;
+import com.DraftLeague.dto.JornadaMatchesDTO;
 import com.DraftLeague.dto.PlayerMatchSummaryDTO;
 import com.DraftLeague.dto.PlayerStatisticsSummaryDTO;
-import com.DraftLeague.services.FantasyPointsService;
+import com.DraftLeague.repositories.MatchRepository;
+import com.DraftLeague.repositories.PlayerRepository;
+import com.DraftLeague.repositories.PlayerStatisticRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import com.DraftLeague.models.Player.Player;
-import com.DraftLeague.models.Match.Match;
-import com.DraftLeague.models.Statistics.PlayerStatistic;
-import com.DraftLeague.repositories.MatchRepository;
-import com.DraftLeague.repositories.PlayerRepository;
-import com.DraftLeague.repositories.PlayerStatisticRepository;
-import com.DraftLeague.services.PlayerStatisticService;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -52,7 +48,7 @@ public class PlayerStatisticService {
     @Transactional
     public List<PlayerStatistic> saveBulkFromJson(List<Map<String, Object>> jsonData) {
         // Pre-load existing player IDs to avoid FK violations for unknown players
-        Set<String> existingPlayerIds = new java.util.HashSet<>(playerRepository.findAllIds());
+        Set<String> existingPlayerIds = new HashSet<>(playerRepository.findAllIds());
 
         List<PlayerStatistic> statistics = new ArrayList<>();
 
@@ -80,7 +76,7 @@ public class PlayerStatisticService {
         statistics = playerStatisticRepository.saveAll(statistics);
 
         if (!statistics.isEmpty()) {
-            java.util.Set<Integer> matchIds = new java.util.HashSet<>();
+            Set<Integer> matchIds = new HashSet<>();
             for (PlayerStatistic stat : statistics) {
                 if (stat.getMatchId() != null) {
                     matchIds.add(stat.getMatchId());
@@ -101,96 +97,73 @@ public class PlayerStatisticService {
 
     private void mapJsonToStatistic(Map<String, Object> data, PlayerStatistic statistic) {
         statistic.setPlayerId(getString(data, "playerId"));
-        statistic.setIsHomeTeam(getBoolean(data, "isHomeTeam"));
+        statistic.setIsHomeTeam(getBooleanValue(data, "isHomeTeam"));
         statistic.setRole((String) data.get("role"));
-        statistic.setRating(getDouble(data, "rating"));
-        statistic.setMinutesPlayed(getInteger(data, "minutesPlayed"));
-        statistic.setGoals(getInteger(data, "goals"));
-        statistic.setAssists(getInteger(data, "assists"));
-        statistic.setTotalShots(getInteger(data, "totalShots"));
-        statistic.setShotsOnTarget(getInteger(data, "shotsOnTarget"));
-        statistic.setAccuratePasses(getInteger(data, "accuratePasses"));
-        statistic.setTotalPasses(getInteger(data, "totalPasses"));
-        statistic.setChancesCreated(getInteger(data, "chancesCreated"));
-        statistic.setSuccessfulDribbles(getInteger(data, "successfulDribbles"));
-        statistic.setTotalDribbles(getInteger(data, "totalDribbles"));
-        statistic.setDribbledPast(getInteger(data, "dribbledPast"));
-        statistic.setOffsides(getInteger(data, "offsides"));
-        statistic.setAccurateCrosses(getInteger(data, "accurateCrosses"));
-        statistic.setTotalCrosses(getInteger(data, "totalCrosses"));
-        statistic.setTackles(getInteger(data, "tackles"));
-        statistic.setBlocks(getInteger(data, "blocks"));
-        statistic.setInterceptions(getInteger(data, "interceptions"));
-        statistic.setDuelsWon(getInteger(data, "duelsWon"));
-        statistic.setDuelsLost(getInteger(data, "duelsLost"));
-        statistic.setWasFouled(getInteger(data, "wasFouled"));
-        statistic.setFoulsCommitted(getInteger(data, "foulsCommitted"));
-        statistic.setYellowCards(getInteger(data, "yellowCards"));
-        statistic.setRedCards(getInteger(data, "redCards"));
-        statistic.setPenaltiesWon(getInteger(data, "penaltiesWon"));
-        statistic.setPenaltyScored(getInteger(data, "penaltyScored"));
-        statistic.setPenaltyMissed(getInteger(data, "penaltyMissed"));
-        statistic.setIsSubstitute(getBoolean(data, "isSubstitute"));
-        statistic.setIsCaptain(getBoolean(data, "isCaptain"));
-        statistic.setShirtNumber(getInteger(data, "shirtNumber"));
-        statistic.setPenaltyCommitted(getInteger(data, "penaltyCommitted"));
+        statistic.setRating(getDoubleOrNull(data, "rating"));
+        statistic.setMinutesPlayed(getIntegerValue(data, "minutesPlayed"));
+        statistic.setGoals(getIntegerValue(data, "goals"));
+        statistic.setAssists(getIntegerValue(data, "assists"));
+        statistic.setTotalShots(getIntegerValue(data, "totalShots"));
+        statistic.setShotsOnTarget(getIntegerValue(data, "shotsOnTarget"));
+        statistic.setAccuratePasses(getIntegerValue(data, "accuratePasses"));
+        statistic.setTotalPasses(getIntegerValue(data, "totalPasses"));
+        statistic.setChancesCreated(getIntegerValue(data, "chancesCreated"));
+        statistic.setSuccessfulDribbles(getIntegerValue(data, "successfulDribbles"));
+        statistic.setTotalDribbles(getIntegerValue(data, "totalDribbles"));
+        statistic.setDribbledPast(getIntegerValue(data, "dribbledPast"));
+        statistic.setOffsides(getIntegerValue(data, "offsides"));
+        statistic.setAccurateCrosses(getIntegerValue(data, "accurateCrosses"));
+        statistic.setTotalCrosses(getIntegerValue(data, "totalCrosses"));
+        statistic.setTackles(getIntegerValue(data, "tackles"));
+        statistic.setBlocks(getIntegerValue(data, "blocks"));
+        statistic.setInterceptions(getIntegerValue(data, "interceptions"));
+        statistic.setDuelsWon(getIntegerValue(data, "duelsWon"));
+        statistic.setDuelsLost(getIntegerValue(data, "duelsLost"));
+        statistic.setWasFouled(getIntegerValue(data, "wasFouled"));
+        statistic.setFoulsCommitted(getIntegerValue(data, "foulsCommitted"));
+        statistic.setYellowCards(getIntegerValue(data, "yellowCards"));
+        statistic.setRedCards(getIntegerValue(data, "redCards"));
+        statistic.setPenaltiesWon(getIntegerValue(data, "penaltiesWon"));
+        statistic.setPenaltyScored(getIntegerValue(data, "penaltyScored"));
+        statistic.setPenaltyMissed(getIntegerValue(data, "penaltyMissed"));
+        statistic.setIsSubstitute(getBooleanValue(data, "isSubstitute"));
+        statistic.setIsCaptain(getBooleanValue(data, "isCaptain"));
+        statistic.setShirtNumber(getIntegerValue(data, "shirtNumber"));
+        statistic.setPenaltyCommitted(getIntegerValue(data, "penaltyCommitted"));
 
         // Resolver fixtureId de API-Football a match_id interno de la BD
-        Integer fixtureId = getInteger(data, "fixtureId");
+        Integer fixtureId = getIntegerValue(data, "fixtureId");
         if (fixtureId != null) {
             Match match = matchRepository.findByApiFootballFixtureId(fixtureId).orElse(null);
             if (match != null) {
                 statistic.setMatchId(match.getId());
             }
         } else {
-            statistic.setMatchId(getInteger(data, "matchId"));
+            statistic.setMatchId(getIntegerValue(data, "matchId"));
         }
 
         // Mapear campos especificos por tipo de jugador
         if (statistic instanceof GoalkeeperStatistic goalkeeper) {
-            goalkeeper.setSaves(getInteger(data, "saves"));
-            goalkeeper.setGoalsConceded(getInteger(data, "goalsConceded"));
-            statistic.setSaves(getInteger(data, "saves"));
-            statistic.setGoalsConceded(getInteger(data, "goalsConceded"));
-            statistic.setPenaltiesSaved(getInteger(data, "penaltiesSaved"));
-            statistic.setCleanSheet(getBoolean(data, "cleanSheet"));
+            goalkeeper.setSaves(getIntegerValue(data, "saves"));
+            goalkeeper.setGoalsConceded(getIntegerValue(data, "goalsConceded"));
+            statistic.setSaves(getIntegerValue(data, "saves"));
+            statistic.setGoalsConceded(getIntegerValue(data, "goalsConceded"));
+            statistic.setPenaltiesSaved(getIntegerValue(data, "penaltiesSaved"));
+            statistic.setCleanSheet(getBooleanValue(data, "cleanSheet"));
         } else if (statistic instanceof DefenderStatistic defender) {
-            defender.setPenaltiesWon(getInteger(data, "penaltiesWon"));
-            defender.setSuccessfulDribbles(getInteger(data, "successfulDribbles"));
-            defender.setTotalDribbles(getInteger(data, "totalDribbles"));
+            defender.setPenaltiesWon(getIntegerValue(data, "penaltiesWon"));
+            defender.setSuccessfulDribbles(getIntegerValue(data, "successfulDribbles"));
+            defender.setTotalDribbles(getIntegerValue(data, "totalDribbles"));
         } else if (statistic instanceof MidfielderStatistic midfielder) {
-            midfielder.setSuccessfulDribbles(getInteger(data, "successfulDribbles"));
-            midfielder.setTotalDribbles(getInteger(data, "totalDribbles"));
-            midfielder.setPenaltiesWon(getInteger(data, "penaltiesWon"));
+            midfielder.setSuccessfulDribbles(getIntegerValue(data, "successfulDribbles"));
+            midfielder.setTotalDribbles(getIntegerValue(data, "totalDribbles"));
+            midfielder.setPenaltiesWon(getIntegerValue(data, "penaltiesWon"));
         } else if (statistic instanceof ForwardStatistic forward) {
-            forward.setSuccessfulDribbles(getInteger(data, "successfulDribbles"));
-            forward.setTotalDribbles(getInteger(data, "totalDribbles"));
-            forward.setPenaltiesWon(getInteger(data, "penaltiesWon"));
-            forward.setOffsides(getInteger(data, "offsides"));
+            forward.setSuccessfulDribbles(getIntegerValue(data, "successfulDribbles"));
+            forward.setTotalDribbles(getIntegerValue(data, "totalDribbles"));
+            forward.setPenaltiesWon(getIntegerValue(data, "penaltiesWon"));
+            forward.setOffsides(getIntegerValue(data, "offsides"));
         }
-    }
-
-    private Integer getInteger(Map<String, Object> data, String key) {
-        Object value = data.get(key);
-        if (value == null) return null;
-        if (value instanceof Integer) return (Integer) value;
-        if (value instanceof Number) return ((Number) value).intValue();
-        return null;
-    }
-
-    private Double getDouble(Map<String, Object> data, String key) {
-        Object value = data.get(key);
-        if (value == null) return null;
-        if (value instanceof Double) return (Double) value;
-        if (value instanceof Number) return ((Number) value).doubleValue();
-        return null;
-    }
-
-    private Boolean getBoolean(Map<String, Object> data, String key) {
-        Object value = data.get(key);
-        if (value == null) return null;
-        if (value instanceof Boolean) return (Boolean) value;
-        return Boolean.parseBoolean(value.toString());
     }
 
     private String getString(Map<String, Object> data, String key) {

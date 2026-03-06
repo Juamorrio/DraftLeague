@@ -36,12 +36,19 @@ public class AuthService {
     }
 
     public AuthResponse register(RegisterRequest request) {
+        if (userRepository.findUserByUsername(request.getUsername()).isPresent()) {
+            throw new IllegalStateException("El nombre de usuario ya está en uso");
+        }
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalStateException("El email ya está registrado");
+        }
+
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEmail(request.getEmail());
         user.setDisplayName(request.getDisplayName());
-        
+
         userRepository.save(user);
         return AuthResponse.builder()
             .token(jwtService.getToken(user))

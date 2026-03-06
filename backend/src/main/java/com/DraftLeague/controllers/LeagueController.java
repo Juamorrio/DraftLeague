@@ -15,12 +15,9 @@ import jakarta.validation.Valid;
 import com.DraftLeague.dto.CreateLeagueRequest;
 import com.DraftLeague.models.League.League;
 import com.DraftLeague.services.LeagueService;
-import com.DraftLeague.models.League.League;
-import com.DraftLeague.services.LeagueService;
-import com.DraftLeague.dto.CreateLeagueRequest;
 
 @RestController
-@RequestMapping({"/api/v1/leagues","/api/v1"})
+@RequestMapping("/api/v1/leagues")
 public class LeagueController {
 
     private final LeagueService leagueService;
@@ -65,12 +62,12 @@ public class LeagueController {
         return ResponseEntity.noContent().build();
     }
     
-    @GetMapping("/leagues/{leagueId}/ranking")
+    @GetMapping("/{leagueId}/ranking")
     public ResponseEntity<List<java.util.Map<String,Object>>> getRanking(@PathVariable Long leagueId) {
         return ResponseEntity.ok(leagueService.getRanking(leagueId));
     }
 
-    @PostMapping("/leagues/join")
+    @PostMapping("/join")
     public ResponseEntity<?> joinLeague(@RequestBody java.util.Map<String,String> body) {
         try {
             String code = body.get("code");

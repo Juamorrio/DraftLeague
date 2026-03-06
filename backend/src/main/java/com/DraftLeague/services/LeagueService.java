@@ -7,6 +7,8 @@ import java.util.Random;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.DraftLeague.dto.CreateLeagueRequest;
 import com.DraftLeague.models.Team.Team;
@@ -29,6 +31,8 @@ import java.util.Set;
 
 @Service
 public class LeagueService {
+
+    private static final Logger logger = LoggerFactory.getLogger(LeagueService.class);
 
     private final LeagueRepository leagueRepository;
     private final UserRepository userRepository;
@@ -90,7 +94,9 @@ public class LeagueService {
                     teamRepository.save(team);
                 }
             }
-        } catch (Exception ignored) {}
+        } catch (Exception e) {
+            logger.warn("Could not auto-create team for league creator: {}", e.getMessage());
+        }
 
         return saved;
     }
@@ -239,7 +245,9 @@ public class LeagueService {
 
         try {
             assignInitialSquad(league, team, 11);
-        } catch (Exception ignored) {}
+        } catch (Exception e) {
+            logger.warn("Could not assign initial squad on league join: {}", e.getMessage());
+        }
         return league;
     }
 
@@ -295,6 +303,7 @@ public class LeagueService {
 
         if (chosen.isEmpty()) return;
 
+        List<PlayerTeam> playerTeams = new ArrayList<>();
         for (Player p : chosen) {
             PlayerTeam pt = new PlayerTeam();
             pt.setPlayer(p);
@@ -304,8 +313,9 @@ public class LeagueService {
             int price = p.getMarketValue() == null ? 0 : p.getMarketValue();
             pt.setSellPrice(price);
             pt.setBuyPrice(price);
-            playerTeamRepository.save(pt);
+            playerTeams.add(pt);
         }
+        playerTeamRepository.saveAll(playerTeams);
     }
 
     private void pickByQuota(List<Player> low, List<Player> high, int need, List<Player> out) {

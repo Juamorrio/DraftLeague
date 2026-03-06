@@ -1,13 +1,15 @@
 package com.DraftLeague.services;
-import com.DraftLeague.models.Notification.NotificationType;
-import com.DraftLeague.models.Notification.NotificationLeague;
 
 import com.DraftLeague.models.League.League;
-import com.DraftLeague.repositories.LeagueRepository;
+import com.DraftLeague.models.Notification.Notification;
+import com.DraftLeague.models.Notification.NotificationLeague;
+import com.DraftLeague.models.Notification.NotificationType;
 import com.DraftLeague.models.Player.Player;
 import com.DraftLeague.models.user.User;
+import com.DraftLeague.repositories.LeagueRepository;
+import com.DraftLeague.repositories.NotificationLeagueRepository;
+import com.DraftLeague.repositories.NotificationRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,47 +17,52 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.DraftLeague.models.user.User;
-import com.DraftLeague.models.Player.Player;
-import com.DraftLeague.models.League.League;
-import com.DraftLeague.models.Notification.Notification;
-import com.DraftLeague.repositories.LeagueRepository;
-import com.DraftLeague.repositories.NotificationRepository;
-import com.DraftLeague.repositories.NotificationLeagueRepository;
-import com.DraftLeague.services.NotificationService;
 
 @Service
 public class NotificationService {
-    
-    @Autowired
-    private NotificationRepository notificationRepository;
-    
-    @Autowired
-    private NotificationLeagueRepository notificationLeagueRepository;
-    
-    @Autowired
-    private LeagueRepository leagueRepository;
-    
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    
+
+    private final NotificationRepository notificationRepository;
+    private final NotificationLeagueRepository notificationLeagueRepository;
+    private final LeagueRepository leagueRepository;
+    private final ObjectMapper objectMapper;
+
+    public NotificationService(NotificationRepository notificationRepository,
+                                NotificationLeagueRepository notificationLeagueRepository,
+                                LeagueRepository leagueRepository,
+                                ObjectMapper objectMapper) {
+        this.notificationRepository = notificationRepository;
+        this.notificationLeagueRepository = notificationLeagueRepository;
+        this.leagueRepository = leagueRepository;
+        this.objectMapper = objectMapper;
+    }
+
+    // ─── Helper ──────────────────────────────────────────────────────────────────
+
+    private NotificationLeague findOrCreateNotificationLeague(Integer leagueId) {
+        return notificationLeagueRepository.findByLeagueId(leagueId)
+                .orElseGet(() -> {
+                    League league = leagueRepository.findById(Long.valueOf(leagueId))
+                            .orElseThrow(() -> new RuntimeException("Liga no encontrada"));
+                    NotificationLeague nl = new NotificationLeague();
+                    nl.setLeague(league);
+                    return notificationLeagueRepository.save(nl);
+                });
+    }
+
+    private String toJson(Map<String, Object> payload) {
+        try {
+            return objectMapper.writeValueAsString(payload);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al crear payload de notificación", e);
+        }
+    }
+
+    // ─── Create methods ───────────────────────────────────────────────────────────
+
     @Transactional
     public void createClauseNotification(Integer leagueId, User buyer, User seller, Player player, int price) {
-        League league = leagueRepository.findById(Long.valueOf(leagueId))
-            .orElseThrow(() -> new RuntimeException("Liga no encontrada"));
-        
-        NotificationLeague notificationLeague = notificationLeagueRepository.findByLeagueId(leagueId)
-            .orElseGet(() -> {
-                NotificationLeague nl = new NotificationLeague();
-                nl.setLeague(league);
-                return notificationLeagueRepository.save(nl);
-            });
-        
-        Notification notification = new Notification();
-        notification.setType(NotificationType.CLAUSE);
-        notification.setCreatedAt(new Date());
-        notification.setNotificationLeague(notificationLeague);
-        
-        // Crear payload con informaciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n del clausulazo
+        NotificationLeague notificationLeague = findOrCreateNotificationLeague(leagueId);
+
         Map<String, Object> payload = new HashMap<>();
         payload.put("buyerUsername", buyer.getUsername());
         payload.put("buyerId", buyer.getId());
@@ -64,74 +71,37 @@ public class NotificationService {
         payload.put("playerName", player.getFullName());
         payload.put("playerId", player.getId());
         payload.put("price", price);
-        
-        try {
-            notification.setPayload(objectMapper.writeValueAsString(payload));
-        } catch (Exception e) {
-            throw new RuntimeException("Error al crear payload de notificaciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n", e);
-        }
-        
-        notificationRepository.save(notification);
-    }
-    
-    @Transactional
-    public void createMarketBuyNotification(Integer leagueId, User buyer, Player player, long price) {
-        League league = leagueRepository.findById(Long.valueOf(leagueId))
-            .orElseThrow(() -> new RuntimeException("Liga no encontrada"));
-        
-        NotificationLeague notificationLeague = notificationLeagueRepository.findByLeagueId(leagueId)
-            .orElseGet(() -> {
-                NotificationLeague nl = new NotificationLeague();
-                nl.setLeague(league);
-                return notificationLeagueRepository.save(nl);
-            });
-        
+
         Notification notification = new Notification();
-        notification.setType(NotificationType.BUY);
+        notification.setType(NotificationType.CLAUSE);
         notification.setCreatedAt(new Date());
         notification.setNotificationLeague(notificationLeague);
-        
-        // Crear payload con informaciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n de la compra
+        notification.setPayload(toJson(payload));
+        notificationRepository.save(notification);
+    }
+
+    @Transactional
+    public void createMarketBuyNotification(Integer leagueId, User buyer, Player player, long price) {
+        NotificationLeague notificationLeague = findOrCreateNotificationLeague(leagueId);
+
         Map<String, Object> payload = new HashMap<>();
         payload.put("buyerUsername", buyer.getUsername());
         payload.put("buyerId", buyer.getId());
         payload.put("playerName", player.getFullName());
         payload.put("playerId", player.getId());
         payload.put("price", price);
-        
-        try {
-            notification.setPayload(objectMapper.writeValueAsString(payload));
-        } catch (Exception e) {
-            throw new RuntimeException("Error al crear payload de notificaciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n", e);
-        }
-        
+
+        Notification notification = new Notification();
+        notification.setType(NotificationType.BUY);
+        notification.setCreatedAt(new Date());
+        notification.setNotificationLeague(notificationLeague);
+        notification.setPayload(toJson(payload));
         notificationRepository.save(notification);
-    }
-    
-    public List<Notification> getNotificationsByLeague(Integer leagueId) {
-        return notificationRepository.findByLeagueIdOrderByCreatedAtDesc(leagueId);
-    }
-    
-    public List<Notification> getNewNotifications(Integer leagueId, Integer lastId) {
-        return notificationRepository.findNewNotificationsByLeagueId(leagueId, lastId);
     }
 
     @Transactional
     public void createTradeOfferNotification(Integer leagueId, User buyer, User seller, Player player, Integer offerPrice, Long offerId) {
-        League league = leagueRepository.findById(Long.valueOf(leagueId))
-            .orElseThrow(() -> new RuntimeException("Liga no encontrada"));
-
-        NotificationLeague notificationLeague = notificationLeagueRepository.findByLeagueId(leagueId)
-            .orElseGet(() -> {
-                NotificationLeague nl = new NotificationLeague();
-                nl.setLeague(league);
-                return notificationLeagueRepository.save(nl);
-            });
-
-        Notification notification = new Notification();
-        notification.setType(NotificationType.TRADE_OFFER);
-        notification.setCreatedAt(new Date());
-        notification.setNotificationLeague(notificationLeague);
+        NotificationLeague notificationLeague = findOrCreateNotificationLeague(leagueId);
 
         Map<String, Object> payload = new HashMap<>();
         payload.put("offerId", offerId);
@@ -143,31 +113,17 @@ public class NotificationService {
         payload.put("playerId", player.getId());
         payload.put("price", offerPrice);
 
-        try {
-            notification.setPayload(objectMapper.writeValueAsString(payload));
-        } catch (Exception e) {
-            throw new RuntimeException("Error al crear payload de notificación de oferta", e);
-        }
-
+        Notification notification = new Notification();
+        notification.setType(NotificationType.TRADE_OFFER);
+        notification.setCreatedAt(new Date());
+        notification.setNotificationLeague(notificationLeague);
+        notification.setPayload(toJson(payload));
         notificationRepository.save(notification);
     }
 
     @Transactional
     public void createTradeResultNotification(Integer leagueId, User buyer, User seller, Player player, Integer price, Long offerId, boolean accepted) {
-        League league = leagueRepository.findById(Long.valueOf(leagueId))
-            .orElseThrow(() -> new RuntimeException("Liga no encontrada"));
-
-        NotificationLeague notificationLeague = notificationLeagueRepository.findByLeagueId(leagueId)
-            .orElseGet(() -> {
-                NotificationLeague nl = new NotificationLeague();
-                nl.setLeague(league);
-                return notificationLeagueRepository.save(nl);
-            });
-
-        Notification notification = new Notification();
-        notification.setType(accepted ? NotificationType.TRADE_ACCEPTED : NotificationType.TRADE_REJECTED);
-        notification.setCreatedAt(new Date());
-        notification.setNotificationLeague(notificationLeague);
+        NotificationLeague notificationLeague = findOrCreateNotificationLeague(leagueId);
 
         Map<String, Object> payload = new HashMap<>();
         payload.put("offerId", offerId);
@@ -179,31 +135,17 @@ public class NotificationService {
         payload.put("playerId", player.getId());
         payload.put("price", price);
 
-        try {
-            notification.setPayload(objectMapper.writeValueAsString(payload));
-        } catch (Exception e) {
-            throw new RuntimeException("Error al crear payload de resultado de oferta", e);
-        }
-
+        Notification notification = new Notification();
+        notification.setType(accepted ? NotificationType.TRADE_ACCEPTED : NotificationType.TRADE_REJECTED);
+        notification.setCreatedAt(new Date());
+        notification.setNotificationLeague(notificationLeague);
+        notification.setPayload(toJson(payload));
         notificationRepository.save(notification);
     }
 
     @Transactional
     public void createSellNotification(Integer leagueId, User seller, Player player, int price) {
-        League league = leagueRepository.findById(Long.valueOf(leagueId))
-            .orElseThrow(() -> new RuntimeException("Liga no encontrada"));
-
-        NotificationLeague notificationLeague = notificationLeagueRepository.findByLeagueId(leagueId)
-            .orElseGet(() -> {
-                NotificationLeague nl = new NotificationLeague();
-                nl.setLeague(league);
-                return notificationLeagueRepository.save(nl);
-            });
-
-        Notification notification = new Notification();
-        notification.setType(NotificationType.SELL);
-        notification.setCreatedAt(new Date());
-        notification.setNotificationLeague(notificationLeague);
+        NotificationLeague notificationLeague = findOrCreateNotificationLeague(leagueId);
 
         Map<String, Object> payload = new HashMap<>();
         payload.put("sellerUsername", seller.getUsername());
@@ -212,12 +154,21 @@ public class NotificationService {
         payload.put("playerId", player.getId());
         payload.put("price", price);
 
-        try {
-            notification.setPayload(objectMapper.writeValueAsString(payload));
-        } catch (Exception e) {
-            throw new RuntimeException("Error al crear payload de notificaciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n", e);
-        }
-
+        Notification notification = new Notification();
+        notification.setType(NotificationType.SELL);
+        notification.setCreatedAt(new Date());
+        notification.setNotificationLeague(notificationLeague);
+        notification.setPayload(toJson(payload));
         notificationRepository.save(notification);
+    }
+
+    // ─── Query methods ────────────────────────────────────────────────────────────
+
+    public List<Notification> getNotificationsByLeague(Integer leagueId) {
+        return notificationRepository.findByLeagueIdOrderByCreatedAtDesc(leagueId);
+    }
+
+    public List<Notification> getNewNotifications(Integer leagueId, Integer lastId) {
+        return notificationRepository.findNewNotificationsByLeagueId(leagueId, lastId);
     }
 }

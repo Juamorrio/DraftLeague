@@ -13,8 +13,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import com.DraftLeague.repositories.UserRepository;
 import com.DraftLeague.models.user.User;
-import com.DraftLeague.models.user.User;
-import com.DraftLeague.repositories.UserRepository;
 
 @RestController
 @RequestMapping("/auth")
@@ -47,7 +45,8 @@ public class AuthController {
             "id", user.getId(),
             "username", user.getUsername(),
             "displayName", user.getDisplayName(),
-            "email", user.getEmail()
+            "email", user.getEmail(),
+            "role", user.getRole() != null ? user.getRole() : "USER"
         );
         return ResponseEntity.ok(body);
     }

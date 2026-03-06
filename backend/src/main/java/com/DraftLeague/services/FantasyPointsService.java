@@ -1,30 +1,22 @@
 package com.DraftLeague.services;
-import com.DraftLeague.models.Team.TeamGameweekPoints;
-import com.DraftLeague.models.Team.TeamPlayerGameweekPoints;
 
 import com.DraftLeague.models.Team.*;
 import com.DraftLeague.models.Player.*;
 import com.DraftLeague.models.Statistics.*;
 import com.DraftLeague.models.Match.*;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.annotation.Propagation;
-import lombok.RequiredArgsConstructor;
-
-import java.util.*;
-import java.util.stream.Collectors;
-import com.DraftLeague.models.Player.Player;
-import com.DraftLeague.models.Team.Team;
-import com.DraftLeague.models.Match.Match;
-import com.DraftLeague.models.Statistics.PlayerStatistic;
-import com.DraftLeague.models.Player.Position;
-import com.DraftLeague.models.Player.PlayerTeam;
 import com.DraftLeague.repositories.PlayerRepository;
 import com.DraftLeague.repositories.TeamRepository;
 import com.DraftLeague.repositories.MatchRepository;
 import com.DraftLeague.repositories.PlayerStatisticRepository;
 import com.DraftLeague.repositories.TeamGameweekPointsRepository;
 import com.DraftLeague.repositories.TeamPlayerGameweekPointsRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -69,6 +61,8 @@ public class FantasyPointsService {
             tpgwPointsRepository.deleteAll(existingSnapshots);
         }
 
+        List<TeamPlayerGameweekPoints> newSnapshots = new ArrayList<>();
+
         for (PlayerTeam pt : team.getPlayerTeams()) {
             Player player = pt.getPlayer();
 
@@ -85,7 +79,6 @@ public class FantasyPointsService {
             int finalPlayerPoints = 0;
             Integer matchId = null;
             int minutesPlayed = 0;
-            boolean played = false;
 
             if (stat != null) {
                 basePlayerPoints = stat.getTotalFantasyPoints() != null
@@ -93,7 +86,6 @@ public class FantasyPointsService {
                 finalPlayerPoints = basePlayerPoints;
                 matchId = stat.getMatchId();
                 minutesPlayed = stat.getMinutesPlayed() != null ? stat.getMinutesPlayed() : 0;
-                played = true;
 
                 if (pt.getIsCaptain() != null && pt.getIsCaptain()) {
                     finalPlayerPoints *= 2;
@@ -115,8 +107,7 @@ public class FantasyPointsService {
             snapshot.setIsInLineup(pt.getLined() != null && pt.getLined());
             snapshot.setIsCaptain(pt.getIsCaptain() != null && pt.getIsCaptain());
             snapshot.setIsBenched(pt.getLined() == null || !pt.getLined());
-
-            tpgwPointsRepository.save(snapshot);
+            newSnapshots.add(snapshot);
 
             if (pt.getLined() != null && pt.getLined()) {
                 totalPoints += finalPlayerPoints;
@@ -138,6 +129,8 @@ public class FantasyPointsService {
                 }
             }
         }
+
+        tpgwPointsRepository.saveAll(newSnapshots);
 
         gwPoints.setPoints(totalPoints);
         gwPoints.setGoalkeeperPoints(gkPoints);

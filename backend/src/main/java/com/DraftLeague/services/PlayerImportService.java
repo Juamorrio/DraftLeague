@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import com.DraftLeague.models.Player.Player;
@@ -115,14 +116,13 @@ public class PlayerImportService {
 
         try (InputStream is = Files.newInputStream(path)) {
             List<PlayerImportDto> dtos = objectMapper.readValue(is, new TypeReference<>() {});
-            int created = 0;
 
+            List<Player> newPlayers = new ArrayList<>();
             for (PlayerImportDto dto : dtos) {
-                String playerId = dto.getId();
-                if (repo.existsById(playerId)) continue;
+                if (repo.existsById(dto.getId())) continue;
 
                 Player p = new Player();
-                p.setId(playerId);
+                p.setId(dto.getId());
                 p.setFullName(dto.getFullName());
                 p.setPosition(mapPosition(dto.getPosition()));
                 p.setAvatarUrl(dto.getAvatarUrl());
@@ -130,21 +130,23 @@ public class PlayerImportService {
                 p.setMarketValue(dto.getMarketValue() != null ? dto.getMarketValue() : 100000);
                 p.setActive(Boolean.TRUE);
                 p.setTotalPoints(0);
-                repo.save(p);
-                created++;
+                newPlayers.add(p);
             }
 
-            return created;
+            repo.saveAll(newPlayers);
+            return newPlayers.size();
         }
     }
 
     /** Fetches all La Liga squads from API-Football and upserts players into the DB. */
+    @Transactional
     public String syncPlayers() throws Exception {
         List<PlayerImportDto> dtos = playerSquadSyncService.fetchAllSquads();
         int created = 0, updated = 0;
+
+        List<Player> toSave = new ArrayList<>(dtos.size());
         for (PlayerImportDto dto : dtos) {
-            String playerId = dto.getId();
-            Player p = repo.findById(playerId).orElse(null);
+            Player p = repo.findById(dto.getId()).orElse(null);
             if (p != null) {
                 p.setFullName(dto.getFullName());
                 p.setPosition(mapPosition(dto.getPosition()));
@@ -154,7 +156,7 @@ public class PlayerImportService {
                 updated++;
             } else {
                 p = new Player();
-                p.setId(playerId);
+                p.setId(dto.getId());
                 p.setFullName(dto.getFullName());
                 p.setPosition(mapPosition(dto.getPosition()));
                 p.setAvatarUrl(dto.getAvatarUrl());
@@ -164,8 +166,9 @@ public class PlayerImportService {
                 p.setTotalPoints(0);
                 created++;
             }
-            repo.save(p);
+            toSave.add(p);
         }
+        repo.saveAll(toSave);
         return "Sync completado: " + created + " creados, " + updated + " actualizados";
     }
 

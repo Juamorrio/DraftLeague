@@ -3,6 +3,7 @@ import com.DraftLeague.models.Team.TeamPlayerGameweekPoints;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import com.DraftLeague.models.Team.Team;
@@ -27,4 +28,7 @@ public interface TeamPlayerGameweekPointsRepository extends JpaRepository<TeamPl
 
     // Ordenados por puntos para un equipo/jornada
     List<TeamPlayerGameweekPoints> findByTeamAndGameweekOrderByPointsDesc(Team team, Integer gameweek);
+
+    @Transactional
+    void deleteAllByTeam(Team team);
 }

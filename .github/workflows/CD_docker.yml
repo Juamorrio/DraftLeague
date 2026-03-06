@@ -13,9 +13,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  # GITHUB_REPOSITORY = owner/repo  (ej: jmore/DraftLeague)
-  IMAGE_BACKEND: ghcr.io/${{ github.repository }}/backend
-  IMAGE_FRONTEND: ghcr.io/${{ github.repository }}/frontend
 
 jobs:
   # ── 1. Tests antes de publicar ─────────────────────────────────────────────
@@ -43,13 +40,18 @@ jobs:
     needs: test-backend
     permissions:
       contents: read
-      packages: write   # necesario para push a GHCR
+      packages: write  
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Calcula la etiqueta: usa el input manual, o 'latest' + el SHA corto
+      - name: Compute lowercase image names
+        run: |
+          REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo "IMAGE_BACKEND=${{ env.REGISTRY }}/${REPO_LOWER}/backend" >> $GITHUB_ENV
+          echo "IMAGE_FRONTEND=${{ env.REGISTRY }}/${REPO_LOWER}/frontend" >> $GITHUB_ENV
+
       - name: Compute image tag
         id: tag
         run: |
@@ -68,7 +70,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Habilita caché de capas entre ejecuciones (BuildKit)
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 

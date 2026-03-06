@@ -44,12 +44,6 @@ public class LeagueController {
         return ResponseEntity.ok(leagues);
     }
 
-    @GetMapping("/users/{userId}/leagues")
-    public ResponseEntity<List<League>> getLeaguesByUserId(@PathVariable Integer userId) {
-        List<League> leagues = leagueService.getLeaguesByUserId(userId);
-        return ResponseEntity.ok(leagues);
-    }
-
     @PutMapping("/{id}")
     public ResponseEntity<League> updateLeague(@PathVariable Long id, @RequestBody League league) {
         League updatedLeague = leagueService.updateLeague(id, league);

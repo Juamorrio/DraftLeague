@@ -13,7 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import com.DraftLeague.models.user.User;
+import com.DraftLeague.models.League.League;
 import com.DraftLeague.services.UserService;
+import com.DraftLeague.services.LeagueService;
+
+import java.util.List;
 
 
 @RestController
@@ -21,13 +25,15 @@ import com.DraftLeague.services.UserService;
 public class UserRestController {
 
     private UserService userService;
+    private LeagueService leagueService;
 
     @Autowired
-    public UserRestController(UserService userService) {
+    public UserRestController(UserService userService, LeagueService leagueService) {
         this.userService = userService;
+        this.leagueService = leagueService;
     }
 
-    @PostMapping
+    @PostMapping()
     public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
         User createdUser = userService.postUser(user);
         return ResponseEntity.ok(createdUser);
@@ -61,6 +67,12 @@ public class UserRestController {
     public ResponseEntity<Iterable<User>> getAllUsers() {
         Iterable<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/{id}/leagues")
+    public ResponseEntity<List<League>> getLeaguesByUserId(@PathVariable Integer id) {
+        List<League> leagues = leagueService.getLeaguesByUserId(id);
+        return ResponseEntity.ok(leagues);
     }
 
 }

@@ -194,6 +194,8 @@ public class MarketService {
         Map<String, Object> highestBid = marketPlayer.getHighestBidInfo();
         
         if (highestBid == null) {
+            // Auction ended without bids; mark as closed so it is not processed as AVAILABLE again.
+            marketPlayer.setStatus(StatusMarketPlayer.SOLD);
             marketPlayerRepository.save(marketPlayer);
             return;
         }
@@ -239,8 +241,8 @@ public class MarketService {
     
     @Transactional
     public void finalizeExpiredAuctions() {
-        List<MarketPlayer> expiredAuctions = new ArrayList<>(marketPlayerRepository
-                .findAll().stream().filter(p -> p.getHighestBidder() != null).toList());
+        List<MarketPlayer> expiredAuctions = marketPlayerRepository
+                .findByStatusAndAuctionEndTimeBefore(StatusMarketPlayer.AVAILABLE, LocalDateTime.now());
         
         for (MarketPlayer marketPlayer : expiredAuctions) {
             finalizeAuction(marketPlayer.getId());
@@ -264,16 +266,50 @@ public class MarketService {
         }
 
         List<MarketPlayer> oldMarketPlayers = marketPlayerRepository.findByLeague(league);
+        Set<String> previousMarketPlayerIds = oldMarketPlayers.stream()
+            .map(mp -> mp.getPlayer().getId())
+            .collect(java.util.stream.Collectors.toSet());
         marketPlayerRepository.deleteAll(oldMarketPlayers);
 
         List<Integer> teamIds = teamRepository.findByLeague(league).stream()
                 .map(Team::getId).toList();
 
-        List<Player> allPlayers = new ArrayList<>(playerRepository.findAll().stream()
-                .filter(p -> playerTeamRepository.findPlayerTeamsByTeamIdIn(teamIds).stream()
-                        .noneMatch(pt -> pt.getPlayer().getId().equals(p.getId()))).toList());
-        Collections.shuffle(allPlayers);
-        List<Player> selectedPlayers = allPlayers.subList(0, Math.min(10, allPlayers.size()));
+        Set<String> ownedPlayerIds = playerTeamRepository.findPlayerTeamsByTeamIdIn(teamIds).stream()
+            .map(pt -> pt.getPlayer().getId())
+            .collect(java.util.stream.Collectors.toSet());
+
+        final int marketSize = 10;
+
+        // Prefer players not owned and not present in the previous market.
+        List<Player> freshCandidates = playerRepository.findAll().stream()
+            .filter(p -> !ownedPlayerIds.contains(p.getId()))
+            .filter(p -> !previousMarketPlayerIds.contains(p.getId()))
+            .toList();
+
+        List<Player> fallbackCandidates = playerRepository.findAll().stream()
+            .filter(p -> !ownedPlayerIds.contains(p.getId()))
+            .toList();
+
+        List<Player> selectedPlayers = new ArrayList<>();
+        List<Player> shuffledFresh = new ArrayList<>(freshCandidates);
+        Collections.shuffle(shuffledFresh);
+        selectedPlayers.addAll(shuffledFresh.subList(0, Math.min(marketSize, shuffledFresh.size())));
+
+        if (selectedPlayers.size() < marketSize) {
+            Set<String> selectedIds = selectedPlayers.stream()
+                .map(Player::getId)
+                .collect(java.util.stream.Collectors.toSet());
+
+            List<Player> fallbackPool = fallbackCandidates.stream()
+                .filter(p -> !selectedIds.contains(p.getId()))
+                .toList();
+
+            List<Player> shuffledFallback = new ArrayList<>(fallbackPool);
+            Collections.shuffle(shuffledFallback);
+
+            int remaining = marketSize - selectedPlayers.size();
+            selectedPlayers.addAll(shuffledFallback.subList(0, Math.min(remaining, shuffledFallback.size())));
+        }
 
         List<MarketPlayer> newMarketPlayers = new ArrayList<>();
         for (Player player : selectedPlayers) {

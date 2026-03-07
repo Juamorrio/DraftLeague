@@ -115,12 +115,15 @@ public interface PlayerStatisticRepository extends JpaRepository<PlayerStatistic
      */
     @Query(value = """
         SELECT
-            COALESCE(SUM(yellow_cards), 0) AS total_yellow_cards,
-            COALESCE(SUM(red_cards), 0)    AS total_red_cards
-        FROM player_statistic
-        WHERE player_id = :playerId
-        ORDER BY match_id DESC
-        LIMIT :limit
+            COALESCE(SUM(recent.yellow_cards), 0) AS total_yellow_cards,
+            COALESCE(SUM(recent.red_cards), 0)    AS total_red_cards
+        FROM (
+            SELECT yellow_cards, red_cards
+            FROM player_statistic
+            WHERE player_id = :playerId
+            ORDER BY match_id DESC
+            LIMIT :limit
+        ) recent
         """, nativeQuery = true)
     Map<String, Object> findRecentDisciplineByPlayerId(@Param("playerId") String playerId,
                                                        @Param("limit") int limit);

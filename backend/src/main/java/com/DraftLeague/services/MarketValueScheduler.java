@@ -28,6 +28,7 @@ import java.util.Map;
 public class MarketValueScheduler {
 
     private final MarketValueUpdateService marketValueUpdateService;
+    private final GameweekStateService gameweekStateService;
 
     /**
      * Daily maintenance price update – runs every day at 04:00 server time.
@@ -53,7 +54,8 @@ public class MarketValueScheduler {
 
     private void runUpdate(String label) {
         try {
-            Map<String, Integer> result = marketValueUpdateService.recalculateAllMarketValues();
+            Integer activeGameweek = gameweekStateService.getActiveGameweek();
+            Map<String, Integer> result = marketValueUpdateService.recalculateAllMarketValuesForGameweek(activeGameweek);
             log.info("[Scheduler][{}] Market values updated: updated={}, skipped={}, errors={}",
                     label,
                     result.getOrDefault("updatedCount", 0),

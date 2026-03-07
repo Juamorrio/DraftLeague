@@ -27,6 +27,7 @@ import com.DraftLeague.models.League.League;
 import com.DraftLeague.repositories.LeagueRepository;
 import com.DraftLeague.repositories.MarketPlayerRepository;
 import com.DraftLeague.repositories.NotificationLeagueRepository;
+import com.DraftLeague.repositories.TradeOfferRepository;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Collections;
@@ -44,6 +45,7 @@ public class LeagueService {
     private final PlayerTeamRepository playerTeamRepository;
     private final NotificationLeagueRepository notificationLeagueRepository;
     private final com.DraftLeague.repositories.NotificationRepository notificationRepository;
+    private final TradeOfferRepository tradeOfferRepository;
     private final MarketPlayerRepository marketPlayerRepository;
     private final TeamGameweekPointsRepository teamGameweekPointsRepository;
     private final TeamPlayerGameweekPointsRepository teamPlayerGameweekPointsRepository;
@@ -52,6 +54,7 @@ public class LeagueService {
                          PlayerRepository playerRepository, PlayerTeamRepository playerTeamRepository,
                          NotificationLeagueRepository notificationLeagueRepository,
                          com.DraftLeague.repositories.NotificationRepository notificationRepository,
+                         TradeOfferRepository tradeOfferRepository,
                          MarketPlayerRepository marketPlayerRepository,
                          TeamGameweekPointsRepository teamGameweekPointsRepository,
                          TeamPlayerGameweekPointsRepository teamPlayerGameweekPointsRepository) {
@@ -62,6 +65,7 @@ public class LeagueService {
         this.playerTeamRepository = playerTeamRepository;
         this.notificationLeagueRepository = notificationLeagueRepository;
         this.notificationRepository = notificationRepository;
+        this.tradeOfferRepository = tradeOfferRepository;
         this.marketPlayerRepository = marketPlayerRepository;
         this.teamGameweekPointsRepository = teamGameweekPointsRepository;
         this.teamPlayerGameweekPointsRepository = teamPlayerGameweekPointsRepository;
@@ -169,6 +173,9 @@ public class LeagueService {
 
         // Delete market players (FK to league)
         marketPlayerRepository.deleteAll(marketPlayerRepository.findByLeague(league));
+
+        // Delete trade offers before deleting teams (FK from_team_id/to_team_id -> team)
+        tradeOfferRepository.deleteByLeague(league);
 
         List<Team> teams = teamRepository.findByLeague(league);
         if (teams != null && !teams.isEmpty()) {

@@ -154,13 +154,43 @@ public class MarketValueUpdateService {
 
         if (recentStats.isEmpty()) {
             if (player.getMarketValue() == null) {
-            player.setMarketValue(baseValue);
-            playerRepository.save(player);
-            playerTeamRepository.updateSellPriceByPlayerId(player.getId(), baseValue);
-            return true;
+                player.setMarketValue(baseValue);
+                playerRepository.save(player);
+                playerTeamRepository.updateSellPriceByPlayerId(player.getId(), baseValue);
+                return true;
             }
-            log.debug("[MarketValueUpdate] No recent stats for player {} – skipping.", player.getId());
-            return false;
+            // Fallback: use season-wide averages so benched/injured players still drift
+            Map<String, Object> season = playerStatisticRepository.getPlayerStatisticsSummaryData(player.getId());
+            double sf = computeSeasonFactor(season, expectedPoints);
+            // Cap season-only drift to ±10 % so the effect is gentler than the full model
+            double cappedSf = clamp(sf, 0.90, 1.10);
+            int rawSeasonValue = (int) Math.round(baseValue * cappedSf);
+            int seasonValue = roundToNearest(clampInt(rawSeasonValue, MIN_VALUE, MAX_VALUE), ROUND_TO);
+            if (seasonValue == baseValue) {
+                log.debug("[MarketValueUpdate] No recent stats, no season change for player {} – skipping.", player.getId());
+                return false;
+            }
+            player.setMarketValue(seasonValue);
+            playerRepository.save(player);
+            playerTeamRepository.updateSellPriceByPlayerId(player.getId(), seasonValue);
+            if (gameweek != null) {
+                int changeAmount = seasonValue - baseValue;
+                double changePercentage = baseValue > 0 ? ((double) changeAmount / baseValue) * 100.0 : 0.0;
+                PlayerMarketValueHistory history = marketValueHistoryRepository
+                        .findByPlayerIdAndGameweek(player.getId(), gameweek)
+                        .orElse(new PlayerMarketValueHistory());
+                history.setPlayerId(player.getId());
+                history.setGameweek(gameweek);
+                history.setPreviousValue(baseValue);
+                history.setNewValue(seasonValue);
+                history.setChangeAmount(changeAmount);
+                history.setChangePercentage(Math.round(changePercentage * 100.0) / 100.0);
+                history.setRecordedAt(new Date());
+                marketValueHistoryRepository.save(history);
+            }
+            log.debug("[MarketValueUpdate] Player {} ({}) [season fallback]: {} -> {}",
+                    player.getId(), player.getFullName(), baseValue, seasonValue);
+            return true;
         }
 
         double avgFantasyPoints = recentStats.stream()

@@ -171,4 +171,14 @@ public class NotificationService {
     public List<Notification> getNewNotifications(Integer leagueId, Integer lastId) {
         return notificationRepository.findNewNotificationsByLeagueId(leagueId, lastId);
     }
+
+    @Transactional
+    public void deleteTradeOfferNotification(Integer leagueId, Long offerId) {
+        if (leagueId == null || offerId == null) return;
+        String token = "\"offerId\":" + offerId;
+        notificationRepository.deleteTradeOfferNotification(
+                leagueId,
+                NotificationType.TRADE_OFFER,
+                token);
+    }
 }

@@ -230,7 +230,13 @@ public class TeamService {
             .findFirst()
             .orElseThrow(() -> new RuntimeException("El jugador no pertenece a tu equipo"));
 
-        int marketValue = target.getPlayer().getMarketValue();
+        Integer marketValue = Optional.ofNullable(target.getPlayer().getMarketValue())
+            .or(() -> Optional.ofNullable(target.getSellPrice()))
+            .or(() -> Optional.ofNullable(target.getBuyPrice()))
+            .orElse(null);
+        if (marketValue == null || marketValue <= 0) {
+            throw new RuntimeException("Valor de mercado no disponible para este jugador");
+        }
         double factor = 0.9 + (Math.random() * 0.2);
         int sellPrice = (int) Math.round(marketValue * factor);
 

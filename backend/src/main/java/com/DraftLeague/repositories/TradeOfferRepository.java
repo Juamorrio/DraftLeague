@@ -23,4 +23,6 @@ public interface TradeOfferRepository extends JpaRepository<TradeOffer, Long> {
     List<TradeOffer> findByFromTeam(Team fromTeam);
 
     List<TradeOffer> findByLeagueAndPlayerAndStatus(League league, Player player, TradeOfferStatus status);
+
+    void deleteByLeague(League league);
 }

@@ -161,7 +161,11 @@ public class TradeOfferService {
         offer.setStatus(TradeOfferStatus.ACCEPTED);
         tradeOfferRepository.save(offer);
 
-        // Auto-reject all other pending offers for this player in this league
+        notificationService.deleteTradeOfferNotification(
+            offer.getLeague().getId(),
+            offer.getId());
+
+      
         List<TradeOffer> otherOffers = tradeOfferRepository.findByLeagueAndPlayerAndStatus(
                 offer.getLeague(), player, TradeOfferStatus.PENDING);
         for (TradeOffer other : otherOffers) {
@@ -193,6 +197,10 @@ public class TradeOfferService {
 
         offer.setStatus(TradeOfferStatus.REJECTED);
         tradeOfferRepository.save(offer);
+
+        notificationService.deleteTradeOfferNotification(
+            offer.getLeague().getId(),
+            offer.getId());
 
         notificationService.createTradeResultNotification(
                 offer.getLeague().getId(),

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import com.DraftLeague.models.user.User;
-import com.DraftLeague.models.League.League;
 import com.DraftLeague.services.UserService;
 import com.DraftLeague.services.LeagueService;
 
@@ -70,8 +69,8 @@ public class UserRestController {
     }
 
     @GetMapping("/{id}/leagues")
-    public ResponseEntity<List<League>> getLeaguesByUserId(@PathVariable Integer id) {
-        List<League> leagues = leagueService.getLeaguesByUserId(id);
+    public ResponseEntity<List<java.util.Map<String,Object>>> getLeaguesByUserId(@PathVariable Integer id) {
+        List<java.util.Map<String,Object>> leagues = leagueService.getLeaguesByUserId(id);
         return ResponseEntity.ok(leagues);
     }
 

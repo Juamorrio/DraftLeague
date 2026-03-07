@@ -205,9 +205,40 @@ public class LeagueService {
         return leagueRepository.findAll();
     }
 
-    public List<League> getLeaguesByUserId(int userId) {
+    public List<Map<String,Object>> getLeaguesByUserId(int userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        return teamRepository.findDistinctLeaguesByUser(user);
+        List<League> leagues = teamRepository.findDistinctLeaguesByUser(user);
+        List<Map<String,Object>> list = new ArrayList<>();
+        for (League league : leagues) {
+            java.util.Map<String,Object> row = new java.util.HashMap<>();
+            row.put("id", league.getId());
+            row.put("code", league.getCode());
+            row.put("name", league.getName());
+            row.put("description", league.getDescription());
+            row.put("maxTeams", league.getMaxTeams());
+            row.put("initialBudget", league.getInitialBudget());
+            row.put("marketEndHour", league.getMarketEndHour());
+            row.put("captainEnable", league.getCaptainEnable());
+            row.put("createdById", league.getCreatedBy() != null ? league.getCreatedBy().getId() : null);
+            row.put("participants", teamRepository.countByLeague(league));
+
+            Team myTeam = teamRepository.findByLeagueAndUser(league, user);
+            Integer totalPoints = myTeam != null && myTeam.getTotalPoints() != null ? myTeam.getTotalPoints() : 0;
+            row.put("totalPoints", totalPoints);
+
+            int position = 0;
+            List<Team> ranking = teamRepository.findByLeagueOrderByTotalPointsDesc(league);
+            for (int i = 0; i < ranking.size(); i++) {
+                Team t = ranking.get(i);
+                if (t.getUser() != null && t.getUser().getId().equals(user.getId())) {
+                    position = i + 1;
+                    break;
+                }
+            }
+            row.put("position", position == 0 ? null : position);
+            list.add(row);
+        }
+        return list;
     }
 
     public List<Map<String,Object>> getRanking(Long leagueId) {

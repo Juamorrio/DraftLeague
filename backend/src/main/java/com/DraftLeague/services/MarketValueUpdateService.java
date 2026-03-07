@@ -142,28 +142,54 @@ public class MarketValueUpdateService {
      */
     @Transactional
     public boolean recalculateForPlayer(Player player, Integer gameweek) {
-        int baseValue = player.getMarketValue();
+        int baseValue = player.getMarketValue() != null
+            ? player.getMarketValue()
+            : defaultBaseValue(player.getPosition());
 
         // ── 1. Form factor ──────────────────────────────────────────────────────
         List<PlayerStatistic> recentStats = playerStatisticRepository
                 .findRecentStatsByPlayerId(player.getId(), PageRequest.of(0, FORM_WINDOW));
 
+        double expectedPoints = getExpectedPoints(player.getPosition());
+
         if (recentStats.isEmpty()) {
-            // Edge case: no match data available – leave price unchanged
+            if (player.getMarketValue() == null) {
+            player.setMarketValue(baseValue);
+            playerRepository.save(player);
+            playerTeamRepository.updateSellPriceByPlayerId(player.getId(), baseValue);
+            return true;
+            }
             log.debug("[MarketValueUpdate] No recent stats for player {} – skipping.", player.getId());
             return false;
         }
 
         double avgFantasyPoints = recentStats.stream()
-                .mapToInt(ps -> ps.getTotalFantasyPoints() != null ? ps.getTotalFantasyPoints() : 0)
-                .average()
-                .orElse(0.0);
+            .mapToInt(ps -> safeFantasyPoints(ps))
+            .average()
+            .orElse(0.0);
 
-        double expectedPoints = getExpectedPoints(player.getPosition());
-        // Form multiplier: centred at 1.0 (meeting expectation), clamped so a
-        // single hot streak cannot more than double the price.
         double formRatio = (expectedPoints > 0) ? (avgFantasyPoints / expectedPoints) : 1.0;
-        double formFactor = clamp(formRatio, 0.80, 1.20);
+        double formFactor = clamp(formRatio, 0.85, 1.25);
+
+        double minutesFactor = clamp(recentStats.stream()
+            .mapToInt(ps -> safeInt(ps.getMinutesPlayed()))
+            .average()
+            .orElse(0.0) / 90.0, 0.70, 1.05);
+
+        double avgRating = recentStats.stream()
+            .mapToDouble(ps -> ps.getRating() != null ? ps.getRating() : 6.5)
+            .average()
+            .orElse(6.5);
+        double ratingFactor = clamp(1.0 + ((avgRating - 6.5) * 0.04), 0.90, 1.10);
+
+        double consistencyFactor = computeConsistencyFactor(recentStats);
+        double momentumFactor = computeMomentumFactor(recentStats, expectedPoints);
+        double impactFactor = computeImpactFactor(recentStats, player.getPosition());
+
+        Map<String, Object> season = playerStatisticRepository.getPlayerStatisticsSummaryData(player.getId());
+        double seasonFactor = computeSeasonFactor(season, expectedPoints);
+
+        double blendedForm = (formFactor * 0.65) + (seasonFactor * 0.35);
 
         // ── 2. Discipline factor ────────────────────────────────────────────────
         double disciplineFactor = computeDisciplineFactor(player.getId());
@@ -178,7 +204,9 @@ public class MarketValueUpdateService {
         double activityFactor = Boolean.TRUE.equals(player.getActive()) ? 1.0 : 0.90;
 
         // ── 5. Combined factor & change cap ────────────────────────────────────
-        double combinedFactor = formFactor * disciplineFactor * demandFactor * activityFactor;
+        double combinedFactor = blendedForm * minutesFactor * ratingFactor *
+            consistencyFactor * momentumFactor * impactFactor *
+            disciplineFactor * demandFactor * activityFactor;
 
         // Clamp the total movement to ±MAX_CHANGE_FRACTION per update run
         double cappedFactor = clamp(combinedFactor,
@@ -194,10 +222,16 @@ public class MarketValueUpdateService {
             return false; // nothing changed – no write needed
         }
 
-        log.debug("[MarketValueUpdate] Player {} ({}): {} -> {} | form={} disc={} demand={} active={}",
+        log.debug("[MarketValueUpdate] Player {} ({}): {} -> {} | form={} season={} minutes={} rating={} momentum={} consistency={} impact={} disc={} demand={} active={}",
                 player.getId(), player.getFullName(),
                 baseValue, newValue,
-                String.format("%.3f", formFactor),
+            String.format("%.3f", formFactor),
+            String.format("%.3f", seasonFactor),
+            String.format("%.3f", minutesFactor),
+            String.format("%.3f", ratingFactor),
+            String.format("%.3f", momentumFactor),
+            String.format("%.3f", consistencyFactor),
+            String.format("%.3f", impactFactor),
                 String.format("%.3f", disciplineFactor),
                 String.format("%.3f", demandFactor),
                 activityFactor);
@@ -281,6 +315,85 @@ public class MarketValueUpdateService {
         return Math.max(min, Math.min(max, value));
     }
 
+    private int defaultBaseValue(Position position) {
+        return switch (position) {
+            case POR -> 5_000_000;
+            case DEF -> 6_000_000;
+            case MID -> 7_000_000;
+            case DEL -> 8_000_000;
+            default -> MIN_VALUE;
+        };
+    }
+
+    private int safeFantasyPoints(PlayerStatistic ps) {
+        if (ps.getTotalFantasyPoints() != null) return ps.getTotalFantasyPoints();
+        return ps.calculateFantasyPoints();
+    }
+
+    private int safeInt(Integer value) {
+        return value != null ? value : 0;
+    }
+
+    private double computeConsistencyFactor(List<PlayerStatistic> recentStats) {
+        if (recentStats.isEmpty()) return 1.0;
+        double avg = recentStats.stream().mapToInt(this::safeFantasyPoints).average().orElse(0.0);
+        double variance = recentStats.stream()
+                .mapToDouble(ps -> Math.pow(safeFantasyPoints(ps) - avg, 2))
+                .average()
+                .orElse(0.0);
+        double std = Math.sqrt(variance);
+        return clamp(1.02 - (std * 0.015), 0.92, 1.05);
+    }
+
+    private double computeMomentumFactor(List<PlayerStatistic> recentStats, double expectedPoints) {
+        if (recentStats.size() < 3 || expectedPoints <= 0) return 1.0;
+        double last3 = recentStats.stream().limit(3)
+                .mapToInt(this::safeFantasyPoints).average().orElse(0.0);
+        double prev = recentStats.stream().skip(3)
+                .mapToInt(this::safeFantasyPoints).average().orElse(last3);
+        double delta = (last3 - prev) / expectedPoints;
+        return clamp(1.0 + (delta * 0.08), 0.95, 1.05);
+    }
+
+    private double computeImpactFactor(List<PlayerStatistic> recentStats, Position position) {
+        if (recentStats.isEmpty()) return 1.0;
+
+        double avgGoals = recentStats.stream().mapToInt(ps -> safeInt(ps.getGoals())).average().orElse(0.0);
+        double avgAssists = recentStats.stream().mapToInt(ps -> safeInt(ps.getAssists())).average().orElse(0.0);
+        double avgShotsOnTarget = recentStats.stream().mapToInt(ps -> safeInt(ps.getShotsOnTarget())).average().orElse(0.0);
+        double avgChances = recentStats.stream().mapToInt(ps -> safeInt(ps.getChancesCreated())).average().orElse(0.0);
+        double avgTackles = recentStats.stream().mapToInt(ps -> safeInt(ps.getTackles())).average().orElse(0.0);
+        double avgInterceptions = recentStats.stream().mapToInt(ps -> safeInt(ps.getInterceptions())).average().orElse(0.0);
+        double avgBlocks = recentStats.stream().mapToInt(ps -> safeInt(ps.getBlocks())).average().orElse(0.0);
+        double avgSaves = recentStats.stream().mapToInt(ps -> safeInt(ps.getSaves())).average().orElse(0.0);
+        double avgConceded = recentStats.stream().mapToInt(ps -> safeInt(ps.getGoalsConceded())).average().orElse(0.0);
+        double cleanSheetRate = recentStats.stream().filter(ps -> Boolean.TRUE.equals(ps.getCleanSheet())).count()
+                / (double) recentStats.size();
+
+        double impactScore = switch (position) {
+            case POR -> (avgSaves / 5.0) * 0.04 + (cleanSheetRate * 0.05) - (avgConceded / 2.0) * 0.03;
+            case DEF -> (avgTackles + avgInterceptions + avgBlocks) / 10.0 * 0.05 + (cleanSheetRate * 0.04)
+                    + (avgGoals * 0.03) + (avgAssists * 0.02);
+            case MID -> (avgChances / 3.0) * 0.04 + (avgAssists * 0.05) + (avgGoals * 0.04);
+            case DEL -> (avgShotsOnTarget / 3.0) * 0.04 + (avgGoals * 0.07) + (avgAssists * 0.03);
+            default -> 0.0;
+        };
+
+        return clamp(1.0 + impactScore, 0.88, 1.12);
+    }
+
+    private double computeSeasonFactor(Map<String, Object> season, double expectedPoints) {
+        if (season == null || expectedPoints <= 0) return 1.0;
+        long matches = toLong(season.get("matches_played"));
+        if (matches <= 0) return 1.0;
+        double totalFantasy = toLong(season.get("total_fantasy_points"));
+        double avgFantasy = totalFantasy / matches;
+        double seasonRatio = avgFantasy / expectedPoints;
+        double rating = toDouble(season.get("avg_rating"), 6.5);
+        double ratingBoost = clamp(1.0 + ((rating - 6.5) * 0.03), 0.92, 1.08);
+        return clamp(seasonRatio, 0.90, 1.15) * ratingBoost;
+    }
+
     private int clampInt(int value, int min, int max) {
         return Math.max(min, Math.min(max, value));
     }
@@ -293,5 +406,11 @@ public class MarketValueUpdateService {
         if (obj == null) return 0L;
         if (obj instanceof Number n) return n.longValue();
         try { return Long.parseLong(obj.toString()); } catch (NumberFormatException ignored) { return 0L; }
+    }
+
+    private double toDouble(Object obj, double fallback) {
+        if (obj == null) return fallback;
+        if (obj instanceof Number n) return n.doubleValue();
+        try { return Double.parseDouble(obj.toString()); } catch (NumberFormatException ignored) { return fallback; }
     }
 }

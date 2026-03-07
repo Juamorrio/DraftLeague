@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class MarketService {
@@ -266,6 +267,42 @@ public class MarketService {
         }
 
         List<MarketPlayer> oldMarketPlayers = marketPlayerRepository.findByLeague(league);
+
+        // If admin refreshes while there are active auctions with bids, refund those bids
+        // before deleting market entries so users do not lose budget unexpectedly.
+        Map<Integer, Long> refundsByUserId = new HashMap<>();
+        for (MarketPlayer mp : oldMarketPlayers) {
+            if (mp.getStatus() != StatusMarketPlayer.AVAILABLE) continue;
+            for (Map<String, Object> bid : mp.getBidsList()) {
+                if (bid == null) continue;
+                Object userIdRaw = bid.get("userId");
+                Object amountRaw = bid.get("amount");
+                if (!(userIdRaw instanceof Number) || !(amountRaw instanceof Number)) continue;
+
+                Integer bidderId = ((Number) userIdRaw).intValue();
+                Long bidAmount = ((Number) amountRaw).longValue();
+                if (bidAmount <= 0) continue;
+
+                refundsByUserId.merge(bidderId, bidAmount, Long::sum);
+            }
+        }
+
+        if (!refundsByUserId.isEmpty()) {
+            Map<Integer, Team> teamsByUserId = teamRepository.findByLeague(league).stream()
+                    .collect(Collectors.toMap(t -> t.getUser().getId(), t -> t, (a, b) -> a));
+
+            List<Team> teamsToSave = new ArrayList<>();
+            for (Map.Entry<Integer, Long> refund : refundsByUserId.entrySet()) {
+                Team team = teamsByUserId.get(refund.getKey());
+                if (team == null) continue;
+                team.setBudget(team.getBudget() + refund.getValue().intValue());
+                teamsToSave.add(team);
+            }
+            if (!teamsToSave.isEmpty()) {
+                teamRepository.saveAll(teamsToSave);
+            }
+        }
+
         Set<String> previousMarketPlayerIds = oldMarketPlayers.stream()
             .map(mp -> mp.getPlayer().getId())
             .collect(java.util.stream.Collectors.toSet());

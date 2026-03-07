@@ -43,6 +43,7 @@ public class LeagueService {
     private final PlayerRepository playerRepository;
     private final PlayerTeamRepository playerTeamRepository;
     private final NotificationLeagueRepository notificationLeagueRepository;
+    private final com.DraftLeague.repositories.NotificationRepository notificationRepository;
     private final MarketPlayerRepository marketPlayerRepository;
     private final TeamGameweekPointsRepository teamGameweekPointsRepository;
     private final TeamPlayerGameweekPointsRepository teamPlayerGameweekPointsRepository;
@@ -50,6 +51,7 @@ public class LeagueService {
     public LeagueService(LeagueRepository leagueRepository, UserRepository userRepository, TeamRepository teamRepository,
                          PlayerRepository playerRepository, PlayerTeamRepository playerTeamRepository,
                          NotificationLeagueRepository notificationLeagueRepository,
+                         com.DraftLeague.repositories.NotificationRepository notificationRepository,
                          MarketPlayerRepository marketPlayerRepository,
                          TeamGameweekPointsRepository teamGameweekPointsRepository,
                          TeamPlayerGameweekPointsRepository teamPlayerGameweekPointsRepository) {
@@ -59,6 +61,7 @@ public class LeagueService {
         this.playerRepository = playerRepository;
         this.playerTeamRepository = playerTeamRepository;
         this.notificationLeagueRepository = notificationLeagueRepository;
+        this.notificationRepository = notificationRepository;
         this.marketPlayerRepository = marketPlayerRepository;
         this.teamGameweekPointsRepository = teamGameweekPointsRepository;
         this.teamPlayerGameweekPointsRepository = teamPlayerGameweekPointsRepository;
@@ -160,7 +163,8 @@ public class LeagueService {
             throw new RuntimeException("Usuario no autenticado");
         }
 
-        // Delete notification_league rows first (FK constraint)
+        // Delete notifications, then notification_league rows (FK constraint)
+        notificationRepository.deleteAllByLeagueId(league.getId());
         notificationLeagueRepository.deleteAllByLeagueId(league.getId());
 
         // Delete market players (FK to league)

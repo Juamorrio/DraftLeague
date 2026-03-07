@@ -178,7 +178,7 @@ public class MarketService {
         Map<String, Object> highestBid = marketPlayer.getHighestBidInfo();
         if (highestBid != null) {
             marketPlayer.setCurrentBid(((Number) highestBid.get("amount")).longValue());
-            Integer highestBidderId = (Integer) highestBid.get("userId");
+            Integer highestBidderId = ((Number) highestBid.get("userId")).intValue();
             User highestBidderUser = userRepository.findById(highestBidderId)
                     .orElseThrow(() -> new IllegalStateException("Usuario no encontrado"));
             marketPlayer.setHighestBidder(highestBidderUser);
@@ -201,7 +201,7 @@ public class MarketService {
             return;
         }
         
-        Integer winnerId = (Integer) highestBid.get("userId");
+        Integer winnerId = ((Number) highestBid.get("userId")).intValue();
         Long winningAmount = ((Number) highestBid.get("amount")).longValue();
         
         User winner = userRepository.findById(winnerId)
@@ -211,7 +211,7 @@ public class MarketService {
         List<Map<String, Object>> allBids = marketPlayer.getBidsList();
         List<Team> teamsToUpdate = new ArrayList<>();
         for (Map<String, Object> bid : allBids) {
-            Integer bidderId = (Integer) bid.get("userId");
+            Integer bidderId = ((Number) bid.get("userId")).intValue();
             Long bidAmount = ((Number) bid.get("amount")).longValue();
 
             if (!bidderId.equals(winnerId)) {
@@ -260,48 +260,14 @@ public class MarketService {
         League league = leagueRepository.findById(Long.valueOf(leagueId))
                 .orElseThrow(() -> new IllegalStateException("Liga no encontrada con id: " + leagueId));
 
-        List<MarketPlayer> expiredAuctions = marketPlayerRepository
-                .findByLeagueAndStatusAndAuctionEndTimeBefore(league, StatusMarketPlayer.AVAILABLE, LocalDateTime.now());
-        for (MarketPlayer expiredAuction : expiredAuctions) {
-            finalizeAuction(expiredAuction.getId());
+      
+        List<MarketPlayer> availableAuctions = marketPlayerRepository
+                .findByLeagueAndStatus(league, StatusMarketPlayer.AVAILABLE);
+        for (MarketPlayer availableAuction : availableAuctions) {
+            finalizeAuction(availableAuction.getId());
         }
 
         List<MarketPlayer> oldMarketPlayers = marketPlayerRepository.findByLeague(league);
-
-        // If admin refreshes while there are active auctions with bids, refund those bids
-        // before deleting market entries so users do not lose budget unexpectedly.
-        Map<Integer, Long> refundsByUserId = new HashMap<>();
-        for (MarketPlayer mp : oldMarketPlayers) {
-            if (mp.getStatus() != StatusMarketPlayer.AVAILABLE) continue;
-            for (Map<String, Object> bid : mp.getBidsList()) {
-                if (bid == null) continue;
-                Object userIdRaw = bid.get("userId");
-                Object amountRaw = bid.get("amount");
-                if (!(userIdRaw instanceof Number) || !(amountRaw instanceof Number)) continue;
-
-                Integer bidderId = ((Number) userIdRaw).intValue();
-                Long bidAmount = ((Number) amountRaw).longValue();
-                if (bidAmount <= 0) continue;
-
-                refundsByUserId.merge(bidderId, bidAmount, Long::sum);
-            }
-        }
-
-        if (!refundsByUserId.isEmpty()) {
-            Map<Integer, Team> teamsByUserId = teamRepository.findByLeague(league).stream()
-                    .collect(Collectors.toMap(t -> t.getUser().getId(), t -> t, (a, b) -> a));
-
-            List<Team> teamsToSave = new ArrayList<>();
-            for (Map.Entry<Integer, Long> refund : refundsByUserId.entrySet()) {
-                Team team = teamsByUserId.get(refund.getKey());
-                if (team == null) continue;
-                team.setBudget(team.getBudget() + refund.getValue().intValue());
-                teamsToSave.add(team);
-            }
-            if (!teamsToSave.isEmpty()) {
-                teamRepository.saveAll(teamsToSave);
-            }
-        }
 
         Set<String> previousMarketPlayerIds = oldMarketPlayers.stream()
             .map(mp -> mp.getPlayer().getId())
@@ -383,7 +349,7 @@ public class MarketService {
         Map<String, Object> newHighestBid = marketPlayer.getHighestBidInfo();
         if (newHighestBid != null) {
             marketPlayer.setCurrentBid(((Number) newHighestBid.get("amount")).longValue());
-            Integer highestBidderId = (Integer) newHighestBid.get("userId");
+            Integer highestBidderId = ((Number) newHighestBid.get("userId")).intValue();
             User highestBidderUser = userRepository.findById(highestBidderId)
                     .orElseThrow(() -> new IllegalStateException("Usuario no encontrado"));
             marketPlayer.setHighestBidder(highestBidderUser);

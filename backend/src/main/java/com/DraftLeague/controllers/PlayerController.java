@@ -18,10 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.DraftLeague.models.Player.PlayerMarketValueHistory;
 import com.DraftLeague.models.user.User;
-import com.DraftLeague.repositories.PlayerMarketValueHistoryRepository;
 import com.DraftLeague.repositories.UserRepository;
 import com.DraftLeague.models.Player.Player;
-import com.DraftLeague.models.Team.Team;
 import com.DraftLeague.services.PlayerService;
 
 @RestController
@@ -30,13 +28,10 @@ public class PlayerController {
     
     private final PlayerService playerService;
     private final UserRepository userRepository;
-    private final PlayerMarketValueHistoryRepository marketValueHistoryRepository;
 
-    public PlayerController(PlayerService playerService, UserRepository userRepository,
-                            PlayerMarketValueHistoryRepository marketValueHistoryRepository) {
+    public PlayerController(PlayerService playerService, UserRepository userRepository) {
         this.playerService = playerService;
         this.userRepository = userRepository;
-        this.marketValueHistoryRepository = marketValueHistoryRepository;
     }
 
     @GetMapping
@@ -131,8 +126,7 @@ public class PlayerController {
     @GetMapping("/{playerId}/market-value-history")
     public ResponseEntity<?> getMarketValueHistory(@PathVariable String playerId) {
         try {
-            List<PlayerMarketValueHistory> history =
-                    marketValueHistoryRepository.findByPlayerIdOrderByGameweekAsc(playerId);
+            List<PlayerMarketValueHistory> history = playerService.getMarketValueHistory(playerId);
             return ResponseEntity.ok(history);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

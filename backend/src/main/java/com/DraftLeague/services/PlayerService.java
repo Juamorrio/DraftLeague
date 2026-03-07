@@ -10,20 +10,16 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.DraftLeague.models.League.League;
-import com.DraftLeague.repositories.LeagueRepository;
-import com.DraftLeague.models.Team.Team;
-import com.DraftLeague.repositories.TeamRepository;
-import com.DraftLeague.models.user.User;
-import com.DraftLeague.models.user.User;
 import com.DraftLeague.models.Player.Player;
-import com.DraftLeague.models.Team.Team;
-import com.DraftLeague.models.League.League;
+import com.DraftLeague.models.Player.PlayerMarketValueHistory;
 import com.DraftLeague.models.Player.PlayerTeam;
-import com.DraftLeague.repositories.PlayerRepository;
-import com.DraftLeague.repositories.TeamRepository;
+import com.DraftLeague.models.Team.Team;
+import com.DraftLeague.models.user.User;
 import com.DraftLeague.repositories.LeagueRepository;
+import com.DraftLeague.repositories.PlayerMarketValueHistoryRepository;
+import com.DraftLeague.repositories.PlayerRepository;
 import com.DraftLeague.repositories.PlayerTeamRepository;
-import com.DraftLeague.services.PlayerService;
+import com.DraftLeague.repositories.TeamRepository;
 
 @Service
 public class PlayerService {
@@ -32,13 +28,16 @@ public class PlayerService {
     private final TeamRepository teamRepository;
     private final PlayerTeamRepository playerTeamRepository;
     private final LeagueRepository leagueRepository;
+    private final PlayerMarketValueHistoryRepository marketValueHistoryRepository;
 
-    public PlayerService(PlayerRepository playerRepository, TeamRepository teamRepository, 
-                         PlayerTeamRepository playerTeamRepository, LeagueRepository leagueRepository) {
+    public PlayerService(PlayerRepository playerRepository, TeamRepository teamRepository,
+                         PlayerTeamRepository playerTeamRepository, LeagueRepository leagueRepository,
+                         PlayerMarketValueHistoryRepository marketValueHistoryRepository) {
         this.playerRepository = playerRepository;
         this.teamRepository = teamRepository;
         this.playerTeamRepository = playerTeamRepository;
         this.leagueRepository = leagueRepository;
+        this.marketValueHistoryRepository = marketValueHistoryRepository;
     }
 
     public Player createPlayer(Player player) {
@@ -111,6 +110,10 @@ public class PlayerService {
         playerTeam.setBuyPrice(player.getMarketValue());
         
         playerTeamRepository.save(playerTeam);
+    }
+
+    public List<PlayerMarketValueHistory> getMarketValueHistory(String playerId) {
+        return marketValueHistoryRepository.findByPlayerIdOrderByGameweekAsc(playerId);
     }
 
     public byte[] fetchPlayerTeamImage(String teamId) {

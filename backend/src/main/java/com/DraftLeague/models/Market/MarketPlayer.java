@@ -89,14 +89,20 @@ public class MarketPlayer {
     public Map<String, Object> getUserBid(Integer userId) {
         List<Map<String, Object>> bidsList = getBidsList();
         return bidsList.stream()
-            .filter(bid -> bid.get("userId").equals(userId))
-            .reduce((first, second) -> second) 
+            .filter(bid -> {
+                Object storedId = bid.get("userId");
+                return storedId instanceof Number && ((Number) storedId).intValue() == userId;
+            })
+            .reduce((first, second) -> second)
             .orElse(null);
     }
     
     public void removeBid(Integer userId) {
         List<Map<String, Object>> bidsList = getBidsList();
-        bidsList.removeIf(bid -> bid.get("userId").equals(userId));
+        bidsList.removeIf(bid -> {
+            Object storedId = bid.get("userId");
+            return storedId instanceof Number && ((Number) storedId).intValue() == userId;
+        });
         
         try {
             this.bids = objectMapper.writeValueAsString(bidsList);

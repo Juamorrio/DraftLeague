@@ -316,6 +316,7 @@ public class MarketValueUpdateService {
     }
 
     private int defaultBaseValue(Position position) {
+        if (position == null) return MIN_VALUE;
         return switch (position) {
             case POR -> 5_000_000;
             case DEF -> 6_000_000;

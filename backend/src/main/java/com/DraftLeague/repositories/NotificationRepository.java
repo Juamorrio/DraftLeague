@@ -24,4 +24,8 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
     int deleteTradeOfferNotification(@Param("leagueId") Integer leagueId,
                                      @Param("type") NotificationType type,
                                      @Param("offerToken") String offerToken);
+
+    @Modifying
+    @Query("DELETE FROM Notification n WHERE n.notificationLeague.league.id = :leagueId")
+    int deleteAllByLeagueId(@Param("leagueId") Integer leagueId);
 }

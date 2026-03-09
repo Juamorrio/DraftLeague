@@ -10,8 +10,11 @@ import com.DraftLeague.repositories.PlayerStatisticRepository;
 import com.DraftLeague.repositories.PlayerTeamRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
@@ -71,6 +74,8 @@ public class MarketValueUpdateService {
     private final PlayerTeamRepository playerTeamRepository;
     private final PlayerMarketValueHistoryRepository marketValueHistoryRepository;
 
+    @Autowired @Lazy private MarketValueUpdateService self;
+
     // ── Public API ────────────────────────────────────────────────────────────
 
     /**
@@ -79,7 +84,6 @@ public class MarketValueUpdateService {
      * @return A summary map containing {@code updatedCount}, {@code skippedCount},
      *         and {@code errorCount}.
      */
-    @Transactional
     public Map<String, Integer> recalculateAllMarketValues() {
         return recalculateAllMarketValuesForGameweek(null);
     }
@@ -93,7 +97,6 @@ public class MarketValueUpdateService {
      * @return A summary map containing {@code updatedCount}, {@code skippedCount},
      *         and {@code errorCount}.
      */
-    @Transactional
     public Map<String, Integer> recalculateAllMarketValuesForGameweek(Integer gameweek) {
         log.info("[MarketValueUpdate] Starting full market value recalculation (gameweek={})…", gameweek);
 
@@ -102,7 +105,7 @@ public class MarketValueUpdateService {
 
         for (Player player : players) {
             try {
-                boolean changed = recalculateForPlayer(player, gameweek);
+                boolean changed = self.recalculateForPlayer(player, gameweek);
                 if (changed) updated++; else skipped++;
             } catch (Exception e) {
                 errors++;
@@ -123,9 +126,8 @@ public class MarketValueUpdateService {
      * @param player the player to update
      * @return {@code true} if the price was actually changed.
      */
-    @Transactional
     public boolean recalculateForPlayer(Player player) {
-        return recalculateForPlayer(player, null);
+        return self.recalculateForPlayer(player, null);
     }
 
     /**
@@ -140,9 +142,9 @@ public class MarketValueUpdateService {
      * @return {@code true} if the price was actually changed, {@code false} when
      *         there is not enough data to justify a change.
      */
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public boolean recalculateForPlayer(Player player, Integer gameweek) {
-        int baseValue = player.getMarketValue() != null
+        int baseValue = (player.getMarketValue() != null && player.getMarketValue() > MIN_VALUE)
             ? player.getMarketValue()
             : defaultBaseValue(player.getPosition());
 

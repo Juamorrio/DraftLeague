@@ -131,7 +131,6 @@ public interface PlayerStatisticRepository extends JpaRepository<PlayerStatistic
     @Query(value = """
         SELECT
             COUNT(*) as matches_played,
-            player_type,
             COALESCE(SUM(goals), 0) as total_goals,
             COALESCE(SUM(assists), 0) as total_assists,
             COALESCE(SUM(minutes_played), 0) as total_minutes_played,
@@ -151,7 +150,6 @@ public interface PlayerStatisticRepository extends JpaRepository<PlayerStatistic
             COALESCE(AVG(rating), 0) as avg_rating
         FROM player_statistic
         WHERE player_id = :playerId
-        GROUP BY player_type
         """, nativeQuery = true)
     Map<String, Object> getPlayerStatisticsSummaryData(@Param("playerId") String playerId);
 }

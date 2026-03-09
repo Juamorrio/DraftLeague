@@ -66,7 +66,7 @@ public class PlayerImportService {
                         p.setPosition(mapPosition(dto.getPosition()));
                         p.setAvatarUrl(dto.getAvatarUrl());
                         p.setClubId(dto.getTeamId());
-                        p.setMarketValue(dto.getMarketValue() != null ? dto.getMarketValue() : 100000);
+                        p.setMarketValue(dto.getMarketValue() != null ? dto.getMarketValue() : defaultMarketValue(mapPosition(dto.getPosition())));
                         updated++;
                     } else {
                         p = new Player();
@@ -75,7 +75,7 @@ public class PlayerImportService {
                         p.setPosition(mapPosition(dto.getPosition()));
                         p.setAvatarUrl(dto.getAvatarUrl());
                         p.setClubId(dto.getTeamId());
-                        p.setMarketValue(dto.getMarketValue() != null ? dto.getMarketValue() : 100000);
+                        p.setMarketValue(dto.getMarketValue() != null ? dto.getMarketValue() : defaultMarketValue(mapPosition(dto.getPosition())));
                         p.setActive(Boolean.TRUE);
                         p.setTotalPoints(0);
                         created++;
@@ -110,6 +110,17 @@ public class PlayerImportService {
         }
     }
 
+    private int defaultMarketValue(Position position) {
+        if (position == null) return 5_000_000;
+        return switch (position) {
+            case POR -> 5_000_000;
+            case DEF -> 6_000_000;
+            case MID -> 7_000_000;
+            case DEL -> 8_000_000;
+            default  -> 5_000_000;
+        };
+    }
+
     @Transactional
     public int importNewPlayersOnly() throws Exception {
         Path path = Paths.get(scriptsPath, "players_data.json");
@@ -127,7 +138,7 @@ public class PlayerImportService {
                 p.setPosition(mapPosition(dto.getPosition()));
                 p.setAvatarUrl(dto.getAvatarUrl());
                 p.setClubId(dto.getTeamId());
-                p.setMarketValue(dto.getMarketValue() != null ? dto.getMarketValue() : 100000);
+                p.setMarketValue(dto.getMarketValue() != null ? dto.getMarketValue() : defaultMarketValue(mapPosition(dto.getPosition())));
                 p.setActive(Boolean.TRUE);
                 p.setTotalPoints(0);
                 newPlayers.add(p);
@@ -152,7 +163,7 @@ public class PlayerImportService {
                 p.setPosition(mapPosition(dto.getPosition()));
                 p.setAvatarUrl(dto.getAvatarUrl());
                 p.setClubId(dto.getTeamId());
-                p.setMarketValue(dto.getMarketValue() != null ? dto.getMarketValue() : 100000);
+                p.setMarketValue(dto.getMarketValue() != null ? dto.getMarketValue() : defaultMarketValue(mapPosition(dto.getPosition())));
                 updated++;
             } else {
                 p = new Player();
@@ -161,7 +172,7 @@ public class PlayerImportService {
                 p.setPosition(mapPosition(dto.getPosition()));
                 p.setAvatarUrl(dto.getAvatarUrl());
                 p.setClubId(dto.getTeamId());
-                p.setMarketValue(dto.getMarketValue() != null ? dto.getMarketValue() : 100000);
+                p.setMarketValue(dto.getMarketValue() != null ? dto.getMarketValue() : defaultMarketValue(mapPosition(dto.getPosition())));
                 p.setActive(Boolean.TRUE);
                 p.setTotalPoints(0);
                 created++;

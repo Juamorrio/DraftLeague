@@ -144,9 +144,12 @@ public class MarketValueUpdateService {
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public boolean recalculateForPlayer(Player player, Integer gameweek) {
+        // Fetch season stats once – reused for computeBaseValue anchor and seasonFactor below
+        Map<String, Object> season = playerStatisticRepository.getPlayerStatisticsSummaryData(player.getId());
+
         int baseValue = (player.getMarketValue() != null && player.getMarketValue() > MIN_VALUE)
             ? player.getMarketValue()
-            : defaultBaseValue(player.getPosition());
+            : computeBaseValue(player, season);
 
         // ── 1. Form factor ──────────────────────────────────────────────────────
         List<PlayerStatistic> recentStats = playerStatisticRepository
@@ -162,7 +165,6 @@ public class MarketValueUpdateService {
                 return true;
             }
             // Fallback: use season-wide averages so benched/injured players still drift
-            Map<String, Object> season = playerStatisticRepository.getPlayerStatisticsSummaryData(player.getId());
             double sf = computeSeasonFactor(season, expectedPoints);
             // Cap season-only drift to ±10 % so the effect is gentler than the full model
             double cappedSf = clamp(sf, 0.90, 1.10);
@@ -218,7 +220,6 @@ public class MarketValueUpdateService {
         double momentumFactor = computeMomentumFactor(recentStats, expectedPoints);
         double impactFactor = computeImpactFactor(recentStats, player.getPosition());
 
-        Map<String, Object> season = playerStatisticRepository.getPlayerStatisticsSummaryData(player.getId());
         double seasonFactor = computeSeasonFactor(season, expectedPoints);
 
         double blendedForm = (formFactor * 0.65) + (seasonFactor * 0.35);
@@ -345,6 +346,62 @@ public class MarketValueUpdateService {
 
     private double clamp(double value, double min, double max) {
         return Math.max(min, Math.min(max, value));
+    }
+
+    /**
+     * Computes the starting anchor price for a player whose stored market value
+     * is at or below the floor.  The anchor is the product of:
+     * <ol>
+     *   <li>A position baseline (5–8 M).</li>
+     *   <li>A season-performance multiplier derived from the player's career
+     *       fantasy-point average vs. the position benchmark (√ratio, capped at
+     *       0.65–1.50 to soften extremes).</li>
+     *   <li>A club-prestige multiplier reflecting the squad tier in La Liga
+     *       (0.90 – 1.20 range).</li>
+     * </ol>
+     * The result is clamped to [{@value #MIN_VALUE}, 15 M] and rounded to
+     * {@value #ROUND_TO} so it is always a valid starting price.
+     */
+    private int computeBaseValue(Player player, Map<String, Object> season) {
+        int positionDefault = defaultBaseValue(player.getPosition());
+        double clubMultiplier = clubPrestigeMultiplier(player.getClubId());
+
+        long matches = season != null ? toLong(season.get("matches_played")) : 0;
+        if (matches >= 5) {
+            double expectedPts = getExpectedPoints(player.getPosition());
+            double totalFantasy = season != null ? toLong(season.get("total_fantasy_points")) : 0;
+            double avgPts = totalFantasy / matches;
+            double perfRatio = expectedPts > 0 ? avgPts / expectedPts : 1.0;
+            // √ratio softens extremes: a player on 2× expected → ×1.41, half → ×0.71
+            double perfMultiplier = clamp(Math.sqrt(perfRatio), 0.65, 1.50);
+            int raw = (int) Math.round(positionDefault * perfMultiplier * clubMultiplier);
+            return roundToNearest(clampInt(raw, MIN_VALUE, 15_000_000), ROUND_TO);
+        }
+
+        // Not enough season data – fall back to position default adjusted by club tier
+        int raw = (int) Math.round(positionDefault * clubMultiplier);
+        return roundToNearest(clampInt(raw, MIN_VALUE, 15_000_000), ROUND_TO);
+    }
+
+    /**
+     * Returns a prestige multiplier for a La Liga club based on its typical
+     * squad quality and budget tier.
+     * <ul>
+     *   <li>Tier 1 (Real Madrid, Barcelona, Atlético) → 1.20</li>
+     *   <li>Tier 2 (Sevilla, Villarreal, Athletic, R.Sociedad, Betis) → 1.10</li>
+     *   <li>Tier 3 (Girona, Celta, Valencia, Rayo, Getafe, Osasuna) → 1.00</li>
+     *   <li>Tier 4 (Mallorca, Espanyol, Alavés, Oviedo, Levante, Elche) → 0.90</li>
+     * </ul>
+     */
+    private double clubPrestigeMultiplier(Integer clubId) {
+        if (clubId == null) return 1.0;
+        return switch (clubId) {
+            case 541, 529, 530 -> 1.20;           // Real Madrid, Barcelona, Atlético Madrid
+            case 536, 533, 531, 548, 543 -> 1.10; // Sevilla, Villarreal, Athletic, R.Sociedad, Betis
+            case 547, 538, 532, 728, 546, 727 -> 1.00; // Girona, Celta, Valencia, Rayo, Getafe, Osasuna
+            case 798, 540, 542, 718, 539, 797 -> 0.90; // Mallorca, Espanyol, Alavés, Oviedo, Levante, Elche
+            default -> 1.00;
+        };
     }
 
     private int defaultBaseValue(Position position) {

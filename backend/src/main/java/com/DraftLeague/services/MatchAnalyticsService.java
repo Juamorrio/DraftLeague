@@ -1,17 +1,14 @@
 package com.DraftLeague.services;
 
 import com.DraftLeague.models.Match.Match;
-import com.DraftLeague.repositories.MatchRepository;
 import com.DraftLeague.models.Match.MatchStatus;
+import com.DraftLeague.repositories.MatchRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import com.DraftLeague.models.Match.Match;
-import com.DraftLeague.models.Match.MatchStatus;
-import com.DraftLeague.repositories.MatchRepository;
 
 
 @Service
@@ -22,6 +19,7 @@ public class MatchAnalyticsService {
 
     private static final double K_FACTOR = 32.0;
     private static final double INITIAL_ELO = 1500.0;
+    private static final int POISSON_GRID_SIZE = 6;
 
     @Data
     public static class MatchStats {
@@ -99,8 +97,8 @@ public class MatchAnalyticsService {
         stats.setOpponentCleanSheetProb(Math.exp(-teamLambda));
 
         double win = 0, draw = 0, loss = 0;
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 6; j++) {
+        for (int i = 0; i < POISSON_GRID_SIZE; i++) {
+            for (int j = 0; j < POISSON_GRID_SIZE; j++) {
                 double prob = poisson(i, teamLambda) * poisson(j, opponentLambda);
                 if (i > j) win += prob;
                 else if (i == j) draw += prob;

@@ -21,13 +21,7 @@ public class GameweekStateService {
      */
     @Transactional(readOnly = true)
     public GameweekState getState() {
-        return gameweekStateRepository.findById(STATE_ID)
-                .orElseGet(() -> {
-                    GameweekState state = new GameweekState();
-                    state.setId(STATE_ID);
-                    state.setTeamsLocked(false);
-                    return state;
-                });
+        return getOrCreateState();
     }
 
     /**
@@ -36,12 +30,7 @@ public class GameweekStateService {
      */
     @Transactional
     public GameweekState activateGameweek(Integer gameweek) {
-        GameweekState state = gameweekStateRepository.findById(STATE_ID)
-                .orElseGet(() -> {
-                    GameweekState s = new GameweekState();
-                    s.setId(STATE_ID);
-                    return s;
-                });
+        GameweekState state = getOrCreateState();
 
         state.setActiveGameweek(gameweek);
         state.setTeamsLocked(true);
@@ -57,12 +46,7 @@ public class GameweekStateService {
      */
     @Transactional
     public GameweekState unlockTeams() {
-        GameweekState state = gameweekStateRepository.findById(STATE_ID)
-                .orElseGet(() -> {
-                    GameweekState s = new GameweekState();
-                    s.setId(STATE_ID);
-                    return s;
-                });
+        GameweekState state = getOrCreateState();
 
         state.setTeamsLocked(false);
         state.setUnlockedAt(new Date());
@@ -82,5 +66,15 @@ public class GameweekStateService {
      */
     public Integer getActiveGameweek() {
         return getState().getActiveGameweek();
+    }
+
+    private GameweekState getOrCreateState() {
+        return gameweekStateRepository.findById(STATE_ID)
+                .orElseGet(() -> {
+                    GameweekState s = new GameweekState();
+                    s.setId(STATE_ID);
+                    s.setTeamsLocked(false);
+                    return s;
+                });
     }
 }

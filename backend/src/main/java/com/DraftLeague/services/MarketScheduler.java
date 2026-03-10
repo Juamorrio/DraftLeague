@@ -8,9 +8,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import com.DraftLeague.models.League.League;
-import com.DraftLeague.repositories.LeagueRepository;
-import com.DraftLeague.services.MarketService;
 
 @Component
 public class MarketScheduler {
@@ -25,6 +22,7 @@ public class MarketScheduler {
         this.leagueRepository = leagueRepository;
     }
 
+    // Runs daily at midnight
     @Scheduled(cron = "0 0 0 * * *")
     public void finalizeAndRefreshMarkets() {
         try {

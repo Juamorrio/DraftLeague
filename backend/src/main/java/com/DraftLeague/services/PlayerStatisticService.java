@@ -15,6 +15,8 @@ import com.DraftLeague.repositories.MatchRepository;
 import com.DraftLeague.repositories.PlayerRepository;
 import com.DraftLeague.repositories.PlayerStatisticRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class PlayerStatisticService {
+
+    private static final Logger logger = LoggerFactory.getLogger(PlayerStatisticService.class);
 
     private final PlayerStatisticRepository playerStatisticRepository;
     private final PlayerStatisticFactory playerStatisticFactory;
@@ -55,7 +59,7 @@ public class PlayerStatisticService {
         for (Map<String, Object> data : jsonData) {
             String playerId = data.get("playerId") instanceof String s ? s : String.valueOf(data.get("playerId"));
             if (!existingPlayerIds.contains(playerId)) {
-                System.out.println("saveBulkFromJson: skipping unknown player " + playerId);
+                logger.warn("saveBulkFromJson: ignorando jugador desconocido {}", playerId);
                 continue;
             }
 
@@ -86,8 +90,7 @@ public class PlayerStatisticService {
                 try {
                     fantasyPointsService.triggerPointsUpdateForMatch(matchId);
                 } catch (Exception e) {
-                    System.err.println("Error triggering fantasy points update for match " + matchId + ": " + e.getMessage());
-                    e.printStackTrace();
+                    logger.error("Error al actualizar puntos fantasy para el partido {}: {}", matchId, e.getMessage(), e);
                 }
             }
         }

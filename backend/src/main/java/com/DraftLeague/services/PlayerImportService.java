@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -24,6 +26,8 @@ import com.DraftLeague.repositories.PlayerRepository;
 
 @Service
 public class PlayerImportService {
+
+    private static final Logger logger = LoggerFactory.getLogger(PlayerImportService.class);
 
     private final PlayerRepository repo;
     private final ObjectMapper objectMapper;
@@ -58,39 +62,32 @@ public class PlayerImportService {
 
             for (PlayerImportDto dto : dtos) {
                 try {
-                    String playerId = dto.getId();
-                    Player p = repo.findById(playerId).orElse(null);
-
-                    if (p != null) {
-                        p.setFullName(dto.getFullName());
-                        p.setPosition(mapPosition(dto.getPosition()));
-                        p.setAvatarUrl(dto.getAvatarUrl());
-                        p.setClubId(dto.getTeamId());
-                        p.setMarketValue(dto.getMarketValue() != null ? dto.getMarketValue() : defaultMarketValue(mapPosition(dto.getPosition())));
-                        updated++;
-                    } else {
-                        p = new Player();
-                        p.setId(playerId);
-                        p.setFullName(dto.getFullName());
-                        p.setPosition(mapPosition(dto.getPosition()));
-                        p.setAvatarUrl(dto.getAvatarUrl());
-                        p.setClubId(dto.getTeamId());
-                        p.setMarketValue(dto.getMarketValue() != null ? dto.getMarketValue() : defaultMarketValue(mapPosition(dto.getPosition())));
-                        p.setActive(Boolean.TRUE);
-                        p.setTotalPoints(0);
-                        created++;
-                    }
-
+                    boolean isNew = !repo.existsById(dto.getId());
+                    Player p = isNew ? new Player() : repo.findById(dto.getId()).get();
+                    buildOrUpdatePlayer(dto, p, isNew);
                     repo.save(p);
+                    if (isNew) created++; else updated++;
                 } catch (Exception e) {
-                    System.err.println("Error al importar jugador: " + dto.getId() + " - " + dto.getFullName());
-                    System.err.println("Detalles: " + e.getMessage());
+                    logger.error("Error al importar jugador {} - {}: {}", dto.getId(), dto.getFullName(), e.getMessage(), e);
                     throw e;
                 }
             }
 
             return dtos.size();
         }
+    }
+
+    private void buildOrUpdatePlayer(PlayerImportDto dto, Player p, boolean isNew) {
+        if (isNew) {
+            p.setId(dto.getId());
+            p.setActive(Boolean.TRUE);
+            p.setTotalPoints(0);
+        }
+        p.setFullName(dto.getFullName());
+        p.setPosition(mapPosition(dto.getPosition()));
+        p.setAvatarUrl(dto.getAvatarUrl());
+        p.setClubId(dto.getTeamId());
+        p.setMarketValue(dto.getMarketValue() != null ? dto.getMarketValue() : defaultMarketValue(mapPosition(dto.getPosition())));
     }
 
     private Position mapPosition(String code) {
@@ -131,16 +128,8 @@ public class PlayerImportService {
             List<Player> newPlayers = new ArrayList<>();
             for (PlayerImportDto dto : dtos) {
                 if (repo.existsById(dto.getId())) continue;
-
                 Player p = new Player();
-                p.setId(dto.getId());
-                p.setFullName(dto.getFullName());
-                p.setPosition(mapPosition(dto.getPosition()));
-                p.setAvatarUrl(dto.getAvatarUrl());
-                p.setClubId(dto.getTeamId());
-                p.setMarketValue(dto.getMarketValue() != null ? dto.getMarketValue() : defaultMarketValue(mapPosition(dto.getPosition())));
-                p.setActive(Boolean.TRUE);
-                p.setTotalPoints(0);
+                buildOrUpdatePlayer(dto, p, true);
                 newPlayers.add(p);
             }
 
@@ -157,27 +146,11 @@ public class PlayerImportService {
 
         List<Player> toSave = new ArrayList<>(dtos.size());
         for (PlayerImportDto dto : dtos) {
-            Player p = repo.findById(dto.getId()).orElse(null);
-            if (p != null) {
-                p.setFullName(dto.getFullName());
-                p.setPosition(mapPosition(dto.getPosition()));
-                p.setAvatarUrl(dto.getAvatarUrl());
-                p.setClubId(dto.getTeamId());
-                p.setMarketValue(dto.getMarketValue() != null ? dto.getMarketValue() : defaultMarketValue(mapPosition(dto.getPosition())));
-                updated++;
-            } else {
-                p = new Player();
-                p.setId(dto.getId());
-                p.setFullName(dto.getFullName());
-                p.setPosition(mapPosition(dto.getPosition()));
-                p.setAvatarUrl(dto.getAvatarUrl());
-                p.setClubId(dto.getTeamId());
-                p.setMarketValue(dto.getMarketValue() != null ? dto.getMarketValue() : defaultMarketValue(mapPosition(dto.getPosition())));
-                p.setActive(Boolean.TRUE);
-                p.setTotalPoints(0);
-                created++;
-            }
+            boolean isNew = !repo.existsById(dto.getId());
+            Player p = isNew ? new Player() : repo.findById(dto.getId()).get();
+            buildOrUpdatePlayer(dto, p, isNew);
             toSave.add(p);
+            if (isNew) created++; else updated++;
         }
         repo.saveAll(toSave);
         return "Sync completado: " + created + " creados, " + updated + " actualizados";

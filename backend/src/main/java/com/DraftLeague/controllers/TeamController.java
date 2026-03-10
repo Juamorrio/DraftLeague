@@ -113,4 +113,40 @@ public class TeamController {
             return ResponseEntity.badRequest().body(java.util.Map.of("error", e.getMessage()));
         }
     }
+
+    @PostMapping("/league/{leagueId}/{userId}/wildcard")
+    public ResponseEntity<?> useWildcard(
+            @PathVariable Integer leagueId,
+            @PathVariable Integer userId,
+            @Valid @RequestBody UpdateTeamPlayersRequest request) {
+        try {
+            Team updatedTeam = teamService.useWildcard(leagueId, userId, request);
+            return ResponseEntity.ok(java.util.Map.of(
+                "teamId", updatedTeam.getId(),
+                "wildcardUsed", true
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/league/{leagueId}/{userId}/chip")
+    public ResponseEntity<?> activateChip(
+            @PathVariable Integer leagueId,
+            @PathVariable Integer userId,
+            @RequestBody java.util.Map<String, String> body) {
+        try {
+            String chip = body.get("chip");
+            if (chip == null || chip.isBlank()) {
+                return ResponseEntity.badRequest().body(java.util.Map.of("error", "chip requerido"));
+            }
+            Team updatedTeam = teamService.activateChip(leagueId, userId, chip);
+            return ResponseEntity.ok(java.util.Map.of(
+                "activeChip", updatedTeam.getActiveChip() != null ? updatedTeam.getActiveChip() : "",
+                "usedChips", updatedTeam.getUsedChips() != null ? updatedTeam.getUsedChips() : ""
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("error", e.getMessage()));
+        }
+    }
 }

@@ -19,7 +19,6 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.beans.factory.annotation.Value;
-import com.DraftLeague.models.user.User;
 
 @Service
 public class JwtService {
@@ -28,10 +27,11 @@ public class JwtService {
     private String jwtSecretProperty;
 
     private static final String DEFAULT_DEV_SECRET = "dev-secret-key-change-me-32-bytes-minimum-2025";
+    private static final long TOKEN_EXPIRATION_MS = 10L * 60 * 60 * 1000;
 
     public String getToken(User user) {
         HashMap<String,Object> claims = new HashMap<>();
-        // Claims bÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡sicos para lectura rÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡pida en frontend
+
         claims.put("uid", user.getId());
         claims.put("displayName", user.getDisplayName());
         claims.put("email", user.getEmail());
@@ -44,7 +44,7 @@ public class JwtService {
                 .setClaims(claims)
                 .setSubject(user.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) 
+                .setExpiration(new Date(System.currentTimeMillis() + TOKEN_EXPIRATION_MS))
                 .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
 

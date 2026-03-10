@@ -5,6 +5,8 @@ import com.DraftLeague.dto.UpcomingMatchDTO;
 import com.DraftLeague.scraping.FixtureSyncService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,8 @@ import com.DraftLeague.repositories.MatchRepository;
 
 @Service
 public class MatchService {
+
+    private static final Logger logger = LoggerFactory.getLogger(MatchService.class);
 
     private final ObjectMapper objectMapper;
     private final MatchRepository matchRepository;
@@ -47,7 +51,7 @@ public class MatchService {
                 return objectMapper.readValue(inputStream, typeRef);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error leyendo matches.json: {}", e.getMessage(), e);
             return new HashMap<>();
         }
     }
@@ -60,7 +64,7 @@ public class MatchService {
                 return objectMapper.readValue(inputStream, typeRef);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error leyendo upcoming_matches.json: {}", e.getMessage(), e);
             return new HashMap<>();
         }
     }

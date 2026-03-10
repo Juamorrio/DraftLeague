@@ -57,12 +57,20 @@ public class NotificationService {
         }
     }
 
+    private void saveNotification(Integer leagueId, NotificationType type, Map<String, Object> payload) {
+        NotificationLeague notificationLeague = findOrCreateNotificationLeague(leagueId);
+        Notification notification = new Notification();
+        notification.setType(type);
+        notification.setCreatedAt(new Date());
+        notification.setNotificationLeague(notificationLeague);
+        notification.setPayload(toJson(payload));
+        notificationRepository.save(notification);
+    }
+
     // ─── Create methods ───────────────────────────────────────────────────────────
 
     @Transactional
     public void createClauseNotification(Integer leagueId, User buyer, User seller, Player player, int price) {
-        NotificationLeague notificationLeague = findOrCreateNotificationLeague(leagueId);
-
         Map<String, Object> payload = new HashMap<>();
         payload.put("buyerUsername", buyer.getUsername());
         payload.put("buyerId", buyer.getId());
@@ -71,38 +79,22 @@ public class NotificationService {
         payload.put("playerName", player.getFullName());
         payload.put("playerId", player.getId());
         payload.put("price", price);
-
-        Notification notification = new Notification();
-        notification.setType(NotificationType.CLAUSE);
-        notification.setCreatedAt(new Date());
-        notification.setNotificationLeague(notificationLeague);
-        notification.setPayload(toJson(payload));
-        notificationRepository.save(notification);
+        saveNotification(leagueId, NotificationType.CLAUSE, payload);
     }
 
     @Transactional
     public void createMarketBuyNotification(Integer leagueId, User buyer, Player player, long price) {
-        NotificationLeague notificationLeague = findOrCreateNotificationLeague(leagueId);
-
         Map<String, Object> payload = new HashMap<>();
         payload.put("buyerUsername", buyer.getUsername());
         payload.put("buyerId", buyer.getId());
         payload.put("playerName", player.getFullName());
         payload.put("playerId", player.getId());
         payload.put("price", price);
-
-        Notification notification = new Notification();
-        notification.setType(NotificationType.BUY);
-        notification.setCreatedAt(new Date());
-        notification.setNotificationLeague(notificationLeague);
-        notification.setPayload(toJson(payload));
-        notificationRepository.save(notification);
+        saveNotification(leagueId, NotificationType.BUY, payload);
     }
 
     @Transactional
     public void createTradeOfferNotification(Integer leagueId, User buyer, User seller, Player player, Integer offerPrice, Long offerId) {
-        NotificationLeague notificationLeague = findOrCreateNotificationLeague(leagueId);
-
         Map<String, Object> payload = new HashMap<>();
         payload.put("offerId", offerId);
         payload.put("buyerUsername", buyer.getUsername());
@@ -112,19 +104,11 @@ public class NotificationService {
         payload.put("playerName", player.getFullName());
         payload.put("playerId", player.getId());
         payload.put("price", offerPrice);
-
-        Notification notification = new Notification();
-        notification.setType(NotificationType.TRADE_OFFER);
-        notification.setCreatedAt(new Date());
-        notification.setNotificationLeague(notificationLeague);
-        notification.setPayload(toJson(payload));
-        notificationRepository.save(notification);
+        saveNotification(leagueId, NotificationType.TRADE_OFFER, payload);
     }
 
     @Transactional
     public void createTradeResultNotification(Integer leagueId, User buyer, User seller, Player player, Integer price, Long offerId, boolean accepted) {
-        NotificationLeague notificationLeague = findOrCreateNotificationLeague(leagueId);
-
         Map<String, Object> payload = new HashMap<>();
         payload.put("offerId", offerId);
         payload.put("buyerUsername", buyer.getUsername());
@@ -134,32 +118,18 @@ public class NotificationService {
         payload.put("playerName", player.getFullName());
         payload.put("playerId", player.getId());
         payload.put("price", price);
-
-        Notification notification = new Notification();
-        notification.setType(accepted ? NotificationType.TRADE_ACCEPTED : NotificationType.TRADE_REJECTED);
-        notification.setCreatedAt(new Date());
-        notification.setNotificationLeague(notificationLeague);
-        notification.setPayload(toJson(payload));
-        notificationRepository.save(notification);
+        saveNotification(leagueId, accepted ? NotificationType.TRADE_ACCEPTED : NotificationType.TRADE_REJECTED, payload);
     }
 
     @Transactional
     public void createSellNotification(Integer leagueId, User seller, Player player, int price) {
-        NotificationLeague notificationLeague = findOrCreateNotificationLeague(leagueId);
-
         Map<String, Object> payload = new HashMap<>();
         payload.put("sellerUsername", seller.getUsername());
         payload.put("sellerId", seller.getId());
         payload.put("playerName", player.getFullName());
         payload.put("playerId", player.getId());
         payload.put("price", price);
-
-        Notification notification = new Notification();
-        notification.setType(NotificationType.SELL);
-        notification.setCreatedAt(new Date());
-        notification.setNotificationLeague(notificationLeague);
-        notification.setPayload(toJson(payload));
-        notificationRepository.save(notification);
+        saveNotification(leagueId, NotificationType.SELL, payload);
     }
 
     // ─── Query methods ────────────────────────────────────────────────────────────

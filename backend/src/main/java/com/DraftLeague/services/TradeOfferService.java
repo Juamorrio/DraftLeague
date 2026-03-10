@@ -127,9 +127,7 @@ public class TradeOfferService {
             throw new IllegalStateException("La oferta ya no está pendiente");
         }
 
-        if (!offer.getToTeam().getUser().getId().equals(acceptingUser.getId())) {
-            throw new IllegalStateException("No tienes permiso para aceptar esta oferta");
-        }
+        assertUserIsRecipient(offer, acceptingUser.getId(), "aceptar");
 
         Team fromTeam = offer.getFromTeam();
         Team toTeam = offer.getToTeam();
@@ -191,9 +189,7 @@ public class TradeOfferService {
             throw new IllegalStateException("La oferta ya no está pendiente");
         }
 
-        if (!offer.getToTeam().getUser().getId().equals(rejectingUser.getId())) {
-            throw new IllegalStateException("No tienes permiso para rechazar esta oferta");
-        }
+        assertUserIsRecipient(offer, rejectingUser.getId(), "rechazar");
 
         offer.setStatus(TradeOfferStatus.REJECTED);
         tradeOfferRepository.save(offer);
@@ -243,5 +239,11 @@ public class TradeOfferService {
         Team team = teamRepository.findByLeagueAndUser(league, user);
         if (team == null) return List.of();
         return tradeOfferRepository.findByFromTeam(team);
+    }
+
+    private void assertUserIsRecipient(TradeOffer offer, Integer userId, String action) {
+        if (!offer.getToTeam().getUser().getId().equals(userId)) {
+            throw new IllegalStateException("No tienes permiso para " + action + " esta oferta");
+        }
     }
 }

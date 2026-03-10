@@ -36,6 +36,7 @@ import com.DraftLeague.services.PlayerService;
 import com.DraftLeague.services.TeamService;
 import com.DraftLeague.services.NotificationService;
 import com.DraftLeague.services.GameweekStateService;
+import com.DraftLeague.models.Team.ChipType;
 
 @Service
 public class TeamService {
@@ -139,17 +140,52 @@ public class TeamService {
             throw new RuntimeException("Las modificaciones de equipo están bloqueadas durante la jornada activa");
         }
         Team team = getTeamByUserAndLeague(leagueId, userId);
-        
+        return applyPlayerSelections(team, request.getPlayers());
+    }
+
+    @Transactional
+    public Team activateChip(Integer leagueId, Integer userId, String chip) {
+        if (gameweekStateService.isTeamsLocked()) {
+            throw new RuntimeException("No se puede activar un chip mientras los equipos están bloqueados");
+        }
+        if (!ChipType.isValid(chip)) {
+            throw new RuntimeException("Chip inválido: " + chip);
+        }
+        Team team = getTeamByUserAndLeague(leagueId, userId);
+        if (team.getActiveChip() != null) {
+            throw new RuntimeException("Ya tienes un chip activo para esta jornada: " + team.getActiveChip());
+        }
+        String used = team.getUsedChips();
+        if (used != null && !used.isBlank()) {
+            for (String u : used.split(",")) {
+                if (chip.equals(u.trim())) {
+                    throw new RuntimeException("El chip " + chip + " ya fue usado esta temporada");
+                }
+            }
+        }
+        team.setActiveChip(chip);
+        return teamRepository.save(team);
+    }
+
+    @Transactional
+    public Team useWildcard(Integer leagueId, Integer userId, UpdateTeamPlayersRequest request) {
+        if (!gameweekStateService.isTeamsLocked()) {
+            throw new RuntimeException("El comodín solo se puede usar durante una jornada activa");
+        }
+        Team team = getTeamByUserAndLeague(leagueId, userId);
+        if (Boolean.TRUE.equals(team.getWildcardUsed())) {
+            throw new RuntimeException("Ya has usado el comodín en esta temporada");
+        }
+        Team updated = applyPlayerSelections(team, request.getPlayers());
+        updated.setWildcardUsed(true);
+        return teamRepository.save(updated);
+    }
+
+    private Team applyPlayerSelections(Team team, List<UpdateTeamPlayersRequest.PlayerSelection> players) {
         team.getPlayerTeams().clear();
-        
-        int totalCost = 0;
         List<PlayerTeam> newPlayerTeams = new ArrayList<>();
-        
-        for (UpdateTeamPlayersRequest.PlayerSelection selection : request.getPlayers()) {
+        for (UpdateTeamPlayersRequest.PlayerSelection selection : players) {
             Player player = playerService.getPlayerById(selection.getPlayerId());
-            
-            totalCost += player.getMarketValue();
-            
             PlayerTeam playerTeam = new PlayerTeam();
             playerTeam.setPlayer(player);
             playerTeam.setTeam(team);
@@ -157,13 +193,9 @@ public class TeamService {
             playerTeam.setIsCaptain(selection.getIsCaptain() != null ? selection.getIsCaptain() : false);
             playerTeam.setSellPrice(player.getMarketValue());
             playerTeam.setBuyPrice(player.getMarketValue());
-            
             newPlayerTeams.add(playerTeam);
         }
-        
-        
         team.getPlayerTeams().addAll(newPlayerTeams);
-        
         return teamRepository.save(team);
     }
 

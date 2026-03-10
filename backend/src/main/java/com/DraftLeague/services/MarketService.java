@@ -96,10 +96,10 @@ public class MarketService {
         logger.info("Jugadores disponibles en mercado: {}", availablePlayers.size());
         
         if (availablePlayers.isEmpty()) {
-            logger.info("Mercado vacÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­o, inicializando automÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ticamente...");
+            logger.info("Mercado vacío, inicializando automáticamente...");
             initializeMarket(leagueId);
             availablePlayers = marketPlayerRepository.findByLeagueAndStatus(league, StatusMarketPlayer.AVAILABLE);
-            logger.info("DespuÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©s de inicializar, jugadores disponibles: {}", availablePlayers.size());
+            logger.info("Después de inicializar, jugadores disponibles: {}", availablePlayers.size());
         }
         
         return availablePlayers;
@@ -252,11 +252,8 @@ public class MarketService {
 
     @Transactional
     public void refreshMarket(Integer leagueId) {
-        logger.info("=== Refrescando mercado ===");
-        logger.info("LeagueId recibido: {}", leagueId);
-        logger.info("Tipo: {}", leagueId.getClass().getName());
-        logger.info("Convirtiendo a Long: {}", Long.valueOf(leagueId));
-        
+        logger.info("Refrescando mercado para liga {}", leagueId);
+
         League league = leagueRepository.findById(Long.valueOf(leagueId))
                 .orElseThrow(() -> new IllegalStateException("Liga no encontrada con id: " + leagueId));
 

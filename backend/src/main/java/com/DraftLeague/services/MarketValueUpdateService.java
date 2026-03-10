@@ -229,8 +229,9 @@ public class MarketValueUpdateService {
 
         // ── 3. Demand factor ────────────────────────────────────────────────────
         long ownershipCount = playerTeamRepository.countByPlayerId(player.getId());
-        // Each owning team adds +1.5 %, capped at +20 %
-        double demandBonus = Math.min(ownershipCount * 0.015, 0.20);
+        // Logarithmic demand: log(1+n)/log(1+10) * 0.25, capped at +25 %
+        // Uses log1p so that 0 owners = 0 bonus, and growth decelerates with each extra owner
+        double demandBonus = Math.min(Math.log1p(ownershipCount) / Math.log1p(10.0) * 0.25, 0.25);
         double demandFactor = 1.0 + demandBonus;
 
         // ── 4. Activity factor ──────────────────────────────────────────────────
@@ -461,7 +462,7 @@ public class MarketValueUpdateService {
                 / (double) recentStats.size();
 
         double impactScore = switch (position) {
-            case POR -> (avgSaves / 5.0) * 0.04 + (cleanSheetRate * 0.05) - (avgConceded / 2.0) * 0.03;
+            case POR -> (avgSaves / 4.0) * 0.07 + (cleanSheetRate * 0.07) - (avgConceded / 2.0) * 0.03;
             case DEF -> (avgTackles + avgInterceptions + avgBlocks) / 10.0 * 0.05 + (cleanSheetRate * 0.04)
                     + (avgGoals * 0.03) + (avgAssists * 0.02);
             case MID -> (avgChances / 3.0) * 0.04 + (avgAssists * 0.05) + (avgGoals * 0.04);

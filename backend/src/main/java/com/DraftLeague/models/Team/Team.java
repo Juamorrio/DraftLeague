@@ -58,6 +58,14 @@ public class Team {
     //boolean??
     private Boolean wildcardUsed;
 
+    /** Currently active chip for the ongoing gameweek. Cleared after score calculation. */
+    @Column(name = "active_chip")
+    private String activeChip;
+
+    /** Comma-separated list of chip IDs already consumed this season. */
+    @Column(name = "used_chips", length = 500)
+    private String usedChips = "";
+
     @Min(0)
     @Column(name = "captain_id")
     private Integer captainId;        

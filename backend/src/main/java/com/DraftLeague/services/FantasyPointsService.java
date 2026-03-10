@@ -11,6 +11,8 @@ import com.DraftLeague.repositories.PlayerStatisticRepository;
 import com.DraftLeague.repositories.TeamGameweekPointsRepository;
 import com.DraftLeague.repositories.TeamPlayerGameweekPointsRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,11 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class FantasyPointsService {
+
+    private static final Logger logger = LoggerFactory.getLogger(FantasyPointsService.class);
+
+    private static final String CHIP_TRIPLE_CAP = "TRIPLE_CAP";
+    private static final String CHIP_BENCH_BOOST = "BENCH_BOOST";
 
     private final TeamRepository teamRepository;
     private final TeamGameweekPointsRepository gwPointsRepository;
@@ -47,6 +54,11 @@ public class FantasyPointsService {
         Set<Integer> matchIds = matches.stream()
             .map(Match::getId)
             .collect(Collectors.toSet());
+
+        String activeChip = team.getActiveChip();
+        boolean isTripleCap = CHIP_TRIPLE_CAP.equals(activeChip);
+        boolean isBenchBoost = CHIP_BENCH_BOOST.equals(activeChip);
+        boolean isStatChip = activeChip != null && !isTripleCap && !isBenchBoost;
 
         int totalPoints = 0;
         int gkPoints = 0, defPoints = 0, midPoints = 0, fwdPoints = 0;
@@ -81,14 +93,18 @@ public class FantasyPointsService {
             int minutesPlayed = 0;
 
             if (stat != null) {
-                basePlayerPoints = stat.getTotalFantasyPoints() != null
-                    ? stat.getTotalFantasyPoints() : 0;
+                if (isStatChip) {
+                    basePlayerPoints = stat.calculateFantasyPointsWithChip(activeChip);
+                } else {
+                    basePlayerPoints = stat.getTotalFantasyPoints() != null
+                        ? stat.getTotalFantasyPoints() : 0;
+                }
                 finalPlayerPoints = basePlayerPoints;
                 matchId = stat.getMatchId();
                 minutesPlayed = stat.getMinutesPlayed() != null ? stat.getMinutesPlayed() : 0;
 
                 if (pt.getIsCaptain() != null && pt.getIsCaptain()) {
-                    finalPlayerPoints *= 2;
+                    finalPlayerPoints *= isTripleCap ? 3 : 2;
                     captainBonus = basePlayerPoints;
                     captainId = player.getId();
                 }
@@ -109,7 +125,8 @@ public class FantasyPointsService {
             snapshot.setIsBenched(pt.getLined() == null || !pt.getLined());
             newSnapshots.add(snapshot);
 
-            if (pt.getLined() != null && pt.getLined()) {
+            boolean countForTotal = isBenchBoost || (pt.getLined() != null && pt.getLined());
+            if (countForTotal) {
                 totalPoints += finalPlayerPoints;
 
                 Position position = player.getPosition();
@@ -131,6 +148,18 @@ public class FantasyPointsService {
         }
 
         tpgwPointsRepository.saveAll(newSnapshots);
+
+        // Consume the active chip after calculation
+        if (activeChip != null) {
+            String used = team.getUsedChips();
+            if (used == null || used.isBlank()) {
+                team.setUsedChips(activeChip);
+            } else {
+                team.setUsedChips(used + "," + activeChip);
+            }
+            team.setActiveChip(null);
+            teamRepository.save(team);
+        }
 
         gwPoints.setPoints(totalPoints);
         gwPoints.setGoalkeeperPoints(gkPoints);
@@ -189,7 +218,7 @@ public class FantasyPointsService {
             try {
                 updatePlayerTotalPoints(playerId);
             } catch (Exception e) {
-                System.err.println("Error updating points for player " + playerId + ": " + e.getMessage());
+                logger.error("Error updating points for player {}: {}", playerId, e.getMessage(), e);
             }
         }
     }
@@ -203,7 +232,7 @@ public class FantasyPointsService {
             try {
                 updatePlayerPointsForMatch(match.getId());
             } catch (Exception e) {
-                System.err.println("Error updating player points for match " + match.getId() + ": " + e.getMessage());
+                logger.error("Error updating player points for match {}: {}", match.getId(), e.getMessage(), e);
             }
         }
 
@@ -212,7 +241,7 @@ public class FantasyPointsService {
                 calculateTeamPointsForGameweek(team.getId(), gameweek);
                 updateTeamTotalPoints(team.getId());
             } catch (Exception e) {
-                System.err.println("Error calculating points for team " + team.getId() + ": " + e.getMessage());
+                logger.error("Error calculating points for team {}: {}", team.getId(), e.getMessage(), e);
             }
         }
 
@@ -230,7 +259,7 @@ public class FantasyPointsService {
             try {
                 updatePlayerTotalPoints(player.getId());
             } catch (Exception e) {
-                System.err.println("Error updating player " + player.getId() + ": " + e.getMessage());
+                logger.error("Error updating player {}: {}", player.getId(), e.getMessage(), e);
             }
         }
     }

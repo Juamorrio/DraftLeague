@@ -206,6 +206,8 @@ public abstract class PlayerStatistic {
 
         // Puntos base por minutos jugados
         if (minutesPlayed >= 60) {
+            points += 3;
+        } else if (minutesPlayed >= 45) {
             points += 2;
         } else if (minutesPlayed > 0) {
             points += 1;
@@ -232,6 +234,12 @@ public abstract class PlayerStatistic {
             points += assists * 3;
         }
 
+        // Oportunidades creadas (mediocampistas y delanteros, 1 pt cada 3 chances)
+        if ((playerType == PlayerType.MIDFIELDER || playerType == PlayerType.FORWARD)
+                && chancesCreated != null && chancesCreated >= 3) {
+            points += chancesCreated / 3;
+        }
+
         // Bonus por rating
         if (rating != null) {
             if (rating >= 9.0) {
@@ -253,6 +261,11 @@ public abstract class PlayerStatistic {
             points -= redCards * 3;
         }
 
+        // Faltas cometidas (penalizacion por juego agresivo, 1 pt cada 3 faltas)
+        if (foulsCommitted != null && foulsCommitted >= 3) {
+            points -= foulsCommitted / 3;
+        }
+
         // Acciones defensivas (para defensores y mediocampistas)
         if (playerType == PlayerType.DEFENDER || playerType == PlayerType.MIDFIELDER) {
             if (tackles != null) points += tackles / 3;
@@ -272,6 +285,18 @@ public abstract class PlayerStatistic {
             if (cleanSheet != null && cleanSheet) {
                 points += 4;
             }
+        }
+
+        // Clean Sheet para mediocampistas (+1 pt)
+        if (playerType == PlayerType.MIDFIELDER && minutesPlayed >= 60) {
+            if (cleanSheet != null && cleanSheet) {
+                points += 1;
+            }
+        }
+
+        // Bonus por paradas del portero (1 pt cada 3 paradas)
+        if (playerType == PlayerType.GOALKEEPER && saves != null && saves >= 3) {
+            points += saves / 3;
         }
 
         // Hat-trick (3+ goles)
@@ -299,9 +324,19 @@ public abstract class PlayerStatistic {
             points -= 2;
         }
 
+        // Multiples goles concedidos (penalizacion para defensas)
+        if (playerType == PlayerType.DEFENDER && goalsConceded != null && goalsConceded >= 3) {
+            points -= 1;
+        }
+
         // Penalti cometido (provocar penalti del rival)
         if (penaltyCommitted != null && penaltyCommitted > 0) {
             points -= penaltyCommitted * 2;
+        }
+
+        // Penalti fallado
+        if (penaltyMissed != null && penaltyMissed > 0) {
+            points -= penaltyMissed * 2;
         }
 
         // Asegurar que no sea negativo
@@ -318,6 +353,9 @@ public abstract class PlayerStatistic {
 
         // Puntos base por minutos jugados
         if (minutesPlayed >= 60) {
+            breakdown.put("minutesPlayed", 3);
+            total += 3;
+        } else if (minutesPlayed >= 45) {
             breakdown.put("minutesPlayed", 2);
             total += 2;
         } else if (minutesPlayed > 0) {
@@ -353,6 +391,14 @@ public abstract class PlayerStatistic {
             total += assistPoints;
         }
 
+        // Oportunidades creadas (mediocampistas y delanteros)
+        if ((playerType == PlayerType.MIDFIELDER || playerType == PlayerType.FORWARD)
+                && chancesCreated != null && chancesCreated >= 3) {
+            int chancesPoints = chancesCreated / 3;
+            breakdown.put("chancesCreated", chancesPoints);
+            total += chancesPoints;
+        }
+
         // Bonus por rating
         if (rating != null) {
             int ratingPoints = 0;
@@ -383,6 +429,13 @@ public abstract class PlayerStatistic {
             total += rcPoints;
         }
 
+        // Faltas cometidas
+        if (foulsCommitted != null && foulsCommitted >= 3) {
+            int foulsPoints = -(foulsCommitted / 3);
+            breakdown.put("foulsCommitted", foulsPoints);
+            total += foulsPoints;
+        }
+
         // Acciones defensivas (para defensores y mediocampistas)
         if (playerType == PlayerType.DEFENDER || playerType == PlayerType.MIDFIELDER) {
             int defPoints = 0;
@@ -408,6 +461,21 @@ public abstract class PlayerStatistic {
                 breakdown.put("cleanSheet", 4);
                 total += 4;
             }
+        }
+
+        // Clean Sheet para mediocampistas
+        if (playerType == PlayerType.MIDFIELDER && minutesPlayed >= 60) {
+            if (cleanSheet != null && cleanSheet) {
+                breakdown.put("cleanSheetMid", 1);
+                total += 1;
+            }
+        }
+
+        // Bonus por paradas del portero
+        if (playerType == PlayerType.GOALKEEPER && saves != null && saves >= 3) {
+            int savesPoints = saves / 3;
+            breakdown.put("saves", savesPoints);
+            total += savesPoints;
         }
 
         // Hat-trick
@@ -441,11 +509,24 @@ public abstract class PlayerStatistic {
             total -= 2;
         }
 
+        // Multiples goles concedidos (defensas)
+        if (playerType == PlayerType.DEFENDER && goalsConceded != null && goalsConceded >= 3) {
+            breakdown.put("multipleGoalsConcededDef", -1);
+            total -= 1;
+        }
+
         // Penalti cometido
         if (penaltyCommitted != null && penaltyCommitted > 0) {
             int penCommittedPoints = -penaltyCommitted * 2;
             breakdown.put("penaltyCommitted", penCommittedPoints);
             total += penCommittedPoints;
+        }
+
+        // Penalti fallado
+        if (penaltyMissed != null && penaltyMissed > 0) {
+            int penMissedPoints = -penaltyMissed * 2;
+            breakdown.put("penaltyMissed", penMissedPoints);
+            total += penMissedPoints;
         }
 
         breakdown.put("total", Math.max(total, 0));

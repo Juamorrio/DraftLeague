@@ -191,9 +191,12 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 		const entries = Object.entries(assigned);
 		if (entries.length === 0) return null;
 		const roleMap = formations[formation]?.positions.reduce((acc, pos) => {
-			acc[pos.key] = pos.role;
+			const safeKey = String(pos.key);
+			if (Object.prototype.hasOwnProperty.call(acc, safeKey) === false) {
+				acc[safeKey] = pos.role;
+			}
 			return acc;
-		}, {}) ?? {};
+		}, Object.create(null)) ?? Object.create(null);
 		const byPosition = { POR: 0, DEF: 0, MID: 0, DEL: 0 };
 		let best = null;
 		let total = 0;

@@ -190,13 +190,10 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 	const teamSummary = useMemo(() => {
 		const entries = Object.entries(assigned);
 		if (entries.length === 0) return null;
-		const roleMap = formations[formation]?.positions.reduce((acc, pos) => {
-			const safeKey = String(pos.key);
-			if (Object.prototype.hasOwnProperty.call(acc, safeKey) === false) {
-				acc[safeKey] = pos.role;
-			}
-			return acc;
-		}, Object.create(null)) ?? Object.create(null);
+		const VALID_ROLES = ['POR', 'DEF', 'MID', 'DEL'];
+		const roleMap = new Map(
+			(formations[formation]?.positions ?? []).map(pos => [String(pos.key), pos.role])
+		);
 		const byPosition = { POR: 0, DEF: 0, MID: 0, DEL: 0 };
 		let best = null;
 		let total = 0;
@@ -204,8 +201,8 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 			const p = slotValue?.player ?? slotValue;
 			if (!p) return;
 			const pts = selectedGameweek === 'total' ? (p.totalPoints ?? 0) : (playerGameweekPoints[p.id] ?? 0);
-			const role = roleMap[key];
-			if (role && byPosition[role] !== undefined) byPosition[role] += pts;
+			const role = roleMap.get(String(key));
+			if (role && VALID_ROLES.includes(role)) byPosition[role] += pts;
 			total += pts;
 			if (!best || pts > best.points) best = { name: p.fullName ?? p.name, points: pts };
 		});

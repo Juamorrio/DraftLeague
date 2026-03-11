@@ -55,7 +55,8 @@ public class FantasyPointsService {
             .map(Match::getId)
             .collect(Collectors.toSet());
 
-        String activeChip = team.getActiveChip();
+        String teamActiveChip = team.getActiveChip();
+        String activeChip = (teamActiveChip != null) ? teamActiveChip : gwPoints.getAppliedChip();
         boolean isTripleCap = CHIP_TRIPLE_CAP.equals(activeChip);
         boolean isBenchBoost = CHIP_BENCH_BOOST.equals(activeChip);
         boolean isStatChip = activeChip != null && !isTripleCap && !isBenchBoost;
@@ -149,13 +150,17 @@ public class FantasyPointsService {
 
         tpgwPointsRepository.saveAll(newSnapshots);
 
-        // Consume the active chip after calculation
-        if (activeChip != null) {
+        // Persist which chip was applied so recalculations can re-use it.
+        gwPoints.setAppliedChip(activeChip);
+
+        // Consume the active chip only if it came fresh from the team entity
+        // (not recovered from a previous gwPoints record).
+        if (teamActiveChip != null) {
             String used = team.getUsedChips();
             if (used == null || used.isBlank()) {
-                team.setUsedChips(activeChip);
+                team.setUsedChips(teamActiveChip);
             } else {
-                team.setUsedChips(used + "," + activeChip);
+                team.setUsedChips(used + "," + teamActiveChip);
             }
             team.setActiveChip(null);
             teamRepository.save(team);

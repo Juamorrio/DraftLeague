@@ -1,9 +1,5 @@
 package com.DraftLeague.services;
 
-import com.DraftLeague.models.Statistics.GoalkeeperStatistic;
-import com.DraftLeague.models.Statistics.DefenderStatistic;
-import com.DraftLeague.models.Statistics.MidfielderStatistic;
-import com.DraftLeague.models.Statistics.ForwardStatistic;
 import com.DraftLeague.models.Statistics.PlayerStatistic;
 import com.DraftLeague.models.Match.Match;
 import com.DraftLeague.models.Player.Player;
@@ -145,27 +141,12 @@ public class PlayerStatisticService {
             statistic.setMatchId(getIntegerValue(data, "matchId"));
         }
 
-        // Mapear campos especificos por tipo de jugador
-        if (statistic instanceof GoalkeeperStatistic goalkeeper) {
-            goalkeeper.setSaves(getIntegerValue(data, "saves"));
-            goalkeeper.setGoalsConceded(getIntegerValue(data, "goalsConceded"));
+        // Mapear campos especificos segun tipo de jugador
+        if (statistic.getPlayerType() == PlayerStatistic.PlayerType.GOALKEEPER) {
             statistic.setSaves(getIntegerValue(data, "saves"));
             statistic.setGoalsConceded(getIntegerValue(data, "goalsConceded"));
             statistic.setPenaltiesSaved(getIntegerValue(data, "penaltiesSaved"));
             statistic.setCleanSheet(getBooleanValue(data, "cleanSheet"));
-        } else if (statistic instanceof DefenderStatistic defender) {
-            defender.setPenaltiesWon(getIntegerValue(data, "penaltiesWon"));
-            defender.setSuccessfulDribbles(getIntegerValue(data, "successfulDribbles"));
-            defender.setTotalDribbles(getIntegerValue(data, "totalDribbles"));
-        } else if (statistic instanceof MidfielderStatistic midfielder) {
-            midfielder.setSuccessfulDribbles(getIntegerValue(data, "successfulDribbles"));
-            midfielder.setTotalDribbles(getIntegerValue(data, "totalDribbles"));
-            midfielder.setPenaltiesWon(getIntegerValue(data, "penaltiesWon"));
-        } else if (statistic instanceof ForwardStatistic forward) {
-            forward.setSuccessfulDribbles(getIntegerValue(data, "successfulDribbles"));
-            forward.setTotalDribbles(getIntegerValue(data, "totalDribbles"));
-            forward.setPenaltiesWon(getIntegerValue(data, "penaltiesWon"));
-            forward.setOffsides(getIntegerValue(data, "offsides"));
         }
     }
 

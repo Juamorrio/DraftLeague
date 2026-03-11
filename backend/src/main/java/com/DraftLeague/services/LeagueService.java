@@ -108,6 +108,7 @@ public class LeagueService {
                     team.setWildcardUsed(false);
                     team.setCaptainId(null);
                     teamRepository.save(team);
+                    assignInitialSquad(saved, team, 11);
                 }
             }
         } catch (Exception e) {

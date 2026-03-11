@@ -57,4 +57,7 @@ public class TeamGameweekPoints {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "calculated_at")
     private Date calculatedAt;
+
+    @Column(name = "applied_chip")
+    private String appliedChip;
 }

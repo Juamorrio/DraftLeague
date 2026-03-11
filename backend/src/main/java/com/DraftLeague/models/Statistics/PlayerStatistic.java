@@ -18,9 +18,8 @@ import com.DraftLeague.models.Statistics.PlayerStatistic;
 @Getter
 @Setter
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "player_statistic")
-public abstract class PlayerStatistic {
+public class PlayerStatistic {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

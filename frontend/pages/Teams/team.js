@@ -1,18 +1,29 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AppState, View, Text, StyleSheet, TouchableOpacity, Image, Modal, FlatList, Alert, ScrollView, ActivityIndicator, TextInput } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
 import { useLeague } from '../../context/LeagueContext';
 import pitch from '../../assets/Team/pitch.png';
 import Player from '../../components/player';
 import authService, { authenticatedFetch } from '../../services/authService';
-import predictionService from '../../services/predictionService';
-import { LineChartComponent } from '../../components/StatisticsChart';
 import withAuth from '../../components/withAuth';
-import { createOffer } from '../../services/tradeOfferService';
+import { createOffer, getIncomingOffers, getOutgoingOffers, acceptOffer, rejectOffer, cancelOffer } from '../../services/tradeOfferService';
+import { colors, fontSize, fontWeight, radius, spacing, shadow } from '../../utils/theme';
 
 
 function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 	const { selectedLeague, viewUser, setViewUser, setSelectedPlayer } = useLeague();
+
+	const CHIPS = [
+		{ id: 'TRIPLE_CAP',      name: 'Triple Capitán',       desc: 'Tu capitán puntúa ×3 esta jornada',              icon: '👑' },
+		{ id: 'DOUBLE_GOALS',    name: 'Golazo',               desc: 'Todos los goles valen el doble de puntos',        icon: '⚽' },
+		{ id: 'SUPER_SAVES',     name: 'Mano Segura',          desc: 'Tu portero suma 1pt por cada 2 paradas',          icon: '🧤' },
+		{ id: 'NO_PENALTY',      name: 'Juego Limpio',         desc: 'Las tarjetas no restan puntos esta jornada',      icon: '🟡' },
+		{ id: 'DOUBLE_ASSISTS',  name: 'Rey de Asistencias',   desc: 'Cada asistencia vale 6pts en lugar de 3',         icon: '🎯' },
+		{ id: 'DEFENSIVE_WEEK',  name: 'Muralla',              desc: 'Porterías a cero valen el doble para todos',      icon: '🛡️' },
+		{ id: 'LETHAL_STRIKER',  name: 'Delantero Letal',      desc: 'Los goles de delanteros valen 12pts',             icon: '🏹' },
+		{ id: 'CREATIVE_MIDS',   name: 'Creador Total',        desc: 'Cada oportunidad creada da 1pt (sin mínimo)',     icon: '🎨' },
+		{ id: 'GOLDEN_MINUTES',  name: 'Minutos de Oro',       desc: 'Jugar ≥60 min da +5pts en lugar de +3',           icon: '⏱️' },
+		{ id: 'BENCH_BOOST',     name: 'Banco Boost',          desc: 'Tus suplentes también puntúan esta jornada',     icon: '🪑' },
+	];
 	const [players, setPlayers] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [assigned, setAssigned] = useState({});
@@ -33,15 +44,30 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 	const [maxGameweek] = useState(38);
 	const [loadingPoints, setLoadingPoints] = useState(false);
 	const [captainPlayerId, setCaptainPlayerId] = useState(null);
-	const [pointsHistory, setPointsHistory] = useState(null);
 	const [teamsLocked, setTeamsLocked] = useState(false);
 	const [activeGameweek, setActiveGameweek] = useState(null);
+	const [wildcardUsed, setWildcardUsed] = useState(false);
+
+	// Compare state
+	const [compareVisible, setCompareVisible] = useState(false);
+	const [compareA, setCompareA] = useState(null);
+	const [compareB, setCompareB] = useState(null);
+	const [comparePicking, setComparePicking] = useState(false);
+
+	// Chip state
+	const [activeChip, setActiveChip] = useState(null);
+	const [usedChips, setUsedChips] = useState([]);
+	const [chipModalVisible, setChipModalVisible] = useState(false);
 
 	// Trade offer state
 	const [offerModalVisible, setOfferModalVisible] = useState(false);
 	const [offerPriceText, setOfferPriceText] = useState('');
 	const [offerPlayer, setOfferPlayer] = useState(null);
 	const [offerSubmitting, setOfferSubmitting] = useState(false);
+
+	// Trades management state
+	const [incomingOffers, setIncomingOffers] = useState([]);
+	const [outgoingOffers, setOutgoingOffers] = useState([]);
 
 	// Refs for auto-refresh (avoid stale closures in intervals)
 	const teamIdRef = useRef(null);
@@ -65,7 +91,54 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 				{ key: 'LW', x: '13%', y: '18%', role: 'DEL' },
 				{ key: 'RW', x: '77%', y: '18%', role: 'DEL' },
 				{ key: 'ST', x: '45%', y: '8%', role: 'DEL' },
-				{ key: 'COACH', x: '80%', y: '88%', role: 'COACH' },
+			]
+		},
+		'4-4-2': {
+			name: '4-4-2',
+			positions: [
+				{ key: 'GK', x: '45%', y: '88%', role: 'POR' },
+				{ key: 'LB', x: '8%', y: '68%', role: 'DEF' },
+				{ key: 'CB1', x: '32%', y: '68%', role: 'DEF' },
+				{ key: 'CB2', x: '58%', y: '68%', role: 'DEF' },
+				{ key: 'RB', x: '82%', y: '68%', role: 'DEF' },
+				{ key: 'LM', x: '10%', y: '48%', role: 'MID' },
+				{ key: 'CM1', x: '35%', y: '48%', role: 'MID' },
+				{ key: 'CM2', x: '55%', y: '48%', role: 'MID' },
+				{ key: 'RM', x: '80%', y: '48%', role: 'MID' },
+				{ key: 'ST1', x: '35%', y: '12%', role: 'DEL' },
+				{ key: 'ST2', x: '55%', y: '12%', role: 'DEL' },
+			]
+		},
+		'3-5-2': {
+			name: '3-5-2',
+			positions: [
+				{ key: 'GK', x: '45%', y: '88%', role: 'POR' },
+				{ key: 'CB1', x: '20%', y: '68%', role: 'DEF' },
+				{ key: 'CB2', x: '45%', y: '68%', role: 'DEF' },
+				{ key: 'CB3', x: '70%', y: '68%', role: 'DEF' },
+				{ key: 'LM', x: '6%', y: '50%', role: 'MID' },
+				{ key: 'CM1', x: '28%', y: '48%', role: 'MID' },
+				{ key: 'CM2', x: '52%', y: '48%', role: 'MID' },
+				{ key: 'CAM', x: '45%', y: '32%', role: 'MID' },
+				{ key: 'RM', x: '84%', y: '50%', role: 'MID' },
+				{ key: 'ST1', x: '35%', y: '12%', role: 'DEL' },
+				{ key: 'ST2', x: '55%', y: '12%', role: 'DEL' },
+			]
+		},
+		'4-2-3-1': {
+			name: '4-2-3-1',
+			positions: [
+				{ key: 'GK', x: '45%', y: '88%', role: 'POR' },
+				{ key: 'LB', x: '8%', y: '68%', role: 'DEF' },
+				{ key: 'CB1', x: '32%', y: '68%', role: 'DEF' },
+				{ key: 'CB2', x: '58%', y: '68%', role: 'DEF' },
+				{ key: 'RB', x: '82%', y: '68%', role: 'DEF' },
+				{ key: 'CDM1', x: '35%', y: '52%', role: 'MID' },
+				{ key: 'CDM2', x: '55%', y: '52%', role: 'MID' },
+				{ key: 'LAM', x: '20%', y: '34%', role: 'MID' },
+				{ key: 'CAM', x: '45%', y: '30%', role: 'MID' },
+				{ key: 'RAM', x: '70%', y: '34%', role: 'MID' },
+				{ key: 'ST', x: '45%', y: '10%', role: 'DEL' },
 			]
 		},
 	};
@@ -114,6 +187,29 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 		return result;
 	}, [selectedGameweek, gameweekSnapshots]);
 
+	const teamSummary = useMemo(() => {
+		const entries = Object.entries(assigned);
+		if (entries.length === 0) return null;
+		const VALID_ROLES = ['POR', 'DEF', 'MID', 'DEL'];
+		const roleMap = new Map(
+			(formations[formation]?.positions ?? []).map(pos => [String(pos.key), pos.role])
+		);
+		const byPosition = { POR: 0, DEF: 0, MID: 0, DEL: 0 };
+		let best = null;
+		let total = 0;
+		entries.forEach(([key, slotValue]) => {
+			const p = slotValue?.player ?? slotValue;
+			if (!p) return;
+			const pts = selectedGameweek === 'total' ? (p.totalPoints ?? 0) : (playerGameweekPoints[p.id] ?? 0);
+			const role = roleMap.get(String(key));
+			if (role && VALID_ROLES.includes(role)) byPosition[role] += pts;
+			total += pts;
+			if (!best || pts > best.points) best = { name: p.fullName ?? p.name, points: pts };
+		});
+		const count = entries.length;
+		return { byPosition, bestPlayer: best, averagePoints: count > 0 ? +(total / count).toFixed(1) : 0, total };
+	}, [assigned, playerGameweekPoints, selectedGameweek, formation]);
+
 	if (!viewUserId && viewUser?.id) {
 		viewUserId = viewUser.id;
 		readOnly = true;
@@ -161,6 +257,16 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 			const res = await authenticatedFetch(`/api/v1/teams/league/${selectedLeague.id}/${userIdToUse}`);
 			if (res.ok) {
 				const team = await res.json();
+				if (team?.id) {
+					teamIdRef.current = team.id;
+					setWildcardUsed(!!team.wildcardUsed);
+					setActiveChip(team.activeChip ?? null);
+					setUsedChips(
+						team.usedChips && team.usedChips.length > 0
+							? team.usedChips.split(',').filter(Boolean)
+							: []
+					);
+				}
 				if (mounted && team?.playerTeams) {
 					const newAssigned = {};						
 					const playersByRole = {
@@ -168,7 +274,6 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 						DEF: [],
 						MID: [],
 						DEL: [],
-						COACH: []
 					};	
 					team.playerTeams.forEach(pt => {
 						const role = pt.player.position;
@@ -182,7 +287,6 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 						DEF: [],
 						MID: [],
 						DEL: [],
-						COACH: []
 					};
 					
 					currentFormation.positions.forEach(pos => {
@@ -205,22 +309,6 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 
 					setAssigned(newAssigned);
 
-					if (team.id) {
-						teamIdRef.current = team.id;
-						predictionService.getTeamPointsHistory(team.id)
-							.then(history => {
-								if (history && history.history?.length > 0) {
-									const chartData = {
-										labels: history.history.map(h => `J${h.gameweek}`),
-										datasets: [{
-											data: history.history.map(h => h.points)
-										}]
-									};
-									setPointsHistory(chartData);
-								}
-							})
-							.catch(err => console.log('Error cargando historial de puntos:', err));
-					}
 				}
 			}
 		} catch (e) {
@@ -381,6 +469,24 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 
 	useEffect(() => { loadMyBudget(); }, [selectedLeague?.id]);
 
+	const loadTrades = async () => {
+		if (!selectedLeague?.id || readOnly) return;
+		try {
+			const [incoming, outgoing] = await Promise.all([
+				getIncomingOffers(selectedLeague.id),
+				getOutgoingOffers(selectedLeague.id),
+			]);
+			setIncomingOffers(Array.isArray(incoming) ? incoming : []);
+			setOutgoingOffers(Array.isArray(outgoing) ? outgoing : []);
+		} catch (e) {
+			console.error('Error cargando traspasos:', e);
+		}
+	};
+
+	useEffect(() => {
+		if (!viewUser?.id && selectedLeague?.id) loadTrades();
+	}, [selectedLeague?.id, viewUser?.id]);
+
 	const getPlayerPoints = (player) => {
 		if (selectedGameweek === 'total') {
 			return player.totalPoints ?? 0;
@@ -534,6 +640,89 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 		}
 	};
 
+	const saveWildcard = async () => {
+		if (!selectedLeague?.id) return;
+		const playersList = Object.entries(assigned)
+			.map(([position, slotValue]) => {
+				const p = getAssignedPlayer(slotValue);
+				if (!p?.id) return null;
+				return { playerId: p.id, position, lined: true, isCaptain: p.id === captainPlayerId };
+			})
+			.filter(Boolean);
+		if (playersList.length === 0) {
+			Alert.alert('Error', 'Debes tener jugadores en el equipo');
+			return;
+		}
+		Alert.alert(
+			'🃏 Usar Comodín',
+			'Podrás cambiar tu alineación durante la jornada activa. Solo puedes usarlo UNA VEZ por temporada.',
+			[
+				{ text: 'Cancelar', style: 'cancel' },
+				{ text: 'Usar Comodín', style: 'destructive', onPress: async () => {
+					setSaving(true);
+					try {
+						const user = await authService.getCurrentUser();
+						if (!user?.id) return;
+						const res = await authenticatedFetch(
+							`/api/v1/teams/league/${selectedLeague.id}/${user.id}/wildcard`,
+							{ method: 'POST', headers: { 'Content-Type': 'application/json' },
+							  body: JSON.stringify({ players: playersList }) }
+						);
+						if (res.ok) {
+							setWildcardUsed(true);
+							Alert.alert('✅ Comodín activado', 'Tu alineación ha sido guardada para esta jornada.');
+						} else {
+							const data = await res.json();
+							Alert.alert('Error', data?.error || 'No se pudo usar el comodín');
+						}
+					} catch (e) {
+						Alert.alert('Error', e?.message || 'Error desconocido');
+					} finally {
+						setSaving(false);
+					}
+				}},
+			]
+		);
+	};
+
+	const activateChip = async (chipId) => {
+		if (!selectedLeague?.id) return;
+		const chipDef = CHIPS.find(c => c.id === chipId);
+		Alert.alert(
+			`${chipDef?.icon ?? '🎰'} ${chipDef?.name ?? chipId}`,
+			`${chipDef?.desc ?? ''}\n\nEl chip se activará para la próxima jornada y no podrás cancelarlo. ¿Continuar?`,
+			[
+				{ text: 'Cancelar', style: 'cancel' },
+				{ text: 'Activar', style: 'default', onPress: async () => {
+					try {
+						const user = await authService.getCurrentUser();
+						if (!user?.id) return;
+						const res = await authenticatedFetch(
+							`/api/v1/teams/league/${selectedLeague.id}/${user.id}/chip`,
+							{
+								method: 'POST',
+								headers: { 'Content-Type': 'application/json' },
+								body: JSON.stringify({ chip: chipId }),
+							}
+						);
+						if (res.ok) {
+							const data = await res.json();
+							setActiveChip(data.activeChip || null);
+							setUsedChips(data.usedChips ? data.usedChips.split(',').filter(Boolean) : []);
+							setChipModalVisible(false);
+							Alert.alert('✅ Chip activado', `${chipDef?.name ?? chipId} se aplicará en la próxima jornada.`);
+						} else {
+							const data = await res.json().catch(() => ({}));
+							Alert.alert('Error', data?.error || 'No se pudo activar el chip');
+						}
+					} catch (e) {
+						Alert.alert('Error', e?.message || 'Error desconocido');
+					}
+				}},
+			]
+		);
+	};
+
 	function matchesSpot(playerPos, key) {
 		if (!playerPos || !key) return true;
 		
@@ -556,13 +745,45 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 					</TouchableOpacity>
 				)}
 				{!readOnly && (
-					<TouchableOpacity 
-						style={[styles.saveBtn, (saving || teamsLocked) && styles.saveBtnDisabled]} 
-						onPress={saveTeam}
-						disabled={saving || teamsLocked}
-					>
-						<Text style={styles.saveBtnText}>{saving ? 'Guardando...' : teamsLocked ? '🔒 Bloqueado' : 'Guardar'}</Text>
-					</TouchableOpacity>
+					<View style={{ flexDirection: 'row', gap: 6, alignItems: 'center' }}>
+						<TouchableOpacity 
+							style={[styles.saveBtn, (saving || teamsLocked) && styles.saveBtnDisabled]} 
+							onPress={saveTeam}
+							disabled={saving || teamsLocked}
+						>
+							<Text style={styles.saveBtnText}>{saving ? 'Guardando...' : teamsLocked ? '🔒 Bloqueado' : 'Guardar'}</Text>
+						</TouchableOpacity>
+						{teamsLocked && !wildcardUsed && (
+							<TouchableOpacity
+								style={[styles.saveBtn, { backgroundColor: '#7c3aed' }]}
+								onPress={saveWildcard}
+								disabled={saving}
+							>
+								<Text style={styles.saveBtnText}>🃏 Comodín</Text>
+							</TouchableOpacity>
+						)}
+						{teamsLocked && wildcardUsed && (
+							<View style={[styles.saveBtn, styles.saveBtnDisabled]}>
+								<Text style={styles.saveBtnText}>🃏 Usado</Text>
+							</View>
+						)}
+						{!teamsLocked && (
+							activeChip ? (
+								<View style={[styles.saveBtn, { backgroundColor: '#d97706' }]}>
+									<Text style={styles.saveBtnText}>
+										{CHIPS.find(c => c.id === activeChip)?.icon ?? '🎰'} {CHIPS.find(c => c.id === activeChip)?.name ?? activeChip}
+									</Text>
+								</View>
+							) : (
+								<TouchableOpacity
+									style={[styles.saveBtn, { backgroundColor: '#0369a1' }]}
+									onPress={() => setChipModalVisible(true)}
+								>
+									<Text style={styles.saveBtnText}>🎰 Chips ({usedChips.length}/10)</Text>
+								</TouchableOpacity>
+							)
+						)}
+					</View>
 				)}
 			</View>
 			{teamsLocked && !readOnly && (
@@ -573,19 +794,53 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 				</View>
 			)}
 
-			{!readOnly && (
-				<View style={styles.pickerContainer}>
-					<Text style={styles.pickerLabel}>Ver puntos:</Text>
-					<Picker
-						selectedValue={selectedGameweek}
-						style={styles.picker}
-						onValueChange={(value) => setSelectedGameweek(value)}
-					>
-						<Picker.Item label="Total Acumulado" value="total" />
-						{Array.from({ length: maxGameweek }, (_, i) => i + 1).map(gw => (
-							<Picker.Item key={gw} label={`Jornada ${gw}`} value={gw} />
+			{!readOnly && !teamsLocked && (
+				<View style={styles.formationWrap}>
+					<Text style={styles.formationTitle}>Formacion</Text>
+					<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.formationScroll}>
+						{Object.keys(formations).map(key => (
+							<TouchableOpacity
+								key={key}
+								style={[styles.formationChip, formation === key && styles.formationChipActive]}
+								onPress={() => setFormation(key)}
+							>
+								<Text style={[styles.formationChipText, formation === key && styles.formationChipTextActive]}>
+									{key}
+								</Text>
+							</TouchableOpacity>
 						))}
-					</Picker>
+					</ScrollView>
+				</View>
+			)}
+
+			{!readOnly && (
+				<View style={styles.gwSelectorWrap}>
+					<Text style={styles.gwSelectorTitle}>Ver puntos por jornada</Text>
+					<ScrollView
+						horizontal
+						showsHorizontalScrollIndicator={false}
+						contentContainerStyle={styles.gwScrollContent}
+					>
+						<TouchableOpacity
+							style={[styles.gwChip, selectedGameweek === 'total' && styles.gwChipActive]}
+							onPress={() => setSelectedGameweek('total')}
+						>
+							<Text style={[styles.gwChipText, selectedGameweek === 'total' && styles.gwChipTextActive]}>
+								Total
+							</Text>
+						</TouchableOpacity>
+						{Array.from({ length: maxGameweek }, (_, i) => i + 1).map(gw => (
+							<TouchableOpacity
+								key={gw}
+								style={[styles.gwChip, selectedGameweek === gw && styles.gwChipActive]}
+								onPress={() => setSelectedGameweek(gw)}
+							>
+								<Text style={[styles.gwChipText, selectedGameweek === gw && styles.gwChipTextActive]}>
+									J{gw}
+								</Text>
+							</TouchableOpacity>
+						))}
+					</ScrollView>
 				</View>
 			)}
 
@@ -636,13 +891,36 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 				})}
 				</View>
 
-				{/* Historial de Puntos */}
-				{pointsHistory && (
-					<View style={styles.chartSection}>
-						<LineChartComponent 
-							data={pointsHistory} 
-							title="Evolución de Puntos" 
-						/>
+				{teamSummary && (
+					<View style={styles.summaryCard}>
+						<View style={styles.summaryRow}>
+							{[{ label: 'POR', value: teamSummary.byPosition.POR },
+							  { label: 'DEF', value: teamSummary.byPosition.DEF },
+							  { label: 'MID', value: teamSummary.byPosition.MID },
+							  { label: 'DEL', value: teamSummary.byPosition.DEL },
+							].map(({ label, value }) => (
+								<View key={label} style={styles.summaryPosBlock}>
+									<Text style={styles.summaryPosLabel}>{label}</Text>
+									<Text style={styles.summaryPosValue}>{value}</Text>
+								</View>
+							))}
+						</View>
+						<View style={styles.summarySeparator} />
+						<View style={styles.summaryBottomRow}>
+							{teamSummary.bestPlayer && (
+								<View style={styles.summaryBest}>
+									<Text style={styles.summaryBestLabel}>⭐ Mejor jugador</Text>
+									<Text style={styles.summaryBestName} numberOfLines={1}>{teamSummary.bestPlayer.name}</Text>
+									<Text style={styles.summaryBestPts}>{teamSummary.bestPlayer.points} pts</Text>
+								</View>
+							)}
+							<View style={styles.summaryStats}>
+								<Text style={styles.summaryStatLabel}>Total</Text>
+								<Text style={styles.summaryStatValue}>{teamSummary.total}</Text>
+								<Text style={styles.summaryStatLabel}>Media</Text>
+								<Text style={styles.summaryStatValue}>{teamSummary.averagePoints}</Text>
+							</View>
+						</View>
 					</View>
 				)}
 
@@ -697,6 +975,52 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 								</View>
 							</ScrollView>
 						)}
+					</View>
+				)}
+
+				{/* Traspasos Pendientes */}
+				{!readOnly && (incomingOffers.filter(o => o.status === 'PENDING').length > 0 || outgoingOffers.filter(o => o.status === 'PENDING').length > 0) && (
+					<View style={styles.tradesSection}>
+						<Text style={styles.tradesSectionTitle}>🤝 Traspasos pendientes</Text>
+						{incomingOffers.filter(o => o.status === 'PENDING').map(offer => (
+							<View key={offer.id} style={styles.tradeOfferCard}>
+								<View style={styles.tradeOfferInfo}>
+									<Text style={styles.tradeOfferPlayer}>{offer.player?.fullName}</Text>
+									<Text style={styles.tradeOfferMeta}>{offer.fromTeam?.user?.username} ofrece €{offer.offerPrice?.toLocaleString('es-ES')}</Text>
+								</View>
+								<View style={{ flexDirection: 'row', gap: 6 }}>
+									<TouchableOpacity
+										style={[styles.tradeActionBtn, { backgroundColor: colors.primary }]}
+										onPress={async () => {
+											try { await acceptOffer(offer.id); await Promise.all([loadTrades(), loadTeam()]); Alert.alert('Aceptada', 'Traspaso completado.'); }
+											catch(e) { Alert.alert('Error', e?.message || 'No se pudo aceptar'); }
+										}}
+									><Text style={styles.tradeActionBtnText}>Aceptar</Text></TouchableOpacity>
+									<TouchableOpacity
+										style={[styles.tradeActionBtn, { backgroundColor: colors.danger }]}
+										onPress={async () => {
+											try { await rejectOffer(offer.id); await loadTrades(); Alert.alert('Rechazada', 'Oferta rechazada.'); }
+											catch(e) { Alert.alert('Error', e?.message || 'No se pudo rechazar'); }
+										}}
+									><Text style={styles.tradeActionBtnText}>Rechazar</Text></TouchableOpacity>
+								</View>
+							</View>
+						))}
+						{outgoingOffers.filter(o => o.status === 'PENDING').map(offer => (
+							<View key={offer.id} style={[styles.tradeOfferCard, { borderLeftColor: colors.textMuted }]}>
+								<View style={styles.tradeOfferInfo}>
+									<Text style={styles.tradeOfferPlayer}>{offer.player?.fullName}</Text>
+									<Text style={styles.tradeOfferMeta}>enviada a {offer.toTeam?.user?.username} · €{offer.offerPrice?.toLocaleString('es-ES')}</Text>
+								</View>
+								<TouchableOpacity
+									style={[styles.tradeActionBtn, { backgroundColor: colors.textMuted }]}
+									onPress={async () => {
+										try { await cancelOffer(offer.id); await loadTrades(); Alert.alert('Cancelada', 'Oferta cancelada.'); }
+										catch(e) { Alert.alert('Error', e?.message || 'No se pudo cancelar'); }
+									}}
+								><Text style={styles.tradeActionBtnText}>Cancelar</Text></TouchableOpacity>
+							</View>
+						))}
 					</View>
 				)}
 			</ScrollView>
@@ -864,6 +1188,166 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 				</View>
 			</Modal>
 
+		{/* Compare Modal */}
+		<Modal visible={compareVisible} transparent animationType="fade" onRequestClose={() => { setCompareVisible(false); setComparePicking(false); }}>
+			<View style={styles.modalBackdrop}>
+				<View style={[styles.modalCard, { maxHeight: '82%' }]}>
+					<Text style={styles.modalTitle}>Comparar jugadores</Text>
+					{!comparePicking ? (
+						<>
+							<View style={styles.cmpHeader}>
+								<View style={styles.cmpCol}>
+									<Text style={styles.cmpPlayerName} numberOfLines={1}>{compareA?.fullName ?? compareA?.name ?? '—'}</Text>
+									<View style={[styles.cmpPosBadge, { backgroundColor: colors.primaryDeep }]}>
+										<Text style={styles.cmpPosBadgeTxt}>{compareA?.position}</Text>
+									</View>
+								</View>
+								<Text style={styles.cmpVs}>VS</Text>
+								<TouchableOpacity style={styles.cmpCol} onPress={() => setComparePicking(true)}>
+									{compareB ? (
+										<>
+											<Text style={styles.cmpPlayerName} numberOfLines={1}>{compareB.fullName ?? compareB.name}</Text>
+											<View style={[styles.cmpPosBadge, { backgroundColor: colors.danger }]}>
+												<Text style={styles.cmpPosBadgeTxt}>{compareB.position}</Text>
+											</View>
+										</>
+									) : (
+										<View style={styles.cmpPickBtn}>
+											<Text style={styles.cmpPickBtnText}>+ Elegir</Text>
+										</View>
+									)}
+								</TouchableOpacity>
+							</View>
+							{compareB && (() => {
+								const ptsA = selectedGameweek === 'total' ? (compareA?.totalPoints ?? 0) : (playerGameweekPoints[compareA?.id] ?? 0);
+								const ptsB = selectedGameweek === 'total' ? (compareB?.totalPoints ?? 0) : (playerGameweekPoints[compareB?.id] ?? 0);
+								const compareRows = [
+									{ label: 'Puntos', valA: ptsA, valB: ptsB, numeric: true },
+									{ label: 'Valor', valA: `€${((compareA?.marketValue ?? 0) / 1e6).toFixed(2)}M`, valB: `€${((compareB?.marketValue ?? 0) / 1e6).toFixed(2)}M`, numA: compareA?.marketValue ?? 0, numB: compareB?.marketValue ?? 0, numeric: false, numericCmp: true },
+									{ label: 'Posición', valA: compareA?.position ?? '—', valB: compareB?.position ?? '—', numeric: false },
+									{ label: 'Capitán', valA: captainPlayerId === compareA?.id ? '★' : '—', valB: captainPlayerId === compareB?.id ? '★' : '—', numeric: false },
+								];
+								return (
+									<View style={styles.cmpTable}>
+										{compareRows.map(row => {
+											const winsA = row.numeric ? row.valA > row.valB : row.numericCmp ? row.numA > row.numB : false;
+											const winsB = row.numeric ? row.valB > row.valA : row.numericCmp ? row.numB > row.numA : false;
+											return (
+												<View key={row.label} style={styles.cmpRow}>
+													<Text style={[styles.cmpValue, winsA && styles.cmpWinner]}>{String(row.valA)}</Text>
+													<Text style={styles.cmpStat}>{row.label}</Text>
+													<Text style={[styles.cmpValue, winsB && styles.cmpWinner]}>{String(row.valB)}</Text>
+												</View>
+											);
+										})}
+									</View>
+								);
+							})()}
+						</>
+					) : (
+						<>
+							<Text style={{ fontSize: 13, color: colors.textSecondary, marginBottom: 8 }}>Selecciona el segundo jugador:</Text>
+							<FlatList
+								style={{ maxHeight: 260 }}
+								data={Object.values(assigned).map(s => s?.player ?? s).filter(p => p?.id && p.id !== compareA?.id)}
+								keyExtractor={item => String(item.id)}
+								ItemSeparatorComponent={() => <View style={{ height: 6 }} />}
+								renderItem={({ item }) => (
+									<TouchableOpacity style={styles.pickRow} onPress={() => { setCompareB(item); setComparePicking(false); }}>
+										<Text style={styles.pickName}>{item.fullName ?? item.name}</Text>
+										<Text style={styles.pickMeta}>{item.position} · {selectedGameweek === 'total' ? (item.totalPoints ?? 0) : (playerGameweekPoints[item.id] ?? 0)} pts</Text>
+									</TouchableOpacity>
+								)}
+							/>
+						</>
+					)}
+					<TouchableOpacity style={styles.closeBtn} onPress={() => { setCompareVisible(false); setComparePicking(false); }}>
+						<Text style={styles.closeText}>Cerrar</Text>
+					</TouchableOpacity>
+				</View>
+			</View>
+		</Modal>
+
+		{/* Compare Modal */}
+		<Modal visible={compareVisible} transparent animationType="fade" onRequestClose={() => { setCompareVisible(false); setComparePicking(false); }}>
+			<View style={styles.modalBackdrop}>
+				<View style={[styles.modalCard, { maxHeight: '82%' }]}>
+					<Text style={styles.modalTitle}>Comparar jugadores</Text>
+					{!comparePicking ? (
+						<>
+							<View style={styles.cmpHeader}>
+								<View style={styles.cmpCol}>
+									<Text style={styles.cmpPlayerName} numberOfLines={1}>{compareA?.fullName ?? compareA?.name ?? '—'}</Text>
+									<View style={[styles.cmpPosBadge, { backgroundColor: colors.primaryDeep }]}>
+										<Text style={styles.cmpPosBadgeTxt}>{compareA?.position}</Text>
+									</View>
+								</View>
+								<Text style={styles.cmpVs}>VS</Text>
+								<TouchableOpacity style={styles.cmpCol} onPress={() => setComparePicking(true)}>
+									{compareB ? (
+										<>
+											<Text style={styles.cmpPlayerName} numberOfLines={1}>{compareB.fullName ?? compareB.name}</Text>
+											<View style={[styles.cmpPosBadge, { backgroundColor: colors.danger }]}>
+												<Text style={styles.cmpPosBadgeTxt}>{compareB.position}</Text>
+											</View>
+										</>
+									) : (
+										<View style={styles.cmpPickBtn}>
+											<Text style={styles.cmpPickBtnText}>+ Elegir</Text>
+										</View>
+									)}
+								</TouchableOpacity>
+							</View>
+							{compareB && (() => {
+								const ptsA = selectedGameweek === 'total' ? (compareA?.totalPoints ?? 0) : (playerGameweekPoints[compareA?.id] ?? 0);
+								const ptsB = selectedGameweek === 'total' ? (compareB?.totalPoints ?? 0) : (playerGameweekPoints[compareB?.id] ?? 0);
+								const compareRows = [
+									{ label: 'Puntos', valA: ptsA, valB: ptsB, numeric: true },
+									{ label: 'Valor', valA: `€${((compareA?.marketValue ?? 0) / 1e6).toFixed(2)}M`, valB: `€${((compareB?.marketValue ?? 0) / 1e6).toFixed(2)}M`, numA: compareA?.marketValue ?? 0, numB: compareB?.marketValue ?? 0, numeric: false, numericCmp: true },
+									{ label: 'Posición', valA: compareA?.position ?? '—', valB: compareB?.position ?? '—', numeric: false },
+									{ label: 'Capitán', valA: captainPlayerId === compareA?.id ? '★' : '—', valB: captainPlayerId === compareB?.id ? '★' : '—', numeric: false },
+								];
+								return (
+									<View style={styles.cmpTable}>
+										{compareRows.map(row => {
+											const winsA = row.numeric ? row.valA > row.valB : row.numericCmp ? row.numA > row.numB : false;
+											const winsB = row.numeric ? row.valB > row.valA : row.numericCmp ? row.numB > row.numA : false;
+											return (
+												<View key={row.label} style={styles.cmpRow}>
+													<Text style={[styles.cmpValue, winsA && styles.cmpWinner]}>{String(row.valA)}</Text>
+													<Text style={styles.cmpStat}>{row.label}</Text>
+													<Text style={[styles.cmpValue, winsB && styles.cmpWinner]}>{String(row.valB)}</Text>
+												</View>
+											);
+										})}
+									</View>
+								);
+							})()}
+						</>
+					) : (
+						<>
+							<Text style={{ fontSize: 13, color: colors.textSecondary, marginBottom: 8 }}>Selecciona el segundo jugador:</Text>
+							<FlatList
+								style={{ maxHeight: 260 }}
+								data={Object.values(assigned).map(s => s?.player ?? s).filter(p => p?.id && p.id !== compareA?.id)}
+								keyExtractor={item => String(item.id)}
+								ItemSeparatorComponent={() => <View style={{ height: 6 }} />}
+								renderItem={({ item }) => (
+									<TouchableOpacity style={styles.pickRow} onPress={() => { setCompareB(item); setComparePicking(false); }}>
+										<Text style={styles.pickName}>{item.fullName ?? item.name}</Text>
+										<Text style={styles.pickMeta}>{item.position} · {selectedGameweek === 'total' ? (item.totalPoints ?? 0) : (playerGameweekPoints[item.id] ?? 0)} pts</Text>
+									</TouchableOpacity>
+								)}
+							/>
+						</>
+					)}
+					<TouchableOpacity style={styles.closeBtn} onPress={() => { setCompareVisible(false); setComparePicking(false); }}>
+						<Text style={styles.closeText}>Cerrar</Text>
+					</TouchableOpacity>
+				</View>
+			</View>
+		</Modal>
+
 		{/* Trade Offer Price Modal */}
 		<Modal visible={offerModalVisible} transparent animationType="fade" onRequestClose={() => setOfferModalVisible(false)}>
 			<View style={styles.modalBackdrop}>
@@ -900,215 +1384,337 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 				</View>
 			</View>
 		</Modal>
+
+		{/* Chip Selector Modal */}
+		{!readOnly && (
+			<Modal visible={chipModalVisible} transparent animationType="slide" onRequestClose={() => setChipModalVisible(false)}>
+				<View style={styles.modalBackdrop}>
+					<View style={[styles.modalCard, { maxHeight: '80%', width: '92%' }]}>
+						<Text style={styles.modalTitle}>🎰 Tus Chips ({usedChips.length}/10 usados)</Text>
+						<Text style={{ fontSize: 12, color: colors.textSecondary, marginBottom: 12 }}>
+							Solo puedes activar un chip por jornada y no podrás cancelarlo.
+						</Text>
+						<ScrollView showsVerticalScrollIndicator={false}>
+							{CHIPS.map(chip => {
+								const isUsed = usedChips.includes(chip.id);
+								const isActive = activeChip === chip.id;
+								return (
+									<TouchableOpacity
+										key={chip.id}
+										disabled={isUsed || isActive}
+										onPress={() => activateChip(chip.id)}
+										style={[
+											styles.chipCard,
+											isActive && styles.chipCardActive,
+											isUsed && styles.chipCardUsed,
+										]}
+									>
+										<Text style={styles.chipIcon}>{chip.icon}</Text>
+										<View style={{ flex: 1 }}>
+											<Text style={[styles.chipName, isUsed && styles.chipTextUsed]}>
+												{chip.name}{isActive ? '  ✓ Activo' : ''}{isUsed ? '  ✗ Usado' : ''}
+											</Text>
+											<Text style={[styles.chipDesc, isUsed && styles.chipTextUsed]}>{chip.desc}</Text>
+										</View>
+									</TouchableOpacity>
+								);
+							})}
+						</ScrollView>
+						<TouchableOpacity style={styles.closeBtn} onPress={() => setChipModalVisible(false)}>
+							<Text style={styles.closeText}>Cerrar</Text>
+						</TouchableOpacity>
+					</View>
+				</View>
+			</Modal>
+		)}
+
 		</View>
 	);
 }
 export default withAuth(Team);
 
 const styles = StyleSheet.create({
-	container: { flex: 1, backgroundColor: '#ffffff' },
-	topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, backgroundColor: '#1a5c3a' },
-	header: { color: '#fff', fontWeight: '800', fontSize: 18 },
-	saveBtn: { backgroundColor: '#4CAF50', paddingVertical: 8, paddingHorizontal: 16, borderRadius: 8 },
-	saveBtnDisabled: { backgroundColor: '#ccc' },
-	saveBtnText: { color: '#fff', fontWeight: '700', fontSize: 14 },
-	backBtn: { backgroundColor: '#111827', paddingVertical: 8, paddingHorizontal: 16, borderRadius: 8 },
-	backBtnText: { color: '#fff', fontWeight: '700', fontSize: 14 },
+	container: { flex: 1, backgroundColor: colors.bgApp },
+	topBar: {
+		flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+		paddingHorizontal: spacing.lg, paddingVertical: spacing.md,
+		backgroundColor: colors.primaryDeep,
+	},
+	header: { color: colors.textInverse, fontWeight: fontWeight.extrabold, fontSize: fontSize.lg },
+	saveBtn: { backgroundColor: colors.primary, paddingVertical: 8, paddingHorizontal: spacing.lg, borderRadius: radius.pill },
+	saveBtnDisabled: { backgroundColor: colors.textMuted },
+	saveBtnText: { color: colors.textInverse, fontWeight: fontWeight.bold, fontSize: fontSize.sm },
+	backBtn: {
+		backgroundColor: 'rgba(255,255,255,0.15)', paddingVertical: 8, paddingHorizontal: spacing.lg,
+		borderRadius: radius.pill, borderWidth: 1, borderColor: 'rgba(255,255,255,0.25)',
+	},
+	backBtnText: { color: colors.textInverse, fontWeight: fontWeight.bold, fontSize: fontSize.sm },
 	scrollView: { flex: 1 },
-	scrollContent: { paddingBottom: 20 },
+	scrollContent: { paddingBottom: 24 },
 	fieldContainer: { height: 500, position: 'relative' },
 	fieldImage: { width: '100%', height: '100%' },
 	spot: { position: 'absolute', transform: [{ translateX: -25 }, { translateY: -25 }], alignItems: 'center' },
-	spotBtn: { width: 50, height: 50, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.2)', borderWidth: 2, borderColor: '#000000', alignItems: 'center', justifyContent: 'center' },
-	plus: { color: '#000000', fontWeight: '800', fontSize: 20, lineHeight: 22 },
-	spotLabel: { marginTop: 4, color: '#000000', fontSize: 10, fontWeight: '700' },
+	spotBtn: {
+		width: 50, height: 50, borderRadius: radius.md,
+		backgroundColor: 'rgba(255,255,255,0.25)', borderWidth: 2,
+		borderColor: 'rgba(255,255,255,0.8)', alignItems: 'center', justifyContent: 'center',
+	},
+	plus: { color: colors.textInverse, fontWeight: fontWeight.black, fontSize: 22, lineHeight: 24 },
+	spotLabel: {
+		marginTop: 3, color: colors.textInverse, fontSize: fontSize.xs, fontWeight: fontWeight.bold,
+		textShadowColor: 'rgba(0,0,0,0.6)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2,
+	},
 	playerCard: { minWidth: 140 },
-	modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', alignItems: 'center', justifyContent: 'center' },
-	modalCard: { width: '86%', maxHeight: '70%', backgroundColor: '#fff', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#222' },
-	modalTitle: { fontSize: 14, fontWeight: '800', marginBottom: 8 },
-	pickRow: { paddingVertical: 8, paddingHorizontal: 6, borderRadius: 8, borderWidth: 1, borderColor: '#ddd' },
-	pickName: { fontSize: 12, fontWeight: '800' },
-	pickMeta: { fontSize: 11, color: '#555' },
-	closeBtn: { marginTop: 10, alignSelf: 'flex-end', paddingVertical: 6, paddingHorizontal: 12, borderRadius: 8, borderWidth: 1, borderColor: '#222' },
-	closeText: { fontSize: 12, fontWeight: '700' },
-	buyBtn: { marginTop: 4, backgroundColor: '#1d4ed8', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
-	buyTxt: { color: '#fff', fontSize: 10, fontWeight: '700' },
-	lockBanner: { backgroundColor: '#dc2626', paddingVertical: 8, paddingHorizontal: 16, alignItems: 'center' },
-	lockBannerText: { color: '#fff', fontWeight: '700', fontSize: 13 },
-	chartSection: { padding: 16, backgroundColor: '#f9fafb' },
-	// Estilos para predicción ML del equipo
+	modalBackdrop: { flex: 1, backgroundColor: colors.overlay, alignItems: 'center', justifyContent: 'center' },
+	modalCard: {
+		width: '88%', maxHeight: '72%', backgroundColor: colors.bgCard,
+		borderRadius: radius.xl, padding: spacing.lg, ...shadow.lg,
+	},
+	modalTitle: { fontSize: fontSize.md, fontWeight: fontWeight.bold, marginBottom: spacing.md, color: colors.textPrimary },
+	pickRow: {
+		paddingVertical: spacing.md, paddingHorizontal: spacing.md,
+		borderRadius: radius.md, borderWidth: 1, borderColor: colors.border, marginBottom: 6,
+	},
+	pickName: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, color: colors.textPrimary },
+	pickMeta: { fontSize: fontSize.xs, color: colors.textSecondary, marginTop: 2 },
+	closeBtn: {
+		marginTop: spacing.md, alignSelf: 'flex-end', paddingVertical: 8,
+		paddingHorizontal: spacing.lg, borderRadius: radius.pill,
+		backgroundColor: colors.bgSubtle, borderWidth: 1, borderColor: colors.border,
+	},
+	closeText: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, color: colors.textSecondary },
+	buyBtn: { marginTop: 4, backgroundColor: colors.primary, paddingHorizontal: spacing.sm, paddingVertical: 4, borderRadius: radius.pill },
+	buyTxt: { color: colors.textInverse, fontSize: fontSize.xs, fontWeight: fontWeight.bold },
+	lockBanner: { backgroundColor: colors.danger, paddingVertical: 10, paddingHorizontal: spacing.lg, alignItems: 'center' },
+	lockBannerText: { color: colors.textInverse, fontWeight: fontWeight.bold, fontSize: fontSize.sm },
 	predictionSection: {
-		backgroundColor: '#f9fafb',
-		paddingVertical: 12,
-		paddingHorizontal: 8,
-		borderTopWidth: 2,
-		borderTopColor: '#1a5c3a',
-		maxHeight: 180
+		backgroundColor: colors.bgApp, paddingVertical: spacing.md, paddingHorizontal: spacing.sm,
+		borderTopWidth: 1, borderTopColor: colors.border, maxHeight: 180,
 	},
-	loadingContainer: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'center',
-		padding: 20
-	},
-	loadingText: {
-		marginLeft: 12,
-		fontSize: 13,
-		color: '#6b7280',
-		fontWeight: '600'
-	},
-	predictionContent: {
-		flexDirection: 'row',
-		gap: 12
-	},
+	loadingContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: spacing.xl },
+	loadingText: { marginLeft: spacing.md, fontSize: fontSize.sm, color: colors.textMuted, fontWeight: fontWeight.semibold },
+	predictionContent: { flexDirection: 'row', gap: spacing.md },
 	totalPredictionCard: {
-		backgroundColor: '#f0fdf4',
-		padding: 16,
-		borderRadius: 12,
-		borderWidth: 2,
-		borderColor: '#1a5c3a',
-		alignItems: 'center',
-		minWidth: 140
+		backgroundColor: colors.successBg, padding: spacing.lg, borderRadius: radius.lg,
+		borderWidth: 1.5, borderColor: colors.primaryMuted, alignItems: 'center', minWidth: 140,
 	},
 	predictionCardTitle: {
-		fontSize: 12,
-		fontWeight: '700',
-		color: '#374151',
-		marginBottom: 8,
-		textAlign: 'center'
+		fontSize: fontSize.xs, fontWeight: fontWeight.bold, color: colors.textSecondary,
+		marginBottom: spacing.sm, textAlign: 'center',
 	},
 	totalPredictionValue: {
-		fontSize: 36,
-		fontWeight: '900',
-		color: '#1a5c3a',
-		marginVertical: 4
+		fontSize: fontSize['3xl'], fontWeight: fontWeight.black,
+		color: colors.primaryDark, marginVertical: 4,
 	},
-	predictionLabel: {
-		fontSize: 10,
-		color: '#6b7280',
-		fontWeight: '600',
-		letterSpacing: 1
-	},
-	rangeText: {
-		fontSize: 10,
-		color: '#6b7280',
-		marginTop: 4,
-		fontWeight: '500'
-	},
+	predictionLabel: { fontSize: fontSize.xs, color: colors.textMuted, fontWeight: fontWeight.semibold, letterSpacing: 1 },
+	rangeText: { fontSize: fontSize.xs, color: colors.textMuted, marginTop: 4, fontWeight: fontWeight.medium },
 	topPlayersCard: {
-		backgroundColor: '#ffffff',
-		padding: 12,
-		borderRadius: 12,
-		borderWidth: 1,
-		borderColor: '#e5e7eb',
-		minWidth: 180
+		backgroundColor: colors.bgCard, padding: spacing.md, borderRadius: radius.lg,
+		borderWidth: 1, borderColor: colors.border, minWidth: 180, ...shadow.sm,
 	},
 	playerPredictionRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		paddingVertical: 8,
-		borderBottomWidth: 1,
-		borderBottomColor: '#f3f4f6'
+		flexDirection: 'row', alignItems: 'center', paddingVertical: spacing.sm,
+		borderBottomWidth: 1, borderBottomColor: colors.bgSubtle,
 	},
 	playerRank: {
-		width: 24,
-		height: 24,
-		borderRadius: 12,
-		backgroundColor: '#1a5c3a',
-		alignItems: 'center',
-		justifyContent: 'center',
-		marginRight: 8
+		width: 22, height: 22, borderRadius: 11, backgroundColor: colors.primaryDark,
+		alignItems: 'center', justifyContent: 'center', marginRight: spacing.sm,
 	},
-	rankNumber: {
-		color: '#fff',
-		fontSize: 11,
-		fontWeight: '800'
-	},
-	playerInfo: {
-		flex: 1,
-		marginRight: 8
-	},
-	playerPredictionName: {
-		fontSize: 12,
-		fontWeight: '700',
-		color: '#111827'
-	},
-	playerPosition: {
-		fontSize: 10,
-		color: '#6b7280',
-		marginTop: 2
-	},
-	playerPredictionPoints: {
-		alignItems: 'flex-end'
-	},
-	pointsValue: {
-		fontSize: 16,
-		fontWeight: '800',
-		color: '#1a5c3a'
-	},
-	pointsLabel: {
-		fontSize: 9,
-		color: '#6b7280',
-		fontWeight: '600'
-	},
+	rankNumber: { color: colors.textInverse, fontSize: fontSize.xs, fontWeight: fontWeight.black },
+	playerInfo: { flex: 1, marginRight: spacing.sm },
+	playerPredictionName: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, color: colors.textPrimary },
+	playerPosition: { fontSize: fontSize.xs, color: colors.textMuted, marginTop: 2 },
+	playerPredictionPoints: { alignItems: 'flex-end' },
+	pointsValue: { fontSize: fontSize.md, fontWeight: fontWeight.extrabold, color: colors.primaryDark },
+	pointsLabel: { fontSize: fontSize.xs - 1, color: colors.textMuted, fontWeight: fontWeight.semibold },
 	breakdownCard: {
-		backgroundColor: '#ffffff',
-		padding: 12,
-		borderRadius: 12,
-		borderWidth: 1,
-		borderColor: '#e5e7eb',
-		minWidth: 160
+		backgroundColor: colors.bgCard, padding: spacing.md, borderRadius: radius.lg,
+		borderWidth: 1, borderColor: colors.border, minWidth: 160, ...shadow.sm,
 	},
 	positionRow: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		paddingVertical: 6,
+		flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+		paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colors.bgSubtle,
+	},
+	positionLabel: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, color: colors.textSecondary },
+	positionValue: { fontSize: fontSize.sm, fontWeight: fontWeight.extrabold, color: colors.primaryDark },
+	gwSelectorWrap: {
+		backgroundColor: colors.bgCard,
+		paddingTop: spacing.sm,
+		paddingBottom: spacing.xs,
 		borderBottomWidth: 1,
-		borderBottomColor: '#f3f4f6'
+		borderBottomColor: colors.border,
 	},
-	positionLabel: {
-		fontSize: 12,
-		fontWeight: '700',
-		color: '#374151'
+	gwSelectorTitle: {
+		fontSize: fontSize.xs,
+		fontWeight: fontWeight.semibold,
+		color: colors.textMuted,
+		marginLeft: spacing.lg,
+		marginBottom: 6,
+		letterSpacing: 0.5,
+		textTransform: 'uppercase',
 	},
-	positionValue: {
-		fontSize: 13,
-		fontWeight: '800',
-		color: '#1a5c3a'
+	gwScrollContent: {
+		paddingHorizontal: spacing.md,
+		paddingVertical: 6,
+		gap: 8,
+		alignItems: 'center',
 	},
-	pickerContainer: {
-		backgroundColor: '#f3f4f6',
-		padding: 12,
-		borderRadius: 8,
-		marginBottom: 12,
-		marginHorizontal: 16,
+	gwChip: {
+		paddingVertical: 7,
+		paddingHorizontal: 14,
+		borderRadius: radius.pill,
+		backgroundColor: colors.bgSubtle,
+		borderWidth: 1.5,
+		borderColor: colors.border,
+	},
+	gwChipActive: {
+		backgroundColor: colors.primary,
+		borderColor: colors.primary,
+	},
+	gwChipText: {
+		fontSize: fontSize.sm,
+		fontWeight: fontWeight.semibold,
+		color: colors.textSecondary,
+	},
+	gwChipTextActive: {
+		color: colors.textInverse,
+		fontWeight: fontWeight.bold,
 	},
 	historicalBanner: {
-		backgroundColor: '#1e40af',
-		paddingVertical: 8,
-		paddingHorizontal: 16,
-		marginHorizontal: 16,
-		borderRadius: 8,
-		marginBottom: 8,
+		backgroundColor: '#1E3A8A', paddingVertical: 10, paddingHorizontal: spacing.lg,
+		marginHorizontal: spacing.lg, borderRadius: radius.md, marginBottom: spacing.sm, alignItems: 'center',
+	},
+	historicalBannerText: { color: colors.textInverse, fontSize: fontSize.sm, fontWeight: fontWeight.bold },
+	formationWrap: {
+		backgroundColor: colors.bgCard,
+		marginHorizontal: spacing.md,
+		marginTop: spacing.sm,
+		marginBottom: spacing.sm,
+		borderRadius: radius.lg,
+		borderWidth: 1,
+		borderColor: colors.border,
+		paddingTop: spacing.sm,
+		paddingBottom: spacing.xs,
+		...shadow.sm,
+	},
+	formationTitle: {
+		fontSize: fontSize.xs,
+		fontWeight: fontWeight.semibold,
+		color: colors.textMuted,
+		marginLeft: spacing.md,
+		marginBottom: 6,
+		letterSpacing: 0.5,
+		textTransform: 'uppercase',
+	},
+	formationScroll: {
+		paddingHorizontal: spacing.md,
+		paddingVertical: 6,
+		gap: 8,
 		alignItems: 'center',
 	},
-	historicalBannerText: {
-		color: '#fff',
-		fontSize: 13,
-		fontWeight: '700',
+	formationChip: {
+		paddingVertical: 7,
+		paddingHorizontal: 14,
+		borderRadius: radius.pill,
+		backgroundColor: colors.bgSubtle,
+		borderWidth: 1.5,
+		borderColor: colors.border,
 	},
-	pickerLabel: {
-		fontSize: 14,
-		fontWeight: '600',
-		color: '#374151',
-		marginBottom: 6,
+	formationChipActive: {
+		backgroundColor: colors.primary,
+		borderColor: colors.primary,
 	},
-	picker: {
-		backgroundColor: '#fff',
-		borderRadius: 6,
-		height: 50,
+	formationChipText: {
+		fontSize: fontSize.sm,
+		fontWeight: fontWeight.semibold,
+		color: colors.textSecondary,
 	},
+	formationChipTextActive: {
+		color: colors.textInverse,
+		fontWeight: fontWeight.bold,
+	},
+	tradesSection: {
+		marginHorizontal: spacing.md,
+		marginTop: spacing.md,
+		marginBottom: spacing.sm,
+		backgroundColor: colors.bgCard,
+		borderRadius: radius.lg,
+		padding: spacing.md,
+		borderWidth: 1,
+		borderColor: colors.border,
+	},
+	tradesSectionTitle: {
+		fontSize: fontSize.md,
+		fontWeight: fontWeight.bold,
+		color: colors.textPrimary,
+		marginBottom: spacing.sm,
+	},
+	tradeOfferCard: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		backgroundColor: colors.bgSubtle,
+		borderRadius: radius.md,
+		padding: spacing.md,
+		marginBottom: spacing.sm,
+		borderLeftWidth: 4,
+		borderLeftColor: colors.purple,
+	},
+	tradeOfferInfo: { flex: 1, marginRight: spacing.sm },
+	tradeOfferPlayer: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, color: colors.textPrimary },
+	tradeOfferMeta: { fontSize: fontSize.xs, color: colors.textSecondary, marginTop: 2 },
+	tradeActionBtn: { paddingVertical: 6, paddingHorizontal: 12, borderRadius: radius.pill },
+	tradeActionBtnText: { color: colors.textInverse, fontSize: fontSize.xs, fontWeight: fontWeight.bold },
+	// Summary card
+	summaryCard: {
+		marginHorizontal: spacing.lg, marginTop: spacing.sm, marginBottom: spacing.sm,
+		backgroundColor: colors.bgCard, borderRadius: radius.lg, borderWidth: 1,
+		borderColor: colors.border, padding: spacing.md, ...shadow.sm,
+	},
+	summaryRow: { flexDirection: 'row', justifyContent: 'space-around' },
+	summaryPosBlock: { alignItems: 'center', gap: 4 },
+	summaryPosLabel: { fontSize: fontSize.xs, fontWeight: fontWeight.bold, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.5 },
+	summaryPosValue: { fontSize: fontSize.xl, fontWeight: fontWeight.black, color: colors.textPrimary },
+	summarySeparator: { height: 1, backgroundColor: colors.border, marginVertical: spacing.sm },
+	summaryBottomRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+	summaryBest: { flex: 1, gap: 2 },
+	summaryBestLabel: { fontSize: fontSize.xs, color: colors.textMuted, fontWeight: fontWeight.semibold },
+	summaryBestName: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, color: colors.textPrimary },
+	summaryBestPts: { fontSize: fontSize.xs, color: colors.primary, fontWeight: fontWeight.bold },
+	summaryStats: { alignItems: 'flex-end', gap: 4 },
+	summaryStatLabel: { fontSize: fontSize.xs, color: colors.textMuted },
+	summaryStatValue: { fontSize: fontSize.md, fontWeight: fontWeight.bold, color: colors.textPrimary },
+	// Chip modal
+	chipCard: {
+		flexDirection: 'row', alignItems: 'center', gap: 12,
+		paddingVertical: 12, paddingHorizontal: 14,
+		borderRadius: 10, borderWidth: 1.5, borderColor: colors.border,
+		backgroundColor: colors.bgSubtle, marginBottom: 8,
+	},
+	chipCardActive: {
+		borderColor: '#d97706', backgroundColor: '#fef3c7',
+	},
+	chipCardUsed: {
+		opacity: 0.4, backgroundColor: colors.bgApp,
+	},
+	chipIcon: { fontSize: 26 },
+	chipName: { fontSize: 13, fontWeight: '700', color: colors.textPrimary, marginBottom: 2 },
+	chipDesc: { fontSize: 11, color: colors.textSecondary },
+	chipTextUsed: { color: colors.textMuted },
+	// Compare modal
+	cmpHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.md, gap: spacing.sm },
+	cmpCol: { flex: 1, alignItems: 'center', gap: 6 },
+	cmpVs: { fontSize: fontSize.sm, fontWeight: fontWeight.black, color: colors.textMuted, paddingHorizontal: 4 },
+	cmpPlayerName: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, color: colors.textPrimary, textAlign: 'center' },
+	cmpPosBadge: { paddingHorizontal: spacing.sm, paddingVertical: 3, borderRadius: radius.pill },
+	cmpPosBadgeTxt: { fontSize: fontSize.xs, fontWeight: fontWeight.bold, color: colors.textInverse },
+	cmpPickBtn: { borderWidth: 1.5, borderColor: colors.border, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: radius.md },
+	cmpPickBtnText: { fontSize: fontSize.sm, color: colors.textMuted, fontWeight: fontWeight.semibold },
+	cmpTable: { gap: 2, marginBottom: spacing.sm },
+	cmpRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: spacing.sm, borderBottomWidth: 1, borderBottomColor: colors.border },
+	cmpValue: { flex: 1, fontSize: fontSize.md, fontWeight: fontWeight.bold, color: colors.textSecondary, textAlign: 'center' },
+	cmpWinner: { color: colors.primary, fontSize: fontSize.lg },
+	cmpStat: { flex: 1, fontSize: fontSize.xs, color: colors.textMuted, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 0.5 },
 });
 
 

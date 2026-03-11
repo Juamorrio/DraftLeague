@@ -1,3 +1,9 @@
+-- ============================================================
+-- MIGRATION: Chip system columns (run once on existing databases)
+ALTER TABLE team ADD COLUMN IF NOT EXISTS active_chip VARCHAR(50) NULL;
+ALTER TABLE team ADD COLUMN IF NOT EXISTS used_chips VARCHAR(500) NULL DEFAULT '';
+-- ============================================================
+
 -- Tabla de clubs reales de futbol (La Liga)
 CREATE TABLE IF NOT EXISTS `football_club` (
     `id` INT PRIMARY KEY,

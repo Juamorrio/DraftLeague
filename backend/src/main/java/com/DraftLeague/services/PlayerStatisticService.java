@@ -47,7 +47,6 @@ public class PlayerStatisticService {
 
     @Transactional
     public List<PlayerStatistic> saveBulkFromJson(List<Map<String, Object>> jsonData) {
-        // Pre-load existing player IDs to avoid FK violations for unknown players
         Set<String> existingPlayerIds = new HashSet<>(playerRepository.findAllIds());
 
         List<PlayerStatistic> statistics = new ArrayList<>();
@@ -130,10 +129,10 @@ public class PlayerStatisticService {
         statistic.setShirtNumber(getIntegerValue(data, "shirtNumber"));
         statistic.setPenaltyCommitted(getIntegerValue(data, "penaltyCommitted"));
 
-        // Resolver fixtureId de API-Football a match_id interno de la BD
         Integer fixtureId = getIntegerValue(data, "fixtureId");
+        Match match = null;
         if (fixtureId != null) {
-            Match match = matchRepository.findByApiFootballFixtureId(fixtureId).orElse(null);
+            match = matchRepository.findByApiFootballFixtureId(fixtureId).orElse(null);
             if (match != null) {
                 statistic.setMatchId(match.getId());
             }
@@ -141,12 +140,31 @@ public class PlayerStatisticService {
             statistic.setMatchId(getIntegerValue(data, "matchId"));
         }
 
-        // Mapear campos especificos segun tipo de jugador
         if (statistic.getPlayerType() == PlayerStatistic.PlayerType.GOALKEEPER) {
             statistic.setSaves(getIntegerValue(data, "saves"));
             statistic.setGoalsConceded(getIntegerValue(data, "goalsConceded"));
             statistic.setPenaltiesSaved(getIntegerValue(data, "penaltiesSaved"));
-            statistic.setCleanSheet(getBooleanValue(data, "cleanSheet"));
+        }
+
+        if (match != null) {
+            Boolean isHomeTeam = getBooleanValue(data, "isHomeTeam");
+            if (isHomeTeam != null) {
+                Integer conceded = isHomeTeam ? match.getAwayGoals() : match.getHomeGoals();
+                if (conceded != null) {
+                    PlayerStatistic.PlayerType type = statistic.getPlayerType();
+                    boolean isFieldPlayerOrGk = type == PlayerStatistic.PlayerType.GOALKEEPER
+                            || type == PlayerStatistic.PlayerType.DEFENDER
+                            || type == PlayerStatistic.PlayerType.MIDFIELDER;
+                    if (isFieldPlayerOrGk) {
+                        statistic.setCleanSheet(conceded == 0);
+                    }
+                    if (statistic.getGoalsConceded() == null &&
+                            (type == PlayerStatistic.PlayerType.GOALKEEPER
+                                    || type == PlayerStatistic.PlayerType.DEFENDER)) {
+                        statistic.setGoalsConceded(conceded);
+                    }
+                }
+            }
         }
     }
 
@@ -196,36 +214,28 @@ public class PlayerStatisticService {
     private GoalkeeperStatisticDTO mapToGoalkeeperDTO(Map<String, Object> data) {
         GoalkeeperStatisticDTO dto = new GoalkeeperStatisticDTO();
         mapBaseFields(dto, data);
-        dto.setSaves(getIntegerValue(data, "gk_saves"));
-        dto.setGoalsConceded(getIntegerValue(data, "gk_goals_conceded"));
+        dto.setSaves(getIntegerValue(data, "saves"));
+        dto.setGoalsConceded(getIntegerValue(data, "goals_conceded"));
+        dto.setPenaltiesSaved(getIntegerValue(data, "penalties_saved"));
+        dto.setCleanSheet(getBooleanValue(data, "clean_sheet"));
         return dto;
     }
 
     private DefenderStatisticDTO mapToDefenderDTO(Map<String, Object> data) {
         DefenderStatisticDTO dto = new DefenderStatisticDTO();
         mapBaseFields(dto, data);
-        dto.setPenaltiesWon(getIntegerValue(data, "def_penalties_won"));
-        dto.setSuccessfulDribbles(getIntegerValue(data, "def_successful_dribbles"));
-        dto.setTotalDribbles(getIntegerValue(data, "def_total_dribbles"));
         return dto;
     }
 
     private MidfielderStatisticDTO mapToMidfielderDTO(Map<String, Object> data) {
         MidfielderStatisticDTO dto = new MidfielderStatisticDTO();
         mapBaseFields(dto, data);
-        dto.setSuccessfulDribbles(getIntegerValue(data, "mid_successful_dribbles"));
-        dto.setTotalDribbles(getIntegerValue(data, "mid_total_dribbles"));
-        dto.setPenaltiesWon(getIntegerValue(data, "mid_penalties_won"));
         return dto;
     }
 
     private ForwardStatisticDTO mapToForwardDTO(Map<String, Object> data) {
         ForwardStatisticDTO dto = new ForwardStatisticDTO();
         mapBaseFields(dto, data);
-        dto.setSuccessfulDribbles(getIntegerValue(data, "fwd_successful_dribbles"));
-        dto.setTotalDribbles(getIntegerValue(data, "fwd_total_dribbles"));
-        dto.setPenaltiesWon(getIntegerValue(data, "fwd_penalties_won"));
-        dto.setOffsides(getIntegerValue(data, "fwd_offsides"));
         return dto;
     }
 

@@ -14,6 +14,7 @@ import com.DraftLeague.repositories.UserRepository;
 import com.DraftLeague.services.MarketService;
 import com.DraftLeague.services.MatchService;
 import com.DraftLeague.services.LeagueService;
+import com.DraftLeague.services.PlayerStatisticsService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -38,6 +39,7 @@ public class AdminController {
     private final FantasyPointsService fantasyPointsService;
     private final MarketValueUpdateService marketValueUpdateService;
     private final LeagueService leagueService;
+    private final PlayerStatisticsService playerStatisticsService;
 
     public AdminController(UserRepository userRepository,
                           LeagueRepository leagueRepository,
@@ -49,7 +51,8 @@ public class AdminController {
                           GameweekStateService gameweekStateService,
                           FantasyPointsService fantasyPointsService,
                           MarketValueUpdateService marketValueUpdateService,
-                          LeagueService leagueService) {
+                          LeagueService leagueService,
+                          PlayerStatisticsService playerStatisticsService) {
         this.userRepository = userRepository;
         this.leagueRepository = leagueRepository;
         this.playerRepository = playerRepository;
@@ -61,6 +64,7 @@ public class AdminController {
         this.fantasyPointsService = fantasyPointsService;
         this.marketValueUpdateService = marketValueUpdateService;
         this.leagueService = leagueService;
+        this.playerStatisticsService = playerStatisticsService;
     }
 
     private boolean isAdmin(Authentication auth) {
@@ -113,7 +117,7 @@ public class AdminController {
         
         String newRole = body.get("role");
         if (!"USER".equals(newRole) && !"ADMIN".equals(newRole)) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Rol invÃƒÂ¡lido"));
+            return ResponseEntity.badRequest().body(Map.of("error", "Rol inv\u00e1lido"));
         }
 
         user.setRole(newRole);
@@ -194,7 +198,7 @@ public class AdminController {
             
             Throwable cause = e.getCause();
             if (cause != null) {
-                System.err.println("Causa raÃƒÂ­z: " + cause.getMessage());
+                System.err.println("Causa ra\u00edz: " + cause.getMessage());
                 System.err.println("Tipo causa: " + cause.getClass().getName());
             }
             
@@ -390,6 +394,22 @@ public class AdminController {
             ));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", "Error al calcular puntos: " + e.getMessage()));
+        }
+    }
+
+    @PostMapping("/backfill-clean-sheets")
+    public ResponseEntity<?> backfillCleanSheets(Authentication auth) {
+        if (!isAdmin(auth)) {
+            return ResponseEntity.status(403).body(Map.of("error", "Acceso denegado"));
+        }
+        try {
+            int updated = playerStatisticsService.recalculateCleanSheets();
+            return ResponseEntity.ok(Map.of(
+                "message", "Clean sheets retroactively calculated for " + updated + " statistics.",
+                "updated", updated
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", "Error al backfill clean sheets: " + e.getMessage()));
         }
     }
 }

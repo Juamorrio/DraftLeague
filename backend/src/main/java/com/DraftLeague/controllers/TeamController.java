@@ -2,6 +2,7 @@ package com.DraftLeague.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -86,7 +87,7 @@ public class TeamController {
             Integer sellerUserId = (Integer) body.get("sellerUserId");
             String playerId = (String) body.get("playerId");
             if (sellerUserId == null || playerId == null) {
-                return ResponseEntity.badRequest().body(java.util.Map.of("error", "ParÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡metros invÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡lidos"));
+                return ResponseEntity.badRequest().body(java.util.Map.of("error", "Par\u00e1metros inv\u00e1lidos"));
             }
             Team buyerTeam = teamService.buyoutPlayer(leagueId, sellerUserId, playerId);
             return ResponseEntity.ok(java.util.Map.of(
@@ -143,6 +144,21 @@ public class TeamController {
             Team updatedTeam = teamService.activateChip(leagueId, userId, chip);
             return ResponseEntity.ok(java.util.Map.of(
                 "activeChip", updatedTeam.getActiveChip() != null ? updatedTeam.getActiveChip() : "",
+                "usedChips", updatedTeam.getUsedChips() != null ? updatedTeam.getUsedChips() : ""
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("error", e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/league/{leagueId}/{userId}/chip")
+    public ResponseEntity<?> cancelChip(
+            @PathVariable Integer leagueId,
+            @PathVariable Integer userId) {
+        try {
+            Team updatedTeam = teamService.cancelChip(leagueId, userId);
+            return ResponseEntity.ok(java.util.Map.of(
+                "activeChip", "",
                 "usedChips", updatedTeam.getUsedChips() != null ? updatedTeam.getUsedChips() : ""
             ));
         } catch (RuntimeException e) {

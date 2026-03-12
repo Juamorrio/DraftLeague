@@ -11,10 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
 
-import com.DraftLeague.services.NotificationService;
 import com.DraftLeague.models.Player.Player;
 import com.DraftLeague.repositories.PlayerRepository;
-import com.DraftLeague.services.PlayerService;
 import com.DraftLeague.models.Player.PlayerTeam;
 import com.DraftLeague.repositories.PlayerTeamRepository;
 import com.DraftLeague.dto.UpdateTeamPlayersRequest;
@@ -22,20 +20,9 @@ import com.DraftLeague.models.user.User;
 import com.DraftLeague.repositories.UserRepository;
 import com.DraftLeague.models.League.League;
 import com.DraftLeague.repositories.LeagueRepository;
-import com.DraftLeague.models.user.User;
-import com.DraftLeague.models.Player.Player;
 import com.DraftLeague.models.Team.Team;
-import com.DraftLeague.models.League.League;
-import com.DraftLeague.models.Player.PlayerTeam;
-import com.DraftLeague.repositories.UserRepository;
-import com.DraftLeague.repositories.PlayerRepository;
 import com.DraftLeague.repositories.TeamRepository;
-import com.DraftLeague.repositories.LeagueRepository;
-import com.DraftLeague.repositories.PlayerTeamRepository;
-import com.DraftLeague.services.PlayerService;
 import com.DraftLeague.services.TeamService;
-import com.DraftLeague.services.NotificationService;
-import com.DraftLeague.services.GameweekStateService;
 import com.DraftLeague.models.Team.ChipType;
 
 @Service
@@ -124,7 +111,6 @@ public class TeamService {
         League league = leagueRepository.findById(leagueId.longValue())
             .orElseThrow(() -> new RuntimeException("Liga no encontrada"));
         
-        // Usar el mÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©todo del repository que ya existe y hace el JOIN correctamente
         Team team = teamRepository.findByLeagueAndUser(league, user);
         
         if (team == null) {
@@ -164,6 +150,19 @@ public class TeamService {
             }
         }
         team.setActiveChip(chip);
+        return teamRepository.save(team);
+    }
+
+    @Transactional
+    public Team cancelChip(Integer leagueId, Integer userId) {
+        if (gameweekStateService.isTeamsLocked()) {
+            throw new RuntimeException("No se puede cancelar un chip mientras los equipos están bloqueados");
+        }
+        Team team = getTeamByUserAndLeague(leagueId, userId);
+        if (team.getActiveChip() == null) {
+            throw new RuntimeException("No hay ningún chip activo para cancelar");
+        }
+        team.setActiveChip(null);
         return teamRepository.save(team);
     }
 

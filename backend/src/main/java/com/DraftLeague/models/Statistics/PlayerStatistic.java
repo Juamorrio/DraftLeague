@@ -11,8 +11,6 @@ import lombok.Setter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import com.DraftLeague.models.Player.Player;
-import com.DraftLeague.models.Match.Match;
 import com.DraftLeague.models.Statistics.PlayerStatistic;
 
 @Getter
@@ -163,7 +161,6 @@ public class PlayerStatistic {
     @Column(name = "penalty_missed")
     private Integer penaltyMissed = 0;
 
-    // Goalkeeper specific fields
     @Min(0)
     @Column(name = "saves")
     private Integer saves;
@@ -196,14 +193,10 @@ public class PlayerStatistic {
     @Column(name = "total_fantasy_points")
     private Integer totalFantasyPoints = 0;
 
-    /**
-     * Calcula los puntos fantasy basandose en las estadisticas del jugador
-     * Sistema de puntuacion inspirado en LaLiga Fantasy
-     */
+ 
     public int calculateFantasyPoints() {
         int points = 0;
 
-        // Puntos base por minutos jugados
         if (minutesPlayed >= 60) {
             points += 3;
         } else if (minutesPlayed >= 45) {
@@ -212,7 +205,6 @@ public class PlayerStatistic {
             points += 1;
         }
 
-        // Goles (varia segun posicion)
         if (goals != null && goals > 0) {
             switch (playerType) {
                 case GOALKEEPER:
@@ -228,18 +220,15 @@ public class PlayerStatistic {
             }
         }
 
-        // Asistencias
         if (assists != null && assists > 0) {
             points += assists * 3;
         }
 
-        // Oportunidades creadas (mediocampistas y delanteros, 1 pt cada 3 chances)
         if ((playerType == PlayerType.MIDFIELDER || playerType == PlayerType.FORWARD)
                 && chancesCreated != null && chancesCreated >= 3) {
             points += chancesCreated / 3;
         }
 
-        // Bonus por rating
         if (rating != null) {
             if (rating >= 9.0) {
                 points += 5;
@@ -252,7 +241,6 @@ public class PlayerStatistic {
             }
         }
 
-        // Tarjetas
         if (yellowCards != null && yellowCards > 0) {
             points -= yellowCards;
         }
@@ -260,25 +248,21 @@ public class PlayerStatistic {
             points -= redCards * 3;
         }
 
-        // Faltas cometidas (penalizacion por juego agresivo, 1 pt cada 3 faltas)
         if (foulsCommitted != null && foulsCommitted >= 3) {
             points -= foulsCommitted / 3;
         }
 
-        // Acciones defensivas (para defensores y mediocampistas)
         if (playerType == PlayerType.DEFENDER || playerType == PlayerType.MIDFIELDER) {
             if (tackles != null) points += tackles / 3;
             if (interceptions != null) points += interceptions / 3;
             if (blocks != null) points += blocks / 4;
         }
 
-        // Duelos ganados (todos los jugadores)
         if (duelsWon != null && duelsWon >= 5) {
             points += 1;
         }
 
-        // BONIFICACIONES ESPECIALES
-        // Clean Sheet (portero/defensa sin goles recibidos y jugo >60 min)
+        
         if ((playerType == PlayerType.GOALKEEPER || playerType == PlayerType.DEFENDER)
             && minutesPlayed >= 60) {
             if (cleanSheet != null && cleanSheet) {
@@ -286,73 +270,57 @@ public class PlayerStatistic {
             }
         }
 
-        // Clean Sheet para mediocampistas (+1 pt)
         if (playerType == PlayerType.MIDFIELDER && minutesPlayed >= 60) {
             if (cleanSheet != null && cleanSheet) {
                 points += 1;
             }
         }
 
-        // Bonus por paradas del portero (1 pt cada 3 paradas)
         if (playerType == PlayerType.GOALKEEPER && saves != null && saves >= 3) {
             points += saves / 3;
         }
 
-        // Hat-trick (3+ goles)
         if (goals != null && goals >= 3) {
             points += 5;
         }
 
-        // Penalti parado (solo porteros)
         if (playerType == PlayerType.GOALKEEPER && penaltiesSaved != null && penaltiesSaved > 0) {
             points += penaltiesSaved * 5;
         }
 
-        // Asistencia doble (2 asistencias)
         if (assists != null && assists == 2) {
             points += 3;
         }
 
-        // Asistencia triple o mas (3+ asistencias)
         if (assists != null && assists >= 3) {
             points += 8;
         }
 
-        // Multiples goles concedidos (penalizacion para porteros)
         if (playerType == PlayerType.GOALKEEPER && goalsConceded != null && goalsConceded >= 3) {
             points -= 2;
         }
 
-        // Multiples goles concedidos (penalizacion para defensas)
         if (playerType == PlayerType.DEFENDER && goalsConceded != null && goalsConceded >= 3) {
             points -= 1;
         }
 
-        // Penalti cometido (provocar penalti del rival)
         if (penaltyCommitted != null && penaltyCommitted > 0) {
             points -= penaltyCommitted * 2;
         }
 
-        // Penalti fallado
         if (penaltyMissed != null && penaltyMissed > 0) {
             points -= penaltyMissed * 2;
         }
 
-        // Asegurar que no sea negativo
         return Math.max(points, 0);
     }
 
-    /**
-     * Calcula los puntos fantasy con un chip activo aplicado.
-     * Para chips de tipo stat-level (todos excepto TRIPLE_CAP y BENCH_BOOST).
-     * TRIPLE_CAP y BENCH_BOOST son gestionados en FantasyPointsService.
-     */
+
     public int calculateFantasyPointsWithChip(String chip) {
         if (chip == null) return calculateFantasyPoints();
 
         int points = 0;
 
-        // Puntos base por minutos jugados
         boolean goldenMinutes = "GOLDEN_MINUTES".equals(chip);
         if (minutesPlayed >= 60) {
             points += goldenMinutes ? 5 : 3;
@@ -362,7 +330,6 @@ public class PlayerStatistic {
             points += 1;
         }
 
-        // Goles (varia segun posicion)
         if (goals != null && goals > 0) {
             switch (chip) {
                 case "DOUBLE_GOALS":
@@ -410,23 +377,20 @@ public class PlayerStatistic {
             }
         }
 
-        // Asistencias
         if (assists != null && assists > 0) {
             boolean doubleAssists = "DOUBLE_ASSISTS".equals(chip);
             points += assists * (doubleAssists ? 6 : 3);
         }
 
-        // Oportunidades creadas
         if ((playerType == PlayerType.MIDFIELDER || playerType == PlayerType.FORWARD)
                 && chancesCreated != null && chancesCreated > 0) {
             if ("CREATIVE_MIDS".equals(chip)) {
-                points += chancesCreated; // 1pt per chance
+                points += chancesCreated; 
             } else if (chancesCreated >= 3) {
                 points += chancesCreated / 3;
             }
         }
 
-        // Bonus por rating
         if (rating != null) {
             if (rating >= 9.0) {
                 points += 5;
@@ -439,7 +403,6 @@ public class PlayerStatistic {
             }
         }
 
-        // Tarjetas (NO_PENALTY omite estas deducciones)
         if (!"NO_PENALTY".equals(chip)) {
             if (yellowCards != null && yellowCards > 0) {
                 points -= yellowCards;
@@ -449,24 +412,20 @@ public class PlayerStatistic {
             }
         }
 
-        // Faltas cometidas (penalizacion por juego agresivo, 1 pt cada 3 faltas)
         if (foulsCommitted != null && foulsCommitted >= 3) {
             points -= foulsCommitted / 3;
         }
 
-        // Acciones defensivas (para defensores y mediocampistas)
         if (playerType == PlayerType.DEFENDER || playerType == PlayerType.MIDFIELDER) {
             if (tackles != null) points += tackles / 3;
             if (interceptions != null) points += interceptions / 3;
             if (blocks != null) points += blocks / 4;
         }
 
-        // Duelos ganados (todos los jugadores)
         if (duelsWon != null && duelsWon >= 5) {
             points += 1;
         }
 
-        // Clean Sheet
         boolean defensiveWeek = "DEFENSIVE_WEEK".equals(chip);
         if ((playerType == PlayerType.GOALKEEPER || playerType == PlayerType.DEFENDER)
             && minutesPlayed >= 60) {
@@ -480,7 +439,6 @@ public class PlayerStatistic {
             }
         }
 
-        // Bonus por paradas del portero
         if (playerType == PlayerType.GOALKEEPER && saves != null) {
             if ("SUPER_SAVES".equals(chip)) {
                 if (saves >= 2) points += saves / 2;
@@ -489,27 +447,22 @@ public class PlayerStatistic {
             }
         }
 
-        // Hat-trick (3+ goles)
         if (goals != null && goals >= 3) {
             points += 5;
         }
 
-        // Penalti parado (solo porteros)
         if (playerType == PlayerType.GOALKEEPER && penaltiesSaved != null && penaltiesSaved > 0) {
             points += penaltiesSaved * 5;
         }
 
-        // Asistencia doble / triple
         if (assists != null) {
-            boolean doubleAssists = "DOUBLE_ASSISTS".equals(chip);
             if (assists == 2) {
-                points += doubleAssists ? 6 : 3;
+                points += 3;
             } else if (assists >= 3) {
-                points += doubleAssists ? 16 : 8;
+                points += 8;
             }
         }
 
-        // Multiples goles concedidos
         if (playerType == PlayerType.GOALKEEPER && goalsConceded != null && goalsConceded >= 3) {
             points -= 2;
         }
@@ -517,12 +470,10 @@ public class PlayerStatistic {
             points -= 1;
         }
 
-        // Penalti cometido
         if (penaltyCommitted != null && penaltyCommitted > 0) {
             points -= penaltyCommitted * 2;
         }
 
-        // Penalti fallado
         if (penaltyMissed != null && penaltyMissed > 0) {
             points -= penaltyMissed * 2;
         }
@@ -530,15 +481,10 @@ public class PlayerStatistic {
         return Math.max(points, 0);
     }
 
-    /**
-     * Calcula un desglose detallado de los puntos fantasy por cada concepto.
-     * Solo incluye conceptos con valor != 0.
-     */
     public Map<String, Integer> calculateFantasyPointsBreakdown() {
         Map<String, Integer> breakdown = new LinkedHashMap<>();
         int total = 0;
 
-        // Puntos base por minutos jugados
         if (minutesPlayed >= 60) {
             breakdown.put("minutesPlayed", 3);
             total += 3;
@@ -550,7 +496,6 @@ public class PlayerStatistic {
             total += 1;
         }
 
-        // Goles (varia segun posicion)
         if (goals != null && goals > 0) {
             int goalPoints = 0;
             switch (playerType) {
@@ -571,14 +516,12 @@ public class PlayerStatistic {
             }
         }
 
-        // Asistencias
         if (assists != null && assists > 0) {
             int assistPoints = assists * 3;
             breakdown.put("assists", assistPoints);
             total += assistPoints;
         }
 
-        // Oportunidades creadas (mediocampistas y delanteros)
         if ((playerType == PlayerType.MIDFIELDER || playerType == PlayerType.FORWARD)
                 && chancesCreated != null && chancesCreated >= 3) {
             int chancesPoints = chancesCreated / 3;
@@ -586,7 +529,6 @@ public class PlayerStatistic {
             total += chancesPoints;
         }
 
-        // Bonus por rating
         if (rating != null) {
             int ratingPoints = 0;
             if (rating >= 9.0) {
@@ -604,7 +546,6 @@ public class PlayerStatistic {
             }
         }
 
-        // Tarjetas
         if (yellowCards != null && yellowCards > 0) {
             int ycPoints = -yellowCards;
             breakdown.put("yellowCards", ycPoints);
@@ -616,14 +557,12 @@ public class PlayerStatistic {
             total += rcPoints;
         }
 
-        // Faltas cometidas
         if (foulsCommitted != null && foulsCommitted >= 3) {
             int foulsPoints = -(foulsCommitted / 3);
             breakdown.put("foulsCommitted", foulsPoints);
             total += foulsPoints;
         }
 
-        // Acciones defensivas (para defensores y mediocampistas)
         if (playerType == PlayerType.DEFENDER || playerType == PlayerType.MIDFIELDER) {
             int defPoints = 0;
             if (tackles != null) defPoints += tackles / 3;
@@ -635,13 +574,11 @@ public class PlayerStatistic {
             }
         }
 
-        // Duelos ganados
         if (duelsWon != null && duelsWon >= 5) {
             breakdown.put("duelsBonus", 1);
             total += 1;
         }
 
-        // Clean Sheet
         if ((playerType == PlayerType.GOALKEEPER || playerType == PlayerType.DEFENDER)
             && minutesPlayed >= 60) {
             if (cleanSheet != null && cleanSheet) {
@@ -650,7 +587,6 @@ public class PlayerStatistic {
             }
         }
 
-        // Clean Sheet para mediocampistas
         if (playerType == PlayerType.MIDFIELDER && minutesPlayed >= 60) {
             if (cleanSheet != null && cleanSheet) {
                 breakdown.put("cleanSheetMid", 1);
@@ -658,58 +594,49 @@ public class PlayerStatistic {
             }
         }
 
-        // Bonus por paradas del portero
         if (playerType == PlayerType.GOALKEEPER && saves != null && saves >= 3) {
             int savesPoints = saves / 3;
             breakdown.put("saves", savesPoints);
             total += savesPoints;
         }
 
-        // Hat-trick
         if (goals != null && goals >= 3) {
             breakdown.put("hatTrick", 5);
             total += 5;
         }
 
-        // Penalti parado
         if (playerType == PlayerType.GOALKEEPER && penaltiesSaved != null && penaltiesSaved > 0) {
             int penPoints = penaltiesSaved * 5;
             breakdown.put("penaltySaved", penPoints);
             total += penPoints;
         }
 
-        // Asistencia doble
         if (assists != null && assists == 2) {
             breakdown.put("doubleAssist", 3);
             total += 3;
         }
 
-        // Asistencia triple o mas
         if (assists != null && assists >= 3) {
             breakdown.put("tripleAssist", 8);
             total += 8;
         }
 
-        // Multiples goles concedidos
         if (playerType == PlayerType.GOALKEEPER && goalsConceded != null && goalsConceded >= 3) {
             breakdown.put("multipleGoalsConceded", -2);
             total -= 2;
         }
 
-        // Multiples goles concedidos (defensas)
         if (playerType == PlayerType.DEFENDER && goalsConceded != null && goalsConceded >= 3) {
             breakdown.put("multipleGoalsConcededDef", -1);
             total -= 1;
         }
 
-        // Penalti cometido
         if (penaltyCommitted != null && penaltyCommitted > 0) {
             int penCommittedPoints = -penaltyCommitted * 2;
             breakdown.put("penaltyCommitted", penCommittedPoints);
             total += penCommittedPoints;
         }
 
-        // Penalti fallado
         if (penaltyMissed != null && penaltyMissed > 0) {
             int penMissedPoints = -penaltyMissed * 2;
             breakdown.put("penaltyMissed", penMissedPoints);

@@ -17,6 +17,8 @@ import com.DraftLeague.services.LeagueService;
 import com.DraftLeague.services.PlayerStatisticsService;
 
 import org.springframework.http.ResponseEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +29,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/admin")
 public class AdminController {
+
+    private static final Logger log = LoggerFactory.getLogger(AdminController.class);
 
     private final UserRepository userRepository;
     private final LeagueRepository leagueRepository;
@@ -191,17 +195,7 @@ public class AdminController {
             int count = importService.importFromJsonResource();
             return ResponseEntity.ok(Map.of("message", "Se importaron " + count + " jugadores."));
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("===== ERROR DETALLADO AL IMPORTAR JUGADORES =====");
-            System.err.println("Mensaje: " + e.getMessage());
-            System.err.println("Tipo: " + e.getClass().getName());
-            
-            Throwable cause = e.getCause();
-            if (cause != null) {
-                System.err.println("Causa ra\u00edz: " + cause.getMessage());
-                System.err.println("Tipo causa: " + cause.getClass().getName());
-            }
-            
+            log.error("Error importing players", e);
             return ResponseEntity.status(500).body(Map.of(
                 "error", "Error al importar jugadores: " + e.getMessage(),
                 "type", e.getClass().getSimpleName()

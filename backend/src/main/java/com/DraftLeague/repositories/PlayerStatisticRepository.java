@@ -26,25 +26,8 @@ public interface PlayerStatisticRepository extends JpaRepository<PlayerStatistic
     Optional<PlayerStatistic> findByPlayerIdAndMatchIdIn(@Param("playerId") String playerId, @Param("matchIds") Set<Integer> matchIds);
 
     @Query(value = """
-        SELECT
-            ps.*,
-            gs.saves as gk_saves,
-            gs.goals_conceded as gk_goals_conceded,
-            ds.penalties_won as def_penalties_won,
-            ds.successful_dribbles as def_successful_dribbles,
-            ds.total_dribbles as def_total_dribbles,
-            ms.successful_dribbles as mid_successful_dribbles,
-            ms.total_dribbles as mid_total_dribbles,
-            ms.penalties_won as mid_penalties_won,
-            fs.successful_dribbles as fwd_successful_dribbles,
-            fs.total_dribbles as fwd_total_dribbles,
-            fs.penalties_won as fwd_penalties_won,
-            fs.offsides as fwd_offsides
+        SELECT ps.*
         FROM player_statistic ps
-        LEFT JOIN goalkeeper_statistic gs ON ps.id = gs.id
-        LEFT JOIN defender_statistic ds ON ps.id = ds.id
-        LEFT JOIN midfielder_statistic ms ON ps.id = ms.id
-        LEFT JOIN forward_statistic fs ON ps.id = fs.id
         WHERE ps.player_id = :playerId AND ps.match_id = :matchId
         LIMIT 1
         """, nativeQuery = true)
@@ -89,15 +72,14 @@ public interface PlayerStatisticRepository extends JpaRepository<PlayerStatistic
             ps.duels_lost as duelsLost,
             ps.yellow_cards as yellowCards,
             ps.red_cards as redCards,
-            COALESCE(gs.saves, NULL) as saves,
-            COALESCE(gs.goals_conceded, NULL) as goalsAllowed,
+            ps.saves as saves,
+            ps.goals_conceded as goalsAllowed,
             ps.player_type as playerType,
             ps.is_captain as isCaptain,
             ps.shirt_number as shirtNumber,
             ps.penalty_committed as penaltyCommitted
         FROM player_statistic ps
         LEFT JOIN matches m ON ps.match_id = m.id
-        LEFT JOIN goalkeeper_statistic gs ON ps.id = gs.id
         WHERE ps.player_id = :playerId
         ORDER BY m.round DESC
         """, nativeQuery = true)

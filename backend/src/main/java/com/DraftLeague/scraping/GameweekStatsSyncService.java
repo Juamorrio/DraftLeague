@@ -2,6 +2,8 @@ package com.DraftLeague.scraping;
 
 import com.DraftLeague.models.Match.Match;
 import com.DraftLeague.repositories.MatchRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,6 +18,8 @@ import java.util.Map;
  */
 @Service
 public class GameweekStatsSyncService {
+
+    private static final Logger log = LoggerFactory.getLogger(GameweekStatsSyncService.class);
 
     private static final Map<String, String> POSITION_MAP = Map.of(
             "G", "GOALKEEPER",
@@ -53,7 +57,7 @@ public class GameweekStatsSyncService {
             Integer fixtureId = match.getApiFootballFixtureId();
             if (fixtureId == null) continue;
 
-            System.out.printf("GameweekStatsSyncService: [%d/%d] fixture %d (%s vs %s)%n",
+            log.info("GameweekStatsSyncService: [{}/{}] fixture {} ({} vs {})",
                     i + 1, matches.size(), fixtureId, match.getHomeClub(), match.getAwayClub());
 
             try {
@@ -61,9 +65,9 @@ public class GameweekStatsSyncService {
                 if (!playerStats.isEmpty()) {
                     allStats.addAll(playerStats);
                     success++;
-                    System.out.println("  OK: " + playerStats.size() + " jugadores");
+                    log.info("  OK: {} jugadores", playerStats.size());
                 } else {
-                    System.out.println("  WARNING: sin estadísticas disponibles");
+                    log.warn("  WARNING: sin estadísticas disponibles para fixture {}", fixtureId);
                 }
 
                 // Respect API-Football rate limit
@@ -73,11 +77,11 @@ public class GameweekStatsSyncService {
                 Thread.currentThread().interrupt();
                 break;
             } catch (Exception e) {
-                System.err.println("  ERROR fixture " + fixtureId + ": " + e.getMessage());
+                log.error("  ERROR fixture {}: {}", fixtureId, e.getMessage(), e);
             }
         }
 
-        System.out.printf("GameweekStatsSyncService: jornada %d — %d/%d partidos OK, %d jugadores%n",
+        log.info("GameweekStatsSyncService: jornada {} — {}/{} partidos OK, {} jugadores",
                 gameweek, success, matches.size(), allStats.size());
         return allStats;
     }

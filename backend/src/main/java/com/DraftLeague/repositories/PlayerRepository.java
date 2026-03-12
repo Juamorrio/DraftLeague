@@ -12,4 +12,6 @@ public interface PlayerRepository extends JpaRepository<Player, String> {
 
     @Query("SELECT p.id FROM Player p")
     List<String> findAllIds();
+
+    List<Player> findByIdNotIn(List<String> ids);
 }

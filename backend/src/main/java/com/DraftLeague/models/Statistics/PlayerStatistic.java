@@ -2,6 +2,7 @@ package com.DraftLeague.models.Statistics;
 
 import com.DraftLeague.models.Player.Player;
 import com.DraftLeague.models.Match.Match;
+import com.DraftLeague.models.Team.ChipType;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -316,14 +317,16 @@ public class PlayerStatistic {
     }
 
 
-    public int calculateFantasyPointsWithChip(String chip) {
+    public int calculateFantasyPointsWithChip(String chipName) {
+        if (chipName == null) return calculateFantasyPoints();
+        // Resolve string → ChipType once; fall back to base calculation for unknown values
+        ChipType chip = ChipType.isValid(chipName) ? ChipType.valueOf(chipName) : null;
         if (chip == null) return calculateFantasyPoints();
 
         int points = 0;
 
-        boolean goldenMinutes = "GOLDEN_MINUTES".equals(chip);
         if (minutesPlayed >= 60) {
-            points += goldenMinutes ? 5 : 3;
+            points += (chip == ChipType.GOLDEN_MINUTES) ? 5 : 3;
         } else if (minutesPlayed >= 45) {
             points += 2;
         } else if (minutesPlayed > 0) {
@@ -331,85 +334,50 @@ public class PlayerStatistic {
         }
 
         if (goals != null && goals > 0) {
-            switch (chip) {
-                case "DOUBLE_GOALS":
-                    switch (playerType) {
-                        case GOALKEEPER:
-                        case DEFENDER:
-                            points += goals * 12;
-                            break;
-                        case MIDFIELDER:
-                            points += goals * 10;
-                            break;
-                        case FORWARD:
-                            points += goals * 8;
-                            break;
-                    }
-                    break;
-                case "LETHAL_STRIKER":
-                    switch (playerType) {
-                        case GOALKEEPER:
-                        case DEFENDER:
-                            points += goals * 6;
-                            break;
-                        case MIDFIELDER:
-                            points += goals * 5;
-                            break;
-                        case FORWARD:
-                            points += goals * 12;
-                            break;
-                    }
-                    break;
-                default:
-                    switch (playerType) {
-                        case GOALKEEPER:
-                        case DEFENDER:
-                            points += goals * 6;
-                            break;
-                        case MIDFIELDER:
-                            points += goals * 5;
-                            break;
-                        case FORWARD:
-                            points += goals * 4;
-                            break;
-                    }
-                    break;
+            if (chip == ChipType.DOUBLE_GOALS) {
+                switch (playerType) {
+                    case GOALKEEPER: case DEFENDER: points += goals * 12; break;
+                    case MIDFIELDER:                points += goals * 10; break;
+                    case FORWARD:                   points += goals * 8;  break;
+                }
+            } else if (chip == ChipType.LETHAL_STRIKER) {
+                switch (playerType) {
+                    case GOALKEEPER: case DEFENDER: points += goals * 6;  break;
+                    case MIDFIELDER:                points += goals * 5;  break;
+                    case FORWARD:                   points += goals * 12; break;
+                }
+            } else {
+                switch (playerType) {
+                    case GOALKEEPER: case DEFENDER: points += goals * 6; break;
+                    case MIDFIELDER:                points += goals * 5; break;
+                    case FORWARD:                   points += goals * 4; break;
+                }
             }
         }
 
         if (assists != null && assists > 0) {
-            boolean doubleAssists = "DOUBLE_ASSISTS".equals(chip);
-            points += assists * (doubleAssists ? 6 : 3);
+            points += assists * (chip == ChipType.DOUBLE_ASSISTS ? 6 : 3);
         }
 
         if ((playerType == PlayerType.MIDFIELDER || playerType == PlayerType.FORWARD)
                 && chancesCreated != null && chancesCreated > 0) {
-            if ("CREATIVE_MIDS".equals(chip)) {
-                points += chancesCreated; 
+            if (chip == ChipType.CREATIVE_MIDS) {
+                points += chancesCreated;
             } else if (chancesCreated >= 3) {
                 points += chancesCreated / 3;
             }
         }
 
         if (rating != null) {
-            if (rating >= 9.0) {
-                points += 5;
-            } else if (rating >= 8.0) {
-                points += 3;
-            } else if (rating >= 7.0) {
-                points += 1;
-            } else if (rating < 5.0) {
-                points -= 1;
-            }
+            if (rating >= 9.0)      points += 5;
+            else if (rating >= 8.0) points += 3;
+            else if (rating >= 7.0) points += 1;
+            else if (rating < 5.0)  points -= 1;
         }
 
-        if (!"NO_PENALTY".equals(chip)) {
-            if (yellowCards != null && yellowCards > 0) {
-                points -= yellowCards;
-            }
-            if (redCards != null && redCards > 0) {
-                points -= redCards * 3;
-            }
+        if (chip != ChipType.NO_PENALTY) {
+            if (yellowCards != null && yellowCards > 0) points -= yellowCards;
+            if (redCards != null && redCards > 0)       points -= redCards * 3;
         }
 
         if (foulsCommitted != null && foulsCommitted >= 3) {
@@ -417,30 +385,26 @@ public class PlayerStatistic {
         }
 
         if (playerType == PlayerType.DEFENDER || playerType == PlayerType.MIDFIELDER) {
-            if (tackles != null) points += tackles / 3;
+            if (tackles != null)       points += tackles / 3;
             if (interceptions != null) points += interceptions / 3;
-            if (blocks != null) points += blocks / 4;
+            if (blocks != null)        points += blocks / 4;
         }
 
         if (duelsWon != null && duelsWon >= 5) {
             points += 1;
         }
 
-        boolean defensiveWeek = "DEFENSIVE_WEEK".equals(chip);
         if ((playerType == PlayerType.GOALKEEPER || playerType == PlayerType.DEFENDER)
-            && minutesPlayed >= 60) {
-            if (cleanSheet != null && cleanSheet) {
-                points += defensiveWeek ? 8 : 4;
-            }
+                && minutesPlayed >= 60 && cleanSheet != null && cleanSheet) {
+            points += (chip == ChipType.DEFENSIVE_WEEK) ? 8 : 4;
         }
-        if (playerType == PlayerType.MIDFIELDER && minutesPlayed >= 60) {
-            if (cleanSheet != null && cleanSheet) {
-                points += defensiveWeek ? 2 : 1;
-            }
+        if (playerType == PlayerType.MIDFIELDER && minutesPlayed >= 60
+                && cleanSheet != null && cleanSheet) {
+            points += (chip == ChipType.DEFENSIVE_WEEK) ? 2 : 1;
         }
 
         if (playerType == PlayerType.GOALKEEPER && saves != null) {
-            if ("SUPER_SAVES".equals(chip)) {
+            if (chip == ChipType.SUPER_SAVES) {
                 if (saves >= 2) points += saves / 2;
             } else {
                 if (saves >= 3) points += saves / 3;
@@ -456,11 +420,8 @@ public class PlayerStatistic {
         }
 
         if (assists != null) {
-            if (assists == 2) {
-                points += 3;
-            } else if (assists >= 3) {
-                points += 8;
-            }
+            if (assists == 2)      points += 3;
+            else if (assists >= 3) points += 8;
         }
 
         if (playerType == PlayerType.GOALKEEPER && goalsConceded != null && goalsConceded >= 3) {
@@ -470,13 +431,8 @@ public class PlayerStatistic {
             points -= 1;
         }
 
-        if (penaltyCommitted != null && penaltyCommitted > 0) {
-            points -= penaltyCommitted * 2;
-        }
-
-        if (penaltyMissed != null && penaltyMissed > 0) {
-            points -= penaltyMissed * 2;
-        }
+        if (penaltyCommitted != null && penaltyCommitted > 0) points -= penaltyCommitted * 2;
+        if (penaltyMissed    != null && penaltyMissed    > 0) points -= penaltyMissed    * 2;
 
         return Math.max(points, 0);
     }

@@ -5,6 +5,8 @@ import com.DraftLeague.models.Statistics.PlayerStatistic;
 import com.DraftLeague.services.PlayerStatisticService;
 import com.DraftLeague.dto.*;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,8 @@ import java.util.Map;
 @RequestMapping("/api/statistics")
 @RequiredArgsConstructor
 public class PlayerStatisticController {
+
+    private static final Logger log = LoggerFactory.getLogger(PlayerStatisticController.class);
 
     private final PlayerStatisticService playerStatisticService;
 
@@ -89,8 +93,7 @@ public class PlayerStatisticController {
             }
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            e.printStackTrace(); 
-            System.err.println("Error getting player statistics summary: " + e.getMessage());
+            log.error("Error getting player statistics summary for player {}", playerId, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -101,8 +104,7 @@ public class PlayerStatisticController {
             List<JornadaMatchesDTO> matches = playerStatisticService.getPlayerMatchesSummary(playerId);
             return ResponseEntity.ok(matches);
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("Error getting player matches summary: " + e.getMessage());
+            log.error("Error getting player matches summary for player {}", playerId, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

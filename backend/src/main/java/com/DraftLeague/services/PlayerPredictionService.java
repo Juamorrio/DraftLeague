@@ -14,6 +14,8 @@ import com.DraftLeague.repositories.PlayerStatisticRepository;
 import com.DraftLeague.repositories.PlayerTeamRepository;
 import com.DraftLeague.repositories.TeamRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +26,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class PlayerPredictionService {
+
+    private static final Logger log = LoggerFactory.getLogger(PlayerPredictionService.class);
 
     private final PlayerStatisticRepository statisticRepository;
     private final MatchRepository matchRepository;
@@ -63,12 +67,11 @@ public class PlayerPredictionService {
                     warmed++;
                 }
             } catch (Exception e) {
-                System.err.println("[PredictionCache] Could not pre-warm player "
-                        + player.getId() + ": " + e.getMessage());
+                log.warn("[PredictionCache] Could not pre-warm player {}: {}", player.getId(), e.getMessage());
             }
         }
-        System.out.println("[PredictionCache] Pre-warmed " + warmed
-                + " / " + allPlayers.size() + " player predictions after gameweek recalculation.");
+        log.info("[PredictionCache] Pre-warmed {} / {} player predictions after gameweek recalculation.",
+                warmed, allPlayers.size());
     }
 
     @Transactional(readOnly = true)

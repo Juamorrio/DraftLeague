@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.DraftLeague.models.League.League;
 import com.DraftLeague.models.Player.Player;
@@ -70,13 +71,13 @@ public class PlayerService {
 
     public List<Player> getAvailablePlayersForUserInLeague(User user, Integer leagueId) {
         List<Player> ownedPlayers = getPlayersByUserAndLeague(user, leagueId);
+        if (ownedPlayers.isEmpty()) {
+            return playerRepository.findAll();
+        }
         List<String> ownedPlayerIds = ownedPlayers.stream()
                 .map(Player::getId)
                 .collect(Collectors.toList());
-        
-        return playerRepository.findAll().stream()
-                .filter(p -> !ownedPlayerIds.contains(p.getId()))
-                .collect(Collectors.toList());
+        return playerRepository.findByIdNotIn(ownedPlayerIds);
     }
 
     public void deletePlayer(String id) {
@@ -84,6 +85,7 @@ public class PlayerService {
         playerRepository.delete(player);
     }
 
+    @Transactional
     public void purchasePlayer(String playerId, Integer leagueId, User user) {
         Player player = playerRepository.findById(playerId)
                 .orElseThrow(() -> new IllegalStateException("Jugador no encontrado"));

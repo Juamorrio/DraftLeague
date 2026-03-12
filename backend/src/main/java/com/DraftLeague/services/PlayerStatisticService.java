@@ -205,8 +205,7 @@ public class PlayerStatisticService {
                 case FORWARD -> mapToForwardDTO(data);
             };
         } catch (Exception e) {
-            System.err.println("Error in getPlayerMatchStatistic: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Error in getPlayerMatchStatistic", e);
             throw new RuntimeException("Error getting player match statistic", e);
         }
     }
@@ -386,8 +385,7 @@ public class PlayerStatisticService {
 
             return summary;
         } catch (Exception e) {
-            System.err.println("Error in getPlayerStatisticsSummary: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Error in getPlayerStatisticsSummary", e);
             throw new RuntimeException("Error calculating player statistics summary", e);
         }
     }
@@ -489,8 +487,7 @@ public class PlayerStatisticService {
                 .sorted((a, b) -> b.getJornada().compareTo(a.getJornada()))
                 .collect(Collectors.toList());
         } catch (Exception e) {
-            System.err.println("Error in getPlayerMatchesSummary: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Error in getPlayerMatchesSummary", e);
             throw new RuntimeException("Error getting player matches summary", e);
         }
     }

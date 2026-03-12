@@ -178,14 +178,19 @@ public class MarketValueUpdateService {
             playerRepository.save(player);
             playerTeamRepository.updateSellPriceByPlayerId(player.getId(), seasonValue);
             if (gameweek != null) {
-                int changeAmount = seasonValue - baseValue;
-                double changePercentage = baseValue > 0 ? ((double) changeAmount / baseValue) * 100.0 : 0.0;
                 PlayerMarketValueHistory history = marketValueHistoryRepository
                         .findByPlayerIdAndGameweek(player.getId(), gameweek)
                         .orElse(new PlayerMarketValueHistory());
+                // Preserve the original previousValue on re-runs within the same gameweek
+                // so that changeAmount always reflects the net weekly movement from the
+                // starting value, not from an intermediate intra-day recalculation.
+                boolean isNew = history.getId() == null;
+                int effectivePrev = isNew ? baseValue : history.getPreviousValue();
+                int changeAmount = seasonValue - effectivePrev;
+                double changePercentage = effectivePrev > 0 ? ((double) changeAmount / effectivePrev) * 100.0 : 0.0;
                 history.setPlayerId(player.getId());
                 history.setGameweek(gameweek);
-                history.setPreviousValue(baseValue);
+                if (isNew) history.setPreviousValue(baseValue);
                 history.setNewValue(seasonValue);
                 history.setChangeAmount(changeAmount);
                 history.setChangePercentage(Math.round(changePercentage * 100.0) / 100.0);
@@ -280,18 +285,21 @@ public class MarketValueUpdateService {
 
         // ── 8. Record history snapshot (if gameweek is known) ──────────────────
         if (gameweek != null) {
-            int changeAmount = newValue - baseValue;
-            double changePercentage = baseValue > 0
-                    ? ((double) changeAmount / baseValue) * 100.0
-                    : 0.0;
-
             PlayerMarketValueHistory history = marketValueHistoryRepository
                     .findByPlayerIdAndGameweek(player.getId(), gameweek)
                     .orElse(new PlayerMarketValueHistory());
-
+            // Preserve the original previousValue on re-runs within the same gameweek
+            // so that changeAmount always reflects the net weekly movement from the
+            // starting value, not from an intermediate intra-day recalculation.
+            boolean isNew = history.getId() == null;
+            int effectivePrev = isNew ? baseValue : history.getPreviousValue();
+            int changeAmount = newValue - effectivePrev;
+            double changePercentage = effectivePrev > 0
+                    ? ((double) changeAmount / effectivePrev) * 100.0
+                    : 0.0;
             history.setPlayerId(player.getId());
             history.setGameweek(gameweek);
-            history.setPreviousValue(baseValue);
+            if (isNew) history.setPreviousValue(baseValue);
             history.setNewValue(newValue);
             history.setChangeAmount(changeAmount);
             history.setChangePercentage(Math.round(changePercentage * 100.0) / 100.0);

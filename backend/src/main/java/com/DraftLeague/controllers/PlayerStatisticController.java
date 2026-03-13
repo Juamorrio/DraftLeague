@@ -99,9 +99,11 @@ public class PlayerStatisticController {
     }
 
     @GetMapping("/player/{playerId}/matches")
-    public ResponseEntity<List<JornadaMatchesDTO>> getPlayerMatchesSummary(@PathVariable String playerId) {
+    public ResponseEntity<List<JornadaMatchesDTO>> getPlayerMatchesSummary(
+            @PathVariable String playerId,
+            @RequestParam(required = false) Integer teamId) {
         try {
-            List<JornadaMatchesDTO> matches = playerStatisticService.getPlayerMatchesSummary(playerId);
+            List<JornadaMatchesDTO> matches = playerStatisticService.getPlayerMatchesSummary(playerId, teamId);
             return ResponseEntity.ok(matches);
         } catch (Exception e) {
             log.error("Error getting player matches summary for player {}", playerId, e);

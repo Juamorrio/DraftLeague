@@ -62,6 +62,7 @@ public class FantasyPointsService {
         boolean isStatChip = activeChip != null && !isTripleCap && !isBenchBoost;
 
         int totalPoints = 0;
+        int benchTotalPoints = 0;
         int gkPoints = 0, defPoints = 0, midPoints = 0, fwdPoints = 0;
         int captainBonus = 0;
         String captainId = null;
@@ -106,10 +107,12 @@ public class FantasyPointsService {
 
                 if (pt.getIsCaptain() != null && pt.getIsCaptain()) {
                     finalPlayerPoints *= isTripleCap ? 3 : 2;
-                    captainBonus = basePlayerPoints;
+                    captainBonus = finalPlayerPoints - basePlayerPoints;
                     captainId = player.getId();
                 }
             }
+
+            boolean isInLineup = pt.getLined() != null && pt.getLined();
 
             TeamPlayerGameweekPoints snapshot = new TeamPlayerGameweekPoints();
             snapshot.setTeam(team);
@@ -121,14 +124,16 @@ public class FantasyPointsService {
             snapshot.setPoints(finalPlayerPoints);
             snapshot.setMinutesPlayed(minutesPlayed);
             snapshot.setMatchId(matchId);
-            snapshot.setIsInLineup(pt.getLined() != null && pt.getLined());
+            snapshot.setIsInLineup(isInLineup);
             snapshot.setIsCaptain(pt.getIsCaptain() != null && pt.getIsCaptain());
-            snapshot.setIsBenched(pt.getLined() == null || !pt.getLined());
+            snapshot.setIsBenched(!isInLineup);
             newSnapshots.add(snapshot);
-
-            boolean countForTotal = isBenchBoost || (pt.getLined() != null && pt.getLined());
+            boolean countForTotal = isBenchBoost || isInLineup;
             if (countForTotal) {
                 totalPoints += finalPlayerPoints;
+                if (isBenchBoost && !isInLineup) {
+                    benchTotalPoints += finalPlayerPoints;
+                }
 
                 Position position = player.getPosition();
                 if (Position.POR.equals(position)) {
@@ -176,7 +181,7 @@ public class FantasyPointsService {
         gwPoints.setTopScorerId(topScorerId);
         gwPoints.setTopScorerPoints(topScorerPoints);
         gwPoints.setCalculatedAt(new Date());
-        gwPoints.setBenchPoints(0);
+        gwPoints.setBenchPoints(benchTotalPoints);
 
         return gwPointsRepository.save(gwPoints);
     }

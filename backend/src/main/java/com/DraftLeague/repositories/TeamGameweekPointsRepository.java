@@ -16,6 +16,8 @@ public interface TeamGameweekPointsRepository extends JpaRepository<TeamGameweek
 
     List<TeamGameweekPoints> findByGameweek(Integer gameweek);
 
+    List<TeamGameweekPoints> findByTeamId(Integer teamId);
+
     @Transactional
     void deleteAllByTeam(Team team);
 }

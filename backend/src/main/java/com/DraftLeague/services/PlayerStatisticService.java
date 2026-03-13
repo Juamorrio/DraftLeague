@@ -7,9 +7,14 @@ import com.DraftLeague.dto.*;
 import com.DraftLeague.dto.JornadaMatchesDTO;
 import com.DraftLeague.dto.PlayerMatchSummaryDTO;
 import com.DraftLeague.dto.PlayerStatisticsSummaryDTO;
+import com.DraftLeague.models.Team.ChipType;
+import com.DraftLeague.models.Team.TeamGameweekPoints;
+import com.DraftLeague.models.Team.TeamPlayerGameweekPoints;
 import com.DraftLeague.repositories.MatchRepository;
 import com.DraftLeague.repositories.PlayerRepository;
 import com.DraftLeague.repositories.PlayerStatisticRepository;
+import com.DraftLeague.repositories.TeamGameweekPointsRepository;
+import com.DraftLeague.repositories.TeamPlayerGameweekPointsRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +40,8 @@ public class PlayerStatisticService {
     private final FantasyPointsService fantasyPointsService;
     private final MatchRepository matchRepository;
     private final PlayerRepository playerRepository;
+    private final TeamGameweekPointsRepository gwPointsRepository;
+    private final TeamPlayerGameweekPointsRepository tpgwPointsRepository;
 
     @Transactional
     public PlayerStatistic saveStatistic(PlayerStatistic statistic) {
@@ -408,14 +416,34 @@ public class PlayerStatisticService {
         return 0.0;
     }
 
-    public List<JornadaMatchesDTO> getPlayerMatchesSummary(String playerId) {
+    public List<JornadaMatchesDTO> getPlayerMatchesSummary(String playerId, Integer teamId) {
         try {
             List<Map<String, Object>> results = playerStatisticRepository.getPlayerMatchesSummary(playerId);
 
             List<PlayerStatistic> playerStats = playerStatisticRepository.findByPlayerId(playerId);
-            Map<Integer, PlayerStatistic> statsByMatchId = new java.util.HashMap<>();
+            Map<Integer, PlayerStatistic> statsByMatchId = new HashMap<>();
             for (PlayerStatistic stat : playerStats) {
                 statsByMatchId.put(stat.getMatchId(), stat);
+            }
+
+            // Map: gameweek → appliedChip (only stat-level chips)
+            Map<Integer, String> chipByGameweek = new HashMap<>();
+            // Map: matchId → chip-modified basePoints
+            Map<Integer, Integer> chipPointsByMatchId = new HashMap<>();
+
+            if (teamId != null) {
+                List<TeamGameweekPoints> gwPointsList = gwPointsRepository.findByTeamId(teamId);
+                for (TeamGameweekPoints gp : gwPointsList) {
+                    if (gp.getAppliedChip() != null && ChipType.isValid(gp.getAppliedChip())) {
+                        chipByGameweek.put(gp.getGameweek(), gp.getAppliedChip());
+                    }
+                }
+                List<TeamPlayerGameweekPoints> playerGwList = tpgwPointsRepository.findByTeamIdAndPlayerId(teamId, playerId);
+                for (TeamPlayerGameweekPoints pgp : playerGwList) {
+                    if (pgp.getMatchId() != null && pgp.getBasePoints() != null) {
+                        chipPointsByMatchId.put(pgp.getMatchId(), pgp.getBasePoints());
+                    }
+                }
             }
 
             List<PlayerMatchSummaryDTO> summaries = new ArrayList<>();
@@ -470,9 +498,30 @@ public class PlayerStatisticService {
                 dto.setPenaltyCommitted(getIntegerValue(data, "penaltyCommitted"));
 
                 Integer matchId = dto.getMatchId();
+
+                // Override fantasyPoints with chip-modified value if available
+                if (matchId != null && chipPointsByMatchId.containsKey(matchId)) {
+                    dto.setFantasyPoints(chipPointsByMatchId.get(matchId));
+                }
+
+                // Build breakdown (with chip applied if active)
                 if (matchId != null && statsByMatchId.containsKey(matchId)) {
                     PlayerStatistic stat = statsByMatchId.get(matchId);
-                    dto.setPointsBreakdown(stat.calculateFantasyPointsBreakdown());
+                    Integer round = dto.getRound();
+                    String appliedChip = round != null ? chipByGameweek.get(round) : null;
+                    Map<String, Integer> breakdown;
+                    if (appliedChip != null) {
+                        breakdown = stat.calculateFantasyPointsBreakdown();
+                        // Override total with chip-modified value for accuracy
+                        Integer chipTotal = chipPointsByMatchId.get(matchId);
+                        if (chipTotal != null) {
+                            breakdown.put("total", chipTotal);
+                        }
+                        breakdown.put("chipActive", 1); // flag so frontend can show chip indicator
+                    } else {
+                        breakdown = stat.calculateFantasyPointsBreakdown();
+                    }
+                    dto.setPointsBreakdown(breakdown);
                 }
 
                 summaries.add(dto);

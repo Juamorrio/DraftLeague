@@ -13,4 +13,6 @@ public interface PlayerMarketValueHistoryRepository extends JpaRepository<Player
     List<PlayerMarketValueHistory> findByPlayerIdOrderByGameweekAsc(String playerId);
 
     Optional<PlayerMarketValueHistory> findByPlayerIdAndGameweek(String playerId, Integer gameweek);
+
+    List<PlayerMarketValueHistory> findByGameweek(Integer gameweek);
 }

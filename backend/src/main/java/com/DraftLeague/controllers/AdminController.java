@@ -374,18 +374,38 @@ public class AdminController {
         }
         try {
             // Step 1: fetch stats from API-Football and save to DB
-            importService.syncGameweekStats(activeGameweek);
+            int statsSynced = importService.syncGameweekStats(activeGameweek);
+
             // Step 2: calculate fantasy points for all teams
             fantasyPointsService.recalculateGameweekPoints(activeGameweek);
+
             // Step 3: recalculate market values and record per-gameweek history
             Map<String, Integer> mvResult = marketValueUpdateService.recalculateAllMarketValuesForGameweek(activeGameweek);
-            return ResponseEntity.ok(Map.of(
-                "message", "Estad\u00edsticas obtenidas, puntos y valores de mercado de la jornada " + activeGameweek + " calculados correctamente.",
-                "gameweek", activeGameweek,
-                "marketValueUpdated", mvResult.getOrDefault("updatedCount", 0),
-                "marketValueSkipped", mvResult.getOrDefault("skippedCount", 0),
-                "marketValueErrors",  mvResult.getOrDefault("errorCount", 0)
-            ));
+
+            // Build response – include a warning when the API returned no stats so the
+            // admin knows why market values and fantasy points may not have changed.
+            Map<String, Object> body = new java.util.LinkedHashMap<>();
+            body.put("gameweek",            activeGameweek);
+            body.put("statsPlayersSynced",  statsSynced);
+            body.put("marketValueUpdated",  mvResult.getOrDefault("updatedCount", 0));
+            body.put("marketValueSkipped",  mvResult.getOrDefault("skippedCount", 0));
+            body.put("marketValueErrors",   mvResult.getOrDefault("errorCount", 0));
+
+            if (statsSynced == 0) {
+                body.put("warning",
+                    "La API-Football no devolvió estadísticas para la jornada " + activeGameweek +
+                    ". Verifica que la jornada esté finalizada, que el fixture ID sea correcto " +
+                    "y que no hayas excedido el límite de tu plan. Los valores de mercado se " +
+                    "recalcularon usando únicamente los datos ya existentes en la base de datos.");
+                body.put("message", "Jornada " + activeGameweek +
+                    " procesada con advertencia: 0 estadísticas obtenidas del API.");
+            } else {
+                body.put("message", "Estadísticas (" + statsSynced +
+                    " registros), puntos y valores de mercado de la jornada " +
+                    activeGameweek + " calculados correctamente.");
+            }
+
+            return ResponseEntity.ok(body);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", "Error al calcular puntos: " + e.getMessage()));
         }

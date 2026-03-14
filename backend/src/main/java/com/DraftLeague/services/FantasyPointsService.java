@@ -40,6 +40,22 @@ public class FantasyPointsService {
  
     @Transactional
     public TeamGameweekPoints calculateTeamPointsForGameweek(Integer teamId, Integer gameweek) {
+        List<Match> matches = matchRepository.findByRound(gameweek);
+        Set<Integer> matchIds = matches.stream().map(Match::getId).collect(Collectors.toSet());
+        Map<String, PlayerStatistic> statsByPlayerId = statisticRepository
+            .findByMatchIdIn(matchIds)
+            .stream()
+            .collect(Collectors.toMap(PlayerStatistic::getPlayerId, s -> s, (a, b) -> a));
+        return doCalculateTeamPoints(teamId, gameweek, matchIds, statsByPlayerId);
+    }
+
+    private TeamGameweekPoints calculateTeamPointsForGameweek(Integer teamId, Integer gameweek,
+            Set<Integer> matchIds, Map<String, PlayerStatistic> statsByPlayerId) {
+        return doCalculateTeamPoints(teamId, gameweek, matchIds, statsByPlayerId);
+    }
+
+    private TeamGameweekPoints doCalculateTeamPoints(Integer teamId, Integer gameweek,
+            Set<Integer> matchIds, Map<String, PlayerStatistic> statsByPlayerId) {
         Team team = teamRepository.findById(teamId)
             .orElseThrow(() -> new RuntimeException("Team not found"));
 
@@ -49,11 +65,6 @@ public class FantasyPointsService {
 
         gwPoints.setTeam(team);
         gwPoints.setGameweek(gameweek);
-
-        List<Match> matches = matchRepository.findByRound(gameweek);
-        Set<Integer> matchIds = matches.stream()
-            .map(Match::getId)
-            .collect(Collectors.toSet());
 
         String teamActiveChip = team.getActiveChip();
         String activeChip = (teamActiveChip != null) ? teamActiveChip : gwPoints.getAppliedChip();
@@ -80,14 +91,7 @@ public class FantasyPointsService {
         for (PlayerTeam pt : team.getPlayerTeams()) {
             Player player = pt.getPlayer();
 
-            PlayerStatistic stat = null;
-            List<PlayerStatistic> playerStats = statisticRepository.findByPlayerId(player.getId());
-            for (PlayerStatistic s : playerStats) {
-                if (matchIds.contains(s.getMatchId())) {
-                    stat = s;
-                    break;
-                }
-            }
+            PlayerStatistic stat = statsByPlayerId.get(player.getId());
 
             int basePlayerPoints = 0;
             int finalPlayerPoints = 0;
@@ -246,9 +250,16 @@ public class FantasyPointsService {
             }
         }
 
+        // Pre-load all stats for this gameweek once — avoids N+1 per player per team
+        Set<Integer> matchIds = matches.stream().map(Match::getId).collect(Collectors.toSet());
+        Map<String, PlayerStatistic> statsByPlayerId = statisticRepository
+            .findByMatchIdIn(matchIds)
+            .stream()
+            .collect(Collectors.toMap(PlayerStatistic::getPlayerId, s -> s, (a, b) -> a));
+
         for (Team team : teams) {
             try {
-                calculateTeamPointsForGameweek(team.getId(), gameweek);
+                calculateTeamPointsForGameweek(team.getId(), gameweek, matchIds, statsByPlayerId);
                 updateTeamTotalPoints(team.getId());
             } catch (Exception e) {
                 logger.error("Error calculating points for team {}: {}", team.getId(), e.getMessage(), e);

@@ -17,9 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Service responsible for recalculating player market values based on:
@@ -30,10 +28,15 @@ import java.util.Map;
  *   <li>Activity status (inactive players are penalised)</li>
  * </ul>
  *
- * <p>Price changes per update are capped at ±{@value #MAX_CHANGE_PCT}% to avoid
+ * <p>Price changes per update are capped at ±{@value #MAX_CHANGE_FRACTION}% to avoid
  * wild single-update swings.  Absolute limits are {@value #MIN_VALUE} (floor) and
  * {@value #MAX_VALUE} (ceiling), and every price is rounded to the nearest
  * {@value #ROUND_TO} to keep numbers tidy.</p>
+ *
+ * <h3>Performance</h3>
+ * <p>The full-recalculation path ({@link #recalculateAllMarketValuesForGameweek}) pre-loads
+ * all required data in 5 bulk queries before entering the player loop, reducing DB round-trips
+ * from O(N) to O(1) relative to player count.</p>
  */
 @Slf4j
 @Service
@@ -76,36 +79,115 @@ public class MarketValueUpdateService {
 
     @Autowired @Lazy private MarketValueUpdateService self;
 
-    // ── Public API ────────────────────────────────────────────────────────────
+    // ── Lightweight projection used by the bulk recalculation path ────────────
 
     /**
-     * Recalculates and persists market values for every player in the database.
-     *
-     * @return A summary map containing {@code updatedCount}, {@code skippedCount},
-     *         and {@code errorCount}.
+     * Holds only the fields needed by the computation helpers when data is loaded
+     * via the bulk native queries (no full {@link PlayerStatistic} entity required).
      */
+    private record PlayerStatLite(
+            int    totalFantasyPoints,
+            int    minutesPlayed,
+            Double rating,
+            int    goals,
+            int    assists,
+            int    shotsOnTarget,
+            int    chancesCreated,
+            int    tackles,
+            int    interceptions,
+            int    blocks,
+            int    saves,
+            int    goalsConceded,
+            boolean cleanSheet
+    ) {
+        static PlayerStatLite from(Map<String, Object> row) {
+            return new PlayerStatLite(
+                    toInt(row.get("total_fantasy_points")),
+                    toInt(row.get("minutes_played")),
+                    toDoubleNullable(row.get("rating")),
+                    toInt(row.get("goals")),
+                    toInt(row.get("assists")),
+                    toInt(row.get("shots_on_target")),
+                    toInt(row.get("chances_created")),
+                    toInt(row.get("tackles")),
+                    toInt(row.get("interceptions")),
+                    toInt(row.get("blocks")),
+                    toInt(row.get("saves")),
+                    toInt(row.get("goals_conceded")),
+                    toLong(row.get("clean_sheet")) == 1L
+            );
+        }
+
+        private static int toInt(Object o) {
+            if (o == null) return 0;
+            if (o instanceof Number n) return n.intValue();
+            try { return Integer.parseInt(o.toString()); } catch (NumberFormatException e) { return 0; }
+        }
+
+        private static long toLong(Object o) {
+            if (o == null) return 0L;
+            if (o instanceof Number n) return n.longValue();
+            try { return Long.parseLong(o.toString()); } catch (NumberFormatException e) { return 0L; }
+        }
+
+        private static Double toDoubleNullable(Object o) {
+            if (o == null) return null;
+            if (o instanceof Number n) return n.doubleValue();
+            try { return Double.parseDouble(o.toString()); } catch (NumberFormatException e) { return null; }
+        }
+    }
+
+    // ── Public API ────────────────────────────────────────────────────────────
+
     public Map<String, Integer> recalculateAllMarketValues() {
         return recalculateAllMarketValuesForGameweek(null);
     }
 
-    /**
-     * Recalculates and persists market values for every player and records a
-     * price-history snapshot for the given gameweek.
-     *
-     * @param gameweek the gameweek number to associate with the history record,
-     *                 or {@code null} to skip history recording.
-     * @return A summary map containing {@code updatedCount}, {@code skippedCount},
-     *         and {@code errorCount}.
-     */
+ 
     public Map<String, Integer> recalculateAllMarketValuesForGameweek(Integer gameweek) {
-        log.info("[MarketValueUpdate] Starting full market value recalculation (gameweek={})…", gameweek);
+        log.info("[MarketValueUpdate] Starting full recalculation (gameweek={})…", gameweek);
 
+        log.debug("[MarketValueUpdate] Pre-loading bulk data…");
+
+        Map<String, Map<String, Object>> seasonMap =
+                buildSeasonDataMap(playerStatisticRepository.getAllPlayerStatisticsSummaryData());
+
+        Map<String, List<PlayerStatLite>> recentStatsMap =
+                buildRecentStatsMap(playerStatisticRepository.findRecentStatsForAllPlayers(FORM_WINDOW));
+
+        Map<String, Map<String, Object>> disciplineMap =
+                buildDisciplineMap(playerStatisticRepository.findRecentDisciplineForAllPlayers(DISCIPLINE_WINDOW));
+
+        Map<String, Long> ownershipMap =
+                buildOwnershipMap(playerTeamRepository.countOwnershipForAllPlayers());
+
+        Map<String, PlayerMarketValueHistory> existingHistoryMap = (gameweek != null)
+                ? buildHistoryMap(marketValueHistoryRepository.findByGameweek(gameweek))
+                : Collections.emptyMap();
+
+        log.info("[MarketValueUpdate] Bulk data loaded — seasonRecords={}, playersWithRecentStats={}, disciplineRecords={}, ownedPlayers={}, existingHistoryForGW={}",
+                seasonMap.size(), recentStatsMap.size(), disciplineMap.size(), ownershipMap.size(), existingHistoryMap.size());
+        if (recentStatsMap.isEmpty()) {
+            log.warn("[MarketValueUpdate] No hay estadísticas recientes en BD (gameweek={}). " +
+                     "Los precios solo cambiarán si el factor de media de temporada se desvía de 1.0. " +
+                     "Realiza primero una sincronización de stats exitosa para activar la recalculación completa.", gameweek);
+        }
+
+        // ── 2. Per-player computation (writes only, no reads) ─────────────────
         List<Player> players = playerRepository.findAll();
         int updated = 0, skipped = 0, errors = 0;
 
         for (Player player : players) {
             try {
-                boolean changed = self.recalculateForPlayer(player, gameweek);
+                boolean changed = self.recalculateForPlayerBulk(
+                        player,
+                        gameweek,
+                        seasonMap.get(player.getId()),
+                        recentStatsMap.getOrDefault(player.getId(), Collections.emptyList()),
+                        disciplineMap.get(player.getId()),
+                        ownershipMap.getOrDefault(player.getId(), 0L),
+                        Optional.ofNullable(existingHistoryMap.get(player.getId()))
+                );
                 if (changed) updated++; else skipped++;
             } catch (Exception e) {
                 errors++;
@@ -137,6 +219,10 @@ public class MarketValueUpdateService {
      * If {@code gameweek} is non-null, a {@link PlayerMarketValueHistory} record
      * is upserted so the evolution can be charted per jornada.
      *
+     * <p>This path issues individual DB queries per player and is intended for
+     * on-demand single-player updates. For bulk recalculation use
+     * {@link #recalculateAllMarketValuesForGameweek(Integer)} instead.</p>
+     *
      * @param player   the player to update
      * @param gameweek the active gameweek number, or {@code null} to skip history
      * @return {@code true} if the price was actually changed, {@code false} when
@@ -158,48 +244,7 @@ public class MarketValueUpdateService {
         double expectedPoints = getExpectedPoints(player.getPosition());
 
         if (recentStats.isEmpty()) {
-            if (player.getMarketValue() == null) {
-                player.setMarketValue(baseValue);
-                playerRepository.save(player);
-                playerTeamRepository.updateSellPriceByPlayerId(player.getId(), baseValue);
-                return true;
-            }
-            // Fallback: use season-wide averages so benched/injured players still drift
-            double sf = computeSeasonFactor(season, expectedPoints);
-            // Cap season-only drift to ±10 % so the effect is gentler than the full model
-            double cappedSf = clamp(sf, 0.90, 1.10);
-            int rawSeasonValue = (int) Math.round(baseValue * cappedSf);
-            int seasonValue = roundToNearest(clampInt(rawSeasonValue, MIN_VALUE, MAX_VALUE), ROUND_TO);
-            if (seasonValue == baseValue) {
-                log.debug("[MarketValueUpdate] No recent stats, no season change for player {} – skipping.", player.getId());
-                return false;
-            }
-            player.setMarketValue(seasonValue);
-            playerRepository.save(player);
-            playerTeamRepository.updateSellPriceByPlayerId(player.getId(), seasonValue);
-            if (gameweek != null) {
-                PlayerMarketValueHistory history = marketValueHistoryRepository
-                        .findByPlayerIdAndGameweek(player.getId(), gameweek)
-                        .orElse(new PlayerMarketValueHistory());
-                // Preserve the original previousValue on re-runs within the same gameweek
-                // so that changeAmount always reflects the net weekly movement from the
-                // starting value, not from an intermediate intra-day recalculation.
-                boolean isNew = history.getId() == null;
-                int effectivePrev = isNew ? baseValue : history.getPreviousValue();
-                int changeAmount = seasonValue - effectivePrev;
-                double changePercentage = effectivePrev > 0 ? ((double) changeAmount / effectivePrev) * 100.0 : 0.0;
-                history.setPlayerId(player.getId());
-                history.setGameweek(gameweek);
-                if (isNew) history.setPreviousValue(baseValue);
-                history.setNewValue(seasonValue);
-                history.setChangeAmount(changeAmount);
-                history.setChangePercentage(Math.round(changePercentage * 100.0) / 100.0);
-                history.setRecordedAt(new Date());
-                marketValueHistoryRepository.save(history);
-            }
-            log.debug("[MarketValueUpdate] Player {} ({}) [season fallback]: {} -> {}",
-                    player.getId(), player.getFullName(), baseValue, seasonValue);
-            return true;
+            return applySeasonFallback(player, baseValue, season, expectedPoints, gameweek);
         }
 
         double avgFantasyPoints = recentStats.stream()
@@ -222,91 +267,242 @@ public class MarketValueUpdateService {
         double ratingFactor = clamp(1.0 + ((avgRating - 6.5) * 0.04), 0.90, 1.10);
 
         double consistencyFactor = computeConsistencyFactor(recentStats);
-        double momentumFactor = computeMomentumFactor(recentStats, expectedPoints);
-        double impactFactor = computeImpactFactor(recentStats, player.getPosition());
+        double momentumFactor    = computeMomentumFactor(recentStats, expectedPoints);
+        double impactFactor      = computeImpactFactor(recentStats, player.getPosition());
+        double seasonFactor      = computeSeasonFactor(season, expectedPoints);
+        double blendedForm       = (formFactor * 0.65) + (seasonFactor * 0.35);
 
-        double seasonFactor = computeSeasonFactor(season, expectedPoints);
-
-        double blendedForm = (formFactor * 0.65) + (seasonFactor * 0.35);
-
-        // ── 2. Discipline factor ────────────────────────────────────────────────
         double disciplineFactor = computeDisciplineFactor(player.getId());
 
-        // ── 3. Demand factor ────────────────────────────────────────────────────
         long ownershipCount = playerTeamRepository.countByPlayerId(player.getId());
-        // Logarithmic demand: log(1+n)/log(1+10) * 0.25, capped at +25 %
-        // Uses log1p so that 0 owners = 0 bonus, and growth decelerates with each extra owner
-        double demandBonus = Math.min(Math.log1p(ownershipCount) / Math.log1p(10.0) * 0.25, 0.25);
+        double demandBonus  = Math.min(Math.log1p(ownershipCount) / Math.log1p(10.0) * 0.25, 0.25);
         double demandFactor = 1.0 + demandBonus;
 
-        // ── 4. Activity factor ──────────────────────────────────────────────────
         double activityFactor = Boolean.TRUE.equals(player.getActive()) ? 1.0 : 0.90;
 
-        // ── 5. Combined factor & change cap ────────────────────────────────────
         double combinedFactor = blendedForm * minutesFactor * ratingFactor *
             consistencyFactor * momentumFactor * impactFactor *
             disciplineFactor * demandFactor * activityFactor;
 
-        // Clamp the total movement to ±MAX_CHANGE_FRACTION per update run
         double cappedFactor = clamp(combinedFactor,
-                1.0 - MAX_CHANGE_FRACTION,
-                1.0 + MAX_CHANGE_FRACTION);
+                1.0 - MAX_CHANGE_FRACTION, 1.0 + MAX_CHANGE_FRACTION);
 
         int rawNewValue = (int) Math.round(baseValue * cappedFactor);
+        int newValue    = roundToNearest(clampInt(rawNewValue, MIN_VALUE, MAX_VALUE), ROUND_TO);
 
-        // ── 6. Absolute price clamp & rounding ─────────────────────────────────
-        int newValue = roundToNearest(clampInt(rawNewValue, MIN_VALUE, MAX_VALUE), ROUND_TO);
+        if (newValue == baseValue) return false;
 
-        if (newValue == baseValue) {
-            return false; // nothing changed – no write needed
+        logFactors(player, baseValue, newValue, formFactor, seasonFactor, minutesFactor,
+                ratingFactor, momentumFactor, consistencyFactor, impactFactor,
+                disciplineFactor, demandFactor, activityFactor);
+
+        persistPlayerValue(player, newValue, baseValue, gameweek,
+                marketValueHistoryRepository.findByPlayerIdAndGameweek(player.getId(), gameweek));
+        return true;
+    }
+
+    /**
+     * Bulk variant of {@link #recalculateForPlayer(Player, Integer)}.
+     * Accepts pre-loaded data so no DB reads are performed inside this method —
+     * only writes (player save, sell-price update, history upsert).
+     * Each invocation runs in its own transaction so a single player failure does
+     * not roll back the rest of the batch.
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public boolean recalculateForPlayerBulk(
+            Player player,
+            Integer gameweek,
+            Map<String, Object> season,
+            List<PlayerStatLite> recentStats,
+            Map<String, Object> discipline,
+            long ownershipCount,
+            Optional<PlayerMarketValueHistory> existingHistory) {
+
+        int baseValue = (player.getMarketValue() != null && player.getMarketValue() > MIN_VALUE)
+                ? player.getMarketValue()
+                : computeBaseValue(player, season);
+
+        double expectedPoints = getExpectedPoints(player.getPosition());
+
+        // ── Fallback: no recent stats ──────────────────────────────────────────
+        if (recentStats.isEmpty()) {
+            return applySeasonFallbackBulk(player, baseValue, season, expectedPoints, gameweek, existingHistory);
         }
 
-        log.debug("[MarketValueUpdate] Player {} ({}): {} -> {} | form={} season={} minutes={} rating={} momentum={} consistency={} impact={} disc={} demand={} active={}",
-                player.getId(), player.getFullName(),
-                baseValue, newValue,
-            String.format("%.3f", formFactor),
-            String.format("%.3f", seasonFactor),
-            String.format("%.3f", minutesFactor),
-            String.format("%.3f", ratingFactor),
-            String.format("%.3f", momentumFactor),
-            String.format("%.3f", consistencyFactor),
-            String.format("%.3f", impactFactor),
-                String.format("%.3f", disciplineFactor),
-                String.format("%.3f", demandFactor),
-                activityFactor);
+        // ── Form factors (in-memory, no DB) ───────────────────────────────────
+        double avgFantasyPoints = recentStats.stream()
+                .mapToInt(PlayerStatLite::totalFantasyPoints)
+                .average().orElse(0.0);
 
-        // ── 7. Persist ─────────────────────────────────────────────────────────
+        double formFactor = clamp(
+                expectedPoints > 0 ? avgFantasyPoints / expectedPoints : 1.0,
+                0.85, 1.25);
+
+        double minutesFactor = clamp(
+                recentStats.stream().mapToInt(PlayerStatLite::minutesPlayed).average().orElse(0.0) / 90.0,
+                0.70, 1.05);
+
+        double avgRating = recentStats.stream()
+                .mapToDouble(ps -> ps.rating() != null ? ps.rating() : 6.5)
+                .average().orElse(6.5);
+        double ratingFactor = clamp(1.0 + ((avgRating - 6.5) * 0.04), 0.90, 1.10);
+
+        double consistencyFactor = computeConsistencyFactorLite(recentStats);
+        double momentumFactor    = computeMomentumFactorLite(recentStats, expectedPoints);
+        double impactFactor      = computeImpactFactorLite(recentStats, player.getPosition());
+        double seasonFactor      = computeSeasonFactor(season, expectedPoints);
+        double blendedForm       = (formFactor * 0.65) + (seasonFactor * 0.35);
+
+        double disciplineFactor = computeDisciplineFactorFromMap(discipline);
+
+        double demandBonus  = Math.min(Math.log1p(ownershipCount) / Math.log1p(10.0) * 0.25, 0.25);
+        double demandFactor = 1.0 + demandBonus;
+
+        double activityFactor = Boolean.TRUE.equals(player.getActive()) ? 1.0 : 0.90;
+
+        double combinedFactor = blendedForm * minutesFactor * ratingFactor *
+                consistencyFactor * momentumFactor * impactFactor *
+                disciplineFactor * demandFactor * activityFactor;
+
+        double cappedFactor = clamp(combinedFactor,
+                1.0 - MAX_CHANGE_FRACTION, 1.0 + MAX_CHANGE_FRACTION);
+
+        int rawNewValue = (int) Math.round(baseValue * cappedFactor);
+        int newValue    = roundToNearest(clampInt(rawNewValue, MIN_VALUE, MAX_VALUE), ROUND_TO);
+
+        if (newValue == baseValue) return false;
+
+        logFactors(player, baseValue, newValue, formFactor, seasonFactor, minutesFactor,
+                ratingFactor, momentumFactor, consistencyFactor, impactFactor,
+                disciplineFactor, demandFactor, activityFactor);
+
+        persistPlayerValue(player, newValue, baseValue, gameweek, existingHistory);
+        return true;
+    }
+
+    // ── Pre-load helpers (build Maps from bulk query results) ─────────────────
+
+    private Map<String, Map<String, Object>> buildSeasonDataMap(List<Map<String, Object>> rows) {
+        Map<String, Map<String, Object>> result = new HashMap<>(rows.size() * 2);
+        for (Map<String, Object> row : rows) {
+            String pid = (String) row.get("player_id");
+            if (pid != null) result.put(pid, row);
+        }
+        return result;
+    }
+
+    private Map<String, List<PlayerStatLite>> buildRecentStatsMap(List<Map<String, Object>> rows) {
+        Map<String, List<PlayerStatLite>> result = new HashMap<>();
+        for (Map<String, Object> row : rows) {
+            String pid = (String) row.get("player_id");
+            if (pid != null) {
+                result.computeIfAbsent(pid, k -> new ArrayList<>()).add(PlayerStatLite.from(row));
+            }
+        }
+        return result;
+    }
+
+    private Map<String, Map<String, Object>> buildDisciplineMap(List<Map<String, Object>> rows) {
+        Map<String, Map<String, Object>> result = new HashMap<>(rows.size() * 2);
+        for (Map<String, Object> row : rows) {
+            String pid = (String) row.get("player_id");
+            if (pid != null) result.put(pid, row);
+        }
+        return result;
+    }
+
+    private Map<String, Long> buildOwnershipMap(List<Object[]> rows) {
+        Map<String, Long> result = new HashMap<>(rows.size() * 2);
+        for (Object[] row : rows) {
+            if (row[0] != null) result.put((String) row[0], ((Number) row[1]).longValue());
+        }
+        return result;
+    }
+
+    private Map<String, PlayerMarketValueHistory> buildHistoryMap(List<PlayerMarketValueHistory> rows) {
+        Map<String, PlayerMarketValueHistory> result = new HashMap<>(rows.size() * 2);
+        for (PlayerMarketValueHistory h : rows) {
+            if (h.getPlayerId() != null) result.put(h.getPlayerId(), h);
+        }
+        return result;
+    }
+
+    // ── Shared persist helper ─────────────────────────────────────────────────
+
+    /**
+     * Persists the new player price, updates all sell prices in PlayerTeam rows,
+     * and upserts the history record for the given gameweek (if non-null).
+     * The {@code existingHistory} optional allows callers to pass a pre-loaded record
+     * so no additional DB read is needed.
+     */
+    private void persistPlayerValue(Player player, int newValue, int baseValue,
+                                    Integer gameweek, Optional<PlayerMarketValueHistory> existingHistory) {
         player.setMarketValue(newValue);
         playerRepository.save(player);
-
-        // Update sell prices in all PlayerTeam rows that hold this player so that
-        // the new market signal is immediately visible in the fantasy market.
         playerTeamRepository.updateSellPriceByPlayerId(player.getId(), newValue);
 
-        // ── 8. Record history snapshot (if gameweek is known) ──────────────────
         if (gameweek != null) {
-            PlayerMarketValueHistory history = marketValueHistoryRepository
-                    .findByPlayerIdAndGameweek(player.getId(), gameweek)
-                    .orElse(new PlayerMarketValueHistory());
-            // Preserve the original previousValue on re-runs within the same gameweek
-            // so that changeAmount always reflects the net weekly movement from the
-            // starting value, not from an intermediate intra-day recalculation.
+            PlayerMarketValueHistory history = existingHistory.orElse(new PlayerMarketValueHistory());
             boolean isNew = history.getId() == null;
             int effectivePrev = isNew ? baseValue : history.getPreviousValue();
-            int changeAmount = newValue - effectivePrev;
-            double changePercentage = effectivePrev > 0
-                    ? ((double) changeAmount / effectivePrev) * 100.0
-                    : 0.0;
+            int changeAmount  = newValue - effectivePrev;
+            double changePct  = effectivePrev > 0 ? ((double) changeAmount / effectivePrev) * 100.0 : 0.0;
+
             history.setPlayerId(player.getId());
             history.setGameweek(gameweek);
             if (isNew) history.setPreviousValue(baseValue);
             history.setNewValue(newValue);
             history.setChangeAmount(changeAmount);
-            history.setChangePercentage(Math.round(changePercentage * 100.0) / 100.0);
+            history.setChangePercentage(Math.round(changePct * 100.0) / 100.0);
             history.setRecordedAt(new Date());
             marketValueHistoryRepository.save(history);
         }
+    }
 
+    // ── Season-fallback helpers ───────────────────────────────────────────────
+
+    /** Single-player path: season-only drift when no recent matches exist. */
+    private boolean applySeasonFallback(Player player, int baseValue,
+                                        Map<String, Object> season, double expectedPoints,
+                                        Integer gameweek) {
+        if (player.getMarketValue() == null) {
+            player.setMarketValue(baseValue);
+            playerRepository.save(player);
+            playerTeamRepository.updateSellPriceByPlayerId(player.getId(), baseValue);
+            return true;
+        }
+        double cappedSf = clamp(computeSeasonFactor(season, expectedPoints), 0.90, 1.10);
+        int seasonValue = roundToNearest(clampInt((int) Math.round(baseValue * cappedSf), MIN_VALUE, MAX_VALUE), ROUND_TO);
+        if (seasonValue == baseValue) {
+            log.debug("[MarketValueUpdate] No recent stats, no change for {} – skip.", player.getId());
+            return false;
+        }
+        persistPlayerValue(player, seasonValue, baseValue, gameweek,
+                gameweek != null
+                        ? marketValueHistoryRepository.findByPlayerIdAndGameweek(player.getId(), gameweek)
+                        : Optional.empty());
+        log.debug("[MarketValueUpdate] {} (season fallback): {} -> {}", player.getId(), baseValue, seasonValue);
+        return true;
+    }
+
+    /** Bulk path: season-only drift when no recent matches exist (uses pre-loaded history). */
+    private boolean applySeasonFallbackBulk(Player player, int baseValue,
+                                             Map<String, Object> season, double expectedPoints,
+                                             Integer gameweek, Optional<PlayerMarketValueHistory> existingHistory) {
+        if (player.getMarketValue() == null) {
+            player.setMarketValue(baseValue);
+            playerRepository.save(player);
+            playerTeamRepository.updateSellPriceByPlayerId(player.getId(), baseValue);
+            return true;
+        }
+        double cappedSf = clamp(computeSeasonFactor(season, expectedPoints), 0.90, 1.10);
+        int seasonValue = roundToNearest(clampInt((int) Math.round(baseValue * cappedSf), MIN_VALUE, MAX_VALUE), ROUND_TO);
+        if (seasonValue == baseValue) {
+            log.debug("[MarketValueUpdate] No recent stats, no change for {} – skip.", player.getId());
+            return false;
+        }
+        persistPlayerValue(player, seasonValue, baseValue, gameweek, existingHistory);
+        log.debug("[MarketValueUpdate] {} (season fallback): {} -> {}", player.getId(), baseValue, seasonValue);
         return true;
     }
 
@@ -325,20 +521,19 @@ public class MarketValueUpdateService {
         try {
             Map<String, Object> disc = playerStatisticRepository
                     .findRecentDisciplineByPlayerId(playerId, DISCIPLINE_WINDOW);
-            if (disc == null) return 1.0;
-
-            long yellows = toLong(disc.get("total_yellow_cards"));
-            long reds    = toLong(disc.get("total_red_cards"));
-
-            double factor = 1.0
-                    - (yellows * 0.02)
-                    - (reds    * 0.08);
-
-            return Math.max(factor, 0.70);
+            return computeDisciplineFactorFromMap(disc);
         } catch (Exception e) {
             log.warn("[MarketValueUpdate] Could not compute discipline for {}: {}", playerId, e.getMessage());
             return 1.0;
         }
+    }
+
+    /** Computes discipline factor from a pre-loaded map (bulk path). */
+    private double computeDisciplineFactorFromMap(Map<String, Object> disc) {
+        if (disc == null) return 1.0;
+        long yellows = toLong(disc.get("total_yellow_cards"));
+        long reds    = toLong(disc.get("total_red_cards"));
+        return Math.max(1.0 - (yellows * 0.02) - (reds * 0.08), 0.70);
     }
 
     /** Maps a {@link Position} to the expected average fantasy points per match. */
@@ -359,17 +554,7 @@ public class MarketValueUpdateService {
 
     /**
      * Computes the starting anchor price for a player whose stored market value
-     * is at or below the floor.  The anchor is the product of:
-     * <ol>
-     *   <li>A position baseline (5–8 M).</li>
-     *   <li>A season-performance multiplier derived from the player's career
-     *       fantasy-point average vs. the position benchmark (√ratio, capped at
-     *       0.65–1.50 to soften extremes).</li>
-     *   <li>A club-prestige multiplier reflecting the squad tier in La Liga
-     *       (0.90 – 1.20 range).</li>
-     * </ol>
-     * The result is clamped to [{@value #MIN_VALUE}, 15 M] and rounded to
-     * {@value #ROUND_TO} so it is always a valid starting price.
+     * is at or below the floor.
      */
     private int computeBaseValue(Player player, Map<String, Object> season) {
         int positionDefault = defaultBaseValue(player.getPosition());
@@ -377,17 +562,15 @@ public class MarketValueUpdateService {
 
         long matches = season != null ? toLong(season.get("matches_played")) : 0;
         if (matches >= 5) {
-            double expectedPts = getExpectedPoints(player.getPosition());
+            double expectedPts  = getExpectedPoints(player.getPosition());
             double totalFantasy = season != null ? toLong(season.get("total_fantasy_points")) : 0;
-            double avgPts = totalFantasy / matches;
-            double perfRatio = expectedPts > 0 ? avgPts / expectedPts : 1.0;
-            // √ratio softens extremes: a player on 2× expected → ×1.41, half → ×0.71
+            double avgPts       = totalFantasy / matches;
+            double perfRatio    = expectedPts > 0 ? avgPts / expectedPts : 1.0;
             double perfMultiplier = clamp(Math.sqrt(perfRatio), 0.65, 1.50);
             int raw = (int) Math.round(positionDefault * perfMultiplier * clubMultiplier);
             return roundToNearest(clampInt(raw, MIN_VALUE, 15_000_000), ROUND_TO);
         }
 
-        // Not enough season data – fall back to position default adjusted by club tier
         int raw = (int) Math.round(positionDefault * clubMultiplier);
         return roundToNearest(clampInt(raw, MIN_VALUE, 15_000_000), ROUND_TO);
     }
@@ -395,12 +578,6 @@ public class MarketValueUpdateService {
     /**
      * Returns a prestige multiplier for a La Liga club based on its typical
      * squad quality and budget tier.
-     * <ul>
-     *   <li>Tier 1 (Real Madrid, Barcelona, Atlético) → 1.20</li>
-     *   <li>Tier 2 (Sevilla, Villarreal, Athletic, R.Sociedad, Betis) → 1.10</li>
-     *   <li>Tier 3 (Girona, Celta, Valencia, Rayo, Getafe, Osasuna) → 1.00</li>
-     *   <li>Tier 4 (Mallorca, Espanyol, Alavés, Oviedo, Levante, Elche) → 0.90</li>
-     * </ul>
      */
     private double clubPrestigeMultiplier(Integer clubId) {
         if (clubId == null) return 1.0;
@@ -424,78 +601,130 @@ public class MarketValueUpdateService {
         };
     }
 
+    // ── Computation helpers — PlayerStatistic (single-player path) ────────────
+
     private int safeFantasyPoints(PlayerStatistic ps) {
         if (ps.getTotalFantasyPoints() != null) return ps.getTotalFantasyPoints();
         return ps.calculateFantasyPoints();
     }
 
-    private int safeInt(Integer value) {
-        return value != null ? value : 0;
-    }
+    private int safeInt(Integer value) { return value != null ? value : 0; }
 
     private double computeConsistencyFactor(List<PlayerStatistic> recentStats) {
         if (recentStats.isEmpty()) return 1.0;
         double avg = recentStats.stream().mapToInt(this::safeFantasyPoints).average().orElse(0.0);
         double variance = recentStats.stream()
                 .mapToDouble(ps -> Math.pow(safeFantasyPoints(ps) - avg, 2))
-                .average()
-                .orElse(0.0);
-        double std = Math.sqrt(variance);
-        return clamp(1.02 - (std * 0.015), 0.92, 1.05);
+                .average().orElse(0.0);
+        return clamp(1.02 - (Math.sqrt(variance) * 0.015), 0.92, 1.05);
     }
 
     private double computeMomentumFactor(List<PlayerStatistic> recentStats, double expectedPoints) {
         if (recentStats.size() < 3 || expectedPoints <= 0) return 1.0;
-        double last3 = recentStats.stream().limit(3)
-                .mapToInt(this::safeFantasyPoints).average().orElse(0.0);
-        double prev = recentStats.stream().skip(3)
-                .mapToInt(this::safeFantasyPoints).average().orElse(last3);
-        double delta = (last3 - prev) / expectedPoints;
-        return clamp(1.0 + (delta * 0.08), 0.95, 1.05);
+        double last3 = recentStats.stream().limit(3).mapToInt(this::safeFantasyPoints).average().orElse(0.0);
+        double prev  = recentStats.stream().skip(3).mapToInt(this::safeFantasyPoints).average().orElse(last3);
+        return clamp(1.0 + ((last3 - prev) / expectedPoints * 0.08), 0.95, 1.05);
     }
 
     private double computeImpactFactor(List<PlayerStatistic> recentStats, Position position) {
         if (recentStats.isEmpty()) return 1.0;
 
-        double avgGoals = recentStats.stream().mapToInt(ps -> safeInt(ps.getGoals())).average().orElse(0.0);
-        double avgAssists = recentStats.stream().mapToInt(ps -> safeInt(ps.getAssists())).average().orElse(0.0);
-        double avgShotsOnTarget = recentStats.stream().mapToInt(ps -> safeInt(ps.getShotsOnTarget())).average().orElse(0.0);
-        double avgChances = recentStats.stream().mapToInt(ps -> safeInt(ps.getChancesCreated())).average().orElse(0.0);
-        double avgTackles = recentStats.stream().mapToInt(ps -> safeInt(ps.getTackles())).average().orElse(0.0);
-        double avgInterceptions = recentStats.stream().mapToInt(ps -> safeInt(ps.getInterceptions())).average().orElse(0.0);
-        double avgBlocks = recentStats.stream().mapToInt(ps -> safeInt(ps.getBlocks())).average().orElse(0.0);
-        double avgSaves = recentStats.stream().mapToInt(ps -> safeInt(ps.getSaves())).average().orElse(0.0);
+        double avgGoals    = recentStats.stream().mapToInt(ps -> safeInt(ps.getGoals())).average().orElse(0.0);
+        double avgAssists  = recentStats.stream().mapToInt(ps -> safeInt(ps.getAssists())).average().orElse(0.0);
+        double avgShots    = recentStats.stream().mapToInt(ps -> safeInt(ps.getShotsOnTarget())).average().orElse(0.0);
+        double avgChances  = recentStats.stream().mapToInt(ps -> safeInt(ps.getChancesCreated())).average().orElse(0.0);
+        double avgTackles  = recentStats.stream().mapToInt(ps -> safeInt(ps.getTackles())).average().orElse(0.0);
+        double avgInter    = recentStats.stream().mapToInt(ps -> safeInt(ps.getInterceptions())).average().orElse(0.0);
+        double avgBlocks   = recentStats.stream().mapToInt(ps -> safeInt(ps.getBlocks())).average().orElse(0.0);
+        double avgSaves    = recentStats.stream().mapToInt(ps -> safeInt(ps.getSaves())).average().orElse(0.0);
         double avgConceded = recentStats.stream().mapToInt(ps -> safeInt(ps.getGoalsConceded())).average().orElse(0.0);
-        double cleanSheetRate = recentStats.stream().filter(ps -> Boolean.TRUE.equals(ps.getCleanSheet())).count()
+        double cleanRate   = recentStats.stream().filter(ps -> Boolean.TRUE.equals(ps.getCleanSheet())).count()
                 / (double) recentStats.size();
 
-        double impactScore = switch (position) {
-            case POR -> (avgSaves / 4.0) * 0.07 + (cleanSheetRate * 0.07) - (avgConceded / 2.0) * 0.03;
-            case DEF -> (avgTackles + avgInterceptions + avgBlocks) / 10.0 * 0.05 + (cleanSheetRate * 0.04)
+        return clamp(1.0 + impactScore(position, avgGoals, avgAssists, avgShots, avgChances,
+                avgTackles, avgInter, avgBlocks, avgSaves, avgConceded, cleanRate), 0.88, 1.12);
+    }
+
+    // ── Computation helpers — PlayerStatLite (bulk path) ──────────────────────
+
+    private double computeConsistencyFactorLite(List<PlayerStatLite> stats) {
+        if (stats.isEmpty()) return 1.0;
+        double avg = stats.stream().mapToInt(PlayerStatLite::totalFantasyPoints).average().orElse(0.0);
+        double variance = stats.stream()
+                .mapToDouble(ps -> Math.pow(ps.totalFantasyPoints() - avg, 2))
+                .average().orElse(0.0);
+        return clamp(1.02 - (Math.sqrt(variance) * 0.015), 0.92, 1.05);
+    }
+
+    private double computeMomentumFactorLite(List<PlayerStatLite> stats, double expectedPoints) {
+        if (stats.size() < 3 || expectedPoints <= 0) return 1.0;
+        double last3 = stats.stream().limit(3).mapToInt(PlayerStatLite::totalFantasyPoints).average().orElse(0.0);
+        double prev  = stats.stream().skip(3).mapToInt(PlayerStatLite::totalFantasyPoints).average().orElse(last3);
+        return clamp(1.0 + ((last3 - prev) / expectedPoints * 0.08), 0.95, 1.05);
+    }
+
+    private double computeImpactFactorLite(List<PlayerStatLite> stats, Position position) {
+        if (stats.isEmpty()) return 1.0;
+
+        double avgGoals    = stats.stream().mapToInt(PlayerStatLite::goals).average().orElse(0.0);
+        double avgAssists  = stats.stream().mapToInt(PlayerStatLite::assists).average().orElse(0.0);
+        double avgShots    = stats.stream().mapToInt(PlayerStatLite::shotsOnTarget).average().orElse(0.0);
+        double avgChances  = stats.stream().mapToInt(PlayerStatLite::chancesCreated).average().orElse(0.0);
+        double avgTackles  = stats.stream().mapToInt(PlayerStatLite::tackles).average().orElse(0.0);
+        double avgInter    = stats.stream().mapToInt(PlayerStatLite::interceptions).average().orElse(0.0);
+        double avgBlocks   = stats.stream().mapToInt(PlayerStatLite::blocks).average().orElse(0.0);
+        double avgSaves    = stats.stream().mapToInt(PlayerStatLite::saves).average().orElse(0.0);
+        double avgConceded = stats.stream().mapToInt(PlayerStatLite::goalsConceded).average().orElse(0.0);
+        double cleanRate   = stats.stream().filter(PlayerStatLite::cleanSheet).count()
+                / (double) stats.size();
+
+        return clamp(1.0 + impactScore(position, avgGoals, avgAssists, avgShots, avgChances,
+                avgTackles, avgInter, avgBlocks, avgSaves, avgConceded, cleanRate), 0.88, 1.12);
+    }
+
+    /** Shared position-specific impact score formula (used by both single and bulk paths). */
+    private double impactScore(Position position,
+                               double avgGoals, double avgAssists, double avgShots, double avgChances,
+                               double avgTackles, double avgInter, double avgBlocks,
+                               double avgSaves, double avgConceded, double cleanRate) {
+        if (position == null) return 0.0;
+        return switch (position) {
+            case POR -> (avgSaves / 4.0) * 0.07 + (cleanRate * 0.07) - (avgConceded / 2.0) * 0.03;
+            case DEF -> (avgTackles + avgInter + avgBlocks) / 10.0 * 0.05 + (cleanRate * 0.04)
                     + (avgGoals * 0.03) + (avgAssists * 0.02);
             case MID -> (avgChances / 3.0) * 0.04 + (avgAssists * 0.05) + (avgGoals * 0.04);
-            case DEL -> (avgShotsOnTarget / 3.0) * 0.04 + (avgGoals * 0.07) + (avgAssists * 0.03);
-            default -> 0.0;
+            case DEL -> (avgShots / 3.0) * 0.04 + (avgGoals * 0.07) + (avgAssists * 0.03);
+            default  -> 0.0;
         };
-
-        return clamp(1.0 + impactScore, 0.88, 1.12);
     }
 
     private double computeSeasonFactor(Map<String, Object> season, double expectedPoints) {
         if (season == null || expectedPoints <= 0) return 1.0;
         long matches = toLong(season.get("matches_played"));
         if (matches <= 0) return 1.0;
-        double totalFantasy = toLong(season.get("total_fantasy_points"));
-        double avgFantasy = totalFantasy / matches;
-        double seasonRatio = avgFantasy / expectedPoints;
-        double rating = toDouble(season.get("avg_rating"), 6.5);
-        double ratingBoost = clamp(1.0 + ((rating - 6.5) * 0.03), 0.92, 1.08);
-        return clamp(seasonRatio, 0.90, 1.15) * ratingBoost;
+        double avgFantasy = (double) toLong(season.get("total_fantasy_points")) / matches;
+        double ratingBoost = clamp(1.0 + ((toDouble(season.get("avg_rating"), 6.5) - 6.5) * 0.03), 0.92, 1.08);
+        return clamp(avgFantasy / expectedPoints, 0.90, 1.15) * ratingBoost;
     }
 
-    private int clampInt(int value, int min, int max) {
-        return Math.max(min, Math.min(max, value));
+    // ── Logging helper ────────────────────────────────────────────────────────
+
+    private void logFactors(Player player, int baseValue, int newValue,
+                            double form, double season, double minutes, double rating,
+                            double momentum, double consistency, double impact,
+                            double discipline, double demand, double activity) {
+        log.debug("[MarketValueUpdate] {} ({}): {} -> {} | form={} season={} min={} rating={} mom={} con={} imp={} disc={} dem={} act={}",
+                player.getId(), player.getFullName(), baseValue, newValue,
+                String.format("%.3f", form), String.format("%.3f", season),
+                String.format("%.3f", minutes), String.format("%.3f", rating),
+                String.format("%.3f", momentum), String.format("%.3f", consistency),
+                String.format("%.3f", impact), String.format("%.3f", discipline),
+                String.format("%.3f", demand), activity);
     }
+
+    // ── Numeric conversion utilities ──────────────────────────────────────────
+
+    private int clampInt(int value, int min, int max) { return Math.max(min, Math.min(max, value)); }
 
     private int roundToNearest(int value, int multiple) {
         return Math.round((float) value / multiple) * multiple;

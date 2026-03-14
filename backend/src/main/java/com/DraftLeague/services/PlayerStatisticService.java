@@ -15,6 +15,7 @@ import com.DraftLeague.repositories.PlayerRepository;
 import com.DraftLeague.repositories.PlayerStatisticRepository;
 import com.DraftLeague.repositories.TeamGameweekPointsRepository;
 import com.DraftLeague.repositories.TeamPlayerGameweekPointsRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +38,6 @@ public class PlayerStatisticService {
 
     private final PlayerStatisticRepository playerStatisticRepository;
     private final PlayerStatisticFactory playerStatisticFactory;
-    private final FantasyPointsService fantasyPointsService;
     private final MatchRepository matchRepository;
     private final PlayerRepository playerRepository;
     private final TeamGameweekPointsRepository gwPointsRepository;
@@ -70,35 +70,11 @@ public class PlayerStatisticService {
             PlayerStatistic statistic = playerStatisticFactory.createStatistic(playerType);
 
             mapJsonToStatistic(data, statistic);
+            statistic.setTotalFantasyPoints(statistic.calculateFantasyPoints());
             statistics.add(statistic);
         }
 
-        statistics = playerStatisticRepository.saveAll(statistics);
-
-        for (PlayerStatistic stat : statistics) {
-            int points = stat.calculateFantasyPoints();
-            stat.setTotalFantasyPoints(points);
-        }
-
-        statistics = playerStatisticRepository.saveAll(statistics);
-
-        if (!statistics.isEmpty()) {
-            Set<Integer> matchIds = new HashSet<>();
-            for (PlayerStatistic stat : statistics) {
-                if (stat.getMatchId() != null) {
-                    matchIds.add(stat.getMatchId());
-                }
-            }
-            for (Integer matchId : matchIds) {
-                try {
-                    fantasyPointsService.triggerPointsUpdateForMatch(matchId);
-                } catch (Exception e) {
-                    logger.error("Error al actualizar puntos fantasy para el partido {}: {}", matchId, e.getMessage(), e);
-                }
-            }
-        }
-
-        return statistics;
+        return playerStatisticRepository.saveAll(statistics);
     }
 
     private void mapJsonToStatistic(Map<String, Object> data, PlayerStatistic statistic) {

@@ -26,16 +26,16 @@ public interface PlayerTeamRepository extends JpaRepository<PlayerTeam, Integer>
 
     List<PlayerTeam> findPlayerTeamsByTeamIdIn(List<Integer> teamIds);
 
-    /** Count how many fantasy teams currently own a given player (demand indicator). */
     @Query("SELECT COUNT(pt) FROM PlayerTeam pt WHERE pt.player.id = :playerId")
     long countByPlayerId(@Param("playerId") String playerId);
 
-    /** Find all PlayerTeam entries for a given player so sell price can be refreshed. */
     List<PlayerTeam> findByPlayer(Player player);
 
-    /** Bulk-update sell price for all teams that own a specific player. */
     @Transactional
     @Modifying
     @Query("UPDATE PlayerTeam pt SET pt.sellPrice = :newPrice WHERE pt.player.id = :playerId")
     void updateSellPriceByPlayerId(@Param("playerId") String playerId, @Param("newPrice") int newPrice);
+
+    @Query("SELECT pt.player.id, COUNT(pt) FROM PlayerTeam pt GROUP BY pt.player.id")
+    List<Object[]> countOwnershipForAllPlayers();
 }

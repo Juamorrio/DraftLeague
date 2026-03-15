@@ -1,19 +1,47 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, ActivityIndicator, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, ScrollView, Image, ActivityIndicator, TouchableOpacity, Animated, RefreshControl } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useMatches } from '../../context/MatchesContext';
+import { useLeague } from '../../context/LeagueContext';
+import { colors, fontSize, fontWeight, fontFamily, radius, spacing, shadow } from '../../utils/theme';
 
-export default function Home() {
+export default function Home({ navigation }) {
+	const { selectedLeague } = useLeague();
 	const { 
 		playedMatches: allPlayedData, 
 		upcomingMatches: allUpcomingData, 
 		teamImages, 
-		loading 
+		loading,
+		error: matchesError,
+		refetch,
 	} = useMatches();
+
+	const [refreshing, setRefreshing] = useState(false);
+
+	const onRefresh = async () => {
+		setRefreshing(true);
+		refetch();
+	};
+
+	// Clear refreshing when loading finishes
+	useEffect(() => {
+		if (!loading) setRefreshing(false);
+	}, [loading]);
 
 	const [playedMatches, setPlayedMatches] = useState([]);
 	const [upcomingMatches, setUpcomingMatches] = useState([]);
 	const [selectedJornada, setSelectedJornada] = useState(null);
 	const [availableJornadas, setAvailableJornadas] = useState([]);
+	const fadeAnim = useRef(new Animated.Value(1)).current;
+
+	const animateIn = () => {
+		fadeAnim.setValue(0);
+		Animated.timing(fadeAnim, {
+			toValue: 1,
+			duration: 280,
+			useNativeDriver: true,
+		}).start();
+	};
 
 	useEffect(() => {
 		if (Object.keys(allPlayedData).length === 0 && Object.keys(allUpcomingData).length === 0) return;
@@ -61,6 +89,7 @@ export default function Home() {
 			});
 			setPlayedMatches(played);
 			setUpcomingMatches(sortedUpcoming);
+			animateIn();
 		}
 	}, [allPlayedData, allUpcomingData, selectedJornada]);
 
@@ -139,22 +168,60 @@ export default function Home() {
 		</View>
 	);
 
-	if (loading) {
+	if (loading && !refreshing) {
 		return (
 			<View style={styles.loadingContainer}>
-				<ActivityIndicator size="large" color="#159d9d" />
+				<ActivityIndicator size="large" color={colors.primary} />
 				<Text style={styles.loadingText}>Cargando partidos...</Text>
 			</View>
 		);
 	}
 
+	if (matchesError && !loading) {
+		return (
+			<View style={styles.loadingContainer}>
+				<Text style={styles.errorText}>No se pudieron cargar los partidos</Text>
+				<TouchableOpacity style={styles.retryBtn} onPress={refetch}>
+					<Text style={styles.retryBtnText}>Reintentar</Text>
+				</TouchableOpacity>
+			</View>
+		);
+	}
+
 	return (
-		<ScrollView style={styles.container}>
+		<ScrollView
+			style={styles.container}
+			refreshControl={
+				<RefreshControl
+					refreshing={refreshing}
+					onRefresh={onRefresh}
+					colors={[colors.primary]}
+					tintColor={colors.primary}
+				/>
+			}
+		>
 			<View style={styles.content}>
 				<View style={styles.header}>
 					<Text style={styles.mainTitle}>Home</Text>
 					<Text style={styles.subtitle}>Resultados y próximos partidos</Text>
 				</View>
+
+				{/* ── Onboarding banner ── */}
+				{!selectedLeague && (
+					<TouchableOpacity
+						style={styles.onboardingBanner}
+						onPress={() => navigation.navigate('Leagues')}
+						activeOpacity={0.85}
+					>
+						<Ionicons name="trophy-outline" size={28} color={colors.primary} />
+						<View style={styles.onboardingText}>
+							<Text style={styles.onboardingTitle}>¡Únete a una liga!</Text>
+							<Text style={styles.onboardingSubtitle}>Crea o únete a una liga para competir con tus amigos</Text>
+						</View>
+						<Ionicons name="chevron-forward" size={20} color={colors.primary} />
+					</TouchableOpacity>
+				)}
+
 				<View style={styles.jornadaSelector}>
 					<Text style={styles.jornadaSelectorLabel}>Jornada:</Text>
 					<ScrollView 
@@ -184,22 +251,22 @@ export default function Home() {
 				</View>
 
 				{upcomingMatches.length > 0 && (
-					<View style={styles.section}>
-						<Text style={styles.sectionTitle}>Próximos Partidos</Text>
-						{upcomingMatches.map((match, index) => (
-							<MatchCard key={`upcoming-${index}`} match={match} isUpcoming={true} />
-						))}
-					</View>
-				)}
+				<Animated.View style={[styles.section, { opacity: fadeAnim }]}>
+					<Text style={styles.sectionTitle}>Próximos Partidos</Text>
+					{upcomingMatches.map((match, index) => (
+						<MatchCard key={`upcoming-${index}`} match={match} isUpcoming={true} />
+					))}
+				</Animated.View>
+			)}
 
 				{playedMatches.length > 0 && (
-					<View style={styles.section}>
-						<Text style={styles.sectionTitle}>Resultados</Text>
-						{playedMatches.map((match, index) => (
-							<MatchCard key={`played-${index}`} match={match} isUpcoming={false} />
-						))}
-					</View>
-				)}
+				<Animated.View style={[styles.section, { opacity: fadeAnim }]}>
+					<Text style={styles.sectionTitle}>Resultados</Text>
+					{playedMatches.map((match, index) => (
+						<MatchCard key={`played-${index}`} match={match} isUpcoming={false} />
+					))}
+				</Animated.View>
+			)}
 
 				{playedMatches.length === 0 && upcomingMatches.length === 0 && (
 					<View style={styles.emptyState}>
@@ -214,180 +281,205 @@ export default function Home() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: '#f8fafc',
+		backgroundColor: colors.bgApp,
 	},
 	content: {
-		padding: 16,
+		padding: spacing.lg,
 		paddingBottom: 100,
 	},
 	header: {
-		marginBottom: 24,
-		paddingTop: 8,
+		marginBottom: spacing['2xl'],
+		paddingTop: spacing.sm,
+		alignItems: 'center',
 	},
 	mainTitle: {
-		fontSize: 32,
-		fontWeight: '800',
-		color: '#0f172a',
-        alignSelf: 'center',
-		marginBottom: 4,
+		fontFamily: fontFamily.displayBold,
+		fontSize: 34,
+		color: colors.textPrimary,
+		marginBottom: 2,
+		letterSpacing: 0.5,
 	},
 	subtitle: {
-		fontSize: 16,
-		color: '#64748b',
-        alignSelf: 'center',
+		fontFamily: fontFamily.bodyMedium,
+		fontSize: fontSize.sm,
+		color: colors.textMuted,
+	},
+	loadingContainer: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: colors.bgApp,
+		gap: spacing.md,
+	},
+	loadingText: {
+		fontSize: fontSize.md,
+		color: colors.textMuted,
+	},
+	errorText: {
+		fontSize: fontSize.md,
+		color: colors.danger,
+		textAlign: 'center',
+		marginBottom: spacing.lg,
+	},
+	retryBtn: {
+		backgroundColor: colors.primary,
+		paddingHorizontal: spacing.xl,
+		paddingVertical: spacing.md,
+		borderRadius: radius.pill,
+	},
+	retryBtnText: {
+		color: colors.textInverse,
+		fontWeight: fontWeight.bold,
+		fontSize: fontSize.sm,
 	},
 	jornadaSelector: {
-		marginBottom: 24,
+		marginBottom: spacing['2xl'],
 	},
 	jornadaSelectorLabel: {
-		fontSize: 14,
-		fontWeight: '700',
-		color: '#64748b',
-		marginBottom: 12,
-		paddingLeft: 4,
+		fontSize: fontSize.xs,
+		fontWeight: fontWeight.bold,
+		color: colors.textMuted,
+		marginBottom: spacing.md,
+		letterSpacing: 1,
+		textTransform: 'uppercase',
 	},
 	jornadaScrollView: {
 		flexGrow: 0,
 	},
 	jornadaChip: {
-		backgroundColor: '#ffffff',
-		paddingVertical: 10,
+		backgroundColor: colors.bgCard,
+		paddingVertical: 8,
 		paddingHorizontal: 16,
-		borderRadius: 20,
+		borderRadius: radius.pill,
 		marginRight: 8,
-		borderWidth: 2,
-		borderColor: '#e2e8f0',
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 2 },
-		shadowOpacity: 0.05,
-		shadowRadius: 4,
-		elevation: 2,
+		borderWidth: 1.5,
+		borderColor: colors.border,
+		...shadow.sm,
 	},
 	jornadaChipSelected: {
-		backgroundColor: '#197319ff',
-		borderColor: '#013055',
+		backgroundColor: colors.primary,
+		borderColor: colors.primaryDark,
 	},
 	jornadaChipText: {
-		fontSize: 14,
-		fontWeight: '600',
-		color: '#64748b',
+		fontSize: fontSize.sm,
+		fontWeight: fontWeight.semibold,
+		color: colors.textSecondary,
 	},
 	jornadaChipTextSelected: {
-		color: '#ffffff',
-		fontWeight: '700',
+		color: colors.textInverse,
+		fontWeight: fontWeight.bold,
 	},
 	section: {
-		marginBottom: 32,
+		marginBottom: spacing['3xl'],
 	},
 	sectionTitle: {
-		fontSize: 20,
-		fontWeight: '700',
-		color: '#1e293b',
-		marginBottom: 12,
-		paddingLeft: 4,
+		fontFamily: fontFamily.displaySemi,
+		fontSize: fontSize.xl,
+		color: colors.textPrimary,
+		marginBottom: spacing.md,
+		letterSpacing: 0.3,
 	},
 	matchCard: {
-		backgroundColor: '#ffffff',
-		borderRadius: 16,
-		marginBottom: 12,
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 2 },
-		shadowOpacity: 0.06,
-		shadowRadius: 8,
-		elevation: 2,
+		backgroundColor: colors.bgCard,
+		borderRadius: radius.lg,
+		marginBottom: spacing.md,
+		...shadow.sm,
 		overflow: 'hidden',
 	},
 	matchContent: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		padding: 16,
+		paddingVertical: spacing.lg,
+		paddingHorizontal: spacing.xl,
 		justifyContent: 'space-between',
 	},
 	teamContainer: {
 		flex: 1,
 		alignItems: 'center',
-		gap: 8,
 	},
 	teamImageWrapper: {
-		width: 50,
-		height: 50,
-		borderRadius: 25,
-		backgroundColor: '#f1f5f9',
+		width: 52,
+		height: 52,
+		borderRadius: 26,
+		backgroundColor: colors.bgSubtle,
 		justifyContent: 'center',
 		alignItems: 'center',
-		borderWidth: 2,
-		borderColor: '#e2e8f0',
+		borderWidth: 1.5,
+		borderColor: colors.border,
 	},
 	teamImage: {
-		width: 40,
-		height: 40,
+		width: 38,
+		height: 38,
 		resizeMode: 'contain',
 	},
 	teamImagePlaceholder: {
-		width: 40,
-		height: 40,
-		borderRadius: 20,
-		backgroundColor: '#cbd5e1',
+		width: 38,
+		height: 38,
+		borderRadius: 19,
+		backgroundColor: colors.borderStrong,
 		justifyContent: 'center',
 		alignItems: 'center',
 	},
 	placeholderText: {
-		fontSize: 18,
-		fontWeight: '700',
-		color: '#64748b',
+		fontSize: fontSize.lg,
+		fontWeight: fontWeight.bold,
+		color: colors.textMuted,
 	},
 	teamName: {
-		fontSize: 13,
-		fontWeight: '600',
-		color: '#334155',
+		fontSize: fontSize.xs,
+		fontWeight: fontWeight.semibold,
+		color: colors.textSecondary,
 		textAlign: 'center',
 		maxWidth: 90,
+		marginTop: 4,
 	},
 	scoreContainer: {
-		paddingHorizontal: 20,
+		paddingHorizontal: spacing.xl,
 		justifyContent: 'center',
 		alignItems: 'center',
+		gap: 4,
 	},
 	scoreBox: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		backgroundColor: '#f1f5f9',
-		borderRadius: 12,
-		paddingVertical: 8,
+		backgroundColor: colors.bgSubtle,
+		borderRadius: radius.md,
+		paddingVertical: 10,
 		paddingHorizontal: 16,
-		gap: 8,
+		gap: 10,
 	},
 	scoreText: {
-		fontSize: 24,
-		fontWeight: '800',
-		color: '#0f172a',
-		minWidth: 28,
+		fontFamily: fontFamily.displayBold,
+		fontSize: 32,
+		color: colors.textPrimary,
+		minWidth: 24,
 		textAlign: 'center',
 	},
 	scoreSeparator: {
-		fontSize: 20,
-		fontWeight: '600',
-		color: '#94a3b8',
+		fontFamily: fontFamily.displaySemi,
+		fontSize: fontSize.lg,
+		color: colors.textMuted,
 	},
 	xgRow: {
-		marginTop: 4,
 		alignItems: 'center',
 	},
 	xgText: {
-		fontSize: 11,
-		fontWeight: '600',
-		color: '#94a3b8',
+		fontSize: fontSize.xs,
+		fontWeight: fontWeight.semibold,
+		color: colors.textMuted,
 	},
 	dateContainer: {
-		backgroundColor: '#fef3c7',
-		borderRadius: 12,
-		paddingVertical: 8,
-		paddingHorizontal: 12,
+		backgroundColor: colors.warningBg,
+		borderRadius: radius.md,
+		paddingVertical: 10,
+		paddingHorizontal: 14,
+		borderWidth: 1,
+		borderColor: colors.warning,
 	},
 	dateText: {
-		fontSize: 12,
-		fontWeight: '700',
-		color: '#92400e',
+		fontSize: fontSize.xs,
+		fontWeight: fontWeight.bold,
+		color: colors.warningDeep,
 		textAlign: 'center',
 	},
 	emptyState: {
@@ -395,8 +487,35 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	emptyText: {
-		fontSize: 16,
-		color: '#94a3b8',
+		fontSize: fontSize.md,
+		color: colors.textMuted,
 		textAlign: 'center',
+	},
+	onboardingBanner: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		backgroundColor: colors.successBg,
+		borderRadius: radius.lg,
+		padding: spacing.lg,
+		marginBottom: spacing.lg,
+		gap: spacing.md,
+		borderWidth: 1.5,
+		borderColor: colors.primaryMuted,
+		...shadow.sm,
+	},
+	onboardingText: {
+		flex: 1,
+		gap: 2,
+	},
+	onboardingTitle: {
+		fontFamily: fontFamily.displaySemi,
+		fontSize: fontSize.md,
+		color: colors.primaryDark,
+	},
+	onboardingSubtitle: {
+		fontFamily: fontFamily.body,
+		fontSize: fontSize.xs,
+		color: colors.primary,
+		lineHeight: 16,
 	},
 });

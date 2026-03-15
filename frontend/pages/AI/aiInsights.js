@@ -1,30 +1,34 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
 import { useLeague } from '../../context/LeagueContext';
 import authService, { authenticatedFetch } from '../../services/authService';
 import predictionService from '../../services/predictionService';
 import withAuth from '../../components/withAuth';
+import { colors, fontSize, fontWeight, radius, spacing, shadow, positionBadgeColors } from '../../utils/theme';
 
 const POSITION_GROUPS = [
-	{ key: 'POR', label: 'Portero' },
+	{ key: 'POR', label: 'Porteros' },
 	{ key: 'DEF', label: 'Defensas' },
 	{ key: 'MID', label: 'Centrocampistas' },
-	{ key: 'DEL', label: 'Delanteros' }
+	{ key: 'DEL', label: 'Delanteros' },
 ];
 
-const POSITION_COLORS = {
-	POR: '#f59e0b',
-	DEF: '#3b82f6',
-	MID: '#10b981',
-	DEL: '#ef4444'
-};
+const getPosColor = (pos) => positionBadgeColors[pos] || { bg: colors.bgSubtle, text: colors.textSecondary, border: colors.border, bar: colors.textMuted };
 
-const POSITION_LABELS = {
-	POR: 'POR',
-	DEF: 'DEF',
-	MID: 'MED',
-	DEL: 'DEL'
-};
+const MAX_PTS = 15; // normalisation cap for progress bars
+
+function PtsBar({ pts, color }) {
+	const pct = Math.min((pts / MAX_PTS) * 100, 100);
+	return (
+		<View style={barStyles.track}>
+			<View style={[barStyles.fill, { width: `${pct}%`, backgroundColor: color }]} />
+		</View>
+	);
+}
+const barStyles = StyleSheet.create({
+	track: { height: 5, flex: 1, backgroundColor: colors.border, borderRadius: 3, overflow: 'hidden' },
+	fill:  { height: 5, borderRadius: 3 },
+});
 
 function AIInsights() {
 	const { selectedLeague } = useLeague();
@@ -41,6 +45,7 @@ function AIInsights() {
 	const [refreshing, setRefreshing] = useState(false);
 	const [teamError, setTeamError] = useState(null);
 	const [marketError, setMarketError] = useState(null);
+	const [lastUpdatedAt, setLastUpdatedAt] = useState(null);
 
 	const loadData = async () => {
 		if (!selectedLeague?.id) {
@@ -49,123 +54,129 @@ function AIInsights() {
 			setLoadingMarket(false);
 			return;
 		}
-
-		setTeamError(null);
-		setMarketError(null);
-		setLoadingTeam(true);
-		setLoadingMarket(true);
+		setTeamError(null); setMarketError(null);
+		setLoadingTeam(true); setLoadingMarket(true);
 
 		let userId;
 		try {
 			const user = await authService.getCurrentUser();
-			if (!user?.id) {
-				setTeamError('Usuario no autenticado');
-				setLoadingTeam(false);
-				setLoadingMarket(false);
-				return;
-			}
+			if (!user?.id) { setTeamError('Usuario no autenticado'); setLoadingTeam(false); setLoadingMarket(false); return; }
 			userId = user.id;
-		} catch {
-			setTeamError('Error de autenticacion');
-			setLoadingTeam(false);
-			setLoadingMarket(false);
-			return;
-		}
+		} catch { setTeamError('Error de autenticacion'); setLoadingTeam(false); setLoadingMarket(false); return; }
 
 		const [roundResult, teamResult, marketResult] = await Promise.allSettled([
 			predictionService.getNextRoundMatches(),
-			authenticatedFetch(`/api/v1/teams/league/${selectedLeague.id}/${userId}`).then(r => {
-				if (!r.ok) throw new Error('Team fetch failed');
-				return r.json();
-			}),
-			authenticatedFetch(`/api/v1/market?leagueId=${selectedLeague.id}`).then(r => {
-				if (!r.ok) throw new Error('Market fetch failed');
-				return r.json();
-			})
+			authenticatedFetch(`/api/v1/teams/league/${selectedLeague.id}/${userId}`).then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+			authenticatedFetch(`/api/v1/market?leagueId=${selectedLeague.id}`).then(r => { if (!r.ok) throw new Error(); return r.json(); }),
 		]);
 
-		if (roundResult.status === 'fulfilled' && roundResult.value) {
-			setNextRoundInfo(roundResult.value);
-		}
+		if (roundResult.status === 'fulfilled' && roundResult.value) setNextRoundInfo(roundResult.value);
 
 		let teamData = null;
-		if (teamResult.status === 'fulfilled') {
-			teamData = teamResult.value;
-			setTeam(teamData);
-		} else {
-			setTeamError('No se pudo cargar tu equipo');
-		}
+		if (teamResult.status === 'fulfilled') { teamData = teamResult.value; setTeam(teamData); }
+		else setTeamError('No se pudo cargar tu equipo');
 		setLoadingTeam(false);
 
 		let marketData = [];
-		if (marketResult.status === 'fulfilled') {
-			marketData = Array.isArray(marketResult.value) ? marketResult.value : [];
-			setMarketPlayers(marketData);
-		} else {
-			setMarketError('No se pudieron cargar los jugadores del mercado');
-		}
+		if (marketResult.status === 'fulfilled') { marketData = Array.isArray(marketResult.value) ? marketResult.value : []; setMarketPlayers(marketData); }
+		else setMarketError('No se pudieron cargar los jugadores del mercado');
 		setLoadingMarket(false);
 
 		if (teamData?.playerTeams?.length > 0) {
 			setLoadingPlayerPredictions(true);
 			const playerIds = teamData.playerTeams.map(pt => pt.player?.id).filter(Boolean);
-			const predResults = await Promise.allSettled(
-				playerIds.map(pid => predictionService.predictPlayerPoints(pid))
-			);
+			const results = await Promise.allSettled(playerIds.map(pid => predictionService.predictPlayerPoints(pid)));
 			const pMap = {};
-			playerIds.forEach((pid, i) => {
-				if (predResults[i].status === 'fulfilled' && predResults[i].value) {
-					pMap[pid] = predResults[i].value;
-				}
-			});
+			playerIds.forEach((pid, i) => { if (results[i].status === 'fulfilled' && results[i].value) pMap[pid] = results[i].value; });
 			setPlayerPredictions(pMap);
 			setLoadingPlayerPredictions(false);
 		}
 
 		if (marketData.length > 0) {
 			setLoadingMarketPredictions(true);
-			const mPlayerIds = marketData.map(mp => mp.player?.id).filter(Boolean);
-			const mPredResults = await Promise.allSettled(
-				mPlayerIds.map(pid => predictionService.predictPlayerPoints(pid))
-			);
+			const mIds = marketData.map(mp => mp.player?.id).filter(Boolean);
+			const mResults = await Promise.allSettled(mIds.map(pid => predictionService.predictPlayerPoints(pid)));
 			const mMap = {};
-			mPlayerIds.forEach((pid, i) => {
-				if (mPredResults[i].status === 'fulfilled' && mPredResults[i].value) {
-					mMap[pid] = mPredResults[i].value;
-				}
-			});
+			mIds.forEach((pid, i) => { if (mResults[i].status === 'fulfilled' && mResults[i].value) mMap[pid] = mResults[i].value; });
 			setMarketPredictions(mMap);
 			setLoadingMarketPredictions(false);
 		}
-
+		setLastUpdatedAt(new Date());
 		setRefreshing(false);
 	};
 
-	useEffect(() => {
-		loadData();
-	}, [selectedLeague?.id]);
+	useEffect(() => { loadData(); }, [selectedLeague?.id]);
+	const onRefresh = () => { setRefreshing(true); loadData(); };
 
-	const onRefresh = () => {
-		setRefreshing(true);
-		loadData();
-	};
+	// ── Derived / computed insight values ──────────────────────────────────
+	const totalPredicted = useMemo(() =>
+		Object.values(playerPredictions).reduce((s, p) => s + (p.predictedPoints || 0), 0),
+		[playerPredictions]);
 
-	const getPositionColor = (pos) => POSITION_COLORS[pos] || '#6b7280';
+	const playersByPosition = useMemo(() => {
+		const map = {};
+		if (team?.playerTeams) {
+			team.playerTeams.forEach(pt => {
+				const pos = pt.player?.position || 'MID';
+				if (!map[pos]) map[pos] = [];
+				map[pos].push(pt);
+			});
+			Object.keys(map).forEach(pos => {
+				map[pos].sort((a, b) => (playerPredictions[b.player?.id]?.predictedPoints || 0) - (playerPredictions[a.player?.id]?.predictedPoints || 0));
+			});
+		}
+		return map;
+	}, [team, playerPredictions]);
 
-	const formatConfidence = (interval) => {
-		if (!interval || interval.length < 2) return null;
-		return `${interval[0]} - ${interval[1]} pts`;
-	};
+	const sortedMarketPlayers = useMemo(() =>
+		[...marketPlayers].sort((a, b) => {
+			const pA = marketPredictions[a.player?.id]?.predictedPoints;
+			const pB = marketPredictions[b.player?.id]?.predictedPoints;
+			if (pA != null && pB != null) return pB - pA;
+			return pA != null ? -1 : 1;
+		}),
+		[marketPlayers, marketPredictions]);
 
+	// Captain: highest predicted in my team
+	const captainRec = useMemo(() => {
+		if (!team?.playerTeams || Object.keys(playerPredictions).length === 0) return null;
+		return team.playerTeams
+			.filter(pt => pt.player?.id && playerPredictions[pt.player.id])
+			.sort((a, b) => (playerPredictions[b.player.id]?.predictedPoints || 0) - (playerPredictions[a.player.id]?.predictedPoints || 0))[0] || null;
+	}, [team, playerPredictions]);
+
+	// Market top pick by pts/value efficiency
+	const marketTopPick = useMemo(() => {
+		const withEff = sortedMarketPlayers
+			.filter(mp => marketPredictions[mp.player?.id]?.predictedPoints && mp.player?.marketValue > 0)
+			.map(mp => ({
+				...mp,
+				pts: marketPredictions[mp.player.id].predictedPoints,
+				eff: (marketPredictions[mp.player.id].predictedPoints / (mp.player.marketValue / 1_000_000)),
+			}))
+			.sort((a, b) => b.eff - a.eff);
+		return withEff[0] || null;
+	}, [sortedMarketPlayers, marketPredictions]);
+
+	// Weakest player in my team
+	const weakestPlayer = useMemo(() => {
+		if (!team?.playerTeams || Object.keys(playerPredictions).length === 0) return null;
+		return team.playerTeams
+			.filter(pt => pt.player?.id && playerPredictions[pt.player.id])
+			.sort((a, b) => (playerPredictions[a.player.id]?.predictedPoints || 0) - (playerPredictions[b.player.id]?.predictedPoints || 0))[0] || null;
+	}, [team, playerPredictions]);
+
+	// ── Loading / no-league screens ──────────────────────────────────────
 	if (loadingTeam && !team) {
 		return (
-			<View style={styles.container}>
-				<View style={styles.topBar}>
-					<Text style={styles.header}>Análisis Estadístico</Text>
+			<View style={s.container}>
+				<View style={s.topBar}>
+					<Text style={s.topBarTitle}>Análisis Predictivo</Text>
+					<Text style={s.topBarSub}>{selectedLeague?.name || '—'}</Text>
 				</View>
-				<View style={styles.centerContent}>
-					<ActivityIndicator size="large" color="#1a5c3a" />
-					<Text style={styles.loadingText}>Calculando probabilidades...</Text>
+				<View style={s.center}>
+					<ActivityIndicator size="large" color={colors.primary} />
+					<Text style={s.loadingTxt}>Calculando análisis de rendimiento...</Text>
 				</View>
 			</View>
 		);
@@ -173,241 +184,258 @@ function AIInsights() {
 
 	if (!selectedLeague?.id) {
 		return (
-			<View style={styles.container}>
-				<View style={styles.topBar}>
-					<Text style={styles.header}>Análisis Estadístico</Text>
-				</View>
-				<View style={styles.centerContent}>
-					<Text style={styles.errorText}>Selecciona una liga primero</Text>
-				</View>
+			<View style={s.container}>
+				<View style={s.topBar}><Text style={s.topBarTitle}>Análisis Predictivo</Text></View>
+				<View style={s.center}><Text style={s.errorTxt}>Selecciona una liga primero</Text></View>
 			</View>
 		);
 	}
 
-	const renderPlayerPredRow = (playerTeam) => {
-		const player = playerTeam.player;
-		if (!player) return null;
-		const prediction = playerPredictions[player.id];
-		const pos = player.position || 'MID';
+	// ── Helpers ──────────────────────────────────────────────────────────
+	const hasPlayerPreds = Object.keys(playerPredictions).length > 0;
 
-		return (
-			<View key={player.id} style={styles.playerPredRow}>
-				<View style={[styles.positionDot, { backgroundColor: getPositionColor(pos) }]} />
-				<View style={styles.playerInfo}>
-					<Text style={styles.playerName}>{player.fullName || player.name}</Text>
-					<Text style={styles.playerMeta}>
-						{POSITION_LABELS[pos] || pos}
-						{player.totalPoints != null ? ` | ${player.totalPoints} pts totales` : ''}
+	return (
+		<View style={s.container}>
+			{/* ══ TOP BAR ══════════════════════════════════════════════════ */}
+			<View style={s.topBar}>
+				<View style={{ flex: 1 }}>
+					<Text style={s.topBarTitle}>Análisis Predictivo</Text>
+					<Text style={s.topBarSub}>
+						{nextRoundInfo?.round ? `Jornada ${nextRoundInfo.round} · ` : ''}{selectedLeague.name}
 					</Text>
-				</View>
-				<View style={styles.predictionCol}>
-					{prediction ? (
-						<>
-							<Text style={styles.predPoints}>{prediction.predictedPoints?.toFixed(1)}</Text>
-							{prediction.confidenceInterval && (
-								<Text style={styles.predConfidence}>
-									{formatConfidence(prediction.confidenceInterval)}
-								</Text>
-							)}
-						</>
-					) : (
-						<Text style={styles.noPrediction}>Sin datos</Text>
-					)}
-				</View>
-			</View>
-		);
-	};
-
-	const renderMarketPlayerRow = (mp) => {
-		const player = mp.player;
-		if (!player) return null;
-		const prediction = marketPredictions[player.id];
-		const pos = player.position || 'MID';
-
-		return (
-			<View key={mp.id} style={styles.marketPlayerCard}>
-				<View style={[styles.positionDot, { backgroundColor: getPositionColor(pos) }]} />
-				<View style={styles.playerInfo}>
-					<Text style={styles.playerName}>{player.fullName || player.name}</Text>
-					<Text style={styles.playerMeta}>
-						{POSITION_LABELS[pos] || pos} | {player.marketValue?.toLocaleString()} coins
-					</Text>
-					{mp.auctionEndTime && (
-						<Text style={styles.auctionTime}>
-							Cierre: {new Date(mp.auctionEndTime).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+					{lastUpdatedAt && (
+						<Text style={s.topBarFresh}>
+							Actualizado {lastUpdatedAt.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
 						</Text>
 					)}
 				</View>
-				<View style={styles.predictionCol}>
-					{prediction ? (
-						<>
-							<Text style={styles.predPoints}>{prediction.predictedPoints?.toFixed(1)}</Text>
-							{prediction.confidenceInterval && (
-								<Text style={styles.predConfidence}>
-									{formatConfidence(prediction.confidenceInterval)}
-								</Text>
-							)}
-						</>
-					) : (
-						<Text style={styles.noPrediction}>Sin datos</Text>
-					)}
-				</View>
-			</View>
-		);
-	};
-
-	const playersByPosition = {};
-	if (team?.playerTeams) {
-		team.playerTeams.forEach(pt => {
-			const pos = pt.player?.position || 'MID';
-			if (!playersByPosition[pos]) playersByPosition[pos] = [];
-			playersByPosition[pos].push(pt);
-		});
-		Object.keys(playersByPosition).forEach(pos => {
-			playersByPosition[pos].sort((a, b) => {
-				const predA = playerPredictions[a.player?.id]?.predictedPoints || 0;
-				const predB = playerPredictions[b.player?.id]?.predictedPoints || 0;
-				return predB - predA;
-			});
-		});
-	}
-
-	const sortedMarketPlayers = [...marketPlayers].sort((a, b) => {
-		const predA = marketPredictions[a.player?.id]?.predictedPoints;
-		const predB = marketPredictions[b.player?.id]?.predictedPoints;
-		if (predA != null && predB != null) return predB - predA;
-		if (predA != null) return -1;
-		if (predB != null) return 1;
-		return 0;
-	});
-
-	return (
-		<View style={styles.container}>
-			<View style={styles.topBar}>
-				<Text style={styles.header}>Análisis Inteligente</Text>
-				<Text style={styles.subtitle}>
-					{nextRoundInfo?.round ? `Jornada ${nextRoundInfo.round} - ` : ''}{selectedLeague?.name}
-				</Text>
+				<TouchableOpacity style={s.refreshBtn} onPress={onRefresh} disabled={refreshing}>
+					<Text style={s.refreshTxt}>{refreshing ? '...' : '↻'}</Text>
+				</TouchableOpacity>
 			</View>
 
 			<ScrollView
-				style={styles.scrollView}
-				contentContainerStyle={styles.scrollContent}
-				refreshControl={
-					<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#1a5c3a']} />
-				}
+				style={{ flex: 1 }}
+				contentContainerStyle={s.scroll}
+				refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />}
 			>
-				{/* === SECTION 1: Team Player Predictions === */}
-				<View style={styles.section}>
-					<Text style={styles.sectionTitle}>Tu Equipo</Text>
-					<Text style={styles.sectionSubtitle}>Expectativa de puntos según Poisson y Elo</Text>
-
-					{teamError ? (
-						<View style={styles.errorCard}>
-							<Text style={styles.errorCardText}>{teamError}</Text>
-							<TouchableOpacity style={styles.retryButton} onPress={loadData}>
-								<Text style={styles.retryButtonText}>Reintentar</Text>
-							</TouchableOpacity>
-						</View>
-					) : (
-						<>
-							{loadingPlayerPredictions && (
-								<ActivityIndicator size="small" color="#1a5c3a" style={{ marginBottom: 12 }} />
-							)}
-							{POSITION_GROUPS.map(group => {
-								const players = playersByPosition[group.key];
-								if (!players || players.length === 0) return null;
-								return (
-									<View key={group.key}>
-										<Text style={[styles.positionGroupHeader, { color: getPositionColor(group.key) }]}>
-											{group.label}
-										</Text>
-										{players.map(renderPlayerPredRow)}
-									</View>
-								);
-							})}
-							{team && (!team.playerTeams || team.playerTeams.length === 0) && (
-								<Text style={styles.emptyText}>No tienes jugadores en tu equipo</Text>
-							)}
-						</>
-					)}
-				</View>
-
-				{/* === SECTION 2: Total Team Prediction === */}
-				<View style={styles.section}>
-					<Text style={styles.sectionTitle}>Proyección Total</Text>
-					<Text style={styles.sectionSubtitle}>Suma algorítmica de tu alineación</Text>
-
-					{loadingPlayerPredictions ? (
-						<View style={styles.predictionCard}>
-							<ActivityIndicator size="large" color="#1a5c3a" />
-						</View>
-					) : teamError ? (
-						<View style={styles.warningCard}>
-							<Text style={styles.warningText}>Carga tu equipo para ver la proyección</Text>
-						</View>
-					) : Object.keys(playerPredictions).length > 0 ? (
-						<>
-							<View style={styles.predictionCard}>
-								<View style={styles.mainPrediction}>
-									<Text style={styles.predictionLabel}>PUNTOS ESPERADOS</Text>
-									<Text style={styles.predictionValue}>
-										{Object.values(playerPredictions)
-											.reduce((sum, p) => sum + (p.predictedPoints || 0), 0)
-											.toFixed(1)}
-									</Text>
+				{/* ══ INSIGHT CHIPS ════════════════════════════════════════ */}
+				{(captainRec || marketTopPick || weakestPlayer) && (
+					<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.chipsRow}>
+						{captainRec && playerPredictions[captainRec.player?.id] && (
+							<View style={[s.insightChip, { borderColor: colors.warning, backgroundColor: colors.warningBg }]}>
+								<Text style={s.chipIcon}>⭐</Text>
+								<View>
+									<Text style={s.chipLabel}>Capitán recomendado</Text>
+									<Text style={s.chipValue}>{captainRec.player.fullName ?? captainRec.player.name}</Text>
+									<Text style={s.chipSub}>{playerPredictions[captainRec.player.id].predictedPoints?.toFixed(1)} pts esperados</Text>
 								</View>
 							</View>
+						)}
+						{marketTopPick && (
+							<View style={[s.insightChip, { borderColor: positionBadgeColors.DEF.border, backgroundColor: positionBadgeColors.DEF.bg }]}>
+								<Text style={s.chipIcon}>🛒</Text>
+								<View>
+									<Text style={s.chipLabel}>Mejor fichaje eficiente</Text>
+									<Text style={s.chipValue}>{marketTopPick.player.fullName ?? marketTopPick.player.name}</Text>
+									<Text style={s.chipSub}>{marketTopPick.pts?.toFixed(1)} pts · {marketTopPick.eff?.toFixed(1)} pts/M€</Text>
+								</View>
+							</View>
+						)}
+						{weakestPlayer && playerPredictions[weakestPlayer.player?.id] && (
+							<View style={[s.insightChip, { borderColor: colors.danger, backgroundColor: colors.dangerBg }]}>
+								<Text style={s.chipIcon}>⚠️</Text>
+								<View>
+									<Text style={s.chipLabel}>Eslabón débil</Text>
+									<Text style={s.chipValue}>{weakestPlayer.player.fullName ?? weakestPlayer.player.name}</Text>
+									<Text style={s.chipSub}>{playerPredictions[weakestPlayer.player.id].predictedPoints?.toFixed(1)} pts esperados</Text>
+								</View>
+							</View>
+						)}
+					</ScrollView>
+				)}
 
-							{/* Breakdown by position */}
-							<View style={styles.breakdownGrid}>
-								{POSITION_GROUPS.map(group => {
-									const posPlayerTeams = (team?.playerTeams || []).filter(
-										pt => (pt.player?.position || 'MID') === group.key
-									);
-									if (posPlayerTeams.length === 0) return null;
-									const totalPos = posPlayerTeams.reduce((sum, pt) => {
-										const pred = playerPredictions[pt.player?.id];
-										return sum + (pred?.predictedPoints || 0);
-									}, 0);
+				{/* ══ HERO: PROYECCIÓN TOTAL ═══════════════════════════════ */}
+				<View style={s.heroCard}>
+					<Text style={s.heroLabel}>PUNTOS ESPERADOS PRÓXIMA JORNADA</Text>
+					{loadingPlayerPredictions ? (
+						<ActivityIndicator size="large" color={colors.primary} style={{ marginVertical: 12 }} />
+					) : hasPlayerPreds ? (
+						<>
+							<Text style={s.heroValue}>{totalPredicted.toFixed(1)}</Text>
+							<View style={s.heroBreakdown}>
+								{POSITION_GROUPS.map(g => {
+									const pts = (team?.playerTeams || [])
+										.filter(pt => (pt.player?.position || 'MID') === g.key)
+										.reduce((sum, pt) => sum + (playerPredictions[pt.player?.id]?.predictedPoints || 0), 0);
+									if (pts === 0) return null;
+									const pc = getPosColor(g.key);
 									return (
-										<View key={group.key} style={styles.breakdownCard}>
-											<View style={[styles.breakdownDot, { backgroundColor: getPositionColor(group.key) }]} />
-											<Text style={styles.breakdownPosition}>{group.key}</Text>
-											<Text style={styles.breakdownTotal}>{totalPos.toFixed(1)}</Text>
-											<Text style={styles.breakdownLabel}>pts</Text>
+										<View key={g.key} style={[s.heroBreakPill, { backgroundColor: pc.bg, borderColor: pc.border }]}>
+											<Text style={[s.heroBreakPos, { color: pc.text }]}>{g.key}</Text>
+											<Text style={[s.heroBreakPts, { color: pc.text }]}>{pts.toFixed(1)}</Text>
 										</View>
 									);
 								})}
 							</View>
 						</>
-					) : team ? (
-						<View style={styles.warningCard}>
-							<Text style={styles.warningText}>Sin proyecciones disponibles</Text>
-						</View>
-					) : null}
+					) : (
+						<Text style={s.heroNoData}>
+							{teamError ? teamError : 'Sin predicciones disponibles'}
+						</Text>
+					)}
 				</View>
 
-				{/* === SECTION 3: Market Predictions === */}
-				<View style={styles.section}>
-					<Text style={styles.sectionTitle}>Análisis de Mercado</Text>
-					<Text style={styles.sectionSubtitle}>Jugadores con mayor potencial para esta jornada</Text>
+				{/* ══ TUS JUGADORES ════════════════════════════════════════ */}
+				<View style={s.section}>
+					<View style={s.sectionHeader}>
+						<Text style={s.sectionTitle}>Tu Equipo</Text>
+						{loadingPlayerPredictions && <ActivityIndicator size="small" color={colors.primary} />}
+					</View>
+					<Text style={s.sectionSub}>Media ponderada de las últimas 5 jornadas · más peso a las más recientes</Text>
+
+					{teamError ? (
+						<View style={s.errorCard}>
+							<Text style={s.errorCardTxt}>{teamError}</Text>
+							<TouchableOpacity style={s.retryBtn} onPress={loadData}>
+								<Text style={s.retryTxt}>Reintentar</Text>
+							</TouchableOpacity>
+						</View>
+					) : team && (!team.playerTeams || team.playerTeams.length === 0) ? (
+						<Text style={s.emptyTxt}>No tienes jugadores en tu equipo</Text>
+					) : (
+						POSITION_GROUPS.map(group => {
+							const players = playersByPosition[group.key];
+							if (!players || players.length === 0) return null;
+							const pc = getPosColor(group.key);
+							return (
+								<View key={group.key} style={s.posGroup}>
+									<View style={[s.posGroupHeader, { backgroundColor: pc.bg, borderColor: pc.border }]}>
+										<View style={[s.posGroupDot, { backgroundColor: pc.bar }]} />
+										<Text style={[s.posGroupLabel, { color: pc.text }]}>{group.label}</Text>
+									</View>
+
+									{players.map((pt, idx) => {
+										const player = pt.player;
+										if (!player) return null;
+										const pred = playerPredictions[player.id];
+										const pts = pred?.predictedPoints || 0;
+										const ci = pred?.confidenceInterval;
+										const isBest = idx === 0 && pts > 0;
+										const pc2 = getPosColor(player.position);
+
+										return (
+											<View key={player.id} style={[s.playerRow, isBest && s.playerRowBest]}>
+												{isBest && (
+													<View style={s.bestBadge}>
+														<Text style={s.bestBadgeTxt}>TOP</Text>
+													</View>
+												)}
+												<View style={s.playerLeft}>
+													<View style={s.playerNameRow}>
+														<Text style={s.playerName} numberOfLines={1}>
+															{player.fullName || player.name}
+														</Text>
+													</View>
+													<Text style={s.playerMeta}>
+														{player.totalPoints != null ? `${player.totalPoints} pts acumulados` : 'Sin datos totales'}
+													</Text>
+													{ci && ci.length >= 2 && (
+														<Text style={s.playerCI}>
+															Rango: {Number(ci[0]).toFixed(1)} – {Number(ci[1]).toFixed(1)} pts
+														</Text>
+													)}
+													{pred && <PtsBar pts={pts} color={pc2.bar} />}
+												</View>
+												<View style={s.playerRight}>
+													{pred ? (
+														<>
+															<Text style={[s.playerPts, { color: pc2.bar }]}>{pts.toFixed(1)}</Text>
+															<Text style={s.playerPtsLabel}>pts</Text>
+														</>
+													) : (
+														<Text style={s.noPred}>—</Text>
+													)}
+												</View>
+											</View>
+										);
+									})}
+								</View>
+							);
+						})
+					)}
+				</View>
+
+				{/* ══ MERCADO ══════════════════════════════════════════════ */}
+				<View style={s.section}>
+					<View style={s.sectionHeader}>
+						<Text style={s.sectionTitle}>Oportunidades de Mercado</Text>
+						{loadingMarketPredictions && <ActivityIndicator size="small" color={colors.primary} />}
+					</View>
+					<Text style={s.sectionSub}>Ordenados por puntos esperados · <Text style={s.sectionSubHighlight}>pts/M€</Text> = puntos predichos por millón de valor</Text>
 
 					{loadingMarket ? (
-						<ActivityIndicator size="small" color="#1a5c3a" />
+						<ActivityIndicator size="small" color={colors.primary} style={{ margin: spacing.lg }} />
 					) : marketError ? (
-						<View style={styles.errorCard}>
-							<Text style={styles.errorCardText}>{marketError}</Text>
+						<View style={s.errorCard}>
+							<Text style={s.errorCardTxt}>{marketError}</Text>
 						</View>
 					) : sortedMarketPlayers.length === 0 ? (
-						<Text style={styles.emptyText}>No hay jugadores en el mercado</Text>
+						<Text style={s.emptyTxt}>No hay jugadores en el mercado</Text>
 					) : (
-						<>
-							{loadingMarketPredictions && (
-								<ActivityIndicator size="small" color="#1a5c3a" style={{ marginBottom: 12 }} />
-							)}
-							{sortedMarketPlayers.map(renderMarketPlayerRow)}
-						</>
+						sortedMarketPlayers.map((mp, idx) => {
+							const player = mp.player;
+							if (!player) return null;
+							const pred = marketPredictions[player.id];
+							const pts = pred?.predictedPoints || 0;
+							const eff = pts > 0 && player.marketValue > 0
+								? (pts / (player.marketValue / 1_000_000)).toFixed(1)
+								: null;
+							const pc = getPosColor(player.position);
+							const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : null;
+							const ci = pred?.confidenceInterval;
+
+							return (
+								<View key={mp.id} style={[s.marketCard, medal && s.marketCardTop]}>
+									<View style={s.marketRank}>
+										{medal
+											? <Text style={s.medalTxt}>{medal}</Text>
+											: <Text style={s.rankTxt}>#{idx + 1}</Text>
+										}
+									</View>
+									<View style={s.marketInfo}>
+										<View style={s.marketNameRow}>
+											<Text style={s.marketName} numberOfLines={1}>
+												{player.fullName || player.name}
+											</Text>
+											<View style={[s.posBadge, { backgroundColor: pc.bg, borderColor: pc.border }]}>
+												<Text style={[s.posBadgeTxt, { color: pc.text }]}>{player.position}</Text>
+											</View>
+										</View>
+										<Text style={s.marketMeta}>
+											€{player.marketValue?.toLocaleString('es-ES')}
+											{eff && <Text style={s.effTxt}>  ·  {eff} pts/M€</Text>}
+										</Text>
+										{ci && ci.length >= 2 && (
+											<Text style={s.playerCI}>
+												Rango: {Number(ci[0]).toFixed(1)} – {Number(ci[1]).toFixed(1)} pts
+											</Text>
+										)}
+										{pred && <PtsBar pts={pts} color={pc.bar} />}
+									</View>
+									<View style={s.marketPtsCol}>
+										{pred ? (
+											<>
+												<Text style={[s.marketPts, { color: pc.bar }]}>{pts.toFixed(1)}</Text>
+												<Text style={s.marketPtsLabel}>pts</Text>
+											</>
+										) : (
+											<Text style={s.noPred}>—</Text>
+										)}
+									</View>
+								</View>
+							);
+						})
 					)}
 				</View>
 			</ScrollView>
@@ -415,270 +443,160 @@ function AIInsights() {
 	);
 }
 
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: '#f9fafb'
-	},
+export default withAuth(AIInsights);
+
+const s = StyleSheet.create({
+	container: { flex: 1, backgroundColor: colors.bgApp },
+
+	// Top bar
 	topBar: {
-		backgroundColor: '#1a5c3a',
-		paddingHorizontal: 16,
-		paddingVertical: 16,
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 2 },
-		shadowOpacity: 0.1,
-		shadowRadius: 4,
-		elevation: 3
+		flexDirection: 'row', alignItems: 'center',
+		backgroundColor: colors.primaryDeep,
+		paddingHorizontal: spacing.lg, paddingVertical: spacing.lg,
+		...shadow.md,
 	},
-	header: {
-		color: '#fff',
-		fontSize: 22,
-		fontWeight: '800',
-		marginBottom: 4
+	topBarTitle: { color: colors.textInverse, fontSize: fontSize.xl, fontWeight: fontWeight.extrabold },
+	topBarSub: { color: 'rgba(209,250,229,0.85)', fontSize: fontSize.sm, fontWeight: fontWeight.semibold, marginTop: 2 },
+	topBarFresh: { color: 'rgba(209,250,229,0.55)', fontSize: fontSize.xs, marginTop: 2 },
+	refreshBtn: {
+		width: 38, height: 38, borderRadius: 19,
+		backgroundColor: 'rgba(255,255,255,0.15)',
+		alignItems: 'center', justifyContent: 'center',
+		borderWidth: 1, borderColor: 'rgba(255,255,255,0.25)',
 	},
-	subtitle: {
-		color: '#d1fae5',
-		fontSize: 13,
-		fontWeight: '600'
+	refreshTxt: { color: colors.textInverse, fontSize: 20, fontWeight: fontWeight.bold },
+
+	scroll: { padding: spacing.md, paddingBottom: 40, gap: spacing.md },
+
+	center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 32 },
+	loadingTxt: { marginTop: spacing.lg, fontSize: fontSize.md, color: colors.textMuted, fontWeight: fontWeight.semibold },
+	errorTxt: { fontSize: fontSize.md, color: colors.danger, textAlign: 'center' },
+
+	// Insight chips
+	chipsRow: { paddingVertical: 4, paddingHorizontal: 2, gap: spacing.sm },
+	insightChip: {
+		flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
+		borderWidth: 1.5, borderRadius: radius.xl,
+		paddingHorizontal: spacing.md, paddingVertical: spacing.sm,
+		...shadow.sm, minWidth: 200,
 	},
-	scrollView: {
-		flex: 1
+	chipIcon: { fontSize: 24 },
+	chipLabel: { fontSize: fontSize.xs, color: colors.textMuted, fontWeight: fontWeight.semibold, textTransform: 'uppercase', letterSpacing: 0.4 },
+	chipValue: { fontSize: fontSize.sm, fontWeight: fontWeight.extrabold, color: colors.textPrimary },
+	chipSub: { fontSize: fontSize.xs, color: colors.textSecondary, marginTop: 1 },
+
+	// Hero projection card
+	heroCard: {
+		backgroundColor: colors.primaryDeep,
+		borderRadius: radius.xl, paddingVertical: spacing.xl,
+		paddingHorizontal: spacing.lg, alignItems: 'center',
+		...shadow.lg,
+		borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
 	},
-	scrollContent: {
-		padding: 16,
-		paddingBottom: 32
+	heroLabel: {
+		color: 'rgba(209,250,229,0.75)', fontSize: fontSize.xs,
+		fontWeight: fontWeight.bold, letterSpacing: 1.2,
+		textTransform: 'uppercase', marginBottom: 8,
 	},
-	centerContent: {
-		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
-		padding: 32
+	heroValue: {
+		color: colors.textInverse, fontSize: 64,
+		fontWeight: fontWeight.black, lineHeight: 72,
+		marginBottom: spacing.md,
 	},
-	loadingText: {
-		marginTop: 16,
-		fontSize: 15,
-		color: '#6b7280',
-		fontWeight: '600'
+	heroBreakdown: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center' },
+	heroBreakPill: {
+		flexDirection: 'row', alignItems: 'center', gap: 6,
+		paddingHorizontal: 12, paddingVertical: 6,
+		borderRadius: radius.pill, borderWidth: 1,
 	},
-	errorText: {
-		fontSize: 15,
-		color: '#dc2626',
-		textAlign: 'center',
-		marginBottom: 16
-	},
-	retryButton: {
-		backgroundColor: '#1a5c3a',
-		paddingHorizontal: 20,
-		paddingVertical: 10,
-		borderRadius: 8,
-		alignSelf: 'center'
-	},
-	retryButtonText: {
-		color: '#fff',
-		fontWeight: '700',
-		fontSize: 14
-	},
+	heroBreakPos: { fontSize: fontSize.xs, fontWeight: fontWeight.extrabold, letterSpacing: 0.5 },
+	heroBreakPts: { fontSize: fontSize.md, fontWeight: fontWeight.black },
+	heroNoData: { color: 'rgba(255,255,255,0.6)', fontSize: fontSize.md, fontStyle: 'italic', marginTop: 8 },
 
 	// Sections
 	section: {
-		backgroundColor: '#fff',
-		borderRadius: 12,
-		padding: 16,
-		marginBottom: 16,
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 1 },
-		shadowOpacity: 0.05,
-		shadowRadius: 3,
-		elevation: 2
+		backgroundColor: colors.bgCard, borderRadius: radius.xl,
+		padding: spacing.lg, ...shadow.sm,
+		borderWidth: 1, borderColor: colors.border,
 	},
-	sectionTitle: {
-		fontSize: 18,
-		fontWeight: '800',
-		color: '#111827',
-		marginBottom: 2
-	},
-	sectionSubtitle: {
-		fontSize: 13,
-		color: '#6b7280',
-		marginBottom: 14
-	},
+	sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 },
+	sectionTitle: { fontSize: fontSize.lg, fontWeight: fontWeight.extrabold, color: colors.textPrimary },
+	sectionSub: { fontSize: fontSize.xs, color: colors.textMuted, marginBottom: spacing.md, fontWeight: fontWeight.medium },
+	sectionSubHighlight: { fontWeight: fontWeight.bold, color: colors.primary },
 
-	// Position group
-	positionGroupHeader: {
-		fontSize: 13,
-		fontWeight: '700',
-		marginTop: 14,
-		marginBottom: 6,
-		paddingLeft: 4
+	// Position groups
+	posGroup: { marginBottom: spacing.sm },
+	posGroupHeader: {
+		flexDirection: 'row', alignItems: 'center', gap: 8,
+		alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 5,
+		borderRadius: radius.pill, borderWidth: 1,
+		marginBottom: 8, marginTop: 4,
 	},
+	posGroupDot: { width: 7, height: 7, borderRadius: 4 },
+	posGroupLabel: { fontSize: fontSize.xs, fontWeight: fontWeight.extrabold, letterSpacing: 0.5, textTransform: 'uppercase' },
 
-	// Player prediction row
-	playerPredRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		paddingVertical: 10,
-		paddingHorizontal: 4,
-		borderBottomWidth: 1,
-		borderBottomColor: '#f3f4f6'
+	// Player rows
+	playerRow: {
+		flexDirection: 'row', alignItems: 'center',
+		paddingVertical: 10, paddingHorizontal: 10,
+		borderRadius: radius.md, marginBottom: 4,
+		backgroundColor: colors.bgSubtle,
+		borderWidth: 1, borderColor: colors.border,
 	},
-	positionDot: {
-		width: 8,
-		height: 8,
-		borderRadius: 4,
-		marginRight: 10
+	playerRowBest: {
+		backgroundColor: colors.successBg,
+		borderColor: colors.primaryMuted,
 	},
-	playerInfo: {
-		flex: 1
+	bestBadge: {
+		position: 'absolute', top: -1, right: 8,
+		backgroundColor: colors.primary,
+		borderRadius: radius.pill,
+		paddingHorizontal: 7, paddingVertical: 2,
 	},
-	playerName: {
-		fontSize: 14,
-		fontWeight: '700',
-		color: '#111827',
-		marginBottom: 2
-	},
-	playerMeta: {
-		fontSize: 11,
-		color: '#6b7280',
-		fontWeight: '500'
-	},
-	predictionCol: {
-		alignItems: 'flex-end',
-		minWidth: 70
-	},
-	predPoints: {
-		fontSize: 18,
-		fontWeight: '800',
-		color: '#1a5c3a'
-	},
-	predConfidence: {
-		fontSize: 10,
-		color: '#6b7280',
-		fontWeight: '500'
-	},
-	noPrediction: {
-		fontSize: 11,
-		fontStyle: 'italic',
-		color: '#9ca3af'
-	},
+	bestBadgeTxt: { color: colors.textInverse, fontSize: 9, fontWeight: fontWeight.extrabold, letterSpacing: 0.5 },
+	playerLeft: { flex: 1, gap: 4, paddingRight: spacing.sm },
+	playerNameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+	playerName: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, color: colors.textPrimary, flexShrink: 1 },
+	playerMeta: { fontSize: fontSize.xs, color: colors.textMuted },
+	playerCI: { fontSize: 10, color: colors.textMuted, fontStyle: 'italic' },
+	playerRight: { alignItems: 'flex-end', minWidth: 48 },
+	playerPts: { fontSize: fontSize.xl, fontWeight: fontWeight.black },
+	playerPtsLabel: { fontSize: fontSize.xs, color: colors.textMuted, fontWeight: fontWeight.semibold },
+	noPred: { fontSize: fontSize.md, color: colors.textMuted },
 
-	// Team prediction card
-	predictionCard: {
-		backgroundColor: '#f0fdf4',
-		borderRadius: 12,
-		padding: 20,
-		borderWidth: 2,
-		borderColor: '#1a5c3a',
-		alignItems: 'center'
+	// Market cards
+	marketCard: {
+		flexDirection: 'row', alignItems: 'center',
+		padding: spacing.md, borderRadius: radius.lg,
+		borderWidth: 1, borderColor: colors.border,
+		backgroundColor: colors.bgSubtle, marginBottom: 8,
+		gap: spacing.sm,
 	},
-	mainPrediction: {
-		alignItems: 'center'
+	marketCardTop: {
+		backgroundColor: colors.successBg,
+		borderColor: colors.primaryMuted,
 	},
-	predictionLabel: {
-		fontSize: 11,
-		color: '#6b7280',
-		fontWeight: '700',
-		letterSpacing: 1,
-		marginBottom: 6
-	},
-	predictionValue: {
-		fontSize: 52,
-		fontWeight: '900',
-		color: '#1a5c3a',
-		marginBottom: 6
-	},
-	confidenceText: {
-		fontSize: 13,
-		color: '#059669',
-		fontWeight: '600'
-	},
+	marketRank: { width: 32, alignItems: 'center' },
+	medalTxt: { fontSize: 22 },
+	rankTxt: { fontSize: fontSize.sm, fontWeight: fontWeight.extrabold, color: colors.textMuted },
+	marketInfo: { flex: 1, gap: 4 },
+	marketNameRow: { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' },
+	marketName: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, color: colors.textPrimary, flexShrink: 1 },
+	posBadge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: radius.pill, borderWidth: 1 },
+	posBadgeTxt: { fontSize: 10, fontWeight: fontWeight.extrabold, letterSpacing: 0.5 },
+	marketMeta: { fontSize: fontSize.xs, color: colors.textSecondary },
+	effTxt: { fontWeight: fontWeight.extrabold, color: colors.primaryDark },
+	marketPtsCol: { alignItems: 'flex-end', minWidth: 48 },
+	marketPts: { fontSize: fontSize.xl, fontWeight: fontWeight.black },
+	marketPtsLabel: { fontSize: fontSize.xs, color: colors.textMuted },
 
-	// Position breakdown
-	breakdownGrid: {
-		flexDirection: 'row',
-		flexWrap: 'wrap',
-		gap: 10,
-		marginTop: 14
-	},
-	breakdownCard: {
-		flex: 1,
-		minWidth: '22%',
-		backgroundColor: '#f9fafb',
-		padding: 12,
-		borderRadius: 8,
-		alignItems: 'center'
-	},
-	breakdownDot: {
-		width: 6,
-		height: 6,
-		borderRadius: 3,
-		marginBottom: 6
-	},
-	breakdownPosition: {
-		fontSize: 12,
-		fontWeight: '800',
-		color: '#374151',
-		marginBottom: 4
-	},
-	breakdownTotal: {
-		fontSize: 20,
-		fontWeight: '900',
-		color: '#1a5c3a',
-		marginBottom: 2
-	},
-	breakdownLabel: {
-		fontSize: 10,
-		color: '#6b7280'
-	},
-
-	// Market player card
-	marketPlayerCard: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		padding: 12,
-		borderRadius: 8,
-		borderWidth: 1,
-		borderColor: '#e5e7eb',
-		backgroundColor: '#f9fafb',
-		marginBottom: 8
-	},
-	auctionTime: {
-		fontSize: 10,
-		color: '#9ca3af',
-		marginTop: 2
-	},
-
-	// Warning / Error cards
-	warningCard: {
-		backgroundColor: '#fef3c7',
-		borderWidth: 1,
-		borderColor: '#fbbf24',
-		borderRadius: 8,
-		padding: 14
-	},
-	warningText: {
-		fontSize: 13,
-		color: '#92400e',
-		textAlign: 'center'
-	},
+	// Misc
 	errorCard: {
-		backgroundColor: '#fef2f2',
-		borderWidth: 1,
-		borderColor: '#fca5a5',
-		borderRadius: 8,
-		padding: 14
+		backgroundColor: colors.dangerBg, borderWidth: 1, borderColor: colors.danger,
+		borderRadius: radius.md, padding: spacing.lg, alignItems: 'center',
 	},
-	errorCardText: {
-		fontSize: 13,
-		color: '#dc2626',
-		textAlign: 'center',
-		marginBottom: 10
-	},
-	emptyText: {
-		fontSize: 14,
-		color: '#9ca3af',
-		textAlign: 'center',
-		paddingVertical: 20
-	}
+	errorCardTxt: { fontSize: fontSize.sm, color: colors.danger, textAlign: 'center', marginBottom: spacing.sm },
+	retryBtn: { backgroundColor: colors.primary, paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, borderRadius: radius.md },
+	retryTxt: { color: colors.textInverse, fontWeight: fontWeight.bold, fontSize: fontSize.sm },
+	emptyTxt: { fontSize: fontSize.sm, color: colors.textMuted, textAlign: 'center', paddingVertical: spacing.xl },
 });
-
-export default withAuth(AIInsights);

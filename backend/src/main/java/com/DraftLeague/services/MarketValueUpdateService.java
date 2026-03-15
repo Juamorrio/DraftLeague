@@ -290,7 +290,13 @@ public class MarketValueUpdateService {
         int rawNewValue = (int) Math.round(baseValue * cappedFactor);
         int newValue    = roundToNearest(clampInt(rawNewValue, MIN_VALUE, MAX_VALUE), ROUND_TO);
 
-        if (newValue == baseValue) return false;
+        if (newValue == baseValue) {
+            if (gameweek != null) {
+                persistHistoryOnly(player.getId(), baseValue, gameweek,
+                        marketValueHistoryRepository.findByPlayerIdAndGameweek(player.getId(), gameweek));
+            }
+            return false;
+        }
 
         logFactors(player, baseValue, newValue, formFactor, seasonFactor, minutesFactor,
                 ratingFactor, momentumFactor, consistencyFactor, impactFactor,
@@ -370,7 +376,12 @@ public class MarketValueUpdateService {
         int rawNewValue = (int) Math.round(baseValue * cappedFactor);
         int newValue    = roundToNearest(clampInt(rawNewValue, MIN_VALUE, MAX_VALUE), ROUND_TO);
 
-        if (newValue == baseValue) return false;
+        if (newValue == baseValue) {
+            if (gameweek != null) {
+                persistHistoryOnly(player.getId(), baseValue, gameweek, existingHistory);
+            }
+            return false;
+        }
 
         logFactors(player, baseValue, newValue, formFactor, seasonFactor, minutesFactor,
                 ratingFactor, momentumFactor, consistencyFactor, impactFactor,
@@ -459,6 +470,25 @@ public class MarketValueUpdateService {
         }
     }
 
+    /**
+     * Persists a history record with zero change for the given gameweek.
+     * Called when the computed market value equals the current value so that the
+     * evolution chart always has a data point for every gameweek, even when the
+     * price is stable.  No player or sell-price updates are performed.
+     */
+    private void persistHistoryOnly(String playerId, int currentValue, int gameweek,
+                                    Optional<PlayerMarketValueHistory> existingHistory) {
+        PlayerMarketValueHistory history = existingHistory.orElse(new PlayerMarketValueHistory());
+        history.setPlayerId(playerId);
+        history.setGameweek(gameweek);
+        if (history.getId() == null) history.setPreviousValue(currentValue);
+        history.setNewValue(currentValue);
+        history.setChangeAmount(0);
+        history.setChangePercentage(0.0);
+        history.setRecordedAt(new Date());
+        marketValueHistoryRepository.save(history);
+    }
+
     // ── Season-fallback helpers ───────────────────────────────────────────────
 
     /** Single-player path: season-only drift when no recent matches exist. */
@@ -475,6 +505,10 @@ public class MarketValueUpdateService {
         int seasonValue = roundToNearest(clampInt((int) Math.round(baseValue * cappedSf), MIN_VALUE, MAX_VALUE), ROUND_TO);
         if (seasonValue == baseValue) {
             log.debug("[MarketValueUpdate] No recent stats, no change for {} – skip.", player.getId());
+            if (gameweek != null) {
+                persistHistoryOnly(player.getId(), baseValue, gameweek,
+                        marketValueHistoryRepository.findByPlayerIdAndGameweek(player.getId(), gameweek));
+            }
             return false;
         }
         persistPlayerValue(player, seasonValue, baseValue, gameweek,
@@ -499,6 +533,9 @@ public class MarketValueUpdateService {
         int seasonValue = roundToNearest(clampInt((int) Math.round(baseValue * cappedSf), MIN_VALUE, MAX_VALUE), ROUND_TO);
         if (seasonValue == baseValue) {
             log.debug("[MarketValueUpdate] No recent stats, no change for {} – skip.", player.getId());
+            if (gameweek != null) {
+                persistHistoryOnly(player.getId(), baseValue, gameweek, existingHistory);
+            }
             return false;
         }
         persistPlayerValue(player, seasonValue, baseValue, gameweek, existingHistory);

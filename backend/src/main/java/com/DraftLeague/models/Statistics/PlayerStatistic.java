@@ -603,6 +603,217 @@ public class PlayerStatistic {
         return breakdown;
     }
 
+    public Map<String, Integer> calculateFantasyPointsBreakdownWithChip(String chipName) {
+        if (chipName == null) return calculateFantasyPointsBreakdown();
+        if (!ChipType.isValid(chipName)) return calculateFantasyPointsBreakdown();
+        ChipType chip = ChipType.valueOf(chipName);
+        // Service-level chips do not affect the per-stat breakdown
+        if (chip == ChipType.TRIPLE_CAP || chip == ChipType.BENCH_BOOST) {
+            return calculateFantasyPointsBreakdown();
+        }
+
+        Map<String, Integer> breakdown = new LinkedHashMap<>();
+        int total = 0;
+
+        // Minutes played
+        if (minutesPlayed >= 60) {
+            int pts = (chip == ChipType.GOLDEN_MINUTES) ? 5 : 3;
+            breakdown.put("minutesPlayed", pts);
+            total += pts;
+        } else if (minutesPlayed >= 45) {
+            breakdown.put("minutesPlayed", 2);
+            total += 2;
+        } else if (minutesPlayed > 0) {
+            breakdown.put("minutesPlayed", 1);
+            total += 1;
+        }
+
+        // Goals
+        if (goals != null && goals > 0) {
+            int goalPoints;
+            if (chip == ChipType.DOUBLE_GOALS) {
+                switch (playerType) {
+                    case GOALKEEPER: case DEFENDER: goalPoints = goals * 12; break;
+                    case MIDFIELDER:                goalPoints = goals * 10; break;
+                    case FORWARD:                   goalPoints = goals * 8;  break;
+                    default:                        goalPoints = 0;
+                }
+            } else if (chip == ChipType.LETHAL_STRIKER) {
+                switch (playerType) {
+                    case GOALKEEPER: case DEFENDER: goalPoints = goals * 6;  break;
+                    case MIDFIELDER:                goalPoints = goals * 5;  break;
+                    case FORWARD:                   goalPoints = goals * 12; break;
+                    default:                        goalPoints = 0;
+                }
+            } else {
+                switch (playerType) {
+                    case GOALKEEPER: case DEFENDER: goalPoints = goals * 6; break;
+                    case MIDFIELDER:                goalPoints = goals * 5; break;
+                    case FORWARD:                   goalPoints = goals * 4; break;
+                    default:                        goalPoints = 0;
+                }
+            }
+            if (goalPoints != 0) {
+                breakdown.put("goals", goalPoints);
+                total += goalPoints;
+            }
+        }
+
+        // Assists
+        if (assists != null && assists > 0) {
+            int assistPoints = assists * (chip == ChipType.DOUBLE_ASSISTS ? 6 : 3);
+            breakdown.put("assists", assistPoints);
+            total += assistPoints;
+        }
+
+        // Chances created
+        if ((playerType == PlayerType.MIDFIELDER || playerType == PlayerType.FORWARD)
+                && chancesCreated != null && chancesCreated > 0) {
+            int chancesPoints;
+            if (chip == ChipType.CREATIVE_MIDS) {
+                chancesPoints = chancesCreated;
+            } else if (chancesCreated >= 3) {
+                chancesPoints = chancesCreated / 3;
+            } else {
+                chancesPoints = 0;
+            }
+            if (chancesPoints != 0) {
+                breakdown.put("chancesCreated", chancesPoints);
+                total += chancesPoints;
+            }
+        }
+
+        // Rating bonus
+        if (rating != null) {
+            int ratingPoints = 0;
+            if (rating >= 9.0)      ratingPoints = 5;
+            else if (rating >= 8.0) ratingPoints = 3;
+            else if (rating >= 7.0) ratingPoints = 1;
+            else if (rating < 5.0)  ratingPoints = -1;
+            if (ratingPoints != 0) {
+                breakdown.put("ratingBonus", ratingPoints);
+                total += ratingPoints;
+            }
+        }
+
+        // Cards — suppressed by NO_PENALTY
+        if (chip != ChipType.NO_PENALTY) {
+            if (yellowCards != null && yellowCards > 0) {
+                int ycPoints = -yellowCards;
+                breakdown.put("yellowCards", ycPoints);
+                total += ycPoints;
+            }
+            if (redCards != null && redCards > 0) {
+                int rcPoints = -redCards * 3;
+                breakdown.put("redCards", rcPoints);
+                total += rcPoints;
+            }
+        }
+
+        // Fouls
+        if (foulsCommitted != null && foulsCommitted >= 3) {
+            int foulsPoints = -(foulsCommitted / 3);
+            breakdown.put("foulsCommitted", foulsPoints);
+            total += foulsPoints;
+        }
+
+        // Defensive actions
+        if (playerType == PlayerType.DEFENDER || playerType == PlayerType.MIDFIELDER) {
+            int defPoints = 0;
+            if (tackles != null)       defPoints += tackles / 3;
+            if (interceptions != null) defPoints += interceptions / 3;
+            if (blocks != null)        defPoints += blocks / 4;
+            if (defPoints != 0) {
+                breakdown.put("defensiveActions", defPoints);
+                total += defPoints;
+            }
+        }
+
+        // Duels won bonus
+        if (duelsWon != null && duelsWon >= 5) {
+            breakdown.put("duelsBonus", 1);
+            total += 1;
+        }
+
+        // Clean sheet — GK / DEF
+        if ((playerType == PlayerType.GOALKEEPER || playerType == PlayerType.DEFENDER)
+                && minutesPlayed >= 60 && cleanSheet != null && cleanSheet) {
+            int csPoints = (chip == ChipType.DEFENSIVE_WEEK) ? 8 : 4;
+            breakdown.put("cleanSheet", csPoints);
+            total += csPoints;
+        }
+
+        // Clean sheet — MID
+        if (playerType == PlayerType.MIDFIELDER && minutesPlayed >= 60
+                && cleanSheet != null && cleanSheet) {
+            int csPoints = (chip == ChipType.DEFENSIVE_WEEK) ? 2 : 1;
+            breakdown.put("cleanSheetMid", csPoints);
+            total += csPoints;
+        }
+
+        // Saves
+        if (playerType == PlayerType.GOALKEEPER && saves != null) {
+            int savesPoints;
+            if (chip == ChipType.SUPER_SAVES) {
+                savesPoints = (saves >= 2) ? saves / 2 : 0;
+            } else {
+                savesPoints = (saves >= 3) ? saves / 3 : 0;
+            }
+            if (savesPoints != 0) {
+                breakdown.put("saves", savesPoints);
+                total += savesPoints;
+            }
+        }
+
+        // Hat-trick bonus
+        if (goals != null && goals >= 3) {
+            breakdown.put("hatTrick", 5);
+            total += 5;
+        }
+
+        // Penalty saved
+        if (playerType == PlayerType.GOALKEEPER && penaltiesSaved != null && penaltiesSaved > 0) {
+            int penPoints = penaltiesSaved * 5;
+            breakdown.put("penaltySaved", penPoints);
+            total += penPoints;
+        }
+
+        // Double / triple assist bonus
+        if (assists != null && assists == 2) {
+            breakdown.put("doubleAssist", 3);
+            total += 3;
+        }
+        if (assists != null && assists >= 3) {
+            breakdown.put("tripleAssist", 8);
+            total += 8;
+        }
+
+        // Goals conceded penalty
+        if (playerType == PlayerType.GOALKEEPER && goalsConceded != null && goalsConceded >= 3) {
+            breakdown.put("multipleGoalsConceded", -2);
+            total -= 2;
+        }
+        if (playerType == PlayerType.DEFENDER && goalsConceded != null && goalsConceded >= 3) {
+            breakdown.put("multipleGoalsConcededDef", -1);
+            total -= 1;
+        }
+
+        // Penalty committed / missed
+        if (penaltyCommitted != null && penaltyCommitted > 0) {
+            int penCommittedPoints = -penaltyCommitted * 2;
+            breakdown.put("penaltyCommitted", penCommittedPoints);
+            total += penCommittedPoints;
+        }
+        if (penaltyMissed != null && penaltyMissed > 0) {
+            int penMissedPoints = -penaltyMissed * 2;
+            breakdown.put("penaltyMissed", penMissedPoints);
+            total += penMissedPoints;
+        }
+
+        breakdown.put("total", Math.max(total, 0));
+        return breakdown;
+    }
+
     public enum PlayerType {
         GOALKEEPER, DEFENDER, MIDFIELDER, FORWARD
     }

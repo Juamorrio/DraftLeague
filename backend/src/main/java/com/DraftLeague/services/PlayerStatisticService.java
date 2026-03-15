@@ -487,13 +487,13 @@ public class PlayerStatisticService {
                     String appliedChip = round != null ? chipByGameweek.get(round) : null;
                     Map<String, Integer> breakdown;
                     if (appliedChip != null) {
-                        breakdown = stat.calculateFantasyPointsBreakdown();
+                        breakdown = stat.calculateFantasyPointsBreakdownWithChip(appliedChip);
                         // Override total with chip-modified value for accuracy
                         Integer chipTotal = chipPointsByMatchId.get(matchId);
                         if (chipTotal != null) {
                             breakdown.put("total", chipTotal);
                         }
-                        breakdown.put("chipActive", 1); // flag so frontend can show chip indicator
+                        dto.setAppliedChip(appliedChip);
                     } else {
                         breakdown = stat.calculateFantasyPointsBreakdown();
                     }

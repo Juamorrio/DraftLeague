@@ -103,7 +103,8 @@ public class FantasyPointsService {
                     basePlayerPoints = stat.calculateFantasyPointsWithChip(activeChip);
                 } else {
                     basePlayerPoints = stat.getTotalFantasyPoints() != null
-                        ? stat.getTotalFantasyPoints() : 0;
+                        ? stat.getTotalFantasyPoints()
+                        : stat.calculateFantasyPoints();
                 }
                 finalPlayerPoints = basePlayerPoints;
                 matchId = stat.getMatchId();

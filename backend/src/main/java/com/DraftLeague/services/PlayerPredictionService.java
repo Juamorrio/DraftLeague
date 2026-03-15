@@ -37,6 +37,16 @@ public class PlayerPredictionService {
 
     private static final int MIN_STATS_FOR_PREDICTION = 2;
 
+    /** Home-advantage multiplier applied to the base predicted points. */
+    private static final double HOME_MULTIPLIER = 1.08;
+    /** Away-disadvantage multiplier applied to the base predicted points. */
+    private static final double AWAY_MULTIPLIER = 0.93;
+    /**
+     * Number of recent finished matches used to estimate the opponent's
+     * defensive strength (goals conceded per game).
+     */
+    private static final int RIVAL_DIFFICULTY_LOOKBACK = 6;
+
     private final Map<String, PlayerPredictionDTO> predictionCache = new ConcurrentHashMap<>();
 
     /**
@@ -151,8 +161,84 @@ public class PlayerPredictionService {
         double avgAssists       = wAssists / sumWeights;
         double avgMinutes       = wMinutes / sumWeights;
 
-        int confidenceLow  = Math.max(0, (int) Math.floor(predictedPoints * 0.7));
-        int confidenceHigh = (int) Math.ceil(predictedPoints * 1.3);
+        // --- Improvement 1: Home / away factor ---
+        if (isHomeTeam != null) {
+            predictedPoints *= Boolean.TRUE.equals(isHomeTeam) ? HOME_MULTIPLIER : AWAY_MULTIPLIER;
+        }
+
+        // --- Improvement 3: Rival difficulty adjustment ---
+        // Derive opponentClubId from the next match and the player's own club
+        if (player != null && opponent != null) {
+            Integer opponentClubId = null;
+            List<Match> upcomingForPlayer = matchRepository
+                    .findByStatusOrderByRoundAsc(MatchStatus.UPCOMING)
+                    .stream()
+                    .filter(m -> player.getClubId().equals(m.getHomeTeamId())
+                              || player.getClubId().equals(m.getAwayTeamId()))
+                    .limit(1)
+                    .collect(Collectors.toList());
+            if (!upcomingForPlayer.isEmpty()) {
+                Match nm = upcomingForPlayer.get(0);
+                opponentClubId = player.getClubId().equals(nm.getHomeTeamId())
+                        ? nm.getAwayTeamId()
+                        : nm.getHomeTeamId();
+            }
+
+            if (opponentClubId != null) {
+                List<Match> finishedMatches = matchRepository.findByStatus(MatchStatus.FINISHED);
+
+                // Goals conceded by the opponent in their last RIVAL_DIFFICULTY_LOOKBACK matches
+                final Integer oppId = opponentClubId;
+                List<Integer> opponentGoalsConceded = finishedMatches.stream()
+                        .filter(m -> oppId.equals(m.getHomeTeamId()) || oppId.equals(m.getAwayTeamId()))
+                        .filter(m -> m.getHomeGoals() != null && m.getAwayGoals() != null)
+                        .sorted(Comparator.comparingInt(Match::getRound).reversed())
+                        .limit(RIVAL_DIFFICULTY_LOOKBACK)
+                        .map(m -> oppId.equals(m.getHomeTeamId()) ? m.getAwayGoals() : m.getHomeGoals())
+                        .collect(Collectors.toList());
+
+                // League-wide average goals scored per team per finished match
+                double leagueAvgGoals = finishedMatches.stream()
+                        .filter(m -> m.getHomeGoals() != null && m.getAwayGoals() != null)
+                        .mapToInt(m -> m.getHomeGoals() + m.getAwayGoals())
+                        .average()
+                        .orElse(2.6) / 2.0; // divide by 2: each match contributes goals to both sides
+
+                if (!opponentGoalsConceded.isEmpty() && leagueAvgGoals > 0) {
+                    double opponentAvgConceded = opponentGoalsConceded.stream()
+                            .mapToInt(Integer::intValue)
+                            .average()
+                            .orElse(leagueAvgGoals);
+                    // Ratio > 1 means opponent concedes more than average → easier matchup
+                    // Ratio < 1 means opponent concedes less than average → harder matchup
+                    double rivalMultiplier = opponentAvgConceded / leagueAvgGoals;
+                    // Clamp to [0.80, 1.20] to avoid outliers dominating
+                    rivalMultiplier = Math.max(0.80, Math.min(1.20, rivalMultiplier));
+                    predictedPoints *= rivalMultiplier;
+                }
+            }
+        }
+
+        // --- Improvement 2: Real standard-deviation confidence interval ---
+        // Collect the raw fantasy points for the last N matches
+        List<Double> rawPoints = stats.stream()
+                .map(s -> (double) s.calculateFantasyPoints())
+                .collect(Collectors.toList());
+        double stdDev;
+        if (rawPoints.size() >= 2) {
+            double mean = rawPoints.stream().mapToDouble(Double::doubleValue).average().orElse(predictedPoints);
+            double variance = rawPoints.stream()
+                    .mapToDouble(p -> (p - mean) * (p - mean))
+                    .average()
+                    .orElse(0.0);
+            stdDev = Math.sqrt(variance);
+        } else {
+            // Single-sample fallback: use 30% of the predicted value
+            stdDev = predictedPoints * 0.30;
+        }
+
+        int confidenceLow  = (int) Math.max(0, Math.floor(predictedPoints - stdDev));
+        int confidenceHigh = (int) Math.ceil(predictedPoints + stdDev);
 
         // Feature-importance map: values in [0, 1] so the frontend bar renders
         // importance * 100 as a percentage width.

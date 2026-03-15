@@ -5,7 +5,7 @@
   "build": {
     "development": {
       "distribution": "internal",
-      "android": { "buildType": "apk", "image": "latest" },
+      "android": { "buildType": "apk", "image": "ubuntu-22.04-jdk-17-ndk-r26b" },
       "env": {
         "APP_VARIANT": "development",
         "EXPO_PUBLIC_API_BASE": "http://localhost:8080"
@@ -13,14 +13,14 @@
     },
     "preview": {
       "distribution": "internal",
-      "android": { "buildType": "apk", "image": "latest" },
+      "android": { "buildType": "apk", "image": "ubuntu-22.04-jdk-17-ndk-r26b" },
       "env": {
         "APP_VARIANT": "preview",
         "EXPO_PUBLIC_API_BASE": "https://draftleague-production.up.railway.app"
       }
     },
     "production": {
-      "android": { "buildType": "app-bundle", "image": "latest" },
+      "android": { "buildType": "app-bundle", "image": "ubuntu-22.04-jdk-17-ndk-r26b" },
       "env": {
         "APP_VARIANT": "production",
         "EXPO_PUBLIC_API_BASE": "https://draftleague-production.up.railway.app"

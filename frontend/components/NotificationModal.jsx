@@ -9,9 +9,10 @@ import {
 	ActivityIndicator,
 	Alert,
 } from 'react-native';
-import authService, { authenticatedFetch } from '../services/authService';
+import { authenticatedFetch, getCurrentUser } from '../services/authService';
+import { acceptOffer, rejectOffer, cancelOffer } from '../services/tradeOfferService';
 import { useLeague } from '../context/LeagueContext';
-import { acceptOffer, rejectOffer } from '../services/tradeOfferService';
+import { colors, fontSize, fontWeight, radius, spacing, shadow } from '../utils/theme';
 
 export default function NotificationModal({ visible, onClose }) {
 	const { selectedLeague } = useLeague();
@@ -22,11 +23,14 @@ export default function NotificationModal({ visible, onClose }) {
 	const [actionLoading, setActionLoading] = useState({});
 
 	useEffect(() => {
+		getCurrentUser().then(user => {
+			if (user?.id) setCurrentUserId(Number(user.id));
+		}).catch(() => {});
+	}, []);
+
+	useEffect(() => {
 		if (visible && selectedLeague?.id) {
 			loadNotifications();
-			authService.getCurrentUser().then(u => {
-				if (u?.id) setCurrentUserId(u.id);
-			}).catch(() => {});
 		}
 	}, [visible, selectedLeague]);
 
@@ -53,6 +57,20 @@ export default function NotificationModal({ visible, onClose }) {
 
 	const handleClose = () => {
 		if (onClose) onClose(maxSeenId);
+	};
+
+	const handleOfferAction = async (offerId, action) => {
+		setActionLoading(prev => ({ ...prev, [offerId]: action }));
+		try {
+			if (action === 'accept') await acceptOffer(offerId);
+			else if (action === 'reject') await rejectOffer(offerId);
+			else if (action === 'cancel') await cancelOffer(offerId);
+			await loadNotifications();
+		} catch (e) {
+			Alert.alert('Error', e?.message || 'No se pudo completar la acción');
+		} finally {
+			setActionLoading(prev => { const n = { ...prev }; delete n[offerId]; return n; });
+		}
 	};
 
 	const renderNotification = (notification) => {
@@ -91,8 +109,35 @@ export default function NotificationModal({ visible, onClose }) {
 							<View style={styles.contentContainer}>
 								<Text style={styles.title}>Venta</Text>
 								<Text style={styles.description}>
-									Un jugador ha sido vendido
+									<Text style={styles.bold}>{payload.sellerUsername}</Text> ha vendido a{' '}
+									<Text style={styles.bold}>{payload.playerName}</Text>
 								</Text>
+								{payload.price != null && (
+									<Text style={styles.price}>Precio: {Number(payload.price).toLocaleString('es-ES')}€</Text>
+								)}
+								<Text style={styles.date}>
+									{new Date(notification.createdAt).toLocaleString('es-ES')}
+								</Text>
+							</View>
+						</View>
+					);
+
+				case 'CESSION':
+					return (
+						<View key={notification.id} style={[styles.notificationCard, { borderLeftColor: colors.accent }]}>
+							<View style={styles.iconContainer}>
+								<Text style={styles.icon}>🔄</Text>
+							</View>
+							<View style={styles.contentContainer}>
+								<Text style={styles.title}>Cesión</Text>
+								<Text style={styles.description}>
+									<Text style={styles.bold}>{payload.playerName}</Text> ha sido cedido por{' '}
+									<Text style={styles.bold}>{payload.sellerUsername}</Text> a{' '}
+									<Text style={styles.bold}>{payload.buyerUsername}</Text>
+								</Text>
+								{payload.price != null && (
+									<Text style={styles.price}>Precio: {Number(payload.price).toLocaleString('es-ES')}€</Text>
+								)}
 								<Text style={styles.date}>
 									{new Date(notification.createdAt).toLocaleString('es-ES')}
 								</Text>
@@ -122,11 +167,12 @@ export default function NotificationModal({ visible, onClose }) {
 					);
 
 				case 'TRADE_OFFER': {
-					const isSeller = currentUserId && String(payload.sellerId) === String(currentUserId);
 					const offerId = payload.offerId;
-					const isActing = actionLoading[offerId];
+					const isSeller = Number(payload.sellerId) === currentUserId;
+					const isBuyer = Number(payload.buyerId) === currentUserId;
+					const isActing = !!actionLoading[offerId];
 					return (
-						<View key={notification.id} style={[styles.notificationCard, { borderLeftColor: '#7c3aed' }]}>
+						<View key={notification.id} style={[styles.notificationCard, { borderLeftColor: colors.purple }]}>
 							<View style={styles.iconContainer}>
 								<Text style={styles.icon}>🤝</Text>
 							</View>
@@ -141,42 +187,31 @@ export default function NotificationModal({ visible, onClose }) {
 									{new Date(notification.createdAt).toLocaleString('es-ES')}
 								</Text>
 								{isSeller && (
-									<View style={styles.actionRow}>
+									<View style={styles.tradeActions}>
 										<TouchableOpacity
-											style={[styles.actionBtn, styles.acceptBtn, isActing && styles.actionBtnDisabled]}
-											disabled={!!isActing}
-											onPress={async () => {
-												setActionLoading(prev => ({ ...prev, [offerId]: 'accept' }));
-												try {
-													await acceptOffer(offerId);
-													Alert.alert('¡Oferta aceptada!', `Has transferido a ${payload.playerName} por €${Number(payload.price).toLocaleString('es-ES')}.`);
-													loadNotifications();
-												} catch (e) {
-													Alert.alert('Error', e?.message || 'No se pudo aceptar');
-												} finally {
-													setActionLoading(prev => { const n = {...prev}; delete n[offerId]; return n; });
-												}
-											}}
+											style={[styles.tradeBtn, styles.tradeBtnAccept, isActing && styles.tradeBtnDisabled]}
+											onPress={() => handleOfferAction(offerId, 'accept')}
+											disabled={isActing}
 										>
-											<Text style={styles.actionBtnText}>{isActing === 'accept' ? '...' : 'Aceptar'}</Text>
+											<Text style={styles.tradeBtnText}>{actionLoading[offerId] === 'accept' ? '...' : 'Aceptar'}</Text>
 										</TouchableOpacity>
 										<TouchableOpacity
-											style={[styles.actionBtn, styles.rejectBtn, isActing && styles.actionBtnDisabled]}
-											disabled={!!isActing}
-											onPress={async () => {
-												setActionLoading(prev => ({ ...prev, [offerId]: 'reject' }));
-												try {
-													await rejectOffer(offerId);
-													Alert.alert('Oferta rechazada', `Has rechazado la oferta por ${payload.playerName}.`);
-													loadNotifications();
-												} catch (e) {
-													Alert.alert('Error', e?.message || 'No se pudo rechazar');
-												} finally {
-													setActionLoading(prev => { const n = {...prev}; delete n[offerId]; return n; });
-												}
-											}}
+											style={[styles.tradeBtn, styles.tradeBtnReject, isActing && styles.tradeBtnDisabled]}
+											onPress={() => handleOfferAction(offerId, 'reject')}
+											disabled={isActing}
 										>
-											<Text style={styles.actionBtnText}>{isActing === 'reject' ? '...' : 'Rechazar'}</Text>
+											<Text style={styles.tradeBtnText}>{actionLoading[offerId] === 'reject' ? '...' : 'Rechazar'}</Text>
+										</TouchableOpacity>
+									</View>
+								)}
+								{isBuyer && (
+									<View style={styles.tradeActions}>
+										<TouchableOpacity
+											style={[styles.tradeBtn, styles.tradeBtnCancel, isActing && styles.tradeBtnDisabled]}
+											onPress={() => handleOfferAction(offerId, 'cancel')}
+											disabled={isActing}
+										>
+											<Text style={styles.tradeBtnText}>{actionLoading[offerId] === 'cancel' ? '...' : 'Cancelar oferta'}</Text>
 										</TouchableOpacity>
 									</View>
 								)}
@@ -187,7 +222,7 @@ export default function NotificationModal({ visible, onClose }) {
 
 				case 'TRADE_ACCEPTED':
 					return (
-						<View key={notification.id} style={[styles.notificationCard, { borderLeftColor: '#16a34a' }]}>
+						<View key={notification.id} style={[styles.notificationCard, { borderLeftColor: colors.primary }]}>
 							<View style={styles.iconContainer}>
 								<Text style={styles.icon}>✅</Text>
 							</View>
@@ -208,7 +243,7 @@ export default function NotificationModal({ visible, onClose }) {
 
 				case 'TRADE_REJECTED':
 					return (
-						<View key={notification.id} style={[styles.notificationCard, { borderLeftColor: '#dc2626' }]}>
+						<View key={notification.id} style={[styles.notificationCard, { borderLeftColor: colors.dangerDark }]}>
 							<View style={styles.iconContainer}>
 								<Text style={styles.icon}>❌</Text>
 							</View>
@@ -253,7 +288,7 @@ export default function NotificationModal({ visible, onClose }) {
 
 					{loading ? (
 						<View style={styles.loadingContainer}>
-							<ActivityIndicator size="large" color="#007AFF" />
+							<ActivityIndicator size="large" color={colors.primary} />
 						</View>
 					) : notifications.length === 0 ? (
 						<View style={styles.emptyContainer}>
@@ -271,122 +306,39 @@ export default function NotificationModal({ visible, onClose }) {
 }
 
 const styles = StyleSheet.create({
-	overlay: {
-		flex: 1,
-		backgroundColor: 'rgba(0, 0, 0, 0.5)',
-		justifyContent: 'flex-end',
-	},
+	overlay: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'flex-end' },
 	modalContainer: {
-		backgroundColor: 'white',
-		borderTopLeftRadius: 20,
-		borderTopRightRadius: 20,
-		maxHeight: '80%',
-		paddingBottom: 20,
+		backgroundColor: colors.bgCard, borderTopLeftRadius: radius.xl, borderTopRightRadius: radius.xl,
+		maxHeight: '80%', paddingBottom: spacing.xl,
 	},
 	header: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		padding: 20,
-		borderBottomWidth: 1,
-		borderBottomColor: '#e0e0e0',
+		flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+		padding: spacing.xl, borderBottomWidth: 1, borderBottomColor: colors.border,
 	},
-	headerTitle: {
-		fontSize: 20,
-		fontWeight: 'bold',
-		color: '#333',
-	},
-	closeButton: {
-		padding: 5,
-	},
-	closeButtonText: {
-		fontSize: 24,
-		color: '#666',
-	},
-	scrollView: {
-		padding: 15,
-	},
+	headerTitle: { fontSize: fontSize.xl, fontWeight: fontWeight.bold, color: colors.textPrimary },
+	closeButton: { padding: 5 },
+	closeButtonText: { fontSize: fontSize.xl, color: colors.textSecondary },
+	scrollView: { padding: spacing.lg },
 	notificationCard: {
-		flexDirection: 'row',
-		backgroundColor: '#f8f9fa',
-		borderRadius: 12,
-		padding: 15,
-		marginBottom: 12,
-		borderLeftWidth: 4,
-		borderLeftColor: '#007AFF',
+		flexDirection: 'row', backgroundColor: colors.bgSubtle, borderRadius: radius.lg,
+		padding: spacing.lg, marginBottom: spacing.md, borderLeftWidth: 4, borderLeftColor: colors.accent,
 	},
-	iconContainer: {
-		marginRight: 12,
-		justifyContent: 'center',
-	},
-	icon: {
-		fontSize: 32,
-	},
-	contentContainer: {
-		flex: 1,
-	},
-	title: {
-		fontSize: 16,
-		fontWeight: 'bold',
-		color: '#333',
-		marginBottom: 4,
-	},
-	description: {
-		fontSize: 14,
-		color: '#666',
-		marginBottom: 4,
-		lineHeight: 20,
-	},
-	bold: {
-		fontWeight: 'bold',
-		color: '#333',
-	},
-	price: {
-		fontSize: 14,
-		color: '#007AFF',
-		fontWeight: '600',
-		marginBottom: 4,
-	},
-	date: {
-		fontSize: 12,
-		color: '#999',
-	},
-	loadingContainer: {
-		padding: 40,
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	actionRow: {
-		flexDirection: 'row',
-		gap: 8,
-		marginTop: 8,
-	},
-	actionBtn: {
-		paddingVertical: 6,
-		paddingHorizontal: 14,
-		borderRadius: 8,
-	},
-	acceptBtn: {
-		backgroundColor: '#16a34a',
-	},
-	rejectBtn: {
-		backgroundColor: '#dc2626',
-	},
-	actionBtnDisabled: {
-		opacity: 0.5,
-	},
-	actionBtnText: {
-		color: '#fff',
-		fontWeight: '700',
-		fontSize: 13,
-	},
-	emptyContainer: {
-		padding: 40,
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	emptyText: {
-		fontSize: 16,
-		color: '#999',
-	},
+	iconContainer: { marginRight: spacing.md, justifyContent: 'center' },
+	icon: { fontSize: fontSize['2xl'] },
+	contentContainer: { flex: 1 },
+	title: { fontSize: fontSize.md, fontWeight: fontWeight.bold, color: colors.textPrimary, marginBottom: 4 },
+	description: { fontSize: fontSize.sm, color: colors.textSecondary, marginBottom: 4, lineHeight: 20 },
+	bold: { fontWeight: fontWeight.bold, color: colors.textPrimary },
+	price: { fontSize: fontSize.sm, color: colors.accent, fontWeight: fontWeight.semibold, marginBottom: 4 },
+	date: { fontSize: fontSize.xs, color: colors.textMuted },
+	loadingContainer: { padding: 40, alignItems: 'center', justifyContent: 'center' },
+	emptyContainer: { padding: 40, alignItems: 'center', justifyContent: 'center' },
+	emptyText: { fontSize: fontSize.md, color: colors.textMuted },
+	tradeActions: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.sm },
+	tradeBtn: { paddingVertical: spacing.xs, paddingHorizontal: spacing.md, borderRadius: radius.sm },
+	tradeBtnAccept: { backgroundColor: colors.primary },
+	tradeBtnReject: { backgroundColor: colors.danger },
+	tradeBtnCancel: { backgroundColor: colors.textMuted },
+	tradeBtnDisabled: { opacity: 0.5 },
+	tradeBtnText: { color: colors.textInverse, fontSize: fontSize.xs, fontWeight: fontWeight.bold },
 });

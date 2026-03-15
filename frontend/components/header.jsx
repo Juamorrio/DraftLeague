@@ -1,17 +1,32 @@
-import React, { useState } from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import React, { useState, useEffect } from 'react';
+import { View, TouchableOpacity, StyleSheet, Image, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Image } from 'react-native';
-import logo from '../assets/header/Logo.png'
-import bell from '../assets/header/bell.png'
-import settings from '../assets/header/gear.png'
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import logo from '../assets/header/Logo.png';
 import NotificationBell from './NotificationBell';
 import NotificationModal from './NotificationModal';
+import { colors, shadow, fontWeight } from '../utils/theme';
+import authService from '../services/authService';
 
-const Header = ({ userIcon, logoIcon, notificationIcon, settingsIcon, onLogout }) => {
+const Header = ({ onLogout }) => {
+  const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
   const [notificationModalVisible, setNotificationModalVisible] = useState(false);
   const [bellSyncCallback, setBellSyncCallback] = useState(null);
+  const [username, setUsername] = useState(null);
+
+  useEffect(() => {
+    authService.getCurrentUser().then(u => {
+      if (u?.username || u?.displayName || u?.email) {
+        setUsername(u.displayName || u.username || u.email);
+      }
+    }).catch(() => {});
+  }, []);
+
+  const handleProfilePress = () => {
+    navigation.navigate('Profile');
+  };
 
   const handleModalClose = (maxSeenId) => {
     setNotificationModalVisible(false);
@@ -24,29 +39,27 @@ const Header = ({ userIcon, logoIcon, notificationIcon, settingsIcon, onLogout }
   return (
     <>
       <LinearGradient
-        colors={['#197319', '#013055']}
+        colors={[colors.gradientStart, colors.gradientEnd]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
-        style={styles.headerContainer}
+        style={[styles.headerContainer, { paddingTop: insets.top + 4 }]}
       >
-        <TouchableOpacity style={styles.profileIconContainer}>
-          <Ionicons name="person-circle-outline" size={40} color="white" />
+        <TouchableOpacity style={styles.sideSlot} activeOpacity={0.7} onPress={handleProfilePress}>
+          <View style={styles.profileCircle}>
+            <Text style={styles.profileIcon}>{username ? username.charAt(0).toUpperCase() : '👤'}</Text>
+          </View>
         </TouchableOpacity>
 
         <View style={styles.logoContainer}>
-          <Image source={logo} style={{ width: 50, height: 50 }} />
+          <Image source={logo} style={styles.logo} resizeMode="contain" />
         </View>
 
-        <View style={styles.iconContainer}>
+        <View style={[styles.sideSlot, { justifyContent: 'flex-end' }]}>
           <NotificationBell
             onPress={() => setNotificationModalVisible(true)}
             onRequestSync={(syncFn) => setBellSyncCallback(() => syncFn)}
           />
         </View>
-
-        <TouchableOpacity style={styles.iconContainer} onPress={onLogout}>
-          <Image source={settings} style={{ width: 30, height: 30 }} />
-        </TouchableOpacity>
       </LinearGradient>
 
       <NotificationModal
@@ -61,31 +74,40 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    position: 'relative',
-    height: 90,
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingBottom: 6,
+    ...shadow.md,
   },
-  iconContainer: {
-    width: 50,
-    justifyContent: 'flex-end',
-    alignItems: 'flex-end',
+  sideSlot: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    minWidth: 80,
   },
-  profileIconContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-  },
-  logoContainer: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 30,
-    bottom: 0,
+  profileCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.15)',
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.25)',
   },
-  logoIconTouchable: {
+  profileIcon: {
+    fontSize: 16,
+    fontWeight: fontWeight.bold,
+    color: colors.textInverse,
+  },
+  logoContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logo: {
+    width: 68,
+    height: 68,
   },
 });
 

@@ -2,6 +2,7 @@
 -- MIGRATION: Chip system columns (run once on existing databases)
 ALTER TABLE team ADD COLUMN IF NOT EXISTS active_chip VARCHAR(50) NULL;
 ALTER TABLE team ADD COLUMN IF NOT EXISTS used_chips VARCHAR(500) NULL DEFAULT '';
+ALTER TABLE team_gameweek_points ADD COLUMN IF NOT EXISTS applied_chip VARCHAR(50) NULL;
 -- ============================================================
 
 -- Tabla de clubs reales de futbol (La Liga)
@@ -97,42 +98,6 @@ CREATE TABLE IF NOT EXISTS `player_statistic` (
     INDEX `idx_player_id` (`player_id`),
     INDEX `idx_match_id` (`match_id`),
     INDEX `idx_player_type` (`player_type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Tabla para porteros (JOINED inheritance)
-CREATE TABLE IF NOT EXISTS `goalkeeper_statistic` (
-    `id` INT PRIMARY KEY,
-    `saves` INT,
-    `goals_conceded` INT,
-    FOREIGN KEY (`id`) REFERENCES `player_statistic`(`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Tabla para defensas (JOINED inheritance)
-CREATE TABLE IF NOT EXISTS `defender_statistic` (
-    `id` INT PRIMARY KEY,
-    `penalties_won` INT,
-    `successful_dribbles` INT,
-    `total_dribbles` INT,
-    FOREIGN KEY (`id`) REFERENCES `player_statistic`(`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Tabla para centrocampistas (JOINED inheritance)
-CREATE TABLE IF NOT EXISTS `midfielder_statistic` (
-    `id` INT PRIMARY KEY,
-    `successful_dribbles` INT,
-    `total_dribbles` INT,
-    `penalties_won` INT,
-    FOREIGN KEY (`id`) REFERENCES `player_statistic`(`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Tabla para delanteros (JOINED inheritance)
-CREATE TABLE IF NOT EXISTS `forward_statistic` (
-    `id` INT PRIMARY KEY,
-    `successful_dribbles` INT,
-    `total_dribbles` INT,
-    `penalties_won` INT,
-    `offsides` INT,
-    FOREIGN KEY (`id`) REFERENCES `player_statistic`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Tabla de puntos por equipo y por jornada

@@ -10,7 +10,7 @@ function deriveHostFromExpo() {
   if (!hostUri) return null;
   const host = hostUri.split(':')[0];
   if (!host) return null;
-  return `http://${host}:8080`;
+  return `http://${host}:9090`;
 }
 
 async function getBaseUrl() {
@@ -22,9 +22,9 @@ async function getBaseUrl() {
   if (Platform.OS === 'web') {
     try {
       const host = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-      return `http://${host}:8080`;
+      return `http://${host}:9090`;
     } catch {
-      return 'http://localhost:8080';
+      return 'http://localhost:9090';
     }
   }
   // Try to derive from Expo host (works for real devices on LAN)
@@ -32,13 +32,13 @@ async function getBaseUrl() {
   if (derived) {
     if (Platform.OS === 'android' && (derived.includes('localhost') || derived.includes('127.0.0.1'))) {
       // Android emulator can't reach host via localhost
-      return 'http://10.0.2.2:8080';
+      return 'http://10.0.2.2:9090';
     }
     return derived;
   }
   // Fallbacks by platform
-  if (Platform.OS === 'android') return 'http://10.0.2.2:8080';
-  return 'http://localhost:8080';
+  if (Platform.OS === 'android') return 'http://10.0.2.2:9090';
+  return 'http://localhost:9090';
 }
 
 export async function setApiBaseOverride(url) {

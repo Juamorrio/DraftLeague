@@ -2,13 +2,15 @@ import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { LeagueContext } from '../../context/LeagueContext';
-import authService from '../../services/authService';
+import authService, { authenticatedFetch } from '../../services/authService';
+import { colors, fontSize, fontWeight, radius, spacing, shadow } from '../../utils/theme';
 
 export default function GameweekRanking() {
   const { selectedLeague } = useContext(LeagueContext);
   const [selectedGameweek, setSelectedGameweek] = useState(1);
   const [ranking, setRanking] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
 
   useEffect(() => {
@@ -29,19 +31,16 @@ export default function GameweekRanking() {
   const loadRanking = async () => {
     try {
       setLoading(true);
-      const token = await authService.getToken();
-      const response = await fetch(
-        `http://localhost:8080/api/v1/fantasy-points/leagues/${selectedLeague.id}/gameweek/${selectedGameweek}/ranking`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      setError(null);
+      const res = await authenticatedFetch(
+        `/api/v1/fantasy-points/leagues/${selectedLeague.id}/gameweek/${selectedGameweek}/ranking`
       );
-      const data = await response.json();
+      if (!res.ok) throw new Error(`Error ${res.status}`);
+      const data = await res.json();
       setRanking(data);
     } catch (error) {
       console.error('Error loading ranking:', error);
+      setError('No se pudo cargar el ranking. Inténtalo de nuevo.');
     } finally {
       setLoading(false);
     }
@@ -92,7 +91,11 @@ export default function GameweekRanking() {
 
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#1a5c3a" />
+          <ActivityIndicator size="large" color={colors.primaryDeep} />
+        </View>
+      ) : error ? (
+        <View style={styles.loadingContainer}>
+          <Text style={styles.errorText}>{error}</Text>
         </View>
       ) : (
         <FlatList
@@ -107,101 +110,33 @@ export default function GameweekRanking() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f9fafb',
-  },
-  header: {
-    backgroundColor: '#1a5c3a',
-    padding: 20,
-    paddingTop: 40,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: '#fff',
-    marginBottom: 15,
-  },
+  container: { flex: 1, backgroundColor: colors.bgApp },
+  header: { backgroundColor: colors.primaryDeep, padding: spacing.xl, paddingTop: 40 },
+  title: { fontSize: fontSize['2xl'], fontWeight: fontWeight.extrabold, color: colors.textInverse, marginBottom: 15 },
   pickerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    paddingHorizontal: 12,
+    flexDirection: 'row', alignItems: 'center', backgroundColor: colors.bgCard,
+    borderRadius: radius.md, paddingHorizontal: spacing.md,
   },
-  pickerLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#111827',
-    marginRight: 10,
-  },
-  picker: {
-    flex: 1,
-    height: 40,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  listContainer: {
-    padding: 16,
-    gap: 8,
-  },
+  pickerLabel: { fontSize: fontSize.sm, fontWeight: fontWeight.semibold, color: colors.textPrimary, marginRight: 10 },
+  picker: { flex: 1, height: 40 },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  errorText: { fontSize: fontSize.md, color: colors.danger, textAlign: 'center', paddingHorizontal: spacing.xl },
+  listContainer: { padding: spacing.lg, gap: spacing.sm },
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    padding: 16,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-    marginBottom: 8,
+    flexDirection: 'row', alignItems: 'center', backgroundColor: colors.bgCard,
+    padding: spacing.lg, borderRadius: radius.lg, ...shadow.sm, marginBottom: spacing.sm,
+    borderWidth: 1, borderColor: colors.border,
   },
-  currentUserRow: {
-    backgroundColor: '#f0fdf4',
-    borderWidth: 2,
-    borderColor: '#1a5c3a',
-  },
+  currentUserRow: { backgroundColor: colors.successBg, borderWidth: 2, borderColor: colors.primaryDark },
   positionCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#1d4ed8',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
+    width: 40, height: 40, borderRadius: 20, backgroundColor: colors.primaryDark,
+    justifyContent: 'center', alignItems: 'center', marginRight: spacing.md,
   },
-  positionText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '800',
-  },
-  userInfo: {
-    flex: 1,
-  },
-  userName: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  youTag: {
-    color: '#f59e0b',
-    fontWeight: '800',
-  },
-  pointsContainer: {
-    alignItems: 'flex-end',
-  },
-  gameweekPoints: {
-    fontSize: 20,
-    fontWeight: '900',
-    color: '#1a5c3a',
-  },
-  totalPoints: {
-    fontSize: 12,
-    color: '#6b7280',
-    marginTop: 2,
-  },
+  positionText: { color: colors.textInverse, fontSize: fontSize.lg, fontWeight: fontWeight.extrabold },
+  userInfo: { flex: 1 },
+  userName: { fontSize: fontSize.md, fontWeight: fontWeight.bold, color: colors.textPrimary },
+  youTag: { color: colors.warning, fontWeight: fontWeight.extrabold },
+  pointsContainer: { alignItems: 'flex-end' },
+  gameweekPoints: { fontSize: fontSize.xl, fontWeight: fontWeight.black, color: colors.primaryDark },
+  totalPoints: { fontSize: fontSize.sm, color: colors.textMuted, marginTop: 2 },
 });

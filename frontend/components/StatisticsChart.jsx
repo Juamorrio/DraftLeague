@@ -1,10 +1,13 @@
-import React from 'react';
-import { View, Text, StyleSheet, Dimensions, Platform } from 'react-native';
+import React, { useWindowDimensions } from 'react';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import { LineChart, BarChart } from 'react-native-chart-kit';
+import { colors, fontSize, fontWeight, radius, shadow, spacing } from '../utils/theme';
 
-const screenWidth = Dimensions.get('window').width;
+// react-native-chart-kit requires opacity-based rgba callbacks, not hex values.
+// These RGB triplets are extracted from theme tokens and must stay in sync if the palette changes.
+const PRIMARY_RGB = '22, 163, 74';    // colors.primary  #16A34A
+const TEXT_SEC_RGB = '71, 85, 105';   // colors.textSecondary  #475569
 
-// Helper para limpiar props que causan warnings en React 19 Web
 const webSafeProps = Platform.OS === 'web' ? {
 	onStartShouldSetResponder: undefined,
 	onResponderGrant: undefined,
@@ -15,22 +18,23 @@ const webSafeProps = Platform.OS === 'web' ? {
 } : {};
 
 export function LineChartComponent({ data, title }) {
+	const { width: screenWidth } = useWindowDimensions();
 	const chartConfig = {
-		backgroundColor: '#ffffff',
-		backgroundGradientFrom: '#ffffff',
-		backgroundGradientTo: '#ffffff',
+		backgroundColor: colors.bgCard,
+		backgroundGradientFrom: colors.bgCard,
+		backgroundGradientTo: colors.bgCard,
 		decimalPlaces: 1,
-		color: (opacity = 1) => `rgba(26, 92, 58, ${opacity})`,
-		labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-		style: { borderRadius: 16 },
+		color: (opacity = 1) => `rgba(${PRIMARY_RGB}, ${opacity})`,
+		labelColor: (opacity = 1) => `rgba(${TEXT_SEC_RGB}, ${opacity})`,
+		style: { borderRadius: radius.lg },
 		propsForDots: {
 			r: '4',
 			strokeWidth: '2',
-			stroke: '#1a5c3a'
+			stroke: colors.primaryDark,
 		},
 		propsForLabels: {
-			transformOrigin: 'center', // Corregido de transform-origin para React 19
-		}
+			transformOrigin: 'center',
+		},
 	};
 
 	return (
@@ -41,7 +45,6 @@ export function LineChartComponent({ data, title }) {
 				width={screenWidth - 64}
 				height={220}
 				chartConfig={chartConfig}
-				bezier
 				style={styles.chart}
 				onDataPointClick={() => {}}
 				{...webSafeProps}
@@ -51,17 +54,18 @@ export function LineChartComponent({ data, title }) {
 }
 
 export function BarChartComponent({ data, title }) {
+	const { width: screenWidth } = useWindowDimensions();
 	const chartConfig = {
-		backgroundColor: '#ffffff',
-		backgroundGradientFrom: '#ffffff',
-		backgroundGradientTo: '#ffffff',
+		backgroundColor: colors.bgCard,
+		backgroundGradientFrom: colors.bgCard,
+		backgroundGradientTo: colors.bgCard,
 		decimalPlaces: 1,
-		color: (opacity = 1) => `rgba(26, 92, 58, ${opacity})`,
-		labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-		style: { borderRadius: 16 },
+		color: (opacity = 1) => `rgba(${PRIMARY_RGB}, ${opacity})`,
+		labelColor: (opacity = 1) => `rgba(${TEXT_SEC_RGB}, ${opacity})`,
+		style: { borderRadius: radius.lg },
 		propsForLabels: {
 			transformOrigin: 'center',
-		}
+		},
 	};
 
 	return (
@@ -83,24 +87,20 @@ export function BarChartComponent({ data, title }) {
 
 const styles = StyleSheet.create({
 	chartContainer: {
-		backgroundColor: '#fff',
-		borderRadius: 12,
-		padding: 16,
-		marginBottom: 16,
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 2 },
-		shadowOpacity: 0.1,
-		shadowRadius: 4,
-		elevation: 3
+		backgroundColor: colors.bgCard,
+		borderRadius: radius.lg,
+		padding: spacing.lg,
+		marginBottom: spacing.lg,
+		...shadow.sm,
 	},
 	chartTitle: {
-		fontSize: 16,
-		fontWeight: '800',
-		color: '#1a5c3a',
-		marginBottom: 12
+		fontSize: fontSize.md,
+		fontWeight: fontWeight.bold,
+		color: colors.primaryDark,
+		marginBottom: spacing.md,
 	},
 	chart: {
-		marginVertical: 8,
-		borderRadius: 16
-	}
+		marginVertical: spacing.sm,
+		borderRadius: radius.lg,
+	},
 });

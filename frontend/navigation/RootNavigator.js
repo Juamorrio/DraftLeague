@@ -84,7 +84,7 @@ function CustomTabBar({ state, descriptors, navigation, isAdmin }) {
     );
 }
 
-function MainTabNavigator({ isAdmin }) {
+function MainTabNavigator({ isAdmin, onLogout }) {
     return (
         <Tab.Navigator
             tabBar={props => <CustomTabBar {...props} isAdmin={isAdmin} />}
@@ -96,7 +96,9 @@ function MainTabNavigator({ isAdmin }) {
             <Tab.Screen name="Market" component={Market} />
             <Tab.Screen name="AIInsights" component={AIInsights} />
             <Tab.Screen name="Leagues" component={Leagues} />
-            <Tab.Screen name="Profile" component={Profile} />
+            <Tab.Screen name="Profile">
+                {props => <Profile {...props} onLogout={onLogout} />}
+            </Tab.Screen>
             <Tab.Screen name="Admin" component={Admin} />
             <Tab.Screen name="PlayerStats" component={PlayerStats} />
             <Tab.Screen name="PlayerComparator" component={PlayerComparator} />
@@ -104,7 +106,7 @@ function MainTabNavigator({ isAdmin }) {
     );
 }
 
-export default function RootNavigator({ authed, authMode, user, onLoggedIn, onRegistered, onSwitchToRegister, onSwitchToLogin }) {
+export default function RootNavigator({ authed, authMode, user, onLoggedIn, onRegistered, onLogout, onSwitchToRegister, onSwitchToLogin }) {
     const isAdmin = user?.role === 'ADMIN';
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -122,7 +124,7 @@ export default function RootNavigator({ authed, authMode, user, onLoggedIn, onRe
                 </>
             ) : (
                 <Stack.Screen name="Main">
-                    {props => <MainTabNavigator {...props} isAdmin={isAdmin} />}
+                    {props => <MainTabNavigator {...props} isAdmin={isAdmin} onLogout={onLogout} />}
                 </Stack.Screen>
             )}
         </Stack.Navigator>

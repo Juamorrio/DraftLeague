@@ -87,12 +87,13 @@ export default function App() {
           <View style={styles.container}>
             <StatusBar style="auto" />
             {authed && <Header onLogout={handleLogout} />}
-            <RootNavigator 
-              authed={authed} 
+            <RootNavigator
+              authed={authed}
               authMode={authMode}
               user={user}
               onLoggedIn={handleLogin}
               onRegistered={handleLogin}
+              onLogout={handleLogout}
               onSwitchToRegister={() => setAuthMode('register')}
               onSwitchToLogin={() => setAuthMode('login')}
             />

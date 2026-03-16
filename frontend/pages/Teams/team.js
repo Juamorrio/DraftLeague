@@ -204,6 +204,15 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 	}
 	viewUserIdRef.current = viewUserId;
 
+	const loadOwnedPlayers = async () => {
+		if (!selectedLeague?.id || readOnly) return;
+		try {
+			const res = await authenticatedFetch(`/api/v1/players?leagueId=${selectedLeague.id}&onlyOwned=true`);
+			const json = await res.json();
+			setPlayers(Array.isArray(json) ? json : (json?.content ?? []));
+		} catch {}
+	};
+
 	useEffect(() => {
 		let mounted = true;
 		(async () => {
@@ -327,6 +336,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 			await Promise.all([
 				loadTeam(),
 				loadGameweekStatus(),
+				loadOwnedPlayers(),
 			]);
 			if (selectedGameweekRef.current !== 'total' && teamIdRef.current) {
 				await loadPlayerGameweekPoints(teamIdRef.current, selectedGameweekRef.current);
@@ -548,9 +558,10 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 				if (data && typeof data.budget === 'number') setMyBudget(data.budget);
 				Alert.alert('Clausulazo realizado', 'El jugador ha sido transferido a tu equipo.');
 				await loadTeam();
+				await loadOwnedPlayers();
 			} else {
 				const data = await res.json().catch(() => ({}));
-				Alert.alert('Error', data?.error || 'No se pudo realizar el clausulazo');
+				Alert.alert('Error', data?.message || data?.error || 'No se pudo realizar el clausulazo');
 			}
 		} catch (e) {
 			Alert.alert('Error', e?.message || 'Fallo al ejecutar clausulazo');
@@ -572,9 +583,10 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 				Alert.alert('Jugador vendido', `${pt.player.fullName || pt.player.name} vendido por €${price.toLocaleString('es-ES')}`);
 				if (captainPlayerId === pt.player.id) setCaptainPlayerId(null);
 				await loadTeam();
+				await loadOwnedPlayers();
 			} else {
 				const data = await res.json().catch(() => ({}));
-				Alert.alert('Error', data?.error || 'No se pudo vender el jugador');
+				Alert.alert('Error', data?.message || data?.error || 'No se pudo vender el jugador');
 			}
 		} catch (e) {
 			Alert.alert('Error', e?.message || 'Fallo al vender jugador');

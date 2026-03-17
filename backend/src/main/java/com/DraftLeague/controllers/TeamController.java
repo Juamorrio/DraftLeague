@@ -85,7 +85,7 @@ public class TeamController {
             @RequestBody java.util.Map<String,Object> body) {
         try {
             Integer sellerUserId = (Integer) body.get("sellerUserId");
-            String playerId = (String) body.get("playerId");
+            String playerId = body.get("playerId") != null ? String.valueOf(body.get("playerId")) : null;
             if (sellerUserId == null || playerId == null) {
                 return ResponseEntity.badRequest().body(java.util.Map.of("error", "Par\u00e1metros inv\u00e1lidos"));
             }

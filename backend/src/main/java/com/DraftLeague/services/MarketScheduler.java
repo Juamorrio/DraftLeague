@@ -22,12 +22,20 @@ public class MarketScheduler {
         this.leagueRepository = leagueRepository;
     }
 
-    // Runs daily at midnight
+    @Scheduled(cron = "0 0 * * * *")
+    public void finalizeExpiredAuctions() {
+        try {
+            marketService.finalizeExpiredAuctions();
+        } catch (Exception e) {
+            logger.error("Error al finalizar subastas expiradas: {}", e.getMessage(), e);
+        }
+    }
+
     @Scheduled(cron = "0 0 0 * * *")
     public void finalizeAndRefreshMarkets() {
         try {
             List<League> leagues = leagueRepository.findAll();
-            
+
             for (League league : leagues) {
                 try {
                     marketService.refreshMarket(league.getId().intValue());
@@ -35,7 +43,7 @@ public class MarketScheduler {
                     logger.error("Error al refrescar mercado para la liga {}: {}", league.getId(), e.getMessage(), e);
                 }
             }
-            
+
         } catch (Exception e) {
             logger.error("Error al procesar mercados: {}", e.getMessage(), e);
         }

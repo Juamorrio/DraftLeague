@@ -204,8 +204,8 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 	}
 	viewUserIdRef.current = viewUserId;
 
-	const loadOwnedPlayers = async () => {
-		if (!selectedLeague?.id || readOnly) return;
+	const loadOwnedPlayers = async ({ force = false } = {}) => {
+		if (!selectedLeague?.id || (readOnly && !force)) return;
 		try {
 			const res = await authenticatedFetch(`/api/v1/players?leagueId=${selectedLeague.id}&onlyOwned=true`);
 			const json = await res.json();
@@ -241,11 +241,11 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 		
 	}, [selectedLeague?.id]);
 
-	const loadTeam = async () => {
+	const loadTeam = async ({ overrideUserId } = {}) => {
 		if (!selectedLeague?.id) return;
 		let mounted = true;
 		try {
-			let userIdToUse = viewUserIdRef.current;
+			let userIdToUse = overrideUserId ?? viewUserIdRef.current;
 			if (!userIdToUse) {
 				const user = await authService.getCurrentUser();
 				if (!user?.id) return;
@@ -294,7 +294,8 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 					
 					Object.entries(playersByRole).forEach(([role, players]) => {
 						const slots = slotsByRole[role] || [];
-						players.forEach((pt, index) => {
+						const sorted = [...players].sort((a, b) => (b.lined ? 1 : 0) - (a.lined ? 1 : 0));
+						sorted.forEach((pt, index) => {
 							if (index < slots.length) {
 								newAssigned[slots[index]] = pt;
 							}
@@ -551,14 +552,18 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 			const res = await authenticatedFetch(`/api/v1/teams/league/${selectedLeague.id}/buyout`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ sellerUserId: viewUser.id, playerId: pt.player.id })
+				body: JSON.stringify({ sellerUserId: viewUser.id, playerId: String(pt.player.id) })
 			});
 			if (res.ok) {
 				let data = null; try { data = await res.json(); } catch {}
 				if (data && typeof data.budget === 'number') setMyBudget(data.budget);
 				Alert.alert('Clausulazo realizado', 'El jugador ha sido transferido a tu equipo.');
-				await loadTeam();
-				await loadOwnedPlayers();
+				setViewUser(null);
+				const currentUser = await authService.getCurrentUser();
+				if (currentUser?.id) {
+					await loadTeam({ overrideUserId: currentUser.id });
+					await loadOwnedPlayers({ force: true });
+				}
 			} else {
 				const data = await res.json().catch(() => ({}));
 				Alert.alert('Error', data?.message || data?.error || 'No se pudo realizar el clausulazo');
@@ -574,7 +579,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 			const res = await authenticatedFetch(`/api/v1/teams/league/${selectedLeague.id}/sell-player`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ playerId: pt.player.id })
+				body: JSON.stringify({ playerId: String(pt.player.id) })
 			});
 			if (res.ok) {
 				const data = await res.json();
@@ -624,6 +629,11 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 			return;
 		}
 
+		const assignedIds = new Set(playersList.map(p => p.playerId));
+		const benchList = players
+			.filter(p => p?.id && !assignedIds.has(p.id))
+			.map(p => ({ playerId: p.id, position: p.position, lined: false, isCaptain: false }));
+
 		setSaving(true);
 		if (silent) setAutoSaveStatus('saving');
 		try {
@@ -637,7 +647,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 			const res = await authenticatedFetch(`/api/v1/teams/league/${selectedLeague.id}/${user.id}/players`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ players: playersList })
+				body: JSON.stringify({ players: [...playersList, ...benchList] })
 			});
 
 			if (res.ok) {
@@ -686,6 +696,11 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 			Alert.alert('Error', 'Debes tener jugadores en el equipo');
 			return;
 		}
+		const assignedIds = new Set(playersList.map(p => p.playerId));
+		const benchList = players
+			.filter(p => p?.id && !assignedIds.has(p.id))
+			.map(p => ({ playerId: p.id, position: p.position, lined: false, isCaptain: false }));
+		const fullList = [...playersList, ...benchList];
 		Alert.alert(
 			'🃏 Usar Comodín',
 			'Podrás cambiar tu alineación durante la jornada activa. Solo puedes usarlo UNA VEZ por temporada.',
@@ -699,7 +714,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 						const res = await authenticatedFetch(
 							`/api/v1/teams/league/${selectedLeague.id}/${user.id}/wildcard`,
 							{ method: 'POST', headers: { 'Content-Type': 'application/json' },
-							  body: JSON.stringify({ players: playersList }) }
+							  body: JSON.stringify({ players: fullList }) }
 						);
 						if (res.ok) {
 							setWildcardUsed(true);

@@ -408,7 +408,7 @@ function PlayerStats({ navigation }) {
 														return (
 															<View style={styles.chipBanner}>
 																<Text style={styles.chipBannerText}>
-																	{chip ? `${chip.icon} ${chip.name}` : selectedStat.appliedChip} — chip aplicado en esta jornada
+																	{chip ? `${chip.icon} ${chip.name}` : selectedStat.appliedChip} — chip aplicado en la jornada {selectedStat.round}
 																</Text>
 															</View>
 														);

@@ -35,17 +35,48 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      ml-service:
+        condition: service_started
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:mariadb://db:3306/${DB_NAME:-draftleague}?tinyInt1isBit=false
       SPRING_DATASOURCE_USERNAME: ${DB_USER:-draftuser}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-draftpass}
       JWT_SECRET: ${JWT_SECRET:-supersecretjwtkey512bitslong_pleasechangeme}
+      ML_XGBOOST_URL: http://ml-service:8000
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-changeme-internal}
     ports:
-      - "8080:8080"
+      - "9090:9090"
     healthcheck:
-      test: ["CMD-SHELL", "curl -s http://localhost:8080/actuator/health | grep -q UP || exit 1"]
+      test: ["CMD-SHELL", "curl -s http://localhost:9090/actuator/health | grep -q UP || exit 1"]
       start_period: 40s
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks:
+      - draftleague-net
+
+  # ── ML XGBoost Service ──────────────────────────────────────────────────────
+  ml-service:
+    build:
+      context: ./ml-service
+      dockerfile: Dockerfile
+    container_name: draftleague-ml
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: mysql+pymysql://${DB_USER:-draftuser}:${DB_PASSWORD:-draftpass}@db:3306/${DB_NAME:-draftleague}
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-changeme-internal}
+      MODEL_PATH: /app/model_storage/xgboost_model.pkl
+    volumes:
+      - ml_model_data:/app/model_storage
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8000/health || exit 1"]
+      start_period: 60s
       interval: 15s
       timeout: 5s
       retries: 5
@@ -58,7 +89,7 @@ services:
       context: .
       dockerfile: Dockerfile.frontend
       args:
-        EXPO_PUBLIC_API_URL: ${API_URL:-http://localhost:8080}
+        EXPO_PUBLIC_API_URL: ${API_URL:-http://localhost:9090}
     image: ghcr.io/${GITHUB_REPOSITORY:-draftleague/draftleague}/frontend:${IMAGE_TAG:-latest}
     container_name: draftleague-frontend
     restart: unless-stopped
@@ -72,6 +103,8 @@ services:
 
 volumes:
   mariadb_data:
+    driver: local
+  ml_model_data:
     driver: local
 
 networks:

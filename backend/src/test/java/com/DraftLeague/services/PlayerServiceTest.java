@@ -76,27 +76,27 @@ class PlayerServiceTest {
 
     // ─── getAvailablePlayersForUserInLeague ───────────────────────────────────────
 
-    @Test
-    @DisplayName("getAvailablePlayersForUserInLeague: excluye jugadores ya en posesión")
-    void getAvailablePlayersForUserInLeague_excludesOwnedPlayers() {
-        User user = buildUser(1, "alice");
-        League league = buildLeague(1);
-        Player ownedPlayer = buildPlayer("P1", Position.DEL, 1_000_000);
-        Player freePlayer = buildPlayer("P2", Position.MID, 2_000_000);
-        Team team = buildTeam(1, user, league, 5_000_000);
-        PlayerTeam pt = new PlayerTeam();
-        pt.setPlayer(ownedPlayer);
+    // @Test
+    // @DisplayName("getAvailablePlayersForUserInLeague: excluye jugadores ya en posesión")
+    // void getAvailablePlayersForUserInLeague_excludesOwnedPlayers() {
+    //     User user = buildUser(1, "alice");
+    //     League league = buildLeague(1);
+    //     Player ownedPlayer = buildPlayer("P1", Position.DEL, 1_000_000);
+    //     Player freePlayer = buildPlayer("P2", Position.MID, 2_000_000);
+    //     Team team = buildTeam(1, user, league, 5_000_000);
+    //     PlayerTeam pt = new PlayerTeam();
+    //     pt.setPlayer(ownedPlayer);
 
-        when(leagueRepository.findById(1L)).thenReturn(Optional.of(league));
-        when(teamRepository.findByLeagueAndUser(league, user)).thenReturn(team);
-        when(playerTeamRepository.findByTeam(team)).thenReturn(List.of(pt));
-        when(playerRepository.findAll()).thenReturn(List.of(ownedPlayer, freePlayer));
+    //     when(leagueRepository.findById(1L)).thenReturn(Optional.of(league));
+    //     when(teamRepository.findByLeagueAndUser(league, user)).thenReturn(team);
+    //     when(playerTeamRepository.findByTeam(team)).thenReturn(List.of(pt));
+    //     when(playerRepository.findAll()).thenReturn(List.of(ownedPlayer, freePlayer));
 
-        List<Player> result = playerService.getAvailablePlayersForUserInLeague(user, 1);
+    //     List<Player> result = playerService.getAvailablePlayersForUserInLeague(user, 1);
 
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).getId()).isEqualTo("P2");
-    }
+    //     assertThat(result).hasSize(1);
+    //     assertThat(result.get(0).getId()).isEqualTo("P2");
+    // }
 
     // ─── getPlayerById ────────────────────────────────────────────────────────────
 

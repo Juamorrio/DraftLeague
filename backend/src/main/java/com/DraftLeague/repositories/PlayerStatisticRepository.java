@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -20,31 +21,16 @@ public interface PlayerStatisticRepository extends JpaRepository<PlayerStatistic
 
     List<PlayerStatistic> findByMatchId(Integer matchId);
 
+    List<PlayerStatistic> findByMatchIdIn(Collection<Integer> matchIds);
+
     List<PlayerStatistic> findByPlayerType(PlayerStatistic.PlayerType playerType);
 
     @Query("SELECT ps FROM PlayerStatistic ps WHERE ps.playerId = :playerId AND ps.matchId IN :matchIds")
     Optional<PlayerStatistic> findByPlayerIdAndMatchIdIn(@Param("playerId") String playerId, @Param("matchIds") Set<Integer> matchIds);
 
     @Query(value = """
-        SELECT
-            ps.*,
-            gs.saves as gk_saves,
-            gs.goals_conceded as gk_goals_conceded,
-            ds.penalties_won as def_penalties_won,
-            ds.successful_dribbles as def_successful_dribbles,
-            ds.total_dribbles as def_total_dribbles,
-            ms.successful_dribbles as mid_successful_dribbles,
-            ms.total_dribbles as mid_total_dribbles,
-            ms.penalties_won as mid_penalties_won,
-            fs.successful_dribbles as fwd_successful_dribbles,
-            fs.total_dribbles as fwd_total_dribbles,
-            fs.penalties_won as fwd_penalties_won,
-            fs.offsides as fwd_offsides
+        SELECT ps.*
         FROM player_statistic ps
-        LEFT JOIN goalkeeper_statistic gs ON ps.id = gs.id
-        LEFT JOIN defender_statistic ds ON ps.id = ds.id
-        LEFT JOIN midfielder_statistic ms ON ps.id = ms.id
-        LEFT JOIN forward_statistic fs ON ps.id = fs.id
         WHERE ps.player_id = :playerId AND ps.match_id = :matchId
         LIMIT 1
         """, nativeQuery = true)
@@ -89,30 +75,23 @@ public interface PlayerStatisticRepository extends JpaRepository<PlayerStatistic
             ps.duels_lost as duelsLost,
             ps.yellow_cards as yellowCards,
             ps.red_cards as redCards,
-            COALESCE(gs.saves, NULL) as saves,
-            COALESCE(gs.goals_conceded, NULL) as goalsAllowed,
+            ps.saves as saves,
+            ps.goals_conceded as goalsAllowed,
             ps.player_type as playerType,
             ps.is_captain as isCaptain,
             ps.shirt_number as shirtNumber,
             ps.penalty_committed as penaltyCommitted
         FROM player_statistic ps
         LEFT JOIN matches m ON ps.match_id = m.id
-        LEFT JOIN goalkeeper_statistic gs ON ps.id = gs.id
         WHERE ps.player_id = :playerId
         ORDER BY m.round DESC
         """, nativeQuery = true)
     List<Map<String, Object>> getPlayerMatchesSummary(@Param("playerId") String playerId);
 
-    /**
-     * Returns the most recent {@code N} statistics for a player, ordered by most recent match first.
-     * Used by MarketValueUpdateService to assess short-term form.
-     */
+
     @Query("SELECT ps FROM PlayerStatistic ps WHERE ps.playerId = :playerId ORDER BY ps.matchId DESC")
     List<PlayerStatistic> findRecentStatsByPlayerId(@Param("playerId") String playerId, Pageable pageable);
 
-    /**
-     * Returns aggregate discipline data (yellow/red cards) for a player across their last N match IDs.
-     */
     @Query(value = """
         SELECT
             COALESCE(SUM(recent.yellow_cards), 0) AS total_yellow_cards,
@@ -152,4 +131,60 @@ public interface PlayerStatisticRepository extends JpaRepository<PlayerStatistic
         WHERE player_id = :playerId
         """, nativeQuery = true)
     Map<String, Object> getPlayerStatisticsSummaryData(@Param("playerId") String playerId);
+
+    @Query(value = """
+        SELECT
+            player_id,
+            COUNT(*) as matches_played,
+            COALESCE(SUM(goals), 0) as total_goals,
+            COALESCE(SUM(assists), 0) as total_assists,
+            COALESCE(SUM(minutes_played), 0) as total_minutes_played,
+            COALESCE(SUM(total_fantasy_points), 0) as total_fantasy_points,
+            COALESCE(SUM(total_shots), 0) as total_shots,
+            COALESCE(SUM(accurate_passes), 0) as total_accurate_passes,
+            COALESCE(SUM(total_passes), 0) as total_passes,
+            COALESCE(SUM(chances_created), 0) as total_chances_created,
+            COALESCE(SUM(tackles), 0) as total_tackles,
+            COALESCE(SUM(interceptions), 0) as total_interceptions,
+            COALESCE(SUM(duels_won), 0) as total_duels_won,
+            COALESCE(SUM(duels_lost), 0) as total_duels_lost,
+            COALESCE(SUM(yellow_cards), 0) as total_yellow_cards,
+            COALESCE(SUM(red_cards), 0) as total_red_cards,
+            COALESCE(SUM(penalty_committed), 0) as total_penalty_committed,
+            SUM(CASE WHEN is_captain = 1 THEN 1 ELSE 0 END) as times_captain,
+            COALESCE(AVG(rating), 0) as avg_rating
+        FROM player_statistic
+        GROUP BY player_id
+        """, nativeQuery = true)
+    List<Map<String, Object>> getAllPlayerStatisticsSummaryData();
+
+    @Query(value = """
+        SELECT player_id, match_id, minutes_played, rating, total_fantasy_points,
+               goals, assists, shots_on_target, chances_created, tackles,
+               interceptions, blocks, saves, goals_conceded, clean_sheet
+        FROM (
+            SELECT player_id, match_id, minutes_played, rating, total_fantasy_points,
+                   goals, assists, shots_on_target, chances_created, tackles,
+                   interceptions, blocks, saves, goals_conceded, clean_sheet,
+                   ROW_NUMBER() OVER (PARTITION BY player_id ORDER BY match_id DESC) AS rn
+            FROM player_statistic
+        ) ranked
+        WHERE rn <= :limit
+        """, nativeQuery = true)
+    List<Map<String, Object>> findRecentStatsForAllPlayers(@Param("limit") int limit);
+
+
+    @Query(value = """
+        SELECT player_id,
+               COALESCE(SUM(yellow_cards), 0) AS total_yellow_cards,
+               COALESCE(SUM(red_cards), 0)    AS total_red_cards
+        FROM (
+            SELECT player_id, yellow_cards, red_cards,
+                   ROW_NUMBER() OVER (PARTITION BY player_id ORDER BY match_id DESC) AS rn
+            FROM player_statistic
+        ) ranked
+        WHERE rn <= :limit
+        GROUP BY player_id
+        """, nativeQuery = true)
+    List<Map<String, Object>> findRecentDisciplineForAllPlayers(@Param("limit") int limit);
 }

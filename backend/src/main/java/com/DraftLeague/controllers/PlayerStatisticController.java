@@ -5,6 +5,8 @@ import com.DraftLeague.models.Statistics.PlayerStatistic;
 import com.DraftLeague.services.PlayerStatisticService;
 import com.DraftLeague.dto.*;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,12 +19,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PlayerStatisticController {
 
+    private static final Logger log = LoggerFactory.getLogger(PlayerStatisticController.class);
+
     private final PlayerStatisticService playerStatisticService;
 
     @PostMapping
-    public ResponseEntity<PlayerStatistic> createStatistic(@RequestBody PlayerStatistic statistic) {
+    public ResponseEntity<PlayerStatistic> createStatistic(@RequestBody CreatePlayerStatisticRequest request) {
         try {
-            PlayerStatistic saved = playerStatisticService.saveStatistic(statistic);
+            PlayerStatistic saved = playerStatisticService.saveStatistic(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(saved);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -89,20 +93,20 @@ public class PlayerStatisticController {
             }
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            e.printStackTrace(); 
-            System.err.println("Error getting player statistics summary: " + e.getMessage());
+            log.error("Error getting player statistics summary for player {}", playerId, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @GetMapping("/player/{playerId}/matches")
-    public ResponseEntity<List<JornadaMatchesDTO>> getPlayerMatchesSummary(@PathVariable String playerId) {
+    public ResponseEntity<List<JornadaMatchesDTO>> getPlayerMatchesSummary(
+            @PathVariable String playerId,
+            @RequestParam(required = false) Integer teamId) {
         try {
-            List<JornadaMatchesDTO> matches = playerStatisticService.getPlayerMatchesSummary(playerId);
+            List<JornadaMatchesDTO> matches = playerStatisticService.getPlayerMatchesSummary(playerId, teamId);
             return ResponseEntity.ok(matches);
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("Error getting player matches summary: " + e.getMessage());
+            log.error("Error getting player matches summary for player {}", playerId, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

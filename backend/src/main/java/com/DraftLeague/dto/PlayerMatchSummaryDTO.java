@@ -67,4 +67,7 @@ public class PlayerMatchSummaryDTO {
 
     // Points breakdown
     private Map<String, Integer> pointsBreakdown;
+
+    // Chip applied this gameweek (null if none)
+    private String appliedChip;
 }

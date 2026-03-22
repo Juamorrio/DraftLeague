@@ -14,8 +14,11 @@ import com.DraftLeague.repositories.UserRepository;
 import com.DraftLeague.services.MarketService;
 import com.DraftLeague.services.MatchService;
 import com.DraftLeague.services.LeagueService;
+import com.DraftLeague.services.PlayerStatisticsService;
 
 import org.springframework.http.ResponseEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +29,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/admin")
 public class AdminController {
+
+    private static final Logger log = LoggerFactory.getLogger(AdminController.class);
 
     private final UserRepository userRepository;
     private final LeagueRepository leagueRepository;
@@ -38,6 +43,7 @@ public class AdminController {
     private final FantasyPointsService fantasyPointsService;
     private final MarketValueUpdateService marketValueUpdateService;
     private final LeagueService leagueService;
+    private final PlayerStatisticsService playerStatisticsService;
 
     public AdminController(UserRepository userRepository,
                           LeagueRepository leagueRepository,
@@ -49,7 +55,8 @@ public class AdminController {
                           GameweekStateService gameweekStateService,
                           FantasyPointsService fantasyPointsService,
                           MarketValueUpdateService marketValueUpdateService,
-                          LeagueService leagueService) {
+                          LeagueService leagueService,
+                          PlayerStatisticsService playerStatisticsService) {
         this.userRepository = userRepository;
         this.leagueRepository = leagueRepository;
         this.playerRepository = playerRepository;
@@ -61,6 +68,7 @@ public class AdminController {
         this.fantasyPointsService = fantasyPointsService;
         this.marketValueUpdateService = marketValueUpdateService;
         this.leagueService = leagueService;
+        this.playerStatisticsService = playerStatisticsService;
     }
 
     private boolean isAdmin(Authentication auth) {
@@ -113,7 +121,7 @@ public class AdminController {
         
         String newRole = body.get("role");
         if (!"USER".equals(newRole) && !"ADMIN".equals(newRole)) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Rol invÃƒÂ¡lido"));
+            return ResponseEntity.badRequest().body(Map.of("error", "Rol inv\u00e1lido"));
         }
 
         user.setRole(newRole);
@@ -187,17 +195,7 @@ public class AdminController {
             int count = importService.importFromJsonResource();
             return ResponseEntity.ok(Map.of("message", "Se importaron " + count + " jugadores."));
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("===== ERROR DETALLADO AL IMPORTAR JUGADORES =====");
-            System.err.println("Mensaje: " + e.getMessage());
-            System.err.println("Tipo: " + e.getClass().getName());
-            
-            Throwable cause = e.getCause();
-            if (cause != null) {
-                System.err.println("Causa raÃƒÂ­z: " + cause.getMessage());
-                System.err.println("Tipo causa: " + cause.getClass().getName());
-            }
-            
+            log.error("Error importing players", e);
             return ResponseEntity.status(500).body(Map.of(
                 "error", "Error al importar jugadores: " + e.getMessage(),
                 "type", e.getClass().getSimpleName()
@@ -376,20 +374,56 @@ public class AdminController {
         }
         try {
             // Step 1: fetch stats from API-Football and save to DB
-            importService.syncGameweekStats(activeGameweek);
+            int statsSynced = importService.syncGameweekStats(activeGameweek);
+
             // Step 2: calculate fantasy points for all teams
             fantasyPointsService.recalculateGameweekPoints(activeGameweek);
+
             // Step 3: recalculate market values and record per-gameweek history
             Map<String, Integer> mvResult = marketValueUpdateService.recalculateAllMarketValuesForGameweek(activeGameweek);
-            return ResponseEntity.ok(Map.of(
-                "message", "Estad\u00edsticas obtenidas, puntos y valores de mercado de la jornada " + activeGameweek + " calculados correctamente.",
-                "gameweek", activeGameweek,
-                "marketValueUpdated", mvResult.getOrDefault("updatedCount", 0),
-                "marketValueSkipped", mvResult.getOrDefault("skippedCount", 0),
-                "marketValueErrors",  mvResult.getOrDefault("errorCount", 0)
-            ));
+
+            // Build response – include a warning when the API returned no stats so the
+            // admin knows why market values and fantasy points may not have changed.
+            Map<String, Object> body = new java.util.LinkedHashMap<>();
+            body.put("gameweek",            activeGameweek);
+            body.put("statsPlayersSynced",  statsSynced);
+            body.put("marketValueUpdated",  mvResult.getOrDefault("updatedCount", 0));
+            body.put("marketValueSkipped",  mvResult.getOrDefault("skippedCount", 0));
+            body.put("marketValueErrors",   mvResult.getOrDefault("errorCount", 0));
+
+            if (statsSynced == 0) {
+                body.put("warning",
+                    "La API-Football no devolvió estadísticas para la jornada " + activeGameweek +
+                    ". Verifica que la jornada esté finalizada, que el fixture ID sea correcto " +
+                    "y que no hayas excedido el límite de tu plan. Los valores de mercado se " +
+                    "recalcularon usando únicamente los datos ya existentes en la base de datos.");
+                body.put("message", "Jornada " + activeGameweek +
+                    " procesada con advertencia: 0 estadísticas obtenidas del API.");
+            } else {
+                body.put("message", "Estadísticas (" + statsSynced +
+                    " registros), puntos y valores de mercado de la jornada " +
+                    activeGameweek + " calculados correctamente.");
+            }
+
+            return ResponseEntity.ok(body);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", "Error al calcular puntos: " + e.getMessage()));
+        }
+    }
+
+    @PostMapping("/backfill-clean-sheets")
+    public ResponseEntity<?> backfillCleanSheets(Authentication auth) {
+        if (!isAdmin(auth)) {
+            return ResponseEntity.status(403).body(Map.of("error", "Acceso denegado"));
+        }
+        try {
+            int updated = playerStatisticsService.recalculateCleanSheets();
+            return ResponseEntity.ok(Map.of(
+                "message", "Clean sheets retroactively calculated for " + updated + " statistics.",
+                "updated", updated
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", "Error al backfill clean sheets: " + e.getMessage()));
         }
     }
 }

@@ -15,6 +15,7 @@ import { Picker } from '@react-native-picker/picker';
 import { authenticatedFetch } from '../../services/authService';
 import withAuth from '../../components/withAuth';
 import { useMatches } from '../../context/MatchesContext';
+import { colors, fontSize, fontWeight, radius, spacing, shadow, positionBadgeColors } from '../../utils/theme';
 
 function Admin() {
 	const [stats, setStats] = useState(null);
@@ -24,14 +25,22 @@ function Admin() {
 	const [activeTab, setActiveTab] = useState('stats');
 	const [editingUser, setEditingUser] = useState(null);
 	const [selectedRole, setSelectedRole] = useState('USER');
-	const [syncingMatches, setSyncingMatches] = useState(false);
-	const [syncingPlayers, setSyncingPlayers] = useState(false);
 	const [selectedGameweek, setSelectedGameweek] = useState(1);
 	// Gameweek state
 	const [gameweekStatus, setGameweekStatus] = useState({ activeGameweek: null, teamsLocked: false });
-	const [activatingGameweek, setActivatingGameweek] = useState(false);
-	const [calculatingPoints, setCalculatingPoints] = useState(false);
-	const [unlockingTeams, setUnlockingTeams] = useState(false);
+	// Consolidated async-operation flags — replaces 6 separate boolean useState calls
+	const [ops, setOps] = useState({
+		syncingMatches: false,
+		syncingPlayers: false,
+		activatingGameweek: false,
+		calculatingPoints: false,
+		unlockingTeams: false,
+		recalculatingPrices: false,
+		trainingML: false,
+	});
+	const setOp = (key, value) => setOps(prev => ({ ...prev, [key]: value }));
+	// Destructure for drop-in compatibility with existing JSX references
+	const { syncingMatches, syncingPlayers, activatingGameweek, calculatingPoints, unlockingTeams, recalculatingPrices, trainingML } = ops;
 	const { loadMatches } = useMatches();
 
 	useEffect(() => {
@@ -188,7 +197,7 @@ function Admin() {
 				{
 					text: 'Sincronizar',
 					onPress: async () => {
-						setSyncingMatches(true);
+						setOp('syncingMatches', true);
 						try {
 							const res = await authenticatedFetch('/api/v1/admin/sync-matches', {
 								method: 'POST'
@@ -204,7 +213,7 @@ function Admin() {
 						} catch (e) {
 							Alert.alert('Error', 'Error al sincronizar partidos: ' + e.message);
 						} finally {
-							setSyncingMatches(false);
+							setOp('syncingMatches', false);
 						}
 					}
 				}
@@ -221,7 +230,7 @@ function Admin() {
 				{
 					text: 'Sincronizar',
 					onPress: async () => {
-						setSyncingPlayers(true);
+						setOp('syncingPlayers', true);
 						try {
 							const res = await authenticatedFetch('/api/v1/admin/sync-players', {
 								method: 'POST'
@@ -237,7 +246,7 @@ function Admin() {
 						} catch (e) {
 							Alert.alert('Error', 'Error al sincronizar jugadores: ' + e.message);
 						} finally {
-							setSyncingPlayers(false);
+							setOp('syncingPlayers', false);
 						}
 					}
 				}
@@ -267,7 +276,7 @@ function Admin() {
 					text: 'Activar y Bloquear',
 					style: 'destructive',
 					onPress: async () => {
-						setActivatingGameweek(true);
+						setOp('activatingGameweek', true);
 						try {
 							const res = await authenticatedFetch('/api/v1/admin/gameweek/activate', {
 								method: 'POST',
@@ -285,7 +294,7 @@ function Admin() {
 						} catch (e) {
 							Alert.alert('Error', 'Error al activar jornada: ' + e.message);
 						} finally {
-							setActivatingGameweek(false);
+							setOp('activatingGameweek', false);
 						}
 					}
 				}
@@ -302,7 +311,7 @@ function Admin() {
 				{
 					text: 'Desbloquear',
 					onPress: async () => {
-						setUnlockingTeams(true);
+						setOp('unlockingTeams', true);
 						try {
 							const res = await authenticatedFetch('/api/v1/admin/gameweek/unlock', {
 								method: 'POST'
@@ -318,7 +327,7 @@ function Admin() {
 						} catch (e) {
 							Alert.alert('Error', 'Error al desbloquear: ' + e.message);
 						} finally {
-							setUnlockingTeams(false);
+							setOp('unlockingTeams', false);
 						}
 					}
 				}
@@ -339,14 +348,21 @@ function Admin() {
 				{
 					text: 'Calcular',
 					onPress: async () => {
-						setCalculatingPoints(true);
+						setOp('calculatingPoints', true);
 						try {
 							const res = await authenticatedFetch('/api/v1/admin/gameweek/calculate-points', {
 								method: 'POST'
 							});
 							if (res.ok) {
 								const data = await res.json();
-								Alert.alert('✅ Completado', data.message);
+								const title = data.warning ? '⚠️ Completado con advertencia' : '✅ Completado';
+								const lines = [
+									data.message,
+									'Stats sincronizadas: ' + (data.statsPlayersSynced ?? '?'),
+									'Mercado → actualizados: ' + (data.marketValueUpdated ?? 0) + ' · sin cambios: ' + (data.marketValueSkipped ?? 0),
+									data.warning ? ('⚠️ ' + data.warning) : null,
+								].filter(Boolean);
+								Alert.alert(title, lines.join('\n'));
 							} else {
 								const error = await res.json().catch(() => ({}));
 								Alert.alert('Error', error.error || 'No se pudieron calcular los puntos');
@@ -354,7 +370,75 @@ function Admin() {
 						} catch (e) {
 							Alert.alert('Error', 'Error al calcular puntos: ' + e.message);
 						} finally {
-							setCalculatingPoints(false);
+							setOp('calculatingPoints', false);
+						}
+					}
+				}
+			]
+		);
+	};
+
+	const trainMLModel = async () => {
+		Alert.alert(
+			'Entrenar Modelo IA',
+			'¿Reentrenar el modelo XGBoost con los datos actuales? La caché de predicciones se invalidará automáticamente.',
+			[
+				{ text: 'Cancelar', style: 'cancel' },
+				{
+					text: 'Entrenar',
+					onPress: async () => {
+						setOp('trainingML', true);
+						try {
+							const res = await authenticatedFetch('/api/ml/train', {
+								method: 'POST',
+								headers: { 'Content-Type': 'application/json' },
+								body: JSON.stringify({ gameweek: gameweekStatus.activeGameweek ?? 0 })
+							});
+							if (res.ok) {
+								Alert.alert('✅ Entrenamiento iniciado', 'El modelo se está reentrenando en segundo plano. Las predicciones se actualizarán en unos minutos.');
+							} else {
+								const error = await res.json().catch(() => ({}));
+								Alert.alert('Error', error.error || 'No se pudo iniciar el entrenamiento');
+							}
+						} catch (e) {
+							Alert.alert('Error', 'Error al entrenar el modelo: ' + e.message);
+						} finally {
+							setOp('trainingML', false);
+						}
+					}
+				}
+			]
+		);
+	};
+
+	const recalculateMarketPrices = async () => {
+		Alert.alert(
+			'Recalcular precios de mercado',
+			'Esto recalcula el valor de mercado de todos los jugadores. Puede tardar varios segundos.',
+			[
+				{ text: 'Cancelar', style: 'cancel' },
+				{
+					text: 'Recalcular',
+					onPress: async () => {
+						setOp('recalculatingPrices', true);
+						try {
+							const res = await authenticatedFetch('/api/v1/admin/market/recalculate-prices', {
+								method: 'POST'
+							});
+							if (res.ok) {
+								const data = await res.json();
+								Alert.alert(
+									'✅ Precios recalculados',
+									`Actualizados: ${data.updatedCount} · Sin cambios: ${data.skippedCount} · Errores: ${data.errorCount}`
+								);
+							} else {
+								const error = await res.json().catch(() => ({}));
+								Alert.alert('Error', error.error || 'No se pudieron recalcular los precios');
+							}
+						} catch (e) {
+							Alert.alert('Error', 'Error al recalcular precios: ' + e.message);
+						} finally {
+							setOp('recalculatingPrices', false);
 						}
 					}
 				}
@@ -365,7 +449,7 @@ function Admin() {
 	if (loading && !stats) {
 		return (
 			<View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-				<ActivityIndicator size="large" color="#1a5c3a" />
+				<ActivityIndicator size="large" color={colors.primary} />
 				<Text style={styles.loadingText}>Cargando...</Text>
 			</View>
 		);
@@ -531,7 +615,7 @@ function Admin() {
 							>
 								{syncingPlayers ? (
 									<>
-										<ActivityIndicator size="small" color="#fff" />
+										<ActivityIndicator size="small" color={colors.textInverse} />
 										<Text style={styles.btnImportText}>Sincronizando...</Text>
 									</>
 								) : (
@@ -563,7 +647,7 @@ function Admin() {
 							>
 								{syncingMatches ? (
 									<>
-										<ActivityIndicator size="small" color="#fff" />
+										<ActivityIndicator size="small" color={colors.textInverse} />
 										<Text style={styles.btnImportText}>Sincronizando...</Text>
 									</>
 								) : (
@@ -599,10 +683,10 @@ function Admin() {
 							</View>
 
 							{/* Activar jornada */}
-							<Text style={{ fontSize: 14, fontWeight: '600', color: '#333', marginTop: 16, marginBottom: 8 }}>
+							<Text style={{ fontSize: fontSize.sm, fontWeight: fontWeight.semibold, color: colors.textPrimary, marginTop: spacing.lg, marginBottom: spacing.sm }}>
 								Seleccionar jornada a activar:
 							</Text>
-							<View style={{ borderWidth: 1, borderColor: '#ddd', borderRadius: 8, marginBottom: 12, backgroundColor: '#fff' }}>
+							<View style={{ borderWidth: 1, borderColor: colors.border, borderRadius: radius.sm, marginBottom: spacing.md, backgroundColor: colors.bgCard }}>
 								<Picker
 									selectedValue={selectedGameweek}
 									onValueChange={(value) => setSelectedGameweek(value)}
@@ -613,13 +697,13 @@ function Admin() {
 								</Picker>
 							</View>
 							<TouchableOpacity
-								style={[styles.btnImport, { backgroundColor: '#b45309' }, activatingGameweek && styles.btnImportDisabled]}
+								style={[styles.btnImport, { backgroundColor: colors.warningDark }, activatingGameweek && styles.btnImportDisabled]}
 								onPress={activateGameweek}
 								disabled={activatingGameweek}
 							>
 								{activatingGameweek ? (
 									<>
-										<ActivityIndicator size="small" color="#fff" />
+										<ActivityIndicator size="small" color={colors.textInverse} />
 										<Text style={styles.btnImportText}>Activando...</Text>
 									</>
 								) : (
@@ -632,7 +716,7 @@ function Admin() {
 						<TouchableOpacity
 							style={[
 								styles.btnImport,
-								{ backgroundColor: '#2563eb' },
+								{ backgroundColor: positionBadgeColors.DEF.bar },
 								(!gameweekStatus.teamsLocked || unlockingTeams) && styles.btnImportDisabled
 							]}
 							onPress={unlockTeams}
@@ -640,7 +724,7 @@ function Admin() {
 						>
 							{unlockingTeams ? (
 								<>
-									<ActivityIndicator size="small" color="#fff" />
+									<ActivityIndicator size="small" color={colors.textInverse} />
 									<Text style={styles.btnImportText}>Desbloqueando...</Text>
 								</>
 							) : (
@@ -653,7 +737,7 @@ function Admin() {
 							<TouchableOpacity
 								style={[
 									styles.btnImport,
-									{ backgroundColor: '#1a5c3a' },
+								{ backgroundColor: colors.primaryDark },
 									(!gameweekStatus.activeGameweek || calculatingPoints) && styles.btnImportDisabled
 								]}
 								onPress={calculateActiveGameweekPoints}
@@ -661,13 +745,53 @@ function Admin() {
 							>
 								{calculatingPoints ? (
 									<>
-										<ActivityIndicator size="small" color="#fff" />
+										<ActivityIndicator size="small" color={colors.textInverse} />
 										<Text style={styles.btnImportText}>Calculando...</Text>
 									</>
 								) : (
 									<Text style={styles.btnImportText}>
 										⚡ Calcular Puntos{gameweekStatus.activeGameweek ? ` — J${gameweekStatus.activeGameweek}` : ''}
 									</Text>
+								)}
+							</TouchableOpacity>
+
+							<View style={{ height: 12 }} />
+							<TouchableOpacity
+								style={[
+									styles.btnImport,
+									{ backgroundColor: colors.accent },
+									recalculatingPrices && styles.btnImportDisabled
+								]}
+								onPress={recalculateMarketPrices}
+								disabled={recalculatingPrices}
+							>
+								{recalculatingPrices ? (
+									<>
+										<ActivityIndicator size="small" color={colors.textInverse} />
+										<Text style={styles.btnImportText}>Recalculando...</Text>
+									</>
+								) : (
+									<Text style={styles.btnImportText}>📈 Recalcular Valores de Mercado</Text>
+								)}
+							</TouchableOpacity>
+
+							<View style={{ height: 12 }} />
+							<TouchableOpacity
+								style={[
+									styles.btnImport,
+									{ backgroundColor: colors.primary },
+									trainingML && styles.btnImportDisabled
+								]}
+								onPress={trainMLModel}
+								disabled={trainingML}
+							>
+								{trainingML ? (
+									<>
+										<ActivityIndicator size="small" color={colors.textInverse} />
+										<Text style={styles.btnImportText}>Entrenando modelo...</Text>
+									</>
+								) : (
+									<Text style={styles.btnImportText}>🤖 Entrenar Modelo IA</Text>
 								)}
 							</TouchableOpacity>
 
@@ -740,194 +864,79 @@ function Admin() {
 export default withAuth(Admin);
 
 const styles = StyleSheet.create({
-	container: { flex: 1, backgroundColor: '#f5f5f5' },
+	container: { flex: 1, backgroundColor: colors.bgApp },
 	header: {
-		backgroundColor: '#1a5c3a',
-		paddingVertical: 16,
-		paddingHorizontal: 20,
-		borderBottomWidth: 1,
-		borderBottomColor: '#ddd'
+		backgroundColor: colors.primaryDeep, paddingVertical: spacing.lg,
+		paddingHorizontal: spacing.xl, borderBottomWidth: 1, borderBottomColor: colors.primaryDark,
 	},
-	headerTitle: { color: '#fff', fontSize: 20, fontWeight: '800' },
-	tabs: {
-		flexDirection: 'row',
-		backgroundColor: '#fff',
-		borderBottomWidth: 1,
-		borderBottomColor: '#ddd'
-	},
-	tab: {
-		flex: 1,
-		paddingVertical: 14,
-		alignItems: 'center',
-		borderBottomWidth: 2,
-		borderBottomColor: 'transparent'
-	},
-	tabActive: { borderBottomColor: '#1a5c3a' },
-	tabText: { fontSize: 14, fontWeight: '600', color: '#666' },
-	tabTextActive: { color: '#1a5c3a' },
+	headerTitle: { color: colors.textInverse, fontSize: fontSize.xl, fontWeight: fontWeight.extrabold },
+	tabs: { flexDirection: 'row', backgroundColor: colors.bgCard, borderBottomWidth: 1, borderBottomColor: colors.border },
+	tab: { flex: 1, paddingVertical: spacing.lg, alignItems: 'center', borderBottomWidth: 2, borderBottomColor: 'transparent' },
+	tabActive: { borderBottomColor: colors.primaryDark },
+	tabText: { fontSize: fontSize.sm, fontWeight: fontWeight.semibold, color: colors.textMuted },
+	tabTextActive: { color: colors.primaryDark },
 	content: { flex: 1 },
-	loadingText: { marginTop: 10, color: '#666' },
-	statsContainer: {
-		flexDirection: 'row',
-		justifyContent: 'space-around',
-		marginTop: 20
-	},
-	statCard: {
-		backgroundColor: '#fff',
-		padding: 20,
-		borderRadius: 12,
-		alignItems: 'center',
-		minWidth: 100,
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 2 },
-		shadowOpacity: 0.1,
-		shadowRadius: 4,
-		elevation: 3
-	},
-	statValue: { fontSize: 32, fontWeight: '800', color: '#1a5c3a' },
-	statLabel: { fontSize: 14, color: '#666', marginTop: 4 },
+	loadingText: { marginTop: 10, color: colors.textSecondary },
+	statsContainer: { flexDirection: 'row', justifyContent: 'space-around', marginTop: spacing.xl },
+	statCard: { backgroundColor: colors.bgCard, padding: spacing.xl, borderRadius: radius.lg, alignItems: 'center', minWidth: 100, ...shadow.sm },
+	statValue: { fontSize: 32, fontWeight: fontWeight.extrabold, color: colors.primaryDark },
+	statLabel: { fontSize: fontSize.sm, color: colors.textSecondary, marginTop: 4 },
 	userCard: {
-		backgroundColor: '#fff',
-		padding: 14,
-		borderRadius: 10,
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 1 },
-		shadowOpacity: 0.1,
-		shadowRadius: 2,
-		elevation: 2
+		backgroundColor: colors.bgCard, padding: spacing.lg, borderRadius: radius.lg,
+		flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', ...shadow.sm,
 	},
 	userInfo: { flex: 1 },
-	userName: { fontSize: 16, fontWeight: '700', color: '#222' },
-	userMeta: { fontSize: 12, color: '#666', marginTop: 2 },
-	userRole: { fontSize: 12, color: '#1a5c3a', marginTop: 4, fontWeight: '600' },
-	userActions: { flexDirection: 'row', gap: 8 },
-	btnEdit: {
-		backgroundColor: '#4CAF50',
-		paddingVertical: 6,
-		paddingHorizontal: 12,
-		borderRadius: 6
-	},
-	btnEditText: { color: '#fff', fontSize: 12, fontWeight: '700' },
-	btnDelete: {
-		backgroundColor: '#f44336',
-		paddingVertical: 6,
-		paddingHorizontal: 12,
-		borderRadius: 6
-	},
-	btnDeleteText: { color: '#fff', fontSize: 12, fontWeight: '700' },
-	leagueCard: {
-		backgroundColor: '#fff',
-		padding: 14,
-		borderRadius: 10,
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 1 },
-		shadowOpacity: 0.1,
-		shadowRadius: 2,
-		elevation: 2
-	},
-	leagueInfo: { marginBottom: 10 },
-	leagueName: { fontSize: 16, fontWeight: '700', color: '#222' },
-	leagueMeta: { fontSize: 12, color: '#666', marginTop: 4 },
-	leagueActions: { flexDirection: 'row', gap: 8 },
-	btnRefresh: {
-		backgroundColor: '#2196F3',
-		paddingVertical: 8,
-		paddingHorizontal: 12,
-		borderRadius: 6,
-		flex: 1
-	},
-	btnRefreshText: { color: '#fff', fontSize: 12, fontWeight: '700', textAlign: 'center' },
-	modalBackdrop: {
-		flex: 1,
-		backgroundColor: 'rgba(0,0,0,0.5)',
-		justifyContent: 'center',
-		alignItems: 'center'
-	},
-	modalCard: {
-		backgroundColor: '#fff',
-		borderRadius: 12,
-		padding: 20,
-		width: '85%',
-		maxWidth: 400
-	},
-	modalTitle: { fontSize: 18, fontWeight: '800', marginBottom: 12, color: '#222' },
-	modalUserName: { fontSize: 16, fontWeight: '600', color: '#666', marginBottom: 16 },
-	label: { fontSize: 14, fontWeight: '600', color: '#333', marginBottom: 8 },
-	roleButtons: { flexDirection: 'row', gap: 10, marginBottom: 20 },
-	roleBtn: {
-		flex: 1,
-		paddingVertical: 10,
-		borderRadius: 8,
-		borderWidth: 2,
-		borderColor: '#ddd',
-		alignItems: 'center'
-	},
-	roleBtnActive: { borderColor: '#1a5c3a', backgroundColor: '#1a5c3a' },
-	roleBtnText: { fontSize: 14, fontWeight: '700', color: '#666' },
-	roleBtnTextActive: { color: '#fff' },
-	modalActions: { flexDirection: 'row', gap: 10, marginTop: 10 },
-	btnCancel: {
-		flex: 1,
-		paddingVertical: 10,
-		borderRadius: 8,
-		borderWidth: 1,
-		borderColor: '#ddd',
-		alignItems: 'center'
-	},
-	btnCancelText: { fontSize: 14, fontWeight: '700', color: '#666' },
-	btnSave: {
-		flex: 1,
-		paddingVertical: 10,
-		borderRadius: 8,
-		backgroundColor: '#1a5c3a',
-		alignItems: 'center'
-	},
-	btnSaveText: { fontSize: 14, fontWeight: '700', color: '#fff' },
-	playersContainer: {
-		backgroundColor: '#fff',
-		padding: 20,
-		borderRadius: 12,
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 2 },
-		shadowOpacity: 0.1,
-		shadowRadius: 4,
-		elevation: 3
-	},
-	playersTitle: { fontSize: 18, fontWeight: '800', color: '#222', marginBottom: 10 },
-	playersDescription: { fontSize: 14, color: '#666', marginBottom: 20, lineHeight: 20 },
+	userName: { fontSize: fontSize.md, fontWeight: fontWeight.bold, color: colors.textPrimary },
+	userMeta: { fontSize: fontSize.sm, color: colors.textSecondary, marginTop: 2 },
+	userRole: { fontSize: fontSize.sm, color: colors.primaryDark, marginTop: 4, fontWeight: fontWeight.semibold },
+	userActions: { flexDirection: 'row', gap: spacing.sm },
+	btnEdit: { backgroundColor: colors.primary, paddingVertical: 6, paddingHorizontal: spacing.md, borderRadius: radius.sm },
+	btnEditText: { color: colors.textInverse, fontSize: fontSize.sm, fontWeight: fontWeight.bold },
+	btnDelete: { backgroundColor: colors.danger, paddingVertical: 6, paddingHorizontal: spacing.md, borderRadius: radius.sm },
+	btnDeleteText: { color: colors.textInverse, fontSize: fontSize.sm, fontWeight: fontWeight.bold },
+	leagueCard: { backgroundColor: colors.bgCard, padding: spacing.lg, borderRadius: radius.lg, ...shadow.sm },
+	leagueInfo: { marginBottom: spacing.sm },
+	leagueName: { fontSize: fontSize.md, fontWeight: fontWeight.bold, color: colors.textPrimary },
+	leagueMeta: { fontSize: fontSize.sm, color: colors.textSecondary, marginTop: 4 },
+	leagueActions: { flexDirection: 'row', gap: spacing.sm },
+	btnRefresh: { backgroundColor: colors.accent, paddingVertical: spacing.sm, paddingHorizontal: spacing.md, borderRadius: radius.sm, flex: 1 },
+	btnRefreshText: { color: colors.textInverse, fontSize: fontSize.sm, fontWeight: fontWeight.bold, textAlign: 'center' },
+	modalBackdrop: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'center', alignItems: 'center' },
+	modalCard: { backgroundColor: colors.bgCard, borderRadius: radius.lg, padding: spacing.xl, width: '85%', maxWidth: 400, ...shadow.lg },
+	modalTitle: { fontSize: fontSize.lg, fontWeight: fontWeight.extrabold, marginBottom: spacing.md, color: colors.textPrimary },
+	modalUserName: { fontSize: fontSize.md, fontWeight: fontWeight.semibold, color: colors.textSecondary, marginBottom: spacing.lg },
+	label: { fontSize: fontSize.sm, fontWeight: fontWeight.semibold, color: colors.textSecondary, marginBottom: spacing.sm },
+	roleButtons: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.xl },
+	roleBtn: { flex: 1, paddingVertical: spacing.sm, borderRadius: radius.md, borderWidth: 2, borderColor: colors.border, alignItems: 'center' },
+	roleBtnActive: { borderColor: colors.primaryDark, backgroundColor: colors.primaryDark },
+	roleBtnText: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, color: colors.textSecondary },
+	roleBtnTextActive: { color: colors.textInverse },
+	modalActions: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.sm },
+	btnCancel: { flex: 1, paddingVertical: spacing.sm, borderRadius: radius.md, borderWidth: 1, borderColor: colors.border, alignItems: 'center' },
+	btnCancelText: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, color: colors.textSecondary },
+	btnSave: { flex: 1, paddingVertical: spacing.sm, borderRadius: radius.md, backgroundColor: colors.primaryDark, alignItems: 'center' },
+	btnSaveText: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, color: colors.textInverse },
+	playersContainer: { backgroundColor: colors.bgCard, padding: spacing.xl, borderRadius: radius.lg, ...shadow.sm },
+	playersTitle: { fontSize: fontSize.lg, fontWeight: fontWeight.extrabold, color: colors.textPrimary, marginBottom: spacing.sm },
+	playersDescription: { fontSize: fontSize.sm, color: colors.textSecondary, marginBottom: spacing.xl, lineHeight: 20 },
 	btnImport: {
-		backgroundColor: '#1a5c3a',
-		paddingVertical: 14,
-		paddingHorizontal: 20,
-		borderRadius: 8,
-		alignItems: 'center',
-		flexDirection: 'row',
-		justifyContent: 'center',
-		gap: 8
+		backgroundColor: colors.primaryDark, paddingVertical: spacing.lg, paddingHorizontal: spacing.xl,
+		borderRadius: radius.md, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: spacing.sm,
 	},
-	btnImportDisabled: { backgroundColor: '#999', opacity: 0.7 },
-	btnImportText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+	btnImportDisabled: { backgroundColor: colors.textMuted, opacity: 0.7 },
+	btnImportText: { color: colors.textInverse, fontSize: fontSize.md, fontWeight: fontWeight.bold },
 	playersStat: {
-		marginTop: 20,
-		padding: 16,
-		backgroundColor: '#e8f5e9',
-		borderRadius: 8,
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'center'
+		marginTop: spacing.xl, padding: spacing.lg, backgroundColor: colors.successBg,
+		borderRadius: radius.md, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
 	},
-	playersStatLabel: { fontSize: 14, color: '#2e7d32', fontWeight: '600' },
-	playersStatValue: { fontSize: 24, fontWeight: '800', color: '#1b5e20' },
-	// Gameweek status
+	playersStatLabel: { fontSize: fontSize.sm, color: colors.primaryDark, fontWeight: fontWeight.semibold },
+	playersStatValue: { fontSize: 24, fontWeight: fontWeight.extrabold, color: colors.primaryDeep },
 	statusRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
 	statusItem: {},
-	statusLabel: { fontSize: 12, color: '#666', fontWeight: '600', textTransform: 'uppercase' },
-	statusValue: { fontSize: 32, fontWeight: '800', color: '#1a5c3a' },
-	lockBadge: { paddingVertical: 6, paddingHorizontal: 12, borderRadius: 20 },
-	lockBadgeLocked: { backgroundColor: '#fef2f2', borderWidth: 1, borderColor: '#fca5a5' },
-	lockBadgeOpen: { backgroundColor: '#f0fdf4', borderWidth: 1, borderColor: '#86efac' },
-	lockBadgeText: { fontSize: 12, fontWeight: '700' },
+	statusLabel: { fontSize: fontSize.xs, color: colors.textSecondary, fontWeight: fontWeight.bold, textTransform: 'uppercase' },
+	statusValue: { fontSize: 32, fontWeight: fontWeight.extrabold, color: colors.primaryDark },
+	lockBadge: { paddingVertical: 6, paddingHorizontal: spacing.md, borderRadius: radius.pill },
+	lockBadgeLocked: { backgroundColor: colors.dangerBg, borderWidth: 1, borderColor: colors.danger },
+	lockBadgeOpen: { backgroundColor: colors.successBg, borderWidth: 1, borderColor: colors.primaryMuted },
+	lockBadgeText: { fontSize: fontSize.sm, fontWeight: fontWeight.bold },
 });

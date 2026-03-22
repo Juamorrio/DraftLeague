@@ -1,7 +1,6 @@
 package com.DraftLeague.services;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -9,8 +8,9 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
-import jakarta.validation.Valid;
 
+import com.DraftLeague.dto.CreateUserRequest;
+import com.DraftLeague.dto.UpdateUserRequest;
 import com.DraftLeague.models.Team.Team;
 import com.DraftLeague.repositories.TeamRepository;
 import com.DraftLeague.models.League.League;
@@ -18,7 +18,6 @@ import com.DraftLeague.repositories.LeagueRepository;
 import com.DraftLeague.models.user.User;
 import com.DraftLeague.models.Team.Team;
 import com.DraftLeague.models.League.League;
-import com.DraftLeague.models.Player.PlayerTeam;
 import com.DraftLeague.repositories.UserRepository;
 import com.DraftLeague.repositories.TeamRepository;
 import com.DraftLeague.repositories.LeagueRepository;
@@ -39,25 +38,26 @@ public class UserService {
     }
 
     @Transactional
-	public User postUser(@Valid User user) throws DataAccessException {
-		this.userRepository.save(user);
-		return user;
-	}
+    public User postUser(CreateUserRequest request) throws DataAccessException {
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPassword(request.getPassword());
+        user.setDisplayName(request.getDisplayName());
+        user.setRole("USER");
+        this.userRepository.save(user);
+        return user;
+    }
 
     @Transactional
-    public User updateUser(@Valid User user, Integer userId) throws DataAccessException {
-        Optional<User> existingUser = userRepository.findById(userId);
-
-        if (existingUser.isPresent()) {
-            User userToUpdate = existingUser.get();
-            userToUpdate.setDisplayName(user.getDisplayName());
-            userToUpdate.setPassword(user.getPassword());
-            userToUpdate.setUsername(user.getUsername());
-            userToUpdate.setEmail(user.getEmail());
-            return this.userRepository.save(userToUpdate);
-        } else {
-            throw new DataRetrievalFailureException("User not found");
-        }
+    public User updateUser(UpdateUserRequest request, Integer userId) throws DataAccessException {
+        User userToUpdate = userRepository.findById(userId)
+                .orElseThrow(() -> new DataRetrievalFailureException("User not found"));
+        if (request.getDisplayName() != null) userToUpdate.setDisplayName(request.getDisplayName());
+        if (request.getPassword() != null)    userToUpdate.setPassword(request.getPassword());
+        if (request.getUsername() != null)    userToUpdate.setUsername(request.getUsername());
+        if (request.getEmail() != null)       userToUpdate.setEmail(request.getEmail());
+        return this.userRepository.save(userToUpdate);
     }
 
     @Transactional

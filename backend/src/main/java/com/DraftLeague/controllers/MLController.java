@@ -7,8 +7,10 @@ import com.DraftLeague.models.Match.MatchStatus;
 import com.DraftLeague.repositories.MatchRepository;
 import com.DraftLeague.services.FantasyPointsService;
 import com.DraftLeague.services.PlayerPredictionService;
+import com.DraftLeague.services.XGBoostClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +26,7 @@ public class MLController {
     private final PlayerPredictionService playerPredictionService;
     private final FantasyPointsService fantasyPointsService;
     private final MatchRepository matchRepository;
+    private final XGBoostClient xgBoostClient;
 
     /**
      * GET /api/ml/predict/player/{playerId}
@@ -79,6 +82,23 @@ public class MLController {
                 "round",   nextRound,
                 "matches", matchSummaries
         ));
+    }
+
+    /**
+     * POST /api/ml/train
+     * Triggers XGBoost model retraining (fire-and-forget) and invalidates the prediction cache.
+     * Admin-only.
+     */
+    @PostMapping("/train")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> triggerRetraining(
+            @RequestBody(required = false) Map<String, Object> body) {
+        int gameweek = (body != null && body.containsKey("gameweek"))
+                ? ((Number) body.get("gameweek")).intValue()
+                : 0;
+        xgBoostClient.triggerRetraining(gameweek);
+        playerPredictionService.invalidateCache();
+        return ResponseEntity.ok(Map.of("status", "training_triggered", "gameweek", gameweek));
     }
 
     /**

@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.DraftLeague.dto.CreatePlayerRequest;
 import com.DraftLeague.models.League.League;
 import com.DraftLeague.models.Player.Player;
 import com.DraftLeague.models.Player.PlayerMarketValueHistory;
@@ -41,7 +42,16 @@ public class PlayerService {
         this.marketValueHistoryRepository = marketValueHistoryRepository;
     }
 
-    public Player createPlayer(Player player) {
+    public Player createPlayer(CreatePlayerRequest request) {
+        Player player = new Player();
+        player.setId(request.getId());
+        player.setFullName(request.getFullName());
+        player.setPosition(request.getPosition());
+        player.setMarketValue(request.getMarketValue());
+        player.setActive(request.getActive());
+        player.setTotalPoints(request.getTotalPoints() != null ? request.getTotalPoints() : 0);
+        player.setAvatarUrl(request.getAvatarUrl());
+        player.setClubId(request.getClubId());
         return playerRepository.save(player);
     }
 

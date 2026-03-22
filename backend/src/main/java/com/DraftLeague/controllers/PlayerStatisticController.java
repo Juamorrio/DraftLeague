@@ -24,9 +24,9 @@ public class PlayerStatisticController {
     private final PlayerStatisticService playerStatisticService;
 
     @PostMapping
-    public ResponseEntity<PlayerStatistic> createStatistic(@RequestBody PlayerStatistic statistic) {
+    public ResponseEntity<PlayerStatistic> createStatistic(@RequestBody CreatePlayerStatisticRequest request) {
         try {
-            PlayerStatistic saved = playerStatisticService.saveStatistic(statistic);
+            PlayerStatistic saved = playerStatisticService.saveStatistic(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(saved);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

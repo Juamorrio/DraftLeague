@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import placeholder from '../assets/Player/placeholder.png';
-import { authenticatedFetch } from '../services/authService'; 
+import { authenticatedFetch } from '../services/authService';
+import { colors, radius, shadow, fontFamily } from '../utils/theme';
+
+// Module-scope cache: teamId → base64 data URI. Shared across all Player instances.
+const teamImageCache = new Map();
 
 export default function Player({
 	name,
@@ -21,27 +25,25 @@ export default function Player({
 		.slice(0, 2)
 		.toUpperCase();
 
-	const loadTeamImage = async (teamId) => {
-		try {
-			const res = await authenticatedFetch(`/api/v1/players/load-image-team-player?teamId=${teamId}`);
-			if (res.ok) {
-				const data = await res.json();
-				if (data.imageBytes) {
-					return `data:image/png;base64,${data.imageBytes}`;
-				}
-			}
-		} catch (e) {
-			console.error('Error cargando imagen del equipo:', e);
-		}
-		return null;
-	};
-
 	useEffect(() => {
-		if (teamId) {
-			loadTeamImage(teamId).then(url => {
-				if (url) setTeamImage(url);
-			});
+		if (!teamId) return;
+		// Return immediately if already cached
+		if (teamImageCache.has(teamId)) {
+			setTeamImage(teamImageCache.get(teamId));
+			return;
 		}
+		let cancelled = false;
+		authenticatedFetch(`/api/v1/players/load-image-team-player?teamId=${teamId}`)
+			.then(res => res.ok ? res.json() : null)
+			.then(data => {
+				if (!cancelled && data?.imageBytes) {
+					const uri = `data:image/png;base64,${data.imageBytes}`;
+					teamImageCache.set(teamId, uri);
+					setTeamImage(uri);
+				}
+			})
+			.catch(e => console.error('Error cargando imagen del equipo:', e));
+		return () => { cancelled = true; };
 	}, [teamId]);
 
 	return (
@@ -87,17 +89,13 @@ const styles = StyleSheet.create({
 		width: 80,
 		height: 80,
 		borderRadius: 40,
-		backgroundColor: '#f3f4f6',
+		backgroundColor: colors.bgSubtle,
 		overflow: 'hidden',
 		justifyContent: 'center',
 		alignItems: 'center',
-		borderWidth: 3,
-		borderColor: '#ffffff',
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 2 },
-		shadowOpacity: 0.1,
-		shadowRadius: 4,
-		elevation: 3,
+		borderWidth: 2.5,
+		borderColor: colors.bgCard,
+		...shadow.sm,
 	},
 	avatarImage: {
 		width: '85%',
@@ -110,85 +108,73 @@ const styles = StyleSheet.create({
 		height: '100%',
 		justifyContent: 'center',
 		alignItems: 'center',
-		backgroundColor: '#e0e7ff',
+		backgroundColor: colors.primaryLight,
 	},
 	fallbackText: {
 		fontSize: 20,
 		fontWeight: '800',
-		color: '#4f46e5',
+		color: colors.primaryDark,
 	},
 	badge: {
 		position: 'absolute',
 		bottom: -2,
 		right: -2,
-		backgroundColor: '#10b981', 
-		borderRadius: 18,
-		minWidth: 32,
-		height: 32,
-		paddingHorizontal: 8,
+		backgroundColor: colors.primary,
+		borderRadius: radius.pill,
+		minWidth: 30,
+		height: 30,
+		paddingHorizontal: 6,
 		justifyContent: 'center',
 		alignItems: 'center',
-		borderWidth: 3,
-		borderColor: '#ffffff',
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 2 },
-		shadowOpacity: 0.15,
-		shadowRadius: 3,
-		elevation: 4,
+		borderWidth: 2.5,
+		borderColor: colors.bgCard,
+		...shadow.sm,
 	},
 	badgeText: {
-		color: '#ffffff',
-		fontWeight: '800',
-		fontSize: 13,
+		color: colors.textInverse,
+		fontFamily: fontFamily.displayBold,
+		fontSize: 12,
 	},
 	teamBadge: {
 		position: 'absolute',
-		top: -4,
-		right: -4,
-		backgroundColor: '#ffffff',
-		borderRadius: 14,
-		width: 28,
-		height: 28,
+		top: -3,
+		right: -3,
+		backgroundColor: colors.bgCard,
+		borderRadius: radius.pill,
+		width: 26,
+		height: 26,
 		justifyContent: 'center',
 		alignItems: 'center',
-		borderWidth: 2.5,
-		borderColor: '#f3f4f6',
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 1 },
-		shadowOpacity: 0.1,
-		shadowRadius: 2,
-		elevation: 3,
+		borderWidth: 2,
+		borderColor: colors.border,
+		...shadow.sm,
 	},
 	teamImage: {
-		width: 22,
-		height: 22,
+		width: 20,
+		height: 20,
 		resizeMode: 'contain',
 	},
 	captainBorder: {
-		borderColor: '#f59e0b',
-		borderWidth: 3,
+		borderColor: colors.warning,
+		borderWidth: 2.5,
 	},
 	captainBadge: {
 		position: 'absolute',
-		top: -4,
-		left: -4,
-		backgroundColor: '#f59e0b',
-		borderRadius: 12,
-		width: 24,
-		height: 24,
+		top: -3,
+		left: -3,
+		backgroundColor: colors.warning,
+		borderRadius: radius.pill,
+		width: 22,
+		height: 22,
 		justifyContent: 'center',
 		alignItems: 'center',
-		borderWidth: 2.5,
-		borderColor: '#ffffff',
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 1 },
-		shadowOpacity: 0.15,
-		shadowRadius: 2,
-		elevation: 4,
+		borderWidth: 2,
+		borderColor: colors.bgCard,
+		...shadow.sm,
 	},
 	captainText: {
-		color: '#ffffff',
-		fontSize: 12,
+		color: colors.textInverse,
+		fontSize: 11,
 		fontWeight: '900',
 	},
 });

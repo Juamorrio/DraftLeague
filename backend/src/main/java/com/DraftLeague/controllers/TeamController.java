@@ -2,6 +2,7 @@ package com.DraftLeague.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,13 +11,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.DraftLeague.dto.CreateTeamRequest;
 import com.DraftLeague.dto.UpdateTeamPlayersRequest;
-
-import jakarta.validation.Valid;
-import com.DraftLeague.models.Player.Player;
+import com.DraftLeague.dto.UpdateTeamRequest;
 import com.DraftLeague.models.Team.Team;
-import com.DraftLeague.models.League.League;
 import com.DraftLeague.services.TeamService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/teams")
@@ -45,13 +45,13 @@ public class TeamController {
     }
 
     @PostMapping
-    public Team createTeam(@RequestBody Team team) {
-        return teamService.postTeam(team);
+    public Team createTeam(@Valid @RequestBody CreateTeamRequest request) {
+        return teamService.postTeam(request);
     }
 
     @PostMapping("/{id}/update")
-    public Team updateTeam(@PathVariable Integer id, @RequestBody Team team) {
-        return teamService.updateTeam(team, id);
+    public Team updateTeam(@PathVariable Integer id, @RequestBody UpdateTeamRequest request) {
+        return teamService.updateTeam(request, id);
     }
 
     @PutMapping("/league/{leagueId}/{userId}/players")
@@ -84,9 +84,9 @@ public class TeamController {
             @RequestBody java.util.Map<String,Object> body) {
         try {
             Integer sellerUserId = (Integer) body.get("sellerUserId");
-            String playerId = (String) body.get("playerId");
+            String playerId = body.get("playerId") != null ? String.valueOf(body.get("playerId")) : null;
             if (sellerUserId == null || playerId == null) {
-                return ResponseEntity.badRequest().body(java.util.Map.of("error", "ParÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡metros invÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡lidos"));
+                return ResponseEntity.badRequest().body(java.util.Map.of("error", "Par\u00e1metros inv\u00e1lidos"));
             }
             Team buyerTeam = teamService.buyoutPlayer(leagueId, sellerUserId, playerId);
             return ResponseEntity.ok(java.util.Map.of(
@@ -143,6 +143,21 @@ public class TeamController {
             Team updatedTeam = teamService.activateChip(leagueId, userId, chip);
             return ResponseEntity.ok(java.util.Map.of(
                 "activeChip", updatedTeam.getActiveChip() != null ? updatedTeam.getActiveChip() : "",
+                "usedChips", updatedTeam.getUsedChips() != null ? updatedTeam.getUsedChips() : ""
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("error", e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/league/{leagueId}/{userId}/chip")
+    public ResponseEntity<?> cancelChip(
+            @PathVariable Integer leagueId,
+            @PathVariable Integer userId) {
+        try {
+            Team updatedTeam = teamService.cancelChip(leagueId, userId);
+            return ResponseEntity.ok(java.util.Map.of(
+                "activeChip", "",
                 "usedChips", updatedTeam.getUsedChips() != null ? updatedTeam.getUsedChips() : ""
             ));
         } catch (RuntimeException e) {

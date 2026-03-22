@@ -10,8 +10,8 @@ import {
 	ActivityIndicator,
 	Alert,
 	ScrollView,
-	Image,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import authService, { refresh } from '../../services/authService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -19,6 +19,8 @@ import FormLeague from './formLeague';
 import RankingLeague from './rankingLeague';
 import { useLeague } from '../../context/LeagueContext';
 import JoinLeagueModal from './joinLeagueModal';
+import LeagueCard from '../../components/Leagues/LeagueCard';
+import { colors, fontSize, fontWeight, radius, spacing, shadow } from '../../utils/theme';
 
 const DRAFT_KEY = 'leagues.createDraft';
 
@@ -47,7 +49,7 @@ function Leagues({ navigation }) {
 	const [assignedPlayers, setAssignedPlayers] = useState([]);
 	const [assignedLeagueName, setAssignedLeagueName] = useState('');
 
-	const { selectedLeague, setSelectedLeague, viewUser } = useLeague();
+	const { selectedLeague, setSelectedLeague, viewUser, setViewUser } = useLeague();
 
 	useEffect(() => {
 		if (viewUser && navigation) {
@@ -314,47 +316,6 @@ function Leagues({ navigation }) {
 		);
 	};
 
-	const LeagueCard = ({ league }) => {
-		const pts = league.points ?? league.pts ?? '-';
-		const pos = league.position ?? league.ranking ?? '-';
-		const participants = league.participants ?? league.currentTeams ?? league.maxTeams ?? '-';
-		
-		const isCreator = user && league.createdBy && league.createdBy.id === user.id;
-		
-		const showOptions = () => {
-			const buttons = [
-				{ text: 'Ver código', onPress: () => Alert.alert('Código de la liga', league.code ? String(league.code) : 'Sin código') }
-			];
-			
-			if (isCreator) {
-				buttons.push(
-					{ text: 'Editar', onPress: () => handleEditLeague(league) },
-					{ text: 'Eliminar', onPress: () => handleDeleteLeague(league), style: 'destructive' }
-				);
-			}
-			
-			buttons.push({ text: 'Cancelar', style: 'cancel' });
-			
-			Alert.alert('Opciones de liga', league.name, buttons);
-		};
-		
-		const openRanking = () => setSelectedLeague(league);
-		return (
-			<View style={styles.leagueCard}>
-				<View style={styles.leagueFlagWrapper}>
-					<Text style={styles.star}>★</Text>
-					<Text style={styles.flagEmoji}>🇪🇸</Text>
-				</View>
-				<TouchableOpacity style={styles.leagueInfo} onPress={openRanking} activeOpacity={0.8}>
-					<Text style={styles.leagueName}>{league.name}</Text>
-					<Text style={styles.leagueMeta}>Pts: {pts}   Posición: {pos}   Participantes: {participants}</Text>
-				</TouchableOpacity>
-				<TouchableOpacity onPress={showOptions} style={styles.gearBtn} hitSlop={{top:8,bottom:8,left:8,right:8}}>
-					<Image source={require('../../assets/header/gear.png')} style={styles.gearIcon} />
-				</TouchableOpacity>
-			</View>
-		);
-	};
 
 	return (
 		<View style={styles.screen}>
@@ -413,10 +374,33 @@ function Leagues({ navigation }) {
 			{!selectedLeague && (
 				<ScrollView style={styles.list} contentContainerStyle={styles.listContent}>
 					{leagues.map(l => (
-						<LeagueCard key={l.id || l.code || l.name} league={l} />
+						<LeagueCard
+							key={l.id || l.code || l.name}
+							league={l}
+							user={user}
+							onEdit={handleEditLeague}
+							onDelete={handleDeleteLeague}
+							onOpen={(league) => { setViewUser(null); setSelectedLeague(league); }}
+						/>
 					))}
 					{leagues.length === 0 && user && (
-						<Text style={styles.empty}>No tienes ligas todavía.</Text>
+						<View style={styles.onboardingWrap}>
+							<Ionicons name="trophy" size={56} color={colors.primaryMuted} />
+							<Text style={styles.onboardingTitle}>¡Bienvenido a DraftLeague!</Text>
+							<Text style={styles.onboardingSubtitle}>
+								Crea tu propia liga o únete a una existente con un código para empezar a competir.
+							</Text>
+							<View style={styles.onboardingBtns}>
+								<TouchableOpacity style={styles.onboardingPrimaryBtn} onPress={() => setCreating(true)} activeOpacity={0.85}>
+									<Ionicons name="add-circle-outline" size={18} color={colors.textInverse} />
+									<Text style={styles.onboardingPrimaryBtnText}>Crear liga</Text>
+								</TouchableOpacity>
+								<TouchableOpacity style={styles.onboardingSecondaryBtn} onPress={() => setJoinVisible(true)} activeOpacity={0.85}>
+									<Ionicons name="enter-outline" size={18} color={colors.primary} />
+									<Text style={styles.onboardingSecondaryBtnText}>Unirte con código</Text>
+								</TouchableOpacity>
+							</View>
+						</View>
 					)}
 				</ScrollView>
 			)}
@@ -467,52 +451,222 @@ import withAuth from '../../components/withAuth';
 export default withAuth(Leagues);
 
 const styles = StyleSheet.create({
-	    screen: { flex: 1, alignItems: 'stretch', justifyContent: 'flex-start', paddingTop: 12 },
-		topButtons: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, marginBottom: 8 },
-	primaryBtn: { backgroundColor: '#1d4ed8', paddingHorizontal: 20, paddingVertical: 12, borderRadius: 10 },
-	primaryBtnText: { color: '#fff', fontWeight: '700' },
-	secondaryBtn: { backgroundColor: '#111827', paddingHorizontal: 20, paddingVertical: 12, borderRadius: 10 },
-	secondaryBtnText: { color:'#fff', fontWeight:'700' },
-	    backBtn: { backgroundColor: '#6b7280', paddingHorizontal: 16, paddingVertical: 12, borderRadius: 10 },
-	    backBtnText: { color: '#fff', fontWeight: '700' },
-
-    modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.35)', alignItems: 'center', justifyContent: 'center', padding: 16 },
-	modalCard: { width: '94%', maxWidth: 520, maxHeight: '90%', borderRadius: 18, paddingVertical: 20, paddingHorizontal: 20 },
-	scroll: { },
-	scrollContent: { paddingBottom: 12 },
-    title: { fontSize: 22, color: '#fff', fontWeight: '800', textAlign: 'center', marginBottom: 10 },
-    row: { marginVertical: 6 },
-    rowSwitch: { marginTop: 8, paddingHorizontal: 6, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-    label: { color: '#e2e8f0', marginBottom: 6, fontWeight: '600' },
-    input: { backgroundColor: '#ffffff', borderRadius: 12, paddingHorizontal: 12, height: 42, color: '#0f172a' },
-    smallBtn: { marginTop: 6, alignSelf: 'flex-start', backgroundColor: '#111827', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8 },
-    smallBtnText: { color: '#fff' },
-    actions: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: 12, gap: 10 },
-    actionBtn: { paddingHorizontal: 18, paddingVertical: 10, borderRadius: 10 },
-    cancel: { backgroundColor: '#6b7280' },
-    save: { backgroundColor: '#16a34a' },
-    disabled: { backgroundColor: '#9ca3af' },
-    error: {
-        color: '#fecaca',
-        backgroundColor: 'rgba(239,68,68,0.25)',
-        borderRadius: 10,
-        paddingHorizontal: 10,
-        paddingVertical: 6,
-        marginTop: 8,
-        fontWeight: '600',
-    },
-	list: { marginTop: 8, alignSelf: 'stretch', paddingHorizontal: 8 },
-	listContent: { paddingBottom: 40, paddingLeft: 8, paddingRight: 8, gap: 12 },
-	leagueCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#e1e1e1', borderRadius: 22, paddingVertical: 10, paddingHorizontal: 14, gap: 14, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 4, shadowOffset: { width: 0, height: 2 } },
-	leagueFlagWrapper: { alignItems: 'center', justifyContent: 'center', width: 50 },
-	star: { position: 'absolute', top: -6, left: -2, fontSize: 16, color: '#fbbf24', fontWeight: '700' },
-	flagEmoji: { fontSize: 42 },
-	leagueInfo: { flex: 1 },
-	leagueName: { fontSize: 18, fontWeight: '700', color: '#111827' },
-	leagueMeta: { marginTop: 4, fontSize: 12, color: '#374151', fontWeight: '500' },
-	gearIcon: { width: 24, height: 24, tintColor: '#111827' },
-	gearBtn: { paddingLeft: 6, justifyContent: 'center', alignItems: 'center' },
-	empty: { textAlign: 'center', color: '#6b7280', marginTop: 30, fontSize: 14 },
-
+	screen: { flex: 1, alignItems: 'stretch', justifyContent: 'flex-start', paddingTop: spacing.md },
+	topButtons: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingHorizontal: spacing.lg, marginBottom: spacing.sm },
+	primaryBtn: { backgroundColor: colors.primary, paddingHorizontal: spacing.xl, paddingVertical: spacing.md, borderRadius: radius.md },
+	primaryBtnText: { color: colors.textInverse, fontWeight: fontWeight.bold },
+	secondaryBtn: { backgroundColor: colors.primaryDeep, paddingHorizontal: spacing.xl, paddingVertical: spacing.md, borderRadius: radius.md },
+	secondaryBtnText: { color: colors.textInverse, fontWeight: fontWeight.bold },
+	backBtn: { backgroundColor: colors.textSecondary, paddingHorizontal: spacing.lg, paddingVertical: spacing.md, borderRadius: radius.md },
+	backBtnText: { color: colors.textInverse, fontWeight: fontWeight.bold },
+	modalBackdrop: { flex: 1, backgroundColor: colors.overlay, alignItems: 'center', justifyContent: 'center', padding: spacing.lg },
+	modalCard: { width: '94%', maxWidth: 520, maxHeight: '90%', borderRadius: radius.xl, paddingVertical: spacing.xl, paddingHorizontal: spacing.xl },
+	scroll: {},
+	scrollContent: { paddingBottom: spacing.md },
+	title: { fontSize: fontSize.xl, color: colors.textInverse, fontWeight: fontWeight.extrabold, textAlign: 'center', marginBottom: spacing.md },
+	row: { marginVertical: 6 },
+	rowSwitch: { marginTop: spacing.sm, paddingHorizontal: 6, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+	label: { color: '#E2E8F0', marginBottom: 6, fontWeight: fontWeight.semibold },
+	input: { backgroundColor: colors.bgCard, borderRadius: radius.md, paddingHorizontal: spacing.md, height: 48, color: colors.textPrimary, borderWidth: 1.5, borderColor: colors.border },
+	smallBtn: { marginTop: 6, alignSelf: 'flex-start', backgroundColor: colors.primaryDeep, paddingHorizontal: spacing.sm, paddingVertical: 6, borderRadius: radius.sm },
+	smallBtnText: { color: colors.textInverse },
+	actions: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: spacing.md, gap: spacing.sm },
+	actionBtn: { paddingHorizontal: 18, paddingVertical: spacing.sm, borderRadius: radius.md },
+	cancel: { backgroundColor: colors.textSecondary },
+	save: { backgroundColor: colors.primary },
+	disabled: { backgroundColor: colors.textMuted },
+	error: {
+		color: '#FEE2E2',
+		backgroundColor: 'rgba(239,68,68,0.20)',
+		borderRadius: radius.md,
+		paddingHorizontal: spacing.sm,
+		paddingVertical: 6,
+		marginTop: spacing.sm,
+		fontWeight: fontWeight.semibold,
+	},
+	list: { marginTop: spacing.sm, alignSelf: 'stretch', paddingHorizontal: spacing.sm },
+	listContent: { paddingBottom: 40, paddingLeft: spacing.sm, paddingRight: spacing.sm, gap: spacing.md },
+	leagueCard: {
+		flexDirection: 'row',
+		backgroundColor: colors.bgCard,
+		borderRadius: radius.xl,
+		paddingVertical: spacing.md,
+		paddingHorizontal: spacing.md,
+		gap: spacing.md,
+		borderWidth: 1,
+		borderColor: colors.border,
+		...shadow.sm,
+	},
+	cardAccent: {
+		width: 8,
+		borderRadius: 999,
+		backgroundColor: colors.primary,
+	},
+	cardBody: { flex: 1 },
+	cardHeader: {
+		flexDirection: 'row',
+		alignItems: 'flex-start',
+		justifyContent: 'space-between',
+		gap: spacing.md,
+	},
+	identityWrap: { flex: 1, gap: 4 },
+	sectionEyebrow: {
+		fontSize: 10,
+		textTransform: 'uppercase',
+		letterSpacing: 0.8,
+		color: colors.textMuted,
+		fontWeight: fontWeight.semibold,
+	},
+	leagueName: {
+		fontSize: fontSize.lg,
+		fontWeight: fontWeight.extrabold,
+		color: colors.textPrimary,
+	},
+	leagueDesc: {
+		color: colors.textSecondary,
+		fontSize: fontSize.sm,
+		lineHeight: 18,
+	},
+	leagueDescMuted: {
+		color: colors.textMuted,
+		fontSize: fontSize.sm,
+	},
+	headerActions: {
+		alignItems: 'flex-end',
+		gap: spacing.sm,
+	},
+	codePill: {
+		backgroundColor: colors.successBg,
+		borderRadius: radius.md,
+		paddingHorizontal: spacing.sm,
+		paddingVertical: 6,
+		borderWidth: 1,
+		borderColor: colors.primaryMuted,
+		minWidth: 84,
+	},
+	codeLabel: {
+		fontSize: 9,
+		textTransform: 'uppercase',
+		letterSpacing: 0.8,
+		color: colors.primaryDark,
+		fontWeight: fontWeight.semibold,
+	},
+	codeText: {
+		marginTop: 2,
+		color: colors.primaryDeep,
+		fontWeight: fontWeight.bold,
+		fontSize: fontSize.xs,
+		letterSpacing: 0.8,
+	},
+	metricsWrap: {
+		marginTop: spacing.md,
+		flexDirection: 'row',
+		gap: spacing.sm,
+	},
+	metricCard: {
+		flex: 1,
+		backgroundColor: colors.bgSubtle,
+		borderRadius: radius.md,
+		borderWidth: 1,
+		borderColor: colors.border,
+		paddingVertical: spacing.sm,
+		paddingHorizontal: spacing.sm,
+		alignItems: 'center',
+	},
+	metricLabel: {
+		fontSize: 10,
+		color: colors.textMuted,
+		textTransform: 'uppercase',
+		letterSpacing: 0.7,
+		fontWeight: fontWeight.semibold,
+	},
+	metricValue: {
+		marginTop: 3,
+		color: colors.textPrimary,
+		fontSize: fontSize.md,
+		fontWeight: fontWeight.extrabold,
+	},
+	ctaBtn: {
+		marginTop: spacing.md,
+		backgroundColor: colors.primary,
+		borderRadius: radius.md,
+		paddingVertical: spacing.sm,
+		alignItems: 'center',
+		justifyContent: 'center',
+		...shadow.sm,
+	},
+	ctaText: {
+		color: colors.textInverse,
+		fontSize: fontSize.sm,
+		fontWeight: fontWeight.bold,
+		letterSpacing: 0.3,
+	},
+	gearIcon: { width: 22, height: 22, tintColor: colors.textSecondary },
+	gearBtn: {
+		width: 34,
+		height: 34,
+		borderRadius: 17,
+		backgroundColor: colors.bgSubtle,
+		borderWidth: 1,
+		borderColor: colors.border,
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	empty: { textAlign: 'center', color: colors.textMuted, marginTop: 30, fontSize: fontSize.sm },
+	onboardingWrap: {
+		alignItems: 'center',
+		paddingVertical: spacing['4xl'],
+		paddingHorizontal: spacing.xl,
+		gap: spacing.md,
+	},
+	onboardingTitle: {
+		fontSize: fontSize.xl,
+		fontWeight: fontWeight.extrabold,
+		color: colors.textPrimary,
+		textAlign: 'center',
+	},
+	onboardingSubtitle: {
+		fontSize: fontSize.sm,
+		color: colors.textSecondary,
+		textAlign: 'center',
+		lineHeight: 20,
+	},
+	onboardingBtns: {
+		flexDirection: 'row',
+		gap: spacing.md,
+		marginTop: spacing.sm,
+		flexWrap: 'wrap',
+		justifyContent: 'center',
+	},
+	onboardingPrimaryBtn: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: spacing.sm,
+		backgroundColor: colors.primary,
+		paddingHorizontal: spacing.xl,
+		paddingVertical: spacing.md,
+		borderRadius: radius.md,
+	},
+	onboardingPrimaryBtnText: {
+		color: colors.textInverse,
+		fontWeight: fontWeight.bold,
+		fontSize: fontSize.sm,
+	},
+	onboardingSecondaryBtn: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: spacing.sm,
+		backgroundColor: colors.successBg,
+		paddingHorizontal: spacing.xl,
+		paddingVertical: spacing.md,
+		borderRadius: radius.md,
+		borderWidth: 1.5,
+		borderColor: colors.primaryMuted,
+	},
+	onboardingSecondaryBtnText: {
+		color: colors.primary,
+		fontWeight: fontWeight.bold,
+		fontSize: fontSize.sm,
+	},
 });
 

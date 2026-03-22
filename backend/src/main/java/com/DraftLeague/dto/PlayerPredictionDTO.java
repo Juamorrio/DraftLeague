@@ -1,5 +1,6 @@
 package com.DraftLeague.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +19,7 @@ import com.DraftLeague.models.Player.Position;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PlayerPredictionDTO {
 
     private String playerId;
@@ -37,4 +39,6 @@ public class PlayerPredictionDTO {
     private Integer round;
     private Boolean isHomeTeam;
     private String opponent;
+
+    private String modelSource;  // "XGBOOST" | "HEURISTIC"
 }

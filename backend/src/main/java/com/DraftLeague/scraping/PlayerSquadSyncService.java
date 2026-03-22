@@ -1,6 +1,8 @@
 package com.DraftLeague.scraping;
 
 import com.DraftLeague.dto.PlayerImportDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,6 +15,8 @@ import java.util.Map;
  */
 @Service
 public class PlayerSquadSyncService {
+
+    private static final Logger log = LoggerFactory.getLogger(PlayerSquadSyncService.class);
 
     private static final Map<String, String> POSITION_MAP = Map.of(
             "Goalkeeper", "GK",
@@ -38,12 +42,12 @@ public class PlayerSquadSyncService {
             try {
                 List<Map<String, Object>> response = apiClient.fetchSquad(teamId);
                 if (response.isEmpty()) {
-                    System.out.println("PlayerSquadSyncService: no data for team " + teamId);
+                    log.warn("PlayerSquadSyncService: no data for team {}", teamId);
                     continue;
                 }
 
                 List<Map<String, Object>> squad = getList(response.get(0), "players");
-                System.out.println("PlayerSquadSyncService: team " + teamId + " → " + squad.size() + " players");
+                log.info("PlayerSquadSyncService: team {} → {} players", teamId, squad.size());
 
                 for (Map<String, Object> playerData : squad) {
                     Object id = playerData.get("id");
@@ -69,11 +73,11 @@ public class PlayerSquadSyncService {
                 Thread.currentThread().interrupt();
                 break;
             } catch (Exception e) {
-                System.err.println("PlayerSquadSyncService: error for team " + teamId + ": " + e.getMessage());
+                log.error("PlayerSquadSyncService: error for team {}: {}", teamId, e.getMessage(), e);
             }
         }
 
-        System.out.println("PlayerSquadSyncService: total players fetched: " + all.size());
+        log.info("PlayerSquadSyncService: total players fetched: {}", all.size());
         return all;
     }
 

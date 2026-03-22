@@ -20,4 +20,5 @@ public class TeamGameweekPointsDTO {
     private String topScorerName;
     private Integer topScorerPoints;
     private Date calculatedAt;
+    private String appliedChip;
 }

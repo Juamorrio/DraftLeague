@@ -11,4 +11,6 @@ public class GoalkeeperStatisticDTO extends BasePlayerStatisticDTO {
 
     private Integer saves;
     private Integer goalsConceded;
+    private Integer penaltiesSaved;
+    private Boolean cleanSheet;
 }

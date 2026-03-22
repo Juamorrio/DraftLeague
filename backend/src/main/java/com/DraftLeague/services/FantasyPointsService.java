@@ -40,6 +40,22 @@ public class FantasyPointsService {
  
     @Transactional
     public TeamGameweekPoints calculateTeamPointsForGameweek(Integer teamId, Integer gameweek) {
+        List<Match> matches = matchRepository.findByRound(gameweek);
+        Set<Integer> matchIds = matches.stream().map(Match::getId).collect(Collectors.toSet());
+        Map<String, PlayerStatistic> statsByPlayerId = statisticRepository
+            .findByMatchIdIn(matchIds)
+            .stream()
+            .collect(Collectors.toMap(PlayerStatistic::getPlayerId, s -> s, (a, b) -> a));
+        return doCalculateTeamPoints(teamId, gameweek, matchIds, statsByPlayerId);
+    }
+
+    private TeamGameweekPoints calculateTeamPointsForGameweek(Integer teamId, Integer gameweek,
+            Set<Integer> matchIds, Map<String, PlayerStatistic> statsByPlayerId) {
+        return doCalculateTeamPoints(teamId, gameweek, matchIds, statsByPlayerId);
+    }
+
+    private TeamGameweekPoints doCalculateTeamPoints(Integer teamId, Integer gameweek,
+            Set<Integer> matchIds, Map<String, PlayerStatistic> statsByPlayerId) {
         Team team = teamRepository.findById(teamId)
             .orElseThrow(() -> new RuntimeException("Team not found"));
 
@@ -50,17 +66,14 @@ public class FantasyPointsService {
         gwPoints.setTeam(team);
         gwPoints.setGameweek(gameweek);
 
-        List<Match> matches = matchRepository.findByRound(gameweek);
-        Set<Integer> matchIds = matches.stream()
-            .map(Match::getId)
-            .collect(Collectors.toSet());
-
-        String activeChip = team.getActiveChip();
+        String teamActiveChip = team.getActiveChip();
+        String activeChip = (teamActiveChip != null) ? teamActiveChip : gwPoints.getAppliedChip();
         boolean isTripleCap = CHIP_TRIPLE_CAP.equals(activeChip);
         boolean isBenchBoost = CHIP_BENCH_BOOST.equals(activeChip);
         boolean isStatChip = activeChip != null && !isTripleCap && !isBenchBoost;
 
         int totalPoints = 0;
+        int benchTotalPoints = 0;
         int gkPoints = 0, defPoints = 0, midPoints = 0, fwdPoints = 0;
         int captainBonus = 0;
         String captainId = null;
@@ -78,14 +91,7 @@ public class FantasyPointsService {
         for (PlayerTeam pt : team.getPlayerTeams()) {
             Player player = pt.getPlayer();
 
-            PlayerStatistic stat = null;
-            List<PlayerStatistic> playerStats = statisticRepository.findByPlayerId(player.getId());
-            for (PlayerStatistic s : playerStats) {
-                if (matchIds.contains(s.getMatchId())) {
-                    stat = s;
-                    break;
-                }
-            }
+            PlayerStatistic stat = statsByPlayerId.get(player.getId());
 
             int basePlayerPoints = 0;
             int finalPlayerPoints = 0;
@@ -97,7 +103,8 @@ public class FantasyPointsService {
                     basePlayerPoints = stat.calculateFantasyPointsWithChip(activeChip);
                 } else {
                     basePlayerPoints = stat.getTotalFantasyPoints() != null
-                        ? stat.getTotalFantasyPoints() : 0;
+                        ? stat.getTotalFantasyPoints()
+                        : stat.calculateFantasyPoints();
                 }
                 finalPlayerPoints = basePlayerPoints;
                 matchId = stat.getMatchId();
@@ -105,10 +112,12 @@ public class FantasyPointsService {
 
                 if (pt.getIsCaptain() != null && pt.getIsCaptain()) {
                     finalPlayerPoints *= isTripleCap ? 3 : 2;
-                    captainBonus = basePlayerPoints;
+                    captainBonus = finalPlayerPoints - basePlayerPoints;
                     captainId = player.getId();
                 }
             }
+
+            boolean isInLineup = pt.getLined() != null && pt.getLined();
 
             TeamPlayerGameweekPoints snapshot = new TeamPlayerGameweekPoints();
             snapshot.setTeam(team);
@@ -120,14 +129,16 @@ public class FantasyPointsService {
             snapshot.setPoints(finalPlayerPoints);
             snapshot.setMinutesPlayed(minutesPlayed);
             snapshot.setMatchId(matchId);
-            snapshot.setIsInLineup(pt.getLined() != null && pt.getLined());
+            snapshot.setIsInLineup(isInLineup);
             snapshot.setIsCaptain(pt.getIsCaptain() != null && pt.getIsCaptain());
-            snapshot.setIsBenched(pt.getLined() == null || !pt.getLined());
+            snapshot.setIsBenched(!isInLineup);
             newSnapshots.add(snapshot);
-
-            boolean countForTotal = isBenchBoost || (pt.getLined() != null && pt.getLined());
+            boolean countForTotal = isBenchBoost || isInLineup;
             if (countForTotal) {
                 totalPoints += finalPlayerPoints;
+                if (isBenchBoost && !isInLineup) {
+                    benchTotalPoints += finalPlayerPoints;
+                }
 
                 Position position = player.getPosition();
                 if (Position.POR.equals(position)) {
@@ -149,13 +160,17 @@ public class FantasyPointsService {
 
         tpgwPointsRepository.saveAll(newSnapshots);
 
-        // Consume the active chip after calculation
-        if (activeChip != null) {
+        // Persist which chip was applied so recalculations can re-use it.
+        gwPoints.setAppliedChip(activeChip);
+
+        // Consume the active chip only if it came fresh from the team entity
+        // (not recovered from a previous gwPoints record).
+        if (teamActiveChip != null) {
             String used = team.getUsedChips();
             if (used == null || used.isBlank()) {
-                team.setUsedChips(activeChip);
+                team.setUsedChips(teamActiveChip);
             } else {
-                team.setUsedChips(used + "," + activeChip);
+                team.setUsedChips(used + "," + teamActiveChip);
             }
             team.setActiveChip(null);
             teamRepository.save(team);
@@ -171,7 +186,7 @@ public class FantasyPointsService {
         gwPoints.setTopScorerId(topScorerId);
         gwPoints.setTopScorerPoints(topScorerPoints);
         gwPoints.setCalculatedAt(new Date());
-        gwPoints.setBenchPoints(0);
+        gwPoints.setBenchPoints(benchTotalPoints);
 
         return gwPointsRepository.save(gwPoints);
     }
@@ -236,9 +251,16 @@ public class FantasyPointsService {
             }
         }
 
+        // Pre-load all stats for this gameweek once — avoids N+1 per player per team
+        Set<Integer> matchIds = matches.stream().map(Match::getId).collect(Collectors.toSet());
+        Map<String, PlayerStatistic> statsByPlayerId = statisticRepository
+            .findByMatchIdIn(matchIds)
+            .stream()
+            .collect(Collectors.toMap(PlayerStatistic::getPlayerId, s -> s, (a, b) -> a));
+
         for (Team team : teams) {
             try {
-                calculateTeamPointsForGameweek(team.getId(), gameweek);
+                calculateTeamPointsForGameweek(team.getId(), gameweek, matchIds, statsByPlayerId);
                 updateTeamTotalPoints(team.getId());
             } catch (Exception e) {
                 logger.error("Error calculating points for team {}: {}", team.getId(), e.getMessage(), e);

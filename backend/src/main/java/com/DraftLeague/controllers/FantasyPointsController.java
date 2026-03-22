@@ -137,7 +137,10 @@ public class FantasyPointsController {
 
         TeamGameweekPoints gwPoints = gwPointsRepository
             .findByTeamAndGameweek(team, gameweek)
-            .orElseThrow(() -> new RuntimeException("No points found for this gameweek"));
+            .orElse(null);
+        if (gwPoints == null) {
+            return ResponseEntity.notFound().build();
+        }
 
         TeamGameweekPointsDTO dto = new TeamGameweekPointsDTO();
         dto.setTeamId(team.getId());
@@ -153,6 +156,7 @@ public class FantasyPointsController {
         dto.setTopScorerId(gwPoints.getTopScorerId());
         dto.setTopScorerPoints(gwPoints.getTopScorerPoints());
         dto.setCalculatedAt(gwPoints.getCalculatedAt());
+        dto.setAppliedChip(gwPoints.getAppliedChip());
 
         if (gwPoints.getCaptainId() != null) {
             playerRepository.findById(gwPoints.getCaptainId())

@@ -1,9 +1,5 @@
 package com.DraftLeague.services;
 
-import com.DraftLeague.models.Statistics.GoalkeeperStatistic;
-import com.DraftLeague.models.Statistics.DefenderStatistic;
-import com.DraftLeague.models.Statistics.MidfielderStatistic;
-import com.DraftLeague.models.Statistics.ForwardStatistic;
 import com.DraftLeague.models.Statistics.PlayerStatistic;
 import com.DraftLeague.models.Match.Match;
 import com.DraftLeague.models.Player.Player;
@@ -11,9 +7,15 @@ import com.DraftLeague.dto.*;
 import com.DraftLeague.dto.JornadaMatchesDTO;
 import com.DraftLeague.dto.PlayerMatchSummaryDTO;
 import com.DraftLeague.dto.PlayerStatisticsSummaryDTO;
+import com.DraftLeague.models.Team.ChipType;
+import com.DraftLeague.models.Team.TeamGameweekPoints;
+import com.DraftLeague.models.Team.TeamPlayerGameweekPoints;
 import com.DraftLeague.repositories.MatchRepository;
 import com.DraftLeague.repositories.PlayerRepository;
 import com.DraftLeague.repositories.PlayerStatisticRepository;
+import com.DraftLeague.repositories.TeamGameweekPointsRepository;
+import com.DraftLeague.repositories.TeamPlayerGameweekPointsRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -35,12 +38,55 @@ public class PlayerStatisticService {
 
     private final PlayerStatisticRepository playerStatisticRepository;
     private final PlayerStatisticFactory playerStatisticFactory;
-    private final FantasyPointsService fantasyPointsService;
     private final MatchRepository matchRepository;
     private final PlayerRepository playerRepository;
+    private final TeamGameweekPointsRepository gwPointsRepository;
+    private final TeamPlayerGameweekPointsRepository tpgwPointsRepository;
 
     @Transactional
-    public PlayerStatistic saveStatistic(PlayerStatistic statistic) {
+    public PlayerStatistic saveStatistic(CreatePlayerStatisticRequest request) {
+        PlayerStatistic statistic = new PlayerStatistic();
+        statistic.setPlayerId(request.getPlayerId());
+        statistic.setMatchId(request.getMatchId());
+        statistic.setIsHomeTeam(request.getIsHomeTeam());
+        statistic.setPlayerType(request.getPlayerType());
+        statistic.setRole(request.getRole());
+        statistic.setRating(request.getRating());
+        statistic.setMinutesPlayed(request.getMinutesPlayed());
+        statistic.setGoals(request.getGoals());
+        statistic.setAssists(request.getAssists());
+        statistic.setTotalShots(request.getTotalShots());
+        statistic.setShotsOnTarget(request.getShotsOnTarget());
+        statistic.setAccuratePasses(request.getAccuratePasses());
+        statistic.setTotalPasses(request.getTotalPasses());
+        statistic.setChancesCreated(request.getChancesCreated());
+        statistic.setSuccessfulDribbles(request.getSuccessfulDribbles());
+        statistic.setTotalDribbles(request.getTotalDribbles());
+        statistic.setDribbledPast(request.getDribbledPast());
+        statistic.setOffsides(request.getOffsides());
+        statistic.setAccurateCrosses(request.getAccurateCrosses());
+        statistic.setTotalCrosses(request.getTotalCrosses());
+        statistic.setTackles(request.getTackles());
+        statistic.setBlocks(request.getBlocks());
+        statistic.setInterceptions(request.getInterceptions());
+        statistic.setDuelsWon(request.getDuelsWon());
+        statistic.setDuelsLost(request.getDuelsLost());
+        statistic.setWasFouled(request.getWasFouled());
+        statistic.setFoulsCommitted(request.getFoulsCommitted());
+        statistic.setYellowCards(request.getYellowCards());
+        statistic.setRedCards(request.getRedCards());
+        statistic.setPenaltiesWon(request.getPenaltiesWon());
+        statistic.setPenaltyScored(request.getPenaltyScored());
+        statistic.setPenaltyMissed(request.getPenaltyMissed());
+        statistic.setPenaltyCommitted(request.getPenaltyCommitted());
+        statistic.setSaves(request.getSaves());
+        statistic.setPenaltiesSaved(request.getPenaltiesSaved());
+        statistic.setCleanSheet(request.getCleanSheet());
+        statistic.setGoalsConceded(request.getGoalsConceded());
+        statistic.setIsSubstitute(request.getIsSubstitute());
+        statistic.setIsCaptain(request.getIsCaptain());
+        statistic.setShirtNumber(request.getShirtNumber());
+        statistic.setTotalFantasyPoints(request.getTotalFantasyPoints());
         return playerStatisticRepository.save(statistic);
     }
 
@@ -51,7 +97,6 @@ public class PlayerStatisticService {
 
     @Transactional
     public List<PlayerStatistic> saveBulkFromJson(List<Map<String, Object>> jsonData) {
-        // Pre-load existing player IDs to avoid FK violations for unknown players
         Set<String> existingPlayerIds = new HashSet<>(playerRepository.findAllIds());
 
         List<PlayerStatistic> statistics = new ArrayList<>();
@@ -67,35 +112,11 @@ public class PlayerStatisticService {
             PlayerStatistic statistic = playerStatisticFactory.createStatistic(playerType);
 
             mapJsonToStatistic(data, statistic);
+            statistic.setTotalFantasyPoints(statistic.calculateFantasyPoints());
             statistics.add(statistic);
         }
 
-        statistics = playerStatisticRepository.saveAll(statistics);
-
-        for (PlayerStatistic stat : statistics) {
-            int points = stat.calculateFantasyPoints();
-            stat.setTotalFantasyPoints(points);
-        }
-
-        statistics = playerStatisticRepository.saveAll(statistics);
-
-        if (!statistics.isEmpty()) {
-            Set<Integer> matchIds = new HashSet<>();
-            for (PlayerStatistic stat : statistics) {
-                if (stat.getMatchId() != null) {
-                    matchIds.add(stat.getMatchId());
-                }
-            }
-            for (Integer matchId : matchIds) {
-                try {
-                    fantasyPointsService.triggerPointsUpdateForMatch(matchId);
-                } catch (Exception e) {
-                    logger.error("Error al actualizar puntos fantasy para el partido {}: {}", matchId, e.getMessage(), e);
-                }
-            }
-        }
-
-        return statistics;
+        return playerStatisticRepository.saveAll(statistics);
     }
 
     private void mapJsonToStatistic(Map<String, Object> data, PlayerStatistic statistic) {
@@ -134,10 +155,10 @@ public class PlayerStatisticService {
         statistic.setShirtNumber(getIntegerValue(data, "shirtNumber"));
         statistic.setPenaltyCommitted(getIntegerValue(data, "penaltyCommitted"));
 
-        // Resolver fixtureId de API-Football a match_id interno de la BD
         Integer fixtureId = getIntegerValue(data, "fixtureId");
+        Match match = null;
         if (fixtureId != null) {
-            Match match = matchRepository.findByApiFootballFixtureId(fixtureId).orElse(null);
+            match = matchRepository.findByApiFootballFixtureId(fixtureId).orElse(null);
             if (match != null) {
                 statistic.setMatchId(match.getId());
             }
@@ -145,27 +166,31 @@ public class PlayerStatisticService {
             statistic.setMatchId(getIntegerValue(data, "matchId"));
         }
 
-        // Mapear campos especificos por tipo de jugador
-        if (statistic instanceof GoalkeeperStatistic goalkeeper) {
-            goalkeeper.setSaves(getIntegerValue(data, "saves"));
-            goalkeeper.setGoalsConceded(getIntegerValue(data, "goalsConceded"));
+        if (statistic.getPlayerType() == PlayerStatistic.PlayerType.GOALKEEPER) {
             statistic.setSaves(getIntegerValue(data, "saves"));
             statistic.setGoalsConceded(getIntegerValue(data, "goalsConceded"));
             statistic.setPenaltiesSaved(getIntegerValue(data, "penaltiesSaved"));
-            statistic.setCleanSheet(getBooleanValue(data, "cleanSheet"));
-        } else if (statistic instanceof DefenderStatistic defender) {
-            defender.setPenaltiesWon(getIntegerValue(data, "penaltiesWon"));
-            defender.setSuccessfulDribbles(getIntegerValue(data, "successfulDribbles"));
-            defender.setTotalDribbles(getIntegerValue(data, "totalDribbles"));
-        } else if (statistic instanceof MidfielderStatistic midfielder) {
-            midfielder.setSuccessfulDribbles(getIntegerValue(data, "successfulDribbles"));
-            midfielder.setTotalDribbles(getIntegerValue(data, "totalDribbles"));
-            midfielder.setPenaltiesWon(getIntegerValue(data, "penaltiesWon"));
-        } else if (statistic instanceof ForwardStatistic forward) {
-            forward.setSuccessfulDribbles(getIntegerValue(data, "successfulDribbles"));
-            forward.setTotalDribbles(getIntegerValue(data, "totalDribbles"));
-            forward.setPenaltiesWon(getIntegerValue(data, "penaltiesWon"));
-            forward.setOffsides(getIntegerValue(data, "offsides"));
+        }
+
+        if (match != null) {
+            Boolean isHomeTeam = getBooleanValue(data, "isHomeTeam");
+            if (isHomeTeam != null) {
+                Integer conceded = isHomeTeam ? match.getAwayGoals() : match.getHomeGoals();
+                if (conceded != null) {
+                    PlayerStatistic.PlayerType type = statistic.getPlayerType();
+                    boolean isFieldPlayerOrGk = type == PlayerStatistic.PlayerType.GOALKEEPER
+                            || type == PlayerStatistic.PlayerType.DEFENDER
+                            || type == PlayerStatistic.PlayerType.MIDFIELDER;
+                    if (isFieldPlayerOrGk) {
+                        statistic.setCleanSheet(conceded == 0);
+                    }
+                    if (statistic.getGoalsConceded() == null &&
+                            (type == PlayerStatistic.PlayerType.GOALKEEPER
+                                    || type == PlayerStatistic.PlayerType.DEFENDER)) {
+                        statistic.setGoalsConceded(conceded);
+                    }
+                }
+            }
         }
     }
 
@@ -206,8 +231,7 @@ public class PlayerStatisticService {
                 case FORWARD -> mapToForwardDTO(data);
             };
         } catch (Exception e) {
-            System.err.println("Error in getPlayerMatchStatistic: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Error in getPlayerMatchStatistic", e);
             throw new RuntimeException("Error getting player match statistic", e);
         }
     }
@@ -215,36 +239,28 @@ public class PlayerStatisticService {
     private GoalkeeperStatisticDTO mapToGoalkeeperDTO(Map<String, Object> data) {
         GoalkeeperStatisticDTO dto = new GoalkeeperStatisticDTO();
         mapBaseFields(dto, data);
-        dto.setSaves(getIntegerValue(data, "gk_saves"));
-        dto.setGoalsConceded(getIntegerValue(data, "gk_goals_conceded"));
+        dto.setSaves(getIntegerValue(data, "saves"));
+        dto.setGoalsConceded(getIntegerValue(data, "goals_conceded"));
+        dto.setPenaltiesSaved(getIntegerValue(data, "penalties_saved"));
+        dto.setCleanSheet(getBooleanValue(data, "clean_sheet"));
         return dto;
     }
 
     private DefenderStatisticDTO mapToDefenderDTO(Map<String, Object> data) {
         DefenderStatisticDTO dto = new DefenderStatisticDTO();
         mapBaseFields(dto, data);
-        dto.setPenaltiesWon(getIntegerValue(data, "def_penalties_won"));
-        dto.setSuccessfulDribbles(getIntegerValue(data, "def_successful_dribbles"));
-        dto.setTotalDribbles(getIntegerValue(data, "def_total_dribbles"));
         return dto;
     }
 
     private MidfielderStatisticDTO mapToMidfielderDTO(Map<String, Object> data) {
         MidfielderStatisticDTO dto = new MidfielderStatisticDTO();
         mapBaseFields(dto, data);
-        dto.setSuccessfulDribbles(getIntegerValue(data, "mid_successful_dribbles"));
-        dto.setTotalDribbles(getIntegerValue(data, "mid_total_dribbles"));
-        dto.setPenaltiesWon(getIntegerValue(data, "mid_penalties_won"));
         return dto;
     }
 
     private ForwardStatisticDTO mapToForwardDTO(Map<String, Object> data) {
         ForwardStatisticDTO dto = new ForwardStatisticDTO();
         mapBaseFields(dto, data);
-        dto.setSuccessfulDribbles(getIntegerValue(data, "fwd_successful_dribbles"));
-        dto.setTotalDribbles(getIntegerValue(data, "fwd_total_dribbles"));
-        dto.setPenaltiesWon(getIntegerValue(data, "fwd_penalties_won"));
-        dto.setOffsides(getIntegerValue(data, "fwd_offsides"));
         return dto;
     }
 
@@ -395,8 +411,7 @@ public class PlayerStatisticService {
 
             return summary;
         } catch (Exception e) {
-            System.err.println("Error in getPlayerStatisticsSummary: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Error in getPlayerStatisticsSummary", e);
             throw new RuntimeException("Error calculating player statistics summary", e);
         }
     }
@@ -419,14 +434,34 @@ public class PlayerStatisticService {
         return 0.0;
     }
 
-    public List<JornadaMatchesDTO> getPlayerMatchesSummary(String playerId) {
+    public List<JornadaMatchesDTO> getPlayerMatchesSummary(String playerId, Integer teamId) {
         try {
             List<Map<String, Object>> results = playerStatisticRepository.getPlayerMatchesSummary(playerId);
 
             List<PlayerStatistic> playerStats = playerStatisticRepository.findByPlayerId(playerId);
-            Map<Integer, PlayerStatistic> statsByMatchId = new java.util.HashMap<>();
+            Map<Integer, PlayerStatistic> statsByMatchId = new HashMap<>();
             for (PlayerStatistic stat : playerStats) {
                 statsByMatchId.put(stat.getMatchId(), stat);
+            }
+
+            // Map: gameweek → appliedChip (only stat-level chips)
+            Map<Integer, String> chipByGameweek = new HashMap<>();
+            // Map: matchId → chip-modified basePoints
+            Map<Integer, Integer> chipPointsByMatchId = new HashMap<>();
+
+            if (teamId != null) {
+                List<TeamGameweekPoints> gwPointsList = gwPointsRepository.findByTeamId(teamId);
+                for (TeamGameweekPoints gp : gwPointsList) {
+                    if (gp.getAppliedChip() != null && ChipType.isValid(gp.getAppliedChip())) {
+                        chipByGameweek.put(gp.getGameweek(), gp.getAppliedChip());
+                    }
+                }
+                List<TeamPlayerGameweekPoints> playerGwList = tpgwPointsRepository.findByTeamIdAndPlayerId(teamId, playerId);
+                for (TeamPlayerGameweekPoints pgp : playerGwList) {
+                    if (pgp.getMatchId() != null && pgp.getBasePoints() != null) {
+                        chipPointsByMatchId.put(pgp.getMatchId(), pgp.getBasePoints());
+                    }
+                }
             }
 
             List<PlayerMatchSummaryDTO> summaries = new ArrayList<>();
@@ -481,9 +516,30 @@ public class PlayerStatisticService {
                 dto.setPenaltyCommitted(getIntegerValue(data, "penaltyCommitted"));
 
                 Integer matchId = dto.getMatchId();
+
+                // Override fantasyPoints with chip-modified value if available
+                if (matchId != null && chipPointsByMatchId.containsKey(matchId)) {
+                    dto.setFantasyPoints(chipPointsByMatchId.get(matchId));
+                }
+
+                // Build breakdown (with chip applied if active)
                 if (matchId != null && statsByMatchId.containsKey(matchId)) {
                     PlayerStatistic stat = statsByMatchId.get(matchId);
-                    dto.setPointsBreakdown(stat.calculateFantasyPointsBreakdown());
+                    Integer round = dto.getRound();
+                    String appliedChip = round != null ? chipByGameweek.get(round) : null;
+                    Map<String, Integer> breakdown;
+                    if (appliedChip != null) {
+                        breakdown = stat.calculateFantasyPointsBreakdownWithChip(appliedChip);
+                        // Override total with chip-modified value for accuracy
+                        Integer chipTotal = chipPointsByMatchId.get(matchId);
+                        if (chipTotal != null) {
+                            breakdown.put("total", chipTotal);
+                        }
+                        dto.setAppliedChip(appliedChip);
+                    } else {
+                        breakdown = stat.calculateFantasyPointsBreakdown();
+                    }
+                    dto.setPointsBreakdown(breakdown);
                 }
 
                 summaries.add(dto);
@@ -498,8 +554,7 @@ public class PlayerStatisticService {
                 .sorted((a, b) -> b.getJornada().compareTo(a.getJornada()))
                 .collect(Collectors.toList());
         } catch (Exception e) {
-            System.err.println("Error in getPlayerMatchesSummary: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Error in getPlayerMatchesSummary", e);
             throw new RuntimeException("Error getting player matches summary", e);
         }
     }

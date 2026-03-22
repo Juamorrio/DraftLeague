@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import com.DraftLeague.dto.CreateUserRequest;
+import com.DraftLeague.dto.UpdateUserRequest;
 import com.DraftLeague.models.user.User;
 import com.DraftLeague.services.UserService;
 import com.DraftLeague.services.LeagueService;
@@ -33,14 +35,14 @@ public class UserRestController {
     }
 
     @PostMapping()
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
-        User createdUser = userService.postUser(user);
+    public ResponseEntity<User> createUser(@Valid @RequestBody CreateUserRequest request) {
+        User createdUser = userService.postUser(request);
         return ResponseEntity.ok(createdUser);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Integer id, @Valid @RequestBody User user) {
-        User updatedUser = userService.updateUser(user, id);
+    public ResponseEntity<User> updateUser(@PathVariable Integer id, @Valid @RequestBody UpdateUserRequest request) {
+        User updatedUser = userService.updateUser(request, id);
         return ResponseEntity.ok(updatedUser);
     }
 

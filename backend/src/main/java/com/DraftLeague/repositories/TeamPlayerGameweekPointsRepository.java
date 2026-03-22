@@ -7,16 +7,18 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import com.DraftLeague.models.Team.Team;
-import com.DraftLeague.repositories.TeamPlayerGameweekPointsRepository;
 
 @Repository
 public interface TeamPlayerGameweekPointsRepository extends JpaRepository<TeamPlayerGameweekPoints, Integer> {
 
-    // Obtener todos los jugadores de un equipo en una jornada especÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­fica
+    // Obtener todos los jugadores de un equipo en una jornada específica
     List<TeamPlayerGameweekPoints> findByTeamAndGameweek(Team team, Integer gameweek);
 
-    // Obtener histÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³rico de un jugador en un equipo
+    // Obtener histórico de un jugador en un equipo
     List<TeamPlayerGameweekPoints> findByTeamAndPlayerId(Team team, String playerId);
+
+    // Obtener histórico de un jugador por teamId (sin necesidad del objeto Team)
+    List<TeamPlayerGameweekPoints> findByTeamIdAndPlayerId(Integer teamId, String playerId);
 
     // Verificar si ya existe registro
     Optional<TeamPlayerGameweekPoints> findByTeamAndPlayerIdAndGameweek(

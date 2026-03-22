@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.DraftLeague.dto.CreatePlayerRequest;
 import com.DraftLeague.models.League.League;
 import com.DraftLeague.models.Player.Player;
 import com.DraftLeague.models.Player.PlayerMarketValueHistory;
@@ -40,7 +42,16 @@ public class PlayerService {
         this.marketValueHistoryRepository = marketValueHistoryRepository;
     }
 
-    public Player createPlayer(Player player) {
+    public Player createPlayer(CreatePlayerRequest request) {
+        Player player = new Player();
+        player.setId(request.getId());
+        player.setFullName(request.getFullName());
+        player.setPosition(request.getPosition());
+        player.setMarketValue(request.getMarketValue());
+        player.setActive(request.getActive());
+        player.setTotalPoints(request.getTotalPoints() != null ? request.getTotalPoints() : 0);
+        player.setAvatarUrl(request.getAvatarUrl());
+        player.setClubId(request.getClubId());
         return playerRepository.save(player);
     }
 
@@ -70,13 +81,13 @@ public class PlayerService {
 
     public List<Player> getAvailablePlayersForUserInLeague(User user, Integer leagueId) {
         List<Player> ownedPlayers = getPlayersByUserAndLeague(user, leagueId);
+        if (ownedPlayers.isEmpty()) {
+            return playerRepository.findAll();
+        }
         List<String> ownedPlayerIds = ownedPlayers.stream()
                 .map(Player::getId)
                 .collect(Collectors.toList());
-        
-        return playerRepository.findAll().stream()
-                .filter(p -> !ownedPlayerIds.contains(p.getId()))
-                .collect(Collectors.toList());
+        return playerRepository.findByIdNotIn(ownedPlayerIds);
     }
 
     public void deletePlayer(String id) {
@@ -84,6 +95,7 @@ public class PlayerService {
         playerRepository.delete(player);
     }
 
+    @Transactional
     public void purchasePlayer(String playerId, Integer leagueId, User user) {
         Player player = playerRepository.findById(playerId)
                 .orElseThrow(() -> new IllegalStateException("Jugador no encontrado"));

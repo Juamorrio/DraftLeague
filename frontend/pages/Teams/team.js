@@ -5,7 +5,10 @@ import pitch from '../../assets/Team/pitch.png';
 import Player from '../../components/player';
 import authService, { authenticatedFetch } from '../../services/authService';
 import withAuth from '../../components/withAuth';
-import { createOffer, getIncomingOffers, getOutgoingOffers, acceptOffer, rejectOffer, cancelOffer } from '../../services/tradeOfferService';
+import { createOffer, getIncomingOffers, getOutgoingOffers } from '../../services/tradeOfferService';
+import ChipSelectorModal from '../../components/Team/ChipSelectorModal';
+import TradeOfferPriceModal from '../../components/Team/TradeOfferPriceModal';
+import TradesSection from '../../components/Team/TradesSection';
 import { colors, fontSize, fontWeight, radius, spacing, shadow } from '../../utils/theme';
 
 
@@ -34,6 +37,9 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 	const [currentKey, setCurrentKey] = useState(null);
 	const [error, setError] = useState(null);
 	const [saving, setSaving] = useState(false);
+	const [autoSaveStatus, setAutoSaveStatus] = useState(null); // null | 'saving' | 'saved' | 'error'
+	const isInitialLoad = useRef(true);
+	const autoSaveTimer = useRef(null);
 	const [formation, setFormation] = useState('4-3-3');
 	const [selectedPlayerSlot, setSelectedPlayerSlot] = useState(null);
 	const [teamPrediction, setTeamPrediction] = useState(null);
@@ -45,6 +51,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 	const [loadingPoints, setLoadingPoints] = useState(false);
 	const [captainPlayerId, setCaptainPlayerId] = useState(null);
 	const [teamsLocked, setTeamsLocked] = useState(false);
+	const [formationOpen, setFormationOpen] = useState(false);
 	const [activeGameweek, setActiveGameweek] = useState(null);
 	const [wildcardUsed, setWildcardUsed] = useState(false);
 
@@ -58,6 +65,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 	const [activeChip, setActiveChip] = useState(null);
 	const [usedChips, setUsedChips] = useState([]);
 	const [chipModalVisible, setChipModalVisible] = useState(false);
+	const [gwAppliedChip, setGwAppliedChip] = useState(null);
 
 	// Trade offer state
 	const [offerModalVisible, setOfferModalVisible] = useState(false);
@@ -80,65 +88,49 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 		'4-3-3': {
 			name: '4-3-3',
 			positions: [
-				{ key: 'GK', x: '45%', y: '88%', role: 'POR' },
-				{ key: 'LB', x: '8%', y: '68%', role: 'DEF' },
-				{ key: 'CB1', x: '32%', y: '68%', role: 'DEF' },
-				{ key: 'CB2', x: '58%', y: '68%', role: 'DEF' },
-				{ key: 'RB', x: '82%', y: '68%', role: 'DEF' },
-				{ key: 'CM1', x: '23%', y: '48%', role: 'MID' },
-				{ key: 'CM2', x: '67%', y: '48%', role: 'MID' },
-				{ key: 'CAM', x: '45%', y: '35%', role: 'MID' },
-				{ key: 'LW', x: '13%', y: '18%', role: 'DEL' },
-				{ key: 'RW', x: '77%', y: '18%', role: 'DEL' },
-				{ key: 'ST', x: '45%', y: '8%', role: 'DEL' },
+				{ key: 'POR',  x: '45%', y: '88%', role: 'POR' },
+				{ key: 'DEF1', x: '8%',  y: '68%', role: 'DEF' },
+				{ key: 'DEF2', x: '32%', y: '68%', role: 'DEF' },
+				{ key: 'DEF3', x: '58%', y: '68%', role: 'DEF' },
+				{ key: 'DEF4', x: '82%', y: '68%', role: 'DEF' },
+				{ key: 'MID1', x: '23%', y: '48%', role: 'MID' },
+				{ key: 'MID2', x: '67%', y: '48%', role: 'MID' },
+				{ key: 'MID3', x: '45%', y: '35%', role: 'MID' },
+				{ key: 'DEL1', x: '13%', y: '18%', role: 'DEL' },
+				{ key: 'DEL2', x: '77%', y: '18%', role: 'DEL' },
+				{ key: 'DEL3', x: '45%', y: '8%',  role: 'DEL' },
 			]
 		},
 		'4-4-2': {
 			name: '4-4-2',
 			positions: [
-				{ key: 'GK', x: '45%', y: '88%', role: 'POR' },
-				{ key: 'LB', x: '8%', y: '68%', role: 'DEF' },
-				{ key: 'CB1', x: '32%', y: '68%', role: 'DEF' },
-				{ key: 'CB2', x: '58%', y: '68%', role: 'DEF' },
-				{ key: 'RB', x: '82%', y: '68%', role: 'DEF' },
-				{ key: 'LM', x: '10%', y: '48%', role: 'MID' },
-				{ key: 'CM1', x: '35%', y: '48%', role: 'MID' },
-				{ key: 'CM2', x: '55%', y: '48%', role: 'MID' },
-				{ key: 'RM', x: '80%', y: '48%', role: 'MID' },
-				{ key: 'ST1', x: '35%', y: '12%', role: 'DEL' },
-				{ key: 'ST2', x: '55%', y: '12%', role: 'DEL' },
+				{ key: 'POR',  x: '45%', y: '88%', role: 'POR' },
+				{ key: 'DEF1', x: '8%',  y: '68%', role: 'DEF' },
+				{ key: 'DEF2', x: '32%', y: '68%', role: 'DEF' },
+				{ key: 'DEF3', x: '58%', y: '68%', role: 'DEF' },
+				{ key: 'DEF4', x: '82%', y: '68%', role: 'DEF' },
+				{ key: 'MID1', x: '10%', y: '48%', role: 'MID' },
+				{ key: 'MID2', x: '35%', y: '48%', role: 'MID' },
+				{ key: 'MID3', x: '55%', y: '48%', role: 'MID' },
+				{ key: 'MID4', x: '80%', y: '48%', role: 'MID' },
+				{ key: 'DEL1', x: '35%', y: '12%', role: 'DEL' },
+				{ key: 'DEL2', x: '55%', y: '12%', role: 'DEL' },
 			]
 		},
-		'3-5-2': {
-			name: '3-5-2',
+		'3-4-3': {
+			name: '3-4-3',
 			positions: [
-				{ key: 'GK', x: '45%', y: '88%', role: 'POR' },
-				{ key: 'CB1', x: '20%', y: '68%', role: 'DEF' },
-				{ key: 'CB2', x: '45%', y: '68%', role: 'DEF' },
-				{ key: 'CB3', x: '70%', y: '68%', role: 'DEF' },
-				{ key: 'LM', x: '6%', y: '50%', role: 'MID' },
-				{ key: 'CM1', x: '28%', y: '48%', role: 'MID' },
-				{ key: 'CM2', x: '52%', y: '48%', role: 'MID' },
-				{ key: 'CAM', x: '45%', y: '32%', role: 'MID' },
-				{ key: 'RM', x: '84%', y: '50%', role: 'MID' },
-				{ key: 'ST1', x: '35%', y: '12%', role: 'DEL' },
-				{ key: 'ST2', x: '55%', y: '12%', role: 'DEL' },
-			]
-		},
-		'4-2-3-1': {
-			name: '4-2-3-1',
-			positions: [
-				{ key: 'GK', x: '45%', y: '88%', role: 'POR' },
-				{ key: 'LB', x: '8%', y: '68%', role: 'DEF' },
-				{ key: 'CB1', x: '32%', y: '68%', role: 'DEF' },
-				{ key: 'CB2', x: '58%', y: '68%', role: 'DEF' },
-				{ key: 'RB', x: '82%', y: '68%', role: 'DEF' },
-				{ key: 'CDM1', x: '35%', y: '52%', role: 'MID' },
-				{ key: 'CDM2', x: '55%', y: '52%', role: 'MID' },
-				{ key: 'LAM', x: '20%', y: '34%', role: 'MID' },
-				{ key: 'CAM', x: '45%', y: '30%', role: 'MID' },
-				{ key: 'RAM', x: '70%', y: '34%', role: 'MID' },
-				{ key: 'ST', x: '45%', y: '10%', role: 'DEL' },
+				{ key: 'POR',  x: '45%', y: '88%', role: 'POR' },
+				{ key: 'DEF1', x: '20%', y: '68%', role: 'DEF' },
+				{ key: 'DEF2', x: '45%', y: '68%', role: 'DEF' },
+				{ key: 'DEF3', x: '70%', y: '68%', role: 'DEF' },
+				{ key: 'MID1', x: '10%', y: '48%', role: 'MID' },
+				{ key: 'MID2', x: '35%', y: '48%', role: 'MID' },
+				{ key: 'MID3', x: '55%', y: '48%', role: 'MID' },
+				{ key: 'MID4', x: '80%', y: '48%', role: 'MID' },
+				{ key: 'DEL1', x: '13%', y: '18%', role: 'DEL' },
+				{ key: 'DEL2', x: '45%', y: '10%', role: 'DEL' },
+				{ key: 'DEL3', x: '77%', y: '18%', role: 'DEL' },
 			]
 		},
 	};
@@ -150,26 +142,22 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 		if (selectedGameweek === 'total' || gameweekSnapshots.length === 0) return null;
 
 		const positionSlots = { POR: [], DEF: [], MID: [], DEL: [] };
-		const slotKeys = {
-			POR: ['GK'],
-			DEF: ['LB', 'CB1', 'CB2', 'RB'],
-			MID: ['CM1', 'CM2', 'CAM'],
-			DEL: ['LW', 'RW', 'ST'],
-		};
-
 		gameweekSnapshots.forEach(s => {
-			const pos = s.position;
-			if (positionSlots[pos]) {
-				positionSlots[pos].push(s);
-			}
+			if (positionSlots[s.position]) positionSlots[s.position].push(s);
+		});
+
+		// Build slotKeys dynamically from the current formation
+		const slotKeys = { POR: [], DEF: [], MID: [], DEL: [] };
+		currentFormation.positions.forEach(p => {
+			if (slotKeys[p.role]) slotKeys[p.role].push(p.key);
 		});
 
 		const result = {};
 		Object.entries(slotKeys).forEach(([pos, keys]) => {
-			const players = positionSlots[pos] || [];
+			const snaps = positionSlots[pos] || [];
 			keys.forEach((key, i) => {
-				if (i < players.length) {
-					const s = players[i];
+				if (i < snaps.length) {
+					const s = snaps[i];
 					result[key] = {
 						player: {
 							id: s.playerId,
@@ -185,15 +173,15 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 		});
 
 		return result;
-	}, [selectedGameweek, gameweekSnapshots]);
+	}, [selectedGameweek, gameweekSnapshots, currentFormation]);
 
 	const teamSummary = useMemo(() => {
 		const entries = Object.entries(assigned);
 		if (entries.length === 0) return null;
-		const roleMap = formations[formation]?.positions.reduce((acc, pos) => {
-			acc[pos.key] = pos.role;
-			return acc;
-		}, {}) ?? {};
+		const VALID_ROLES = ['POR', 'DEF', 'MID', 'DEL'];
+		const roleMap = new Map(
+			(formations[formation]?.positions ?? []).map(pos => [String(pos.key), pos.role])
+		);
 		const byPosition = { POR: 0, DEF: 0, MID: 0, DEL: 0 };
 		let best = null;
 		let total = 0;
@@ -201,8 +189,8 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 			const p = slotValue?.player ?? slotValue;
 			if (!p) return;
 			const pts = selectedGameweek === 'total' ? (p.totalPoints ?? 0) : (playerGameweekPoints[p.id] ?? 0);
-			const role = roleMap[key];
-			if (role && byPosition[role] !== undefined) byPosition[role] += pts;
+			const role = roleMap.get(String(key));
+			if (role && VALID_ROLES.includes(role)) byPosition[role] += pts;
 			total += pts;
 			if (!best || pts > best.points) best = { name: p.fullName ?? p.name, points: pts };
 		});
@@ -215,6 +203,15 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 		readOnly = true;
 	}
 	viewUserIdRef.current = viewUserId;
+
+	const loadOwnedPlayers = async ({ force = false } = {}) => {
+		if (!selectedLeague?.id || (readOnly && !force)) return;
+		try {
+			const res = await authenticatedFetch(`/api/v1/players?leagueId=${selectedLeague.id}&onlyOwned=true`);
+			const json = await res.json();
+			setPlayers(Array.isArray(json) ? json : (json?.content ?? []));
+		} catch {}
+	};
 
 	useEffect(() => {
 		let mounted = true;
@@ -244,11 +241,11 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 		
 	}, [selectedLeague?.id]);
 
-	const loadTeam = async () => {
+	const loadTeam = async ({ overrideUserId } = {}) => {
 		if (!selectedLeague?.id) return;
 		let mounted = true;
 		try {
-			let userIdToUse = viewUserIdRef.current;
+			let userIdToUse = overrideUserId ?? viewUserIdRef.current;
 			if (!userIdToUse) {
 				const user = await authService.getCurrentUser();
 				if (!user?.id) return;
@@ -297,7 +294,8 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 					
 					Object.entries(playersByRole).forEach(([role, players]) => {
 						const slots = slotsByRole[role] || [];
-						players.forEach((pt, index) => {
+						const sorted = [...players].sort((a, b) => (b.lined ? 1 : 0) - (a.lined ? 1 : 0));
+						sorted.forEach((pt, index) => {
 							if (index < slots.length) {
 								newAssigned[slots[index]] = pt;
 							}
@@ -308,6 +306,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 					setCaptainPlayerId(captain ? captain.player.id : null);
 
 					setAssigned(newAssigned);
+					isInitialLoad.current = false;
 
 				}
 			}
@@ -338,6 +337,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 			await Promise.all([
 				loadTeam(),
 				loadGameweekStatus(),
+				loadOwnedPlayers(),
 			]);
 			if (selectedGameweekRef.current !== 'total' && teamIdRef.current) {
 				await loadPlayerGameweekPoints(teamIdRef.current, selectedGameweekRef.current);
@@ -360,27 +360,37 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 		if (gameweek === 'total') {
 			setPlayerGameweekPoints({});
 			setGameweekSnapshots([]);
+			setGwAppliedChip(null);
 			return;
 		}
 
 		try {
 			setLoadingPoints(true);
-			const res = await authenticatedFetch(
-				`/api/v1/fantasy-points/teams/${teamId}/gameweek/${gameweek}/players`
-			);
-			if (!res.ok) throw new Error('Error loading gameweek points');
+			const [playersRes, breakdownRes] = await Promise.all([
+				authenticatedFetch(`/api/v1/fantasy-points/teams/${teamId}/gameweek/${gameweek}/players`),
+				authenticatedFetch(`/api/v1/fantasy-points/teams/${teamId}/gameweek/${gameweek}/breakdown`),
+			]);
+			if (!playersRes.ok) throw new Error('Error loading gameweek points');
 
-			const data = await res.json();
+			const data = await playersRes.json();
 			const pointsMap = {};
 			data.forEach(p => {
 				pointsMap[p.playerId] = p.gameweekPoints || 0;
 			});
 			setPlayerGameweekPoints(pointsMap);
 			setGameweekSnapshots(data);
+
+			if (breakdownRes.ok) {
+				const bdata = await breakdownRes.json();
+				setGwAppliedChip(bdata.appliedChip || null);
+			} else {
+				setGwAppliedChip(null);
+			}
 		} catch (e) {
 			console.error('Error loading gameweek points:', e);
 			setPlayerGameweekPoints({});
 			setGameweekSnapshots([]);
+			setGwAppliedChip(null);
 		} finally {
 			setLoadingPoints(false);
 		}
@@ -511,7 +521,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 
 	const goToPlayerStats = (player) => {
 		if (!player?.id) return;
-		setSelectedPlayer(player);
+		setSelectedPlayer({ ...player, fantasyTeamId: teamIdRef.current ?? null });
 		setOptionsVisible(false);
 		navigation.navigate('PlayerStats');
 	};
@@ -542,16 +552,21 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 			const res = await authenticatedFetch(`/api/v1/teams/league/${selectedLeague.id}/buyout`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ sellerUserId: viewUser.id, playerId: pt.player.id })
+				body: JSON.stringify({ sellerUserId: viewUser.id, playerId: String(pt.player.id) })
 			});
 			if (res.ok) {
 				let data = null; try { data = await res.json(); } catch {}
 				if (data && typeof data.budget === 'number') setMyBudget(data.budget);
 				Alert.alert('Clausulazo realizado', 'El jugador ha sido transferido a tu equipo.');
-				await loadTeam();
+				setViewUser(null);
+				const currentUser = await authService.getCurrentUser();
+				if (currentUser?.id) {
+					await loadTeam({ overrideUserId: currentUser.id });
+					await loadOwnedPlayers({ force: true });
+				}
 			} else {
 				const data = await res.json().catch(() => ({}));
-				Alert.alert('Error', data?.error || 'No se pudo realizar el clausulazo');
+				Alert.alert('Error', data?.message || data?.error || 'No se pudo realizar el clausulazo');
 			}
 		} catch (e) {
 			Alert.alert('Error', e?.message || 'Fallo al ejecutar clausulazo');
@@ -564,7 +579,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 			const res = await authenticatedFetch(`/api/v1/teams/league/${selectedLeague.id}/sell-player`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ playerId: pt.player.id })
+				body: JSON.stringify({ playerId: String(pt.player.id) })
 			});
 			if (res.ok) {
 				const data = await res.json();
@@ -573,9 +588,10 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 				Alert.alert('Jugador vendido', `${pt.player.fullName || pt.player.name} vendido por €${price.toLocaleString('es-ES')}`);
 				if (captainPlayerId === pt.player.id) setCaptainPlayerId(null);
 				await loadTeam();
+				await loadOwnedPlayers();
 			} else {
 				const data = await res.json().catch(() => ({}));
-				Alert.alert('Error', data?.error || 'No se pudo vender el jugador');
+				Alert.alert('Error', data?.message || data?.error || 'No se pudo vender el jugador');
 			}
 		} catch (e) {
 			Alert.alert('Error', e?.message || 'Fallo al vender jugador');
@@ -589,9 +605,9 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 		setCurrentKey(null);
 	};
 
-	const saveTeam = async () => {
+	const saveTeam = async (silent = false) => {
 		if (!selectedLeague?.id) {
-			Alert.alert('Error', 'Selecciona una liga primero');
+			if (!silent) Alert.alert('Error', 'Selecciona una liga primero');
 			return;
 		}
 
@@ -601,44 +617,71 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 				if (!p?.id) return null;
 				return {
 					playerId: p.id,
-			position: position,
-			lined: true,
-			isCaptain: p.id === captainPlayerId
+					position: position,
+					lined: true,
+					isCaptain: p.id === captainPlayerId
 				};
 			})
 			.filter(Boolean);
 
 		if (playersList.length === 0) {
-			Alert.alert('Error', 'Debes seleccionar al menos un jugador');
+			if (!silent) Alert.alert('Error', 'Debes seleccionar al menos un jugador');
 			return;
 		}
 
+		const assignedIds = new Set(playersList.map(p => p.playerId));
+		const benchList = players
+			.filter(p => p?.id && !assignedIds.has(p.id))
+			.map(p => ({ playerId: p.id, position: p.position, lined: false, isCaptain: false }));
+
 		setSaving(true);
+		if (silent) setAutoSaveStatus('saving');
 		try {
 			const user = await authService.getCurrentUser();
 			if (!user?.id) {
-				Alert.alert('Error', 'Usuario no autenticado');
+				if (!silent) Alert.alert('Error', 'Usuario no autenticado');
 				setSaving(false);
+				if (silent) setAutoSaveStatus('error');
 				return;
 			}
 			const res = await authenticatedFetch(`/api/v1/teams/league/${selectedLeague.id}/${user.id}/players`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ players: playersList })
+				body: JSON.stringify({ players: [...playersList, ...benchList] })
 			});
 
 			if (res.ok) {
-				Alert.alert('Éxito', 'Equipo guardado correctamente');
+				if (!silent) Alert.alert('Éxito', 'Equipo guardado correctamente');
+				if (silent) {
+					setAutoSaveStatus('saved');
+					setTimeout(() => setAutoSaveStatus(null), 2500);
+				}
 			} else {
 				const data = await res.json();
-				Alert.alert('Error', data?.error || 'No se pudo guardar el equipo');
+				if (!silent) Alert.alert('Error', data?.error || 'No se pudo guardar el equipo');
+				if (silent) setAutoSaveStatus('error');
 			}
 		} catch (e) {
-			Alert.alert('Error', 'Error al guardar: ' + (e?.message || 'Desconocido'));
+			if (!silent) Alert.alert('Error', 'Error al guardar: ' + (e?.message || 'Desconocido'));
+			if (silent) setAutoSaveStatus('error');
 		} finally {
 			setSaving(false);
 		}
 	};
+
+	// Auto-save: debounce 1.5s tras cambios en alineación o capitán
+	useEffect(() => {
+		if (isInitialLoad.current) return;
+		if (readOnly || teamsLocked) return;
+		if (Object.keys(assigned).length === 0) return;
+
+		clearTimeout(autoSaveTimer.current);
+		autoSaveTimer.current = setTimeout(() => {
+			saveTeam(true);
+		}, 1500);
+
+		return () => clearTimeout(autoSaveTimer.current);
+	}, [assigned, captainPlayerId]);
 
 	const saveWildcard = async () => {
 		if (!selectedLeague?.id) return;
@@ -653,6 +696,11 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 			Alert.alert('Error', 'Debes tener jugadores en el equipo');
 			return;
 		}
+		const assignedIds = new Set(playersList.map(p => p.playerId));
+		const benchList = players
+			.filter(p => p?.id && !assignedIds.has(p.id))
+			.map(p => ({ playerId: p.id, position: p.position, lined: false, isCaptain: false }));
+		const fullList = [...playersList, ...benchList];
 		Alert.alert(
 			'🃏 Usar Comodín',
 			'Podrás cambiar tu alineación durante la jornada activa. Solo puedes usarlo UNA VEZ por temporada.',
@@ -666,7 +714,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 						const res = await authenticatedFetch(
 							`/api/v1/teams/league/${selectedLeague.id}/${user.id}/wildcard`,
 							{ method: 'POST', headers: { 'Content-Type': 'application/json' },
-							  body: JSON.stringify({ players: playersList }) }
+							  body: JSON.stringify({ players: fullList }) }
 						);
 						if (res.ok) {
 							setWildcardUsed(true);
@@ -690,7 +738,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 		const chipDef = CHIPS.find(c => c.id === chipId);
 		Alert.alert(
 			`${chipDef?.icon ?? '🎰'} ${chipDef?.name ?? chipId}`,
-			`${chipDef?.desc ?? ''}\n\nEl chip se activará para la próxima jornada y no podrás cancelarlo. ¿Continuar?`,
+			`${chipDef?.desc ?? ''}\n\nEl chip se activará para esta jornada. Puedes cancelarlo antes de que la jornada se bloquee. ¿Continuar?`,
 			[
 				{ text: 'Cancelar', style: 'cancel' },
 				{ text: 'Activar', style: 'default', onPress: async () => {
@@ -710,7 +758,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 							setActiveChip(data.activeChip || null);
 							setUsedChips(data.usedChips ? data.usedChips.split(',').filter(Boolean) : []);
 							setChipModalVisible(false);
-							Alert.alert('✅ Chip activado', `${chipDef?.name ?? chipId} se aplicará en la próxima jornada.`);
+							Alert.alert('✅ Chip activado', `${chipDef?.name ?? chipId} se aplicará en la jornada actual.`);
 						} else {
 							const data = await res.json().catch(() => ({}));
 							Alert.alert('Error', data?.error || 'No se pudo activar el chip');
@@ -721,6 +769,27 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 				}},
 			]
 		);
+	};
+
+	const cancelChip = async () => {
+		if (!selectedLeague?.id) return;
+		try {
+			const user = await authService.getCurrentUser();
+			if (!user?.id) return;
+			const res = await authenticatedFetch(
+				`/api/v1/teams/league/${selectedLeague.id}/${user.id}/chip`,
+				{ method: 'DELETE' }
+			);
+			if (res.ok) {
+				setActiveChip(null);
+				setChipModalVisible(false);
+			} else {
+				const data = await res.json().catch(() => ({}));
+				Alert.alert('Error', data?.error || 'No se pudo cancelar el chip');
+			}
+		} catch (e) {
+			Alert.alert('Error', e?.message || 'Error desconocido');
+		}
 	};
 
 	function matchesSpot(playerPos, key) {
@@ -746,9 +815,18 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 				)}
 				{!readOnly && (
 					<View style={{ flexDirection: 'row', gap: 6, alignItems: 'center' }}>
-						<TouchableOpacity 
-							style={[styles.saveBtn, (saving || teamsLocked) && styles.saveBtnDisabled]} 
-							onPress={saveTeam}
+						{autoSaveStatus === 'saving' && (
+							<Text style={styles.autoSaveTxt}>Guardando...</Text>
+						)}
+						{autoSaveStatus === 'saved' && (
+							<Text style={[styles.autoSaveTxt, { color: '#16a34a' }]}>✓ Guardado</Text>
+						)}
+						{autoSaveStatus === 'error' && (
+							<Text style={[styles.autoSaveTxt, { color: '#dc2626' }]}>Error al guardar</Text>
+						)}
+						<TouchableOpacity
+							style={[styles.saveBtn, (saving || teamsLocked) && styles.saveBtnDisabled]}
+							onPress={() => saveTeam(false)}
 							disabled={saving || teamsLocked}
 						>
 							<Text style={styles.saveBtnText}>{saving ? 'Guardando...' : teamsLocked ? '🔒 Bloqueado' : 'Guardar'}</Text>
@@ -767,21 +845,19 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 								<Text style={styles.saveBtnText}>🃏 Usado</Text>
 							</View>
 						)}
-						{!teamsLocked && (
-							activeChip ? (
-								<View style={[styles.saveBtn, { backgroundColor: '#d97706' }]}>
-									<Text style={styles.saveBtnText}>
-										{CHIPS.find(c => c.id === activeChip)?.icon ?? '🎰'} {CHIPS.find(c => c.id === activeChip)?.name ?? activeChip}
-									</Text>
-								</View>
-							) : (
-								<TouchableOpacity
-									style={[styles.saveBtn, { backgroundColor: '#0369a1' }]}
-									onPress={() => setChipModalVisible(true)}
-								>
-									<Text style={styles.saveBtnText}>🎰 Chips ({usedChips.length}/10)</Text>
-								</TouchableOpacity>
-							)
+						{activeChip ? (
+							<View style={[styles.saveBtn, { backgroundColor: '#d97706' }]}>
+								<Text style={styles.saveBtnText}>
+									{CHIPS.find(c => c.id === activeChip)?.icon ?? '🎰'} {CHIPS.find(c => c.id === activeChip)?.name ?? activeChip}
+								</Text>
+							</View>
+						) : !teamsLocked && (
+							<TouchableOpacity
+								style={[styles.saveBtn, { backgroundColor: '#0369a1' }]}
+								onPress={() => setChipModalVisible(true)}
+							>
+								<Text style={styles.saveBtnText}>🎰 Chips ({usedChips.length}/10)</Text>
+							</TouchableOpacity>
 						)}
 					</View>
 				)}
@@ -795,22 +871,34 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 			)}
 
 			{!readOnly && !teamsLocked && (
-				<View style={styles.formationWrap}>
-					<Text style={styles.formationTitle}>Formacion</Text>
-					<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.formationScroll}>
-						{Object.keys(formations).map(key => (
-							<TouchableOpacity
-								key={key}
-								style={[styles.formationChip, formation === key && styles.formationChipActive]}
-								onPress={() => setFormation(key)}
-							>
-								<Text style={[styles.formationChipText, formation === key && styles.formationChipTextActive]}>
-									{key}
-								</Text>
-							</TouchableOpacity>
-						))}
-					</ScrollView>
-				</View>
+				<TouchableOpacity
+					style={styles.formationWrap}
+					activeOpacity={0.85}
+					onPress={() => setFormationOpen(o => !o)}
+				>
+					<View style={styles.formationHeader}>
+						<Text style={styles.formationTitle}>FORMACIÓN</Text>
+						<View style={styles.formationHeaderRight}>
+							<Text style={styles.formationCurrent}>{formation}</Text>
+							<Text style={styles.formationChevron}>{formationOpen ? '▲' : '▼'}</Text>
+						</View>
+					</View>
+					{formationOpen && (
+						<View style={styles.formationScroll}>
+							{Object.keys(formations).map(key => (
+								<TouchableOpacity
+									key={key}
+									style={[styles.formationChip, formation === key && styles.formationChipActive]}
+									onPress={(e) => { e.stopPropagation?.(); setFormation(key); setFormationOpen(false); }}
+								>
+									<Text style={[styles.formationChipText, formation === key && styles.formationChipTextActive]}>
+										{key}
+									</Text>
+								</TouchableOpacity>
+							))}
+						</View>
+					)}
+				</TouchableOpacity>
 			)}
 
 			{!readOnly && (
@@ -874,7 +962,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 										teamId={ap.teamId}
 										points={getPlayerPoints(ap)}
 										isCaptain={captainPlayerId === ap.id}
-										onPress={isHistorical ? undefined : () => openOptions(slotData, p.key)}
+										onPress={isHistorical ? () => goToPlayerStats(ap) : () => openOptions(slotData, p.key)}
 									/>
 								);
 							})()
@@ -893,6 +981,28 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 
 				{teamSummary && (
 					<View style={styles.summaryCard}>
+						{gwAppliedChip && selectedGameweek !== 'total' && (() => {
+							const CHIP_DISPLAY = {
+								TRIPLE_CAP:     { icon: '👑', name: 'Triple Capitán' },
+								DOUBLE_GOALS:   { icon: '⚽', name: 'Golazo' },
+								SUPER_SAVES:    { icon: '🧤', name: 'Mano Segura' },
+								NO_PENALTY:     { icon: '🟡', name: 'Juego Limpio' },
+								DOUBLE_ASSISTS: { icon: '🎯', name: 'Rey de Asistencias' },
+								DEFENSIVE_WEEK: { icon: '🛡️', name: 'Muralla' },
+								LETHAL_STRIKER: { icon: '🏹', name: 'Delantero Letal' },
+								CREATIVE_MIDS:  { icon: '🎨', name: 'Creador Total' },
+								GOLDEN_MINUTES: { icon: '⏱️', name: 'Minutos de Oro' },
+								BENCH_BOOST:    { icon: '🪑', name: 'Banco Boost' },
+							};
+							const chip = CHIP_DISPLAY[gwAppliedChip];
+							return (
+								<View style={styles.gwChipBanner}>
+									<Text style={styles.gwChipBannerText}>
+										{chip ? `${chip.icon} ${chip.name}` : gwAppliedChip} aplicado esta jornada
+									</Text>
+								</View>
+							);
+						})()}
 						<View style={styles.summaryRow}>
 							{[{ label: 'POR', value: teamSummary.byPosition.POR },
 							  { label: 'DEF', value: teamSummary.byPosition.DEF },
@@ -979,49 +1089,12 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 				)}
 
 				{/* Traspasos Pendientes */}
-				{!readOnly && (incomingOffers.filter(o => o.status === 'PENDING').length > 0 || outgoingOffers.filter(o => o.status === 'PENDING').length > 0) && (
-					<View style={styles.tradesSection}>
-						<Text style={styles.tradesSectionTitle}>🤝 Traspasos pendientes</Text>
-						{incomingOffers.filter(o => o.status === 'PENDING').map(offer => (
-							<View key={offer.id} style={styles.tradeOfferCard}>
-								<View style={styles.tradeOfferInfo}>
-									<Text style={styles.tradeOfferPlayer}>{offer.player?.fullName}</Text>
-									<Text style={styles.tradeOfferMeta}>{offer.fromTeam?.user?.username} ofrece €{offer.offerPrice?.toLocaleString('es-ES')}</Text>
-								</View>
-								<View style={{ flexDirection: 'row', gap: 6 }}>
-									<TouchableOpacity
-										style={[styles.tradeActionBtn, { backgroundColor: colors.primary }]}
-										onPress={async () => {
-											try { await acceptOffer(offer.id); await Promise.all([loadTrades(), loadTeam()]); Alert.alert('Aceptada', 'Traspaso completado.'); }
-											catch(e) { Alert.alert('Error', e?.message || 'No se pudo aceptar'); }
-										}}
-									><Text style={styles.tradeActionBtnText}>Aceptar</Text></TouchableOpacity>
-									<TouchableOpacity
-										style={[styles.tradeActionBtn, { backgroundColor: colors.danger }]}
-										onPress={async () => {
-											try { await rejectOffer(offer.id); await loadTrades(); Alert.alert('Rechazada', 'Oferta rechazada.'); }
-											catch(e) { Alert.alert('Error', e?.message || 'No se pudo rechazar'); }
-										}}
-									><Text style={styles.tradeActionBtnText}>Rechazar</Text></TouchableOpacity>
-								</View>
-							</View>
-						))}
-						{outgoingOffers.filter(o => o.status === 'PENDING').map(offer => (
-							<View key={offer.id} style={[styles.tradeOfferCard, { borderLeftColor: colors.textMuted }]}>
-								<View style={styles.tradeOfferInfo}>
-									<Text style={styles.tradeOfferPlayer}>{offer.player?.fullName}</Text>
-									<Text style={styles.tradeOfferMeta}>enviada a {offer.toTeam?.user?.username} · €{offer.offerPrice?.toLocaleString('es-ES')}</Text>
-								</View>
-								<TouchableOpacity
-									style={[styles.tradeActionBtn, { backgroundColor: colors.textMuted }]}
-									onPress={async () => {
-										try { await cancelOffer(offer.id); await loadTrades(); Alert.alert('Cancelada', 'Oferta cancelada.'); }
-										catch(e) { Alert.alert('Error', e?.message || 'No se pudo cancelar'); }
-									}}
-								><Text style={styles.tradeActionBtnText}>Cancelar</Text></TouchableOpacity>
-							</View>
-						))}
-					</View>
+				{!readOnly && (
+					<TradesSection
+						incomingOffers={incomingOffers}
+						outgoingOffers={outgoingOffers}
+						onRefresh={async () => { await Promise.all([loadTrades(), loadTeam()]); }}
+					/>
 				)}
 			</ScrollView>
 
@@ -1348,84 +1421,27 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 			</View>
 		</Modal>
 
-		{/* Trade Offer Price Modal */}
-		<Modal visible={offerModalVisible} transparent animationType="fade" onRequestClose={() => setOfferModalVisible(false)}>
-			<View style={styles.modalBackdrop}>
-				<View style={styles.modalCard}>
-					<Text style={styles.modalTitle}>Hacer oferta por {offerPlayer?.fullName || offerPlayer?.name}</Text>
-					<Text style={{ fontSize: 12, color: '#555', marginBottom: 8 }}>
-						Valor de mercado: €{(offerPlayer?.marketValue || 0).toLocaleString('es-ES')}
-					</Text>
-					<Text style={{ fontSize: 12, fontWeight: '700', marginBottom: 4 }}>Tu oferta (€)</Text>
-					<TextInput
-						style={{ borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 10, fontSize: 16, marginBottom: 12 }}
-						placeholder="Introduce el precio"
-						keyboardType="numeric"
-						value={offerPriceText}
-						onChangeText={setOfferPriceText}
-					/>
-					<View style={{ flexDirection: 'row', gap: 8 }}>
-						<TouchableOpacity
-							style={[styles.saveBtn, { flex: 1, backgroundColor: '#7c3aed', opacity: offerSubmitting ? 0.6 : 1 }]}
-							onPress={sendTradeOffer}
-							disabled={offerSubmitting}
-						>
-							<Text style={[styles.saveBtnText, { textAlign: 'center' }]}>
-								{offerSubmitting ? 'Enviando...' : 'Enviar oferta'}
-							</Text>
-						</TouchableOpacity>
-						<TouchableOpacity
-							style={[styles.closeBtn, { flex: 1, alignSelf: 'stretch', justifyContent: 'center', alignItems: 'center' }]}
-							onPress={() => setOfferModalVisible(false)}
-						>
-							<Text style={styles.closeText}>Cancelar</Text>
-						</TouchableOpacity>
-					</View>
-				</View>
-			</View>
-		</Modal>
+		<TradeOfferPriceModal
+			visible={offerModalVisible}
+			player={offerPlayer}
+			priceText={offerPriceText}
+			onChangePrice={setOfferPriceText}
+			onSend={sendTradeOffer}
+			onClose={() => setOfferModalVisible(false)}
+			submitting={offerSubmitting}
+		/>
 
-		{/* Chip Selector Modal */}
 		{!readOnly && (
-			<Modal visible={chipModalVisible} transparent animationType="slide" onRequestClose={() => setChipModalVisible(false)}>
-				<View style={styles.modalBackdrop}>
-					<View style={[styles.modalCard, { maxHeight: '80%', width: '92%' }]}>
-						<Text style={styles.modalTitle}>🎰 Tus Chips ({usedChips.length}/10 usados)</Text>
-						<Text style={{ fontSize: 12, color: colors.textSecondary, marginBottom: 12 }}>
-							Solo puedes activar un chip por jornada y no podrás cancelarlo.
-						</Text>
-						<ScrollView showsVerticalScrollIndicator={false}>
-							{CHIPS.map(chip => {
-								const isUsed = usedChips.includes(chip.id);
-								const isActive = activeChip === chip.id;
-								return (
-									<TouchableOpacity
-										key={chip.id}
-										disabled={isUsed || isActive}
-										onPress={() => activateChip(chip.id)}
-										style={[
-											styles.chipCard,
-											isActive && styles.chipCardActive,
-											isUsed && styles.chipCardUsed,
-										]}
-									>
-										<Text style={styles.chipIcon}>{chip.icon}</Text>
-										<View style={{ flex: 1 }}>
-											<Text style={[styles.chipName, isUsed && styles.chipTextUsed]}>
-												{chip.name}{isActive ? '  ✓ Activo' : ''}{isUsed ? '  ✗ Usado' : ''}
-											</Text>
-											<Text style={[styles.chipDesc, isUsed && styles.chipTextUsed]}>{chip.desc}</Text>
-										</View>
-									</TouchableOpacity>
-								);
-							})}
-						</ScrollView>
-						<TouchableOpacity style={styles.closeBtn} onPress={() => setChipModalVisible(false)}>
-							<Text style={styles.closeText}>Cerrar</Text>
-						</TouchableOpacity>
-					</View>
-				</View>
-			</Modal>
+			<ChipSelectorModal
+				visible={chipModalVisible}
+				chips={CHIPS}
+				usedChips={usedChips}
+				activeChip={activeChip}
+				teamsLocked={teamsLocked}
+				onActivate={activateChip}
+				onCancel={cancelChip}
+				onClose={() => setChipModalVisible(false)}
+			/>
 		)}
 
 		</View>
@@ -1444,6 +1460,7 @@ const styles = StyleSheet.create({
 	saveBtn: { backgroundColor: colors.primary, paddingVertical: 8, paddingHorizontal: spacing.lg, borderRadius: radius.pill },
 	saveBtnDisabled: { backgroundColor: colors.textMuted },
 	saveBtnText: { color: colors.textInverse, fontWeight: fontWeight.bold, fontSize: fontSize.sm },
+	autoSaveTxt: { fontSize: fontSize.xs, fontWeight: fontWeight.semibold, color: colors.textMuted },
 	backBtn: {
 		backgroundColor: 'rgba(255,255,255,0.15)', paddingVertical: 8, paddingHorizontal: spacing.lg,
 		borderRadius: radius.pill, borderWidth: 1, borderColor: 'rgba(255,255,255,0.25)',
@@ -1593,24 +1610,41 @@ const styles = StyleSheet.create({
 		borderRadius: radius.lg,
 		borderWidth: 1,
 		borderColor: colors.border,
-		paddingTop: spacing.sm,
-		paddingBottom: spacing.xs,
+		paddingHorizontal: spacing.md,
+		paddingVertical: spacing.sm,
 		...shadow.sm,
+	},
+	formationHeader: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+	},
+	formationHeaderRight: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+	},
+	formationCurrent: {
+		fontSize: fontSize.sm,
+		fontWeight: fontWeight.bold,
+		color: colors.primary,
+	},
+	formationChevron: {
+		fontSize: 10,
+		color: colors.textMuted,
 	},
 	formationTitle: {
 		fontSize: fontSize.xs,
 		fontWeight: fontWeight.semibold,
 		color: colors.textMuted,
-		marginLeft: spacing.md,
-		marginBottom: 6,
 		letterSpacing: 0.5,
 		textTransform: 'uppercase',
 	},
 	formationScroll: {
-		paddingHorizontal: spacing.md,
-		paddingVertical: 6,
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		paddingTop: spacing.sm,
 		gap: 8,
-		alignItems: 'center',
 	},
 	formationChip: {
 		paddingVertical: 7,
@@ -1671,6 +1705,8 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.bgCard, borderRadius: radius.lg, borderWidth: 1,
 		borderColor: colors.border, padding: spacing.md, ...shadow.sm,
 	},
+	gwChipBanner: { backgroundColor: '#d97706', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5, marginBottom: 8, alignSelf: 'flex-start' },
+	gwChipBannerText: { fontSize: 11, fontWeight: '700', color: '#fff' },
 	summaryRow: { flexDirection: 'row', justifyContent: 'space-around' },
 	summaryPosBlock: { alignItems: 'center', gap: 4 },
 	summaryPosLabel: { fontSize: fontSize.xs, fontWeight: fontWeight.bold, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.5 },

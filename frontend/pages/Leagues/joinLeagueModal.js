@@ -1,5 +1,6 @@
 import React from 'react';
 import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { colors, fontSize, fontWeight, radius, spacing, shadow } from '../../utils/theme';
 
 export default function JoinLeagueModal({ visible, onClose, code, setCode, onJoin, loading, error }) {
   return (
@@ -32,17 +33,21 @@ export default function JoinLeagueModal({ visible, onClose, code, setCode, onJoi
 }
 
 const styles = StyleSheet.create({
-  backdrop: { flex:1, backgroundColor:'rgba(0,0,0,0.35)', justifyContent:'center', alignItems:'center', padding:16 },
-  card: { width:'92%', maxWidth:400, backgroundColor:'#1f2937', borderRadius:18, padding:20 },
-  title: { fontSize:20, fontWeight:'700', color:'#fff', marginBottom:12, textAlign:'center' },
-  label: { color:'#e2e8f0', marginBottom:6, fontWeight:'600' },
-  input: { backgroundColor:'#fff', borderRadius:12, paddingHorizontal:12, height:44, fontSize:16, letterSpacing:2, color:'#111827' },
-  inputError: { borderWidth: 1, borderColor: '#ef4444' },
-  actions: { flexDirection:'row', justifyContent:'flex-end', marginTop:16, gap:10 },
-  btn: { paddingHorizontal:16, paddingVertical:10, borderRadius:10 },
-  cancel: { backgroundColor:'#6b7280' },
-  join: { backgroundColor:'#2563eb' },
-  disabled: { backgroundColor:'#94a3b8' },
-  btnTxt: { color:'#fff', fontWeight:'600' },
-  errorText: { color:'#fecaca', marginTop: 8, fontSize: 12, fontWeight:'600' }
+  backdrop: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'center', alignItems: 'center', padding: spacing.lg },
+  card: { width: '92%', maxWidth: 400, backgroundColor: colors.bgCard, borderRadius: radius.xl, padding: spacing.xl, ...shadow.lg },
+  title: { fontSize: fontSize.xl, fontWeight: fontWeight.bold, color: colors.textPrimary, marginBottom: spacing.md, textAlign: 'center' },
+  label: { color: colors.textSecondary, marginBottom: 6, fontWeight: fontWeight.semibold },
+  input: {
+    backgroundColor: colors.bgSubtle, borderRadius: radius.md, paddingHorizontal: spacing.md,
+    height: 48, fontSize: fontSize.md, letterSpacing: 2, color: colors.textPrimary,
+    borderWidth: 1.5, borderColor: colors.border,
+  },
+  inputError: { borderColor: colors.danger },
+  actions: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: spacing.lg, gap: spacing.sm },
+  btn: { paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, borderRadius: radius.md },
+  cancel: { backgroundColor: colors.textSecondary },
+  join: { backgroundColor: colors.primary },
+  disabled: { backgroundColor: colors.textMuted },
+  btnTxt: { color: colors.textInverse, fontWeight: fontWeight.semibold },
+  errorText: { color: colors.danger, marginTop: spacing.sm, fontSize: fontSize.sm, fontWeight: fontWeight.semibold },
 });

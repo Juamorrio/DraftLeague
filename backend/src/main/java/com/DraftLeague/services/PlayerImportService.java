@@ -156,10 +156,9 @@ public class PlayerImportService {
         return "Sync completado: " + created + " creados, " + updated + " actualizados";
     }
 
-    /** Fetches player statistics for the given gameweek from API-Football and imports them into the DB. */
-    public String syncGameweekStats(Integer gameweek) throws Exception {
+    public int syncGameweekStats(Integer gameweek) throws Exception {
         List<Map<String, Object>> statsData = gameweekStatsSyncService.fetchStats(gameweek);
         playerStatisticService.saveBulkFromJson(statsData);
-        return "Jornada " + gameweek + ": " + statsData.size() + " estadisticas importadas";
+        return statsData.size();
     }
 }

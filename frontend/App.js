@@ -2,6 +2,18 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { StyleSheet, View, Text } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { useFonts } from 'expo-font';
+import {
+  BarlowCondensed_600SemiBold,
+  BarlowCondensed_700Bold,
+} from '@expo-google-fonts/barlow-condensed';
+import {
+  Barlow_400Regular,
+  Barlow_500Medium,
+  Barlow_600SemiBold,
+  Barlow_700Bold,
+} from '@expo-google-fonts/barlow';
 
 // Contexts
 import { LeagueProvider } from './context/LeagueContext';
@@ -15,6 +27,15 @@ import RootNavigator from './navigation/RootNavigator';
 import authService from './services/authService';
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    BarlowCondensed_600SemiBold,
+    BarlowCondensed_700Bold,
+    Barlow_400Regular,
+    Barlow_500Medium,
+    Barlow_600SemiBold,
+    Barlow_700Bold,
+  });
+
   const [authed, setAuthed] = React.useState(false);
   const [checking, setChecking] = React.useState(true);
   const [authMode, setAuthMode] = React.useState('login');
@@ -49,7 +70,7 @@ export default function App() {
     setUser(null);
   };
 
-  if (checking) {
+  if (checking || !fontsLoaded) {
     return (
       <View style={styles.loadingContainer}>
         <StatusBar style="auto" />
@@ -59,18 +80,20 @@ export default function App() {
   }
 
   return (
+    <SafeAreaProvider>
     <LeagueProvider>
       <MatchesProvider>
         <NavigationContainer>
           <View style={styles.container}>
             <StatusBar style="auto" />
             {authed && <Header onLogout={handleLogout} />}
-            <RootNavigator 
-              authed={authed} 
+            <RootNavigator
+              authed={authed}
               authMode={authMode}
               user={user}
               onLoggedIn={handleLogin}
               onRegistered={handleLogin}
+              onLogout={handleLogout}
               onSwitchToRegister={() => setAuthMode('register')}
               onSwitchToLogin={() => setAuthMode('login')}
             />
@@ -78,6 +101,7 @@ export default function App() {
         </NavigationContainer>
       </MatchesProvider>
     </LeagueProvider>
+    </SafeAreaProvider>
   );
 }
 

@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.DraftLeague.dto.CreateLeagueRequest;
+import com.DraftLeague.dto.UpdateLeagueRequest;
 import com.DraftLeague.models.Team.Team;
 import com.DraftLeague.repositories.TeamRepository;
 import com.DraftLeague.repositories.TeamGameweekPointsRepository;
@@ -108,6 +109,7 @@ public class LeagueService {
                     team.setWildcardUsed(false);
                     team.setCaptainId(null);
                     teamRepository.save(team);
+                    assignInitialSquad(saved, team, 11);
                 }
             }
         } catch (Exception e) {
@@ -121,7 +123,7 @@ public class LeagueService {
         return leagueRepository.findById(id).orElseThrow(() -> new RuntimeException("League not found"));
     }
 
-    public League updateLeague(Long id, League league) {
+    public League updateLeague(Long id, UpdateLeagueRequest league) {
         League existingLeague = getLeagueById(id);
         
         var auth = SecurityContextHolder.getContext().getAuthentication();

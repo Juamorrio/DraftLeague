@@ -1,13 +1,74 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useLeague } from '../../context/LeagueContext';
 import { authenticatedFetch } from '../../services/authService';
+import { Ionicons } from '@expo/vector-icons';
 import withAuth from '../../components/withAuth';
-import { LineChartComponent } from '../../components/StatisticsChart';
+import Player from '../../components/player';
+import { colors, fontSize, fontWeight, radius, spacing, positionBadgeColors } from '../../utils/theme';
+
+function MarketValueChart({ data }) {
+	const CHART_HEIGHT = 150;
+	const BAR_MIN_HEIGHT = 6;
+
+	// Prepend an "Inicio" bar with the previousValue of the first entry so the
+	// chart shows where the player started (before any recorded change).
+	const chartPoints = data.length > 0
+		? [
+			{ label: 'Inicio', value: data[0].previousValue ?? 0, change: null },
+			...data.map(d => ({ label: `J${d.gameweek}`, value: d.newValue ?? 0, change: d.changeAmount ?? 0 })),
+		  ]
+		: [];
+
+	// Guard: no history yet — avoid Math.min/max on empty arrays
+	if (chartPoints.length === 0) {
+		return (
+			<View style={{ paddingVertical: 32, alignItems: 'center' }}>
+				<Text style={{ color: colors.textMuted, fontSize: fontSize.sm, fontWeight: fontWeight.semibold }}>
+					Sin historial de valor de mercado aún
+				</Text>
+			</View>
+		);
+	}
+
+	const values = chartPoints.map(p => p.value);
+	const minVal = Math.min(...values);
+	const maxVal = Math.max(...values);
+	const range = maxVal - minVal || 1;
+
+	return (
+		<ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginVertical: 8 }}>
+			<View style={{ flexDirection: 'row', alignItems: 'flex-end', height: CHART_HEIGHT + 56, paddingHorizontal: 8 }}>
+				{chartPoints.map((point, index) => {
+					const barHeight = BAR_MIN_HEIGHT + ((point.value - minVal) / range) * (CHART_HEIGHT - BAR_MIN_HEIGHT);
+					const isInitial = index === 0;
+					const barColor = isInitial ? colors.textMuted : point.change >= 0 ? colors.success : colors.danger;
+					const valM = (point.value / 1_000_000).toFixed(2);
+					return (
+						<View key={point.label} style={{ alignItems: 'center', marginHorizontal: 5 }}>
+							<Text style={{ fontSize: 9, color: colors.textSecondary, marginBottom: 3, fontWeight: fontWeight.semibold }}>
+								{valM}M
+							</Text>
+							<View style={{ width: 32, height: barHeight, backgroundColor: barColor, borderRadius: 5 }} />
+							<Text style={{ fontSize: 10, color: colors.textSecondary, marginTop: 5, fontWeight: fontWeight.bold }}>
+								{point.label}
+							</Text>
+							{!isInitial && (
+								<Text style={{ fontSize: 8, color: point.change >= 0 ? colors.success : colors.danger, fontWeight: fontWeight.bold }}>
+									{point.change >= 0 ? '▲' : '▼'}
+								</Text>
+							)}
+						</View>
+					);
+				})}
+			</View>
+		</ScrollView>
+	);
+}
 
 function PlayerStats({ navigation }) {
-	const { selectedPlayer, selectedLeague } = useLeague();
+	const { selectedPlayer, setComparePlayer } = useLeague();
 	const [playerPrediction, setPlayerPrediction] = useState(null);
 	const [loadingPrediction, setLoadingPrediction] = useState(false);
 	const [statistics, setStatistics] = useState([]);
@@ -17,112 +78,112 @@ function PlayerStats({ navigation }) {
 	const [marketValueHistory, setMarketValueHistory] = useState([]);
 	const [loadingMarketValue, setLoadingMarketValue] = useState(false);
 
+	// Track which data sets have been fetched for the current player to avoid re-fetching on tab switch
+	const fetchedRef = useRef({ playerId: null, stats: false, market: false, prediction: false });
+
+	// Reset cache when player changes
 	useEffect(() => {
-		if (!selectedPlayer?.id) {
+		const pid = selectedPlayer?.id ?? null;
+		if (fetchedRef.current.playerId !== pid) {
+			fetchedRef.current = { playerId: pid, stats: false, market: false, prediction: false };
 			setPlayerPrediction(null);
-			return;
-		}
-
-		const loadPlayerPrediction = async () => {
-			setLoadingPrediction(true);
-			try {
-				const response = await authenticatedFetch(`/api/ml/predict/player/${selectedPlayer.id}`);
-
-				if (response.ok) {
-					const prediction = await response.json();
-					console.log('Prediccion de jugador cargada:', prediction);
-					setPlayerPrediction(prediction);
-				} else {
-					console.log('No se pudo cargar la prediccion del jugador');
-				}
-			} catch (e) {
-				console.log('Error al cargar prediccion de jugador:', e);
-			} finally {
-				setLoadingPrediction(false);
-			}
-		};
-
-		loadPlayerPrediction();
-	}, [selectedPlayer?.id]);
-
-	// Cargar estadísticas históricas del jugador
-	useEffect(() => {
-		if (!selectedPlayer?.id || !selectedLeague?.id) {
 			setStatistics([]);
-			return;
-		}
-
-		const loadStatistics = async () => {
-			setLoadingStats(true);
-			try {
-				// El ID del jugador viene como string desde el backend, usarlo tal cual
-				const playerId = selectedPlayer.id;
-				const response = await authenticatedFetch(`/api/statistics/player/${playerId}/matches`);
-
-				if (response.ok) {
-					const jornadas = await response.json();
-					console.log('📊 Jornadas recibidas:', jornadas);
-
-					// Convertir estructura anidada a lista plana
-					let flatStats = [];
-					if (Array.isArray(jornadas)) {
-						jornadas.forEach(jornada => {
-							if (jornada.matches && Array.isArray(jornada.matches)) {
-								jornada.matches.forEach(match => {
-									flatStats.push({
-										...match,
-										// Asegurar que tenemos los campos correctos del backend
-										totalFantasyPoints: match.fantasyPoints || 0,
-										match: { round: match.round }
-									});
-								});
-							}
-						});
-					}
-					console.log('📊 Estadísticas procesadas:', flatStats);
-					setStatistics(flatStats);
-				} else {
-					console.warn('⚠️ Error al cargar estadísticas:', response.status);
-				}
-			} catch (e) {
-				console.error('Error cargando estadísticas:', e);
-			} finally {
-				setLoadingStats(false);
-			}
-		};
-
-		loadStatistics();
-	}, [selectedPlayer?.id, selectedLeague?.id]);
-
-	// Cargar historial de valor de mercado del jugador
-	useEffect(() => {
-		if (!selectedPlayer?.id) {
 			setMarketValueHistory([]);
-			return;
+			setSelectedRound(null);
+			// Auto-load stats for initial tab
+			if (pid) loadStatistics(pid);
 		}
-
-		const loadMarketHistory = async () => {
-			setLoadingMarketValue(true);
-			try {
-				const response = await authenticatedFetch(
-					`/api/v1/players/${selectedPlayer.id}/market-value-history`
-				);
-				if (response.ok) {
-					const data = await response.json();
-					setMarketValueHistory(Array.isArray(data) ? data : []);
-				} else {
-					setMarketValueHistory([]);
-				}
-			} catch (e) {
-				console.error('Error cargando historial de valor de mercado:', e);
-				setMarketValueHistory([]);
-			} finally {
-				setLoadingMarketValue(false);
-			}
-		};
-
-		loadMarketHistory();
 	}, [selectedPlayer?.id]);
+
+	// Load data lazily when tab is selected
+	useEffect(() => {
+		const pid = selectedPlayer?.id;
+		if (!pid) return;
+		if (activeTab === 'stats' && !fetchedRef.current.stats) loadStatistics(pid);
+		if (activeTab === 'market' && !fetchedRef.current.market) loadMarketHistory(pid);
+		if (activeTab === 'prediction' && !fetchedRef.current.prediction) loadPlayerPrediction(pid);
+	}, [activeTab, selectedPlayer?.id]);
+
+	const loadPlayerPrediction = async (pid) => {
+		if (fetchedRef.current.prediction) return;
+		fetchedRef.current.prediction = true;
+		setLoadingPrediction(true);
+		try {
+			const response = await authenticatedFetch(`/api/ml/predict/player/${pid}`);
+			if (response.ok) {
+				const prediction = await response.json();
+				setPlayerPrediction(prediction);
+			}
+		} catch (e) {
+			console.log('Error al cargar prediccion de jugador:', e);
+		} finally {
+			setLoadingPrediction(false);
+		}
+	};
+
+	const loadStatistics = async (pid) => {
+		if (fetchedRef.current.stats) return;
+		fetchedRef.current.stats = true;
+		setLoadingStats(true);
+		try {
+			const fantasyTeamId = selectedPlayer?.fantasyTeamId;
+			const matchesUrl = fantasyTeamId
+				? `/api/statistics/player/${pid}/matches?teamId=${fantasyTeamId}`
+				: `/api/statistics/player/${pid}/matches`;
+			const response = await authenticatedFetch(matchesUrl);
+			if (response.ok) {
+				const payload = await response.json();
+				let flatStats = [];
+				if (Array.isArray(payload)) {
+					payload.forEach(item => {
+						if (item && Array.isArray(item.matches)) {
+							item.matches.forEach(match => {
+								flatStats.push({
+									...match,
+									round: match?.round ?? item?.jornada ?? null,
+									totalFantasyPoints: match?.fantasyPoints || 0,
+									match: { round: match?.round ?? item?.jornada ?? null }
+								});
+							});
+						} else if (item && (item.round != null || item.matchId != null)) {
+							flatStats.push({
+								...item,
+								totalFantasyPoints: item?.fantasyPoints || 0,
+								match: { round: item?.round ?? null }
+							});
+						}
+					});
+				}
+				flatStats = flatStats.filter(s => s?.round != null || s?.matchId != null);
+				setStatistics(flatStats);
+				if (flatStats.length > 0) setSelectedRound(flatStats[0].round);
+			}
+		} catch (e) {
+			console.error('Error cargando estadísticas:', e);
+		} finally {
+			setLoadingStats(false);
+		}
+	};
+
+	const loadMarketHistory = async (pid) => {
+		if (fetchedRef.current.market) return;
+		fetchedRef.current.market = true;
+		setLoadingMarketValue(true);
+		try {
+			const response = await authenticatedFetch(`/api/v1/players/${pid}/market-value-history`);
+			if (response.ok) {
+				const data = await response.json();
+				setMarketValueHistory(Array.isArray(data) ? data : []);
+			} else {
+				setMarketValueHistory([]);
+			}
+		} catch (e) {
+			console.error('Error cargando historial de valor de mercado:', e);
+			setMarketValueHistory([]);
+		} finally {
+			setLoadingMarketValue(false);
+		}
+	};
 
 	const translateFeature = (featureName) => {
 		const translations = {
@@ -161,91 +222,107 @@ function PlayerStats({ navigation }) {
 		return (
 			<View style={styles.container}>
 				<View style={styles.topBar}>
-					<Text style={styles.header}>Estadísticas de Jugador</Text>
+					<Text style={styles.topBarTitle}>Estadísticas de Jugador</Text>
 				</View>
 				<View style={styles.emptyState}>
+					<Text style={styles.emptyIcon}>👤</Text>
 					<Text style={styles.emptyText}>Selecciona un jugador para ver sus estadísticas</Text>
 				</View>
 			</View>
 		);
 	}
 
+	const posColor = positionBadgeColors[selectedPlayer.position] ?? positionBadgeColors.MID;
+
 	return (
 		<View style={styles.container}>
-			<View style={styles.topBar}>
-				<Text style={styles.header}>
-					{selectedPlayer.fullName || selectedPlayer.name}
-				</Text>
-				<TouchableOpacity
-					style={styles.backBtn}
-					onPress={() => navigation.goBack()}
-				>
-					<Text style={styles.backBtnText}>Volver</Text>
-				</TouchableOpacity>
-			</View>
-
-			{/* Tabs */}
-			<View style={styles.tabsContainer}>
-				<TouchableOpacity
-					style={[styles.tab, activeTab === 'stats' && styles.tabActive]}
-					onPress={() => setActiveTab('stats')}
-				>
-					<Text style={[styles.tabText, activeTab === 'stats' && styles.tabTextActive]}>
-						📊 Estadísticas
-					</Text>
-				</TouchableOpacity>
-				<TouchableOpacity
-					style={[styles.tab, activeTab === 'market' && styles.tabActive]}
-					onPress={() => setActiveTab('market')}
-				>
-					<Text style={[styles.tabText, activeTab === 'market' && styles.tabTextActive]}>
-						💰 Valor
-					</Text>
-				</TouchableOpacity>
-				<TouchableOpacity
-					style={[styles.tab, activeTab === 'prediction' && styles.tabActive]}
-					onPress={() => setActiveTab('prediction')}
-				>
-					<Text style={[styles.tabText, activeTab === 'prediction' && styles.tabTextActive]}>
-						🔮 Predicción
-					</Text>
-				</TouchableOpacity>
-			</View>
-
-			<ScrollView style={styles.content}>
-				{/* Información básica del jugador (siempre visible) */}
-				<View style={styles.section}>
-					<View style={styles.playerInfoCard}>
-						<View style={styles.infoRow}>
-							<Text style={styles.infoLabel}>Posición:</Text>
-							<Text style={styles.infoValue}>{selectedPlayer.position}</Text>
-						</View>
-						{selectedPlayer.team && (
-							<View style={styles.infoRow}>
-								<Text style={styles.infoLabel}>Equipo:</Text>
-								<Text style={styles.infoValue}>{selectedPlayer.team.name}</Text>
-							</View>
-						)}
-						{selectedPlayer.marketValue && (
-							<View style={styles.infoRow}>
-								<Text style={styles.infoLabel}>Valor:</Text>
-								<Text style={styles.infoValue}>
-									€{selectedPlayer.marketValue.toLocaleString('es-ES')}
+			{/* ── Hero card ── */}
+			<View style={styles.heroCard}>
+				<View style={[styles.heroPosBar, { backgroundColor: posColor.bar }]} />
+				<View style={styles.heroInner}>
+					<View style={styles.heroAvatarCol}>
+						<Player
+							name={selectedPlayer.fullName ?? selectedPlayer.name}
+							avatar={selectedPlayer.avatarUrl ? { uri: selectedPlayer.avatarUrl } : null}
+							teamId={selectedPlayer.teamId}
+							size={60}
+						/>
+					</View>
+					<View style={styles.heroMidCol}>
+						<Text style={styles.heroName} numberOfLines={2}>
+							{selectedPlayer.fullName ?? selectedPlayer.name}
+						</Text>
+						<View style={styles.heroMetaRow}>
+							<View style={[styles.heroPosBadge, { backgroundColor: posColor.bg, borderColor: posColor.border }]}>
+								<Text style={[styles.heroPosBadgeText, { color: posColor.text }]}>
+									{selectedPlayer.position}
 								</Text>
 							</View>
-						)}
-						{selectedPlayer.totalPoints !== undefined && (
-							<View style={styles.infoRow}>
-								<Text style={styles.infoLabel}>Puntos Totales:</Text>
-								<Text style={styles.infoValue}>{selectedPlayer.totalPoints}</Text>
-							</View>
+							{selectedPlayer.team && (
+								<Text style={styles.heroTeam} numberOfLines={1}>{selectedPlayer.team.name}</Text>
+							)}
+						</View>
+						{selectedPlayer.marketValue != null && (
+							<Text style={styles.heroValue}>
+								€{(selectedPlayer.marketValue / 1_000_000).toFixed(2)}M
+							</Text>
 						)}
 					</View>
+					<View style={styles.heroRightCol}>
+						{selectedPlayer.totalPoints !== undefined && (
+							<View style={[styles.heroPtsBadge, { borderColor: posColor.bar }]}>
+								<Text style={[styles.heroPtsNum, { color: posColor.bar }]}>
+									{selectedPlayer.totalPoints}
+								</Text>
+								<Text style={styles.heroPtsLabel}>pts</Text>
+							</View>
+						)}
+						<TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+							<Text style={styles.backBtnText}>← Volver</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							style={styles.compareBtn}
+							onPress={() => { setComparePlayer(selectedPlayer); navigation.navigate('PlayerComparator'); }}
+							activeOpacity={0.8}
+						>
+							<Ionicons name="git-compare-outline" size={13} color={colors.primary} />
+							<Text style={styles.compareBtnText}>Comparar</Text>
+						</TouchableOpacity>
+					</View>
 				</View>
+			</View>
+
+			{/* ── Tabs ── */}
+			<View style={styles.tabsBar}>
+				{[
+					{ key: 'stats', label: '📊 Stats' },
+					{ key: 'market', label: '💰 Valor' },
+					{ key: 'prediction', label: '🔮 IA' },
+				].map(tab => (
+					<TouchableOpacity
+						key={tab.key}
+						style={[styles.tab, activeTab === tab.key && styles.tabActive]}
+						onPress={() => setActiveTab(tab.key)}
+					>
+						<Text style={[styles.tabText, activeTab === tab.key && styles.tabTextActive]}>
+							{tab.label}
+						</Text>
+					</TouchableOpacity>
+				))}
+			</View>
+
+			<ScrollView style={styles.content} contentContainerStyle={{ paddingBottom: 24 }}>
 
 				{/* TAB: ESTADÍSTICAS */}
 				{activeTab === 'stats' && (
 					<>
+						{loadingStats && (
+							<View style={styles.loadingContainer}>
+								<ActivityIndicator size="small" color={colors.primaryDark} />
+								<Text style={styles.loadingText}>Cargando estadísticas...</Text>
+							</View>
+						)}
+
 						{/* Selector de Jornada */}
 						{statistics.length > 0 && (
 							<View style={styles.section}>
@@ -261,7 +338,7 @@ function PlayerStats({ navigation }) {
 											<Picker.Item
 												key={stat.matchId}
 												label={`Jornada ${stat.round} - vs ${stat.opponent}`}
-												value={stat.round}
+												value={String(stat.round)}
 											/>
 										))}
 									</Picker>
@@ -273,75 +350,95 @@ function PlayerStats({ navigation }) {
 						{selectedRound !== null && (
 							<>
 								{(() => {
-									const selectedStat = statistics.find(s => s.round === selectedRound);
+									const selectedStat = statistics.find(s => String(s.round) === String(selectedRound));
 									if (!selectedStat) return null;
 
 									return (
 										<View style={styles.section}>
 											<Text style={styles.sectionTitle}>
-												Jornada {selectedStat.round} - vs {selectedStat.opponent}
+												Jornada {selectedStat.round} — vs {selectedStat.opponent}
 											</Text>
 
-											{/* Card de resumen general */}
-											<View style={styles.detailCard}>
-												<View style={styles.detailRow}>
-													<Text style={styles.detailLabel}>Resultado:</Text>
-													<Text style={styles.detailValue}>
-														{selectedStat.isHomeTeam ? '🏠' : '🚌'} {selectedStat.goalsScored} - {selectedStat.goalsConceded}
-													</Text>
-												</View>
-												<View style={styles.detailRow}>
-													<Text style={styles.detailLabel}>Minutos:</Text>
-													<Text style={styles.detailValue}>{selectedStat.minutesPlayed}'</Text>
-												</View>
-												<View style={styles.detailRow}>
-													<Text style={styles.detailLabel}>Rating:</Text>
-													<Text style={styles.detailValue}>{selectedStat.rating?.toFixed(2) || '-'}</Text>
-												</View>
-												<View style={styles.detailRow}>
-													<Text style={styles.detailLabel}>Puntos Fantasy:</Text>
-													<Text style={[styles.detailValue, styles.pointsHighlight]}>
-														{selectedStat.fantasyPoints}
-													</Text>
-												</View>
-												{selectedStat.shirtNumber && (
-													<View style={styles.detailRow}>
-														<Text style={styles.detailLabel}>Dorsal:</Text>
-														<Text style={styles.detailValue}>#{selectedStat.shirtNumber}</Text>
+											{/* Resumen general */}
+											<View style={styles.matchSummaryCard}>
+												<View style={styles.matchSummaryTop}>
+													<View style={styles.matchStat}>
+														<Text style={styles.matchStatNum}>{selectedStat.minutesPlayed}'</Text>
+														<Text style={styles.matchStatLabel}>Minutos</Text>
 													</View>
-												)}
-												{selectedStat.isCaptain && (
-													<View style={styles.detailRow}>
-														<Text style={styles.detailLabel}>Capitan:</Text>
-														<Text style={styles.detailValue}>(C)</Text>
+													<View style={styles.matchStat}>
+														<Text style={styles.matchStatNum}>{selectedStat.rating?.toFixed(1) || '-'}</Text>
+														<Text style={styles.matchStatLabel}>Rating</Text>
 													</View>
-												)}
+													<View style={[styles.matchStat, styles.matchStatPts]}>
+														<Text style={[styles.matchStatNum, { color: colors.primaryDark, fontSize: 22 }]}>
+															{selectedStat.fantasyPoints}
+														</Text>
+														<Text style={styles.matchStatLabel}>Pts Fantasy</Text>
+													</View>
+													<View style={styles.matchStat}>
+														<Text style={styles.matchStatNum}>
+															{selectedStat.isHomeTeam ? '🏠' : '✈️'}
+														</Text>
+														<Text style={styles.matchStatLabel}>
+															{selectedStat.goalsScored}-{selectedStat.goalsConceded}
+														</Text>
+													</View>
+												</View>
 											</View>
 
 											{/* Desglose de Puntos Fantasy */}
 											{selectedStat.pointsBreakdown && Object.keys(selectedStat.pointsBreakdown).length > 1 && (
 												<View style={styles.statsSection}>
 													<Text style={styles.statsSubtitle}>Desglose de Puntos Fantasy</Text>
+													{selectedStat.appliedChip && (() => {
+														const CHIP_DISPLAY = {
+															TRIPLE_CAP:     { icon: '👑', name: 'Triple Capitán' },
+															DOUBLE_GOALS:   { icon: '⚽', name: 'Golazo' },
+															SUPER_SAVES:    { icon: '🧤', name: 'Mano Segura' },
+															NO_PENALTY:     { icon: '🟡', name: 'Juego Limpio' },
+															DOUBLE_ASSISTS: { icon: '🎯', name: 'Rey de Asistencias' },
+															DEFENSIVE_WEEK: { icon: '🛡️', name: 'Muralla' },
+															LETHAL_STRIKER: { icon: '🏹', name: 'Delantero Letal' },
+															CREATIVE_MIDS:  { icon: '🎨', name: 'Creador Total' },
+															GOLDEN_MINUTES: { icon: '⏱️', name: 'Minutos de Oro' },
+															BENCH_BOOST:    { icon: '🪑', name: 'Banco Boost' },
+														};
+														const chip = CHIP_DISPLAY[selectedStat.appliedChip];
+														return (
+															<View style={styles.chipBanner}>
+																<Text style={styles.chipBannerText}>
+																	{chip ? `${chip.icon} ${chip.name}` : selectedStat.appliedChip} — chip aplicado en la jornada {selectedStat.round}
+																</Text>
+															</View>
+														);
+													})()}
 													<View style={styles.breakdownContainer}>
 														{Object.entries(selectedStat.pointsBreakdown)
-															.filter(([key]) => key !== 'total')
+															.filter(([key]) => key !== 'total' && key !== 'chipActive')
 															.map(([key, value]) => {
 																const labels = {
 																	minutesPlayed: 'Minutos jugados',
 																	goals: 'Goles',
 																	assists: 'Asistencias',
+																	chancesCreated: 'Ocasiones creadas',
 																	ratingBonus: 'Bonus por rating',
 																	yellowCards: 'Tarjetas amarillas',
 																	redCards: 'Tarjetas rojas',
-																	blocksBonus: 'Bonus bloqueos',
+																	foulsCommitted: 'Faltas cometidas',
+																	defensiveActions: 'Acciones defensivas',
 																	duelsBonus: 'Bonus duelos ganados',
-																	cleanSheet: 'Porteria a cero',
+																	cleanSheet: 'Portería a cero',
+																	cleanSheetMid: 'Portería a cero',
+																	saves: 'Paradas',
 																	hatTrick: 'Bonus hat-trick',
 																	penaltySaved: 'Penalti parado',
 																	doubleAssist: 'Bonus doble asistencia',
 																	tripleAssist: 'Bonus triple asistencia',
 																	multipleGoalsConceded: 'Goles encajados (3+)',
+																	multipleGoalsConcededDef: 'Goles encajados (def)',
 																	penaltyCommitted: 'Penalti cometido',
+																	penaltyMissed: 'Penalti fallado',
 																};
 																return (
 																	<View key={key} style={styles.breakdownRow}>
@@ -368,104 +465,86 @@ function PlayerStats({ navigation }) {
 											{/* Estadísticas ofensivas */}
 											{(selectedStat.goals > 0 || selectedStat.assists > 0 || selectedStat.totalShots > 0) && (
 												<View style={styles.statsSection}>
-													<Text style={styles.statsSubtitle}>⚽ Estadísticas Ofensivas</Text>
+													<Text style={styles.statsSubtitle}>⚽ Ofensivo</Text>
 													<View style={styles.statGrid2Col}>
 														{selectedStat.goals > 0 && (
 															<View style={styles.statItem2Col}>
-																<Text style={styles.statLabel}>Goles</Text>
 																<Text style={styles.statValue}>{selectedStat.goals}</Text>
+																<Text style={styles.statLabel}>Goles</Text>
 															</View>
 														)}
 														{selectedStat.assists > 0 && (
 															<View style={styles.statItem2Col}>
-																<Text style={styles.statLabel}>Asistencias</Text>
 																<Text style={styles.statValue}>{selectedStat.assists}</Text>
+																<Text style={styles.statLabel}>Asistencias</Text>
 															</View>
 														)}
-														{selectedStat.shotsOnTarget !== undefined && selectedStat.shotsOnTarget > 0 && (
+														{selectedStat.shotsOnTarget > 0 && (
 															<View style={styles.statItem2Col}>
-																<Text style={styles.statLabel}>Tiros a puerta</Text>
 																<Text style={styles.statValue}>{selectedStat.shotsOnTarget}</Text>
+																<Text style={styles.statLabel}>Tiros a puerta</Text>
 															</View>
 														)}
-														{selectedStat.chancesCreated !== undefined && selectedStat.chancesCreated > 0 && (
+														{selectedStat.chancesCreated > 0 && (
 															<View style={styles.statItem2Col}>
-																<Text style={styles.statLabel}>Ocasiones</Text>
 																<Text style={styles.statValue}>{selectedStat.chancesCreated}</Text>
+																<Text style={styles.statLabel}>Ocasiones</Text>
 															</View>
 														)}
-														{selectedStat.totalShots !== undefined && selectedStat.totalShots > 0 && (
+														{selectedStat.totalShots > 0 && (
 															<View style={styles.statItem2Col}>
-																<Text style={styles.statLabel}>Tiros</Text>
 																<Text style={styles.statValue}>{selectedStat.totalShots}</Text>
-															</View>
-														)}
-														{selectedStat.penaltyCommitted !== undefined && selectedStat.penaltyCommitted > 0 && (
-															<View style={styles.statItem2Col}>
-																<Text style={styles.statLabel}>Penaltis cometidos</Text>
-																<Text style={styles.statValue}>{selectedStat.penaltyCommitted}</Text>
+																<Text style={styles.statLabel}>Tiros</Text>
 															</View>
 														)}
 													</View>
 												</View>
 											)}
 
-											{/* Estadísticas de pase y posesión */}
-											{(selectedStat.totalPasses !== undefined || selectedStat.accuratePasses !== undefined) && (
+											{/* Pase y posesión */}
+											{(selectedStat.totalPasses != null || selectedStat.accuratePasses != null) && (
 												<View style={styles.statsSection}>
-													<Text style={styles.statsSubtitle}>🎯 Pase y Posesión</Text>
+													<Text style={styles.statsSubtitle}>🎯 Pases</Text>
 													<View style={styles.statGrid2Col}>
-														{selectedStat.totalPasses !== undefined && (
+														{selectedStat.totalPasses != null && (
 															<View style={styles.statItem2Col}>
-																<Text style={styles.statLabel}>Pases</Text>
 																<Text style={styles.statValue}>{selectedStat.totalPasses}</Text>
+																<Text style={styles.statLabel}>Pases</Text>
 															</View>
 														)}
-														{selectedStat.totalPasses !== undefined && selectedStat.accuratePasses !== undefined && (
+														{selectedStat.totalPasses > 0 && selectedStat.accuratePasses != null && (
 															<View style={styles.statItem2Col}>
-																<Text style={styles.statLabel}>Precisión</Text>
 																<Text style={styles.statValue}>
 																	{((selectedStat.accuratePasses / selectedStat.totalPasses) * 100).toFixed(0)}%
 																</Text>
-															</View>
-														)}
-														{selectedStat.penaltyCommitted !== undefined && selectedStat.penaltyCommitted > 0 && (
-															<View style={styles.statItem2Col}>
-																<Text style={styles.statLabel}>Penaltis cometidos</Text>
-																<Text style={styles.statValue}>{selectedStat.penaltyCommitted}</Text>
+																<Text style={styles.statLabel}>Precisión</Text>
 															</View>
 														)}
 													</View>
 												</View>
 											)}
 
-											{/* Estadísticas defensivas */}
-											{(selectedStat.tackles !== undefined || selectedStat.interceptions !== undefined || selectedStat.blocks !== undefined) && (
+											{/* Defensa */}
+											{(selectedStat.tackles > 0 || selectedStat.interceptions > 0 || selectedStat.blocks > 0) && (
 												<View style={styles.statsSection}>
 													<Text style={styles.statsSubtitle}>🛡️ Defensa</Text>
 													<View style={styles.statGrid2Col}>
-														{selectedStat.tackles !== undefined && selectedStat.tackles > 0 && (
+														{selectedStat.tackles > 0 && (
 															<View style={styles.statItem2Col}>
-																<Text style={styles.statLabel}>Entradas</Text>
 																<Text style={styles.statValue}>{selectedStat.tackles}</Text>
+																<Text style={styles.statLabel}>Entradas</Text>
 															</View>
 														)}
-														{selectedStat.interceptions !== undefined && selectedStat.interceptions > 0 && (
+														{selectedStat.interceptions > 0 && (
 															<View style={styles.statItem2Col}>
-																<Text style={styles.statLabel}>Intercepciones</Text>
 																<Text style={styles.statValue}>{selectedStat.interceptions}</Text>
+																<Text style={styles.statLabel}>Intercepciones</Text>
 															</View>
 														)}
-														{selectedStat.blocks !== undefined && selectedStat.blocks > 0 && (
+														{selectedStat.blocks > 0 && (
 															<View style={styles.statItem2Col}>
-																<Text style={styles.statLabel}>Bloqueos</Text>
 																<Text style={styles.statValue}>{selectedStat.blocks}</Text>
-															</View>
-														)}
-														{selectedStat.penaltyCommitted !== undefined && selectedStat.penaltyCommitted > 0 && (
-															<View style={styles.statItem2Col}>
-																<Text style={styles.statLabel}>Penaltis cometidos</Text>
-																<Text style={styles.statValue}>{selectedStat.penaltyCommitted}</Text>
+																<Text style={styles.statLabel}>Bloqueos</Text>
 															</View>
 														)}
 													</View>
@@ -473,91 +552,77 @@ function PlayerStats({ navigation }) {
 											)}
 
 											{/* Duelos */}
-											{(selectedStat.duelsWon !== undefined || selectedStat.duelsLost !== undefined) && (
+											{(selectedStat.duelsWon != null || selectedStat.duelsLost != null) && (
 												<View style={styles.statsSection}>
 													<Text style={styles.statsSubtitle}>⚔️ Duelos</Text>
 													<View style={styles.statGrid2Col}>
-														{selectedStat.duelsWon !== undefined && (
+														{selectedStat.duelsWon != null && (
 															<View style={styles.statItem2Col}>
-																<Text style={styles.statLabel}>Ganados</Text>
 																<Text style={styles.statValue}>{selectedStat.duelsWon}</Text>
+																<Text style={styles.statLabel}>Ganados</Text>
 															</View>
 														)}
-														{selectedStat.duelsLost !== undefined && (
+														{selectedStat.duelsLost != null && (
 															<View style={styles.statItem2Col}>
-																<Text style={styles.statLabel}>Perdidos</Text>
 																<Text style={styles.statValue}>{selectedStat.duelsLost}</Text>
+																<Text style={styles.statLabel}>Perdidos</Text>
 															</View>
 														)}
-														{selectedStat.duelsWon !== undefined && selectedStat.duelsLost !== undefined && (
+														{selectedStat.duelsWon != null && selectedStat.duelsLost != null && (
 															<View style={styles.statItem2Col}>
-																<Text style={styles.statLabel}>Ganador %</Text>
 																<Text style={styles.statValue}>
 																	{selectedStat.duelsWon + selectedStat.duelsLost > 0
 																		? ((selectedStat.duelsWon / (selectedStat.duelsWon + selectedStat.duelsLost)) * 100).toFixed(0) + '%'
 																		: '-'
 																	}
 																</Text>
-															</View>
-														)}
-														{selectedStat.penaltyCommitted !== undefined && selectedStat.penaltyCommitted > 0 && (
-															<View style={styles.statItem2Col}>
-																<Text style={styles.statLabel}>Penaltis cometidos</Text>
-																<Text style={styles.statValue}>{selectedStat.penaltyCommitted}</Text>
+																<Text style={styles.statLabel}>% Ganador</Text>
 															</View>
 														)}
 													</View>
 												</View>
 											)}
 
-											{/* Portero - Estadísticas especiales */}
-											{(selectedStat.saves !== undefined) && (
+											{/* Portero */}
+											{selectedStat.saves != null && (
 												<View style={styles.statsSection}>
-													<Text style={styles.statsSubtitle}>Portero</Text>
+													<Text style={styles.statsSubtitle}>🧤 Portero</Text>
 													<View style={styles.statGrid2Col}>
-														{selectedStat.saves !== undefined && (
+														<View style={styles.statItem2Col}>
+															<Text style={styles.statValue}>{selectedStat.saves || 0}</Text>
+															<Text style={styles.statLabel}>Paradas</Text>
+														</View>
+														{selectedStat.goalsAllowed != null && (
 															<View style={styles.statItem2Col}>
-																<Text style={styles.statLabel}>Paradas</Text>
-																<Text style={styles.statValue}>{selectedStat.saves || '-'}</Text>
-															</View>
-														)}
-														{selectedStat.goalsAllowed !== undefined && (
-															<View style={styles.statItem2Col}>
-																<Text style={styles.statLabel}>Goles Recibidos</Text>
 																<Text style={styles.statValue}>{selectedStat.goalsAllowed}</Text>
-															</View>
-														)}
-														{selectedStat.penaltyCommitted !== undefined && selectedStat.penaltyCommitted > 0 && (
-															<View style={styles.statItem2Col}>
-																<Text style={styles.statLabel}>Penaltis cometidos</Text>
-																<Text style={styles.statValue}>{selectedStat.penaltyCommitted}</Text>
+																<Text style={styles.statLabel}>Goles recibidos</Text>
 															</View>
 														)}
 													</View>
 												</View>
 											)}
 
-											{/* Tarjetas */}
-											{(selectedStat.yellowCards !== undefined || selectedStat.redCards !== undefined || selectedStat.penaltyCommitted > 0) && (
+											{/* Disciplina */}
+											{(selectedStat.yellowCards > 0 || selectedStat.redCards > 0 || selectedStat.penaltyCommitted > 0) && (
 												<View style={styles.statsSection}>
 													<Text style={styles.statsSubtitle}>🟥 Disciplina</Text>
 													<View style={styles.statGrid2Col}>
-														{selectedStat.yellowCards !== undefined && selectedStat.yellowCards > 0 && (
+														{selectedStat.yellowCards > 0 && (
 															<View style={styles.statItem2Col}>
+																<Text style={[styles.statValue, { color: '#D97706' }]}>{selectedStat.yellowCards}</Text>
 																<Text style={styles.statLabel}>Amarillas</Text>
-																<Text style={styles.statValue}>{selectedStat.yellowCards}</Text>
 															</View>
 														)}
-														{selectedStat.redCards !== undefined && selectedStat.redCards > 0 && (
+														{selectedStat.redCards > 0 && (
 															<View style={styles.statItem2Col}>
+																<Text style={[styles.statValue, { color: colors.danger }]}>{selectedStat.redCards}</Text>
 																<Text style={styles.statLabel}>Rojas</Text>
-																<Text style={styles.statValue}>{selectedStat.redCards}</Text>
 															</View>
 														)}
-														{selectedStat.penaltyCommitted !== undefined && selectedStat.penaltyCommitted > 0 && (
+														{selectedStat.penaltyCommitted > 0 && (
 															<View style={styles.statItem2Col}>
-																<Text style={styles.statLabel}>Penaltis cometidos</Text>
-																<Text style={styles.statValue}>{selectedStat.penaltyCommitted}</Text>
+																<Text style={[styles.statValue, { color: colors.danger }]}>{selectedStat.penaltyCommitted}</Text>
+																<Text style={styles.statLabel}>Penaltis</Text>
 															</View>
 														)}
 													</View>
@@ -569,61 +634,45 @@ function PlayerStats({ navigation }) {
 							</>
 						)}
 
-						{/* Resumen general de toda la temporada */}
+						{/* Resumen de temporada */}
 						{statistics.length > 0 && (
 							<View style={styles.section}>
 								<Text style={styles.sectionTitle}>📈 Resumen de Temporada</Text>
-								<View style={styles.summaryCard}>
-									<View style={styles.summaryRow}>
-										<Text style={styles.summaryLabel}>Partidos Jugados:</Text>
-										<Text style={styles.summaryValue}>{statistics.length}</Text>
+								<View style={styles.seasonGrid}>
+									<View style={styles.seasonStatBox}>
+										<Text style={styles.seasonStatNum}>{statistics.length}</Text>
+										<Text style={styles.seasonStatLabel}>Partidos</Text>
 									</View>
-									<View style={styles.summaryRow}>
-										<Text style={styles.summaryLabel}>Rating Promedio:</Text>
-										<Text style={styles.summaryValue}>
-											{(statistics.reduce((sum, s) => sum + (s.rating || 0), 0) / statistics.length).toFixed(2)}
+									<View style={styles.seasonStatBox}>
+										<Text style={styles.seasonStatNum}>
+											{(statistics.reduce((s, x) => s + (x.rating || 0), 0) / statistics.length).toFixed(1)}
 										</Text>
+										<Text style={styles.seasonStatLabel}>Rating medio</Text>
 									</View>
-									<View style={styles.summaryRow}>
-										<Text style={styles.summaryLabel}>Goles Totales:</Text>
-										<Text style={styles.summaryValue}>
-											{statistics.reduce((sum, s) => sum + (s.goals || 0), 0)}
+									<View style={styles.seasonStatBox}>
+										<Text style={styles.seasonStatNum}>
+											{statistics.reduce((s, x) => s + (x.goals || 0), 0)}
 										</Text>
+										<Text style={styles.seasonStatLabel}>Goles</Text>
 									</View>
-									<View style={styles.summaryRow}>
-										<Text style={styles.summaryLabel}>Asistencias Totales:</Text>
-										<Text style={styles.summaryValue}>
-											{statistics.reduce((sum, s) => sum + (s.assists || 0), 0)}
+									<View style={styles.seasonStatBox}>
+										<Text style={styles.seasonStatNum}>
+											{statistics.reduce((s, x) => s + (x.assists || 0), 0)}
 										</Text>
+										<Text style={styles.seasonStatLabel}>Asistencias</Text>
 									</View>
-									<View style={styles.summaryRow}>
-										<Text style={styles.summaryLabel}>Minutos Totales:</Text>
-										<Text style={styles.summaryValue}>
-											{statistics.reduce((sum, s) => sum + (s.minutesPlayed || 0), 0)}
+									<View style={styles.seasonStatBox}>
+										<Text style={styles.seasonStatNum}>
+											{statistics.reduce((s, x) => s + (x.minutesPlayed || 0), 0)}
 										</Text>
+										<Text style={styles.seasonStatLabel}>Minutos</Text>
 									</View>
-									<View style={styles.summaryRow}>
-										<Text style={styles.summaryLabel}>Puntos Acumulados:</Text>
-										<Text style={[styles.summaryValue, styles.summaryValueBold]}>
-											{statistics.reduce((sum, s) => sum + (s.fantasyPoints || 0), 0)}
+									<View style={[styles.seasonStatBox, { borderColor: colors.primaryDark }]}>
+										<Text style={[styles.seasonStatNum, { color: colors.primaryDark }]}>
+											{statistics.reduce((s, x) => s + (x.fantasyPoints || 0), 0)}
 										</Text>
+										<Text style={[styles.seasonStatLabel, { color: colors.primaryDark, fontWeight: '700' }]}>Pts totales</Text>
 									</View>
-									{statistics.reduce((sum, s) => sum + (s.penaltyCommitted || 0), 0) > 0 && (
-										<View style={styles.summaryRow}>
-											<Text style={styles.summaryLabel}>Penaltis Cometidos:</Text>
-											<Text style={styles.summaryValue}>
-												{statistics.reduce((sum, s) => sum + (s.penaltyCommitted || 0), 0)}
-											</Text>
-										</View>
-									)}
-									{statistics.filter(s => s.isCaptain).length > 0 && (
-										<View style={styles.summaryRow}>
-											<Text style={styles.summaryLabel}>Veces Capitan:</Text>
-											<Text style={styles.summaryValue}>
-												{statistics.filter(s => s.isCaptain).length}
-											</Text>
-										</View>
-									)}
 								</View>
 							</View>
 						)}
@@ -645,75 +694,67 @@ function PlayerStats({ navigation }) {
 				{activeTab === 'market' && (
 					<>
 						{loadingMarketValue ? (
-							<View style={styles.section}>
-								<View style={styles.loadingContainer}>
-									<ActivityIndicator size="small" color="#1a5c3a" />
-									<Text style={styles.loadingText}>Cargando historial de valor...</Text>
-								</View>
+							<View style={styles.loadingContainer}>
+								<ActivityIndicator size="small" color={colors.primaryDark} />
+								<Text style={styles.loadingText}>Cargando historial de valor...</Text>
 							</View>
 						) : marketValueHistory.length > 0 ? (
 							<>
-								{/* Valor actual y variación total */}
+								{/* Resumen valor */}
 								<View style={styles.section}>
-									<View style={styles.playerInfoCard}>
-										<View style={styles.infoRow}>
-											<Text style={styles.infoLabel}>Valor actual:</Text>
-											<Text style={styles.infoValue}>
-												€{(marketValueHistory[marketValueHistory.length - 1].newValue / 1_000_000).toFixed(2)}M
+									<View style={styles.mvSummaryRow}>
+										<View style={styles.mvSummaryBox}>
+											<Text style={styles.mvSummaryNum}>
+												€{((selectedPlayer.marketValue ?? 0) / 1_000_000).toFixed(2)}M
 											</Text>
+											<Text style={styles.mvSummaryLabel}>Valor actual</Text>
 										</View>
-										<View style={styles.infoRow}>
-											<Text style={styles.infoLabel}>Variación total:</Text>
-											{(() => {
-												const totalChange = marketValueHistory[marketValueHistory.length - 1].newValue
-													- marketValueHistory[0].previousValue;
-												return (
-													<Text style={[
-														styles.infoValue,
-														totalChange >= 0 ? styles.mvPositive : styles.mvNegative
-													]}>
-														{totalChange >= 0 ? '+' : ''}{(totalChange / 1_000_000).toFixed(2)}M
+										{(() => {
+											const first = marketValueHistory[0].previousValue ?? marketValueHistory[0].newValue ?? 0;
+											const last = selectedPlayer.marketValue ?? 0;
+											const totalChange = last - first;
+											const isPos = totalChange >= 0;
+											return (
+												<View style={[styles.mvSummaryBox, { borderColor: isPos ? '#16A34A' : '#EF4444' }]}>
+													<Text style={[styles.mvSummaryNum, { color: isPos ? '#16A34A' : '#EF4444' }]}>
+														{isPos ? '+' : ''}{(totalChange / 1_000_000).toFixed(2)}M
 													</Text>
-												);
-											})()}
+													<Text style={styles.mvSummaryLabel}>Variación total</Text>
+												</View>
+											);
+										})()}
+										<View style={styles.mvSummaryBox}>
+											<Text style={styles.mvSummaryNum}>{marketValueHistory.length}</Text>
+											<Text style={styles.mvSummaryLabel}>Jornadas</Text>
 										</View>
 									</View>
 								</View>
 
-								{/* Gráfica de línea */}
+								{/* Gráfico */}
 								<View style={styles.section}>
-									<Text style={styles.sectionTitle}>📈 Evolución del Valor de Mercado</Text>
-									<LineChartComponent
-										title="Valor de mercado por jornada (M€)"
-										data={{
-											labels: marketValueHistory.map(h => `J${h.gameweek}`),
-											datasets: [{
-												data: marketValueHistory.map(h =>
-													parseFloat((h.newValue / 1_000_000).toFixed(2))
-												)
-											}]
-										}}
-									/>
+									<Text style={styles.sectionTitle}>📈 Evolución del Valor</Text>
+									<View style={styles.chartContainer}>
+										<MarketValueChart data={marketValueHistory} />
+										<Text style={styles.chartLegend}>
+											🟢 Subida · 🔴 Bajada · ⬜ Valor inicial
+										</Text>
+									</View>
 								</View>
 
-								{/* Lista detallada por jornada */}
+								{/* Lista detallada */}
 								<View style={styles.section}>
 									<Text style={styles.sectionTitle}>🗒️ Detalle por Jornada</Text>
 									{[...marketValueHistory].reverse().map(h => {
-										const isPositive = h.changeAmount >= 0;
+										const changeAmount = h.changeAmount ?? 0;
+										const isPositive = changeAmount >= 0;
 										return (
 											<View key={h.gameweek} style={styles.mvHistoryRow}>
-												<Text style={styles.mvHistoryGameweek}>Jornada {h.gameweek}</Text>
+												<Text style={styles.mvHistoryGameweek}>J{h.gameweek}</Text>
 												<Text style={styles.mvHistoryValue}>
-													€{(h.newValue / 1_000_000).toFixed(2)}M
+													€{((h.newValue ?? 0) / 1_000_000).toFixed(2)}M
 												</Text>
-												<Text style={[
-													styles.mvHistoryDelta,
-													isPositive ? styles.mvPositive : styles.mvNegative
-												]}>
-													{isPositive ? '▲' : '▼'} {isPositive ? '+' : ''}
-													{(h.changeAmount / 1_000_000).toFixed(2)}M
-													({isPositive ? '+' : ''}{h.changePercentage.toFixed(2)}%)
+												<Text style={[styles.mvHistoryDelta, isPositive ? styles.mvPositive : styles.mvNegative]}>
+													{isPositive ? '▲ +' : '▼ '}{(changeAmount / 1_000_000).toFixed(2)}M
 												</Text>
 											</View>
 										);
@@ -739,68 +780,58 @@ function PlayerStats({ navigation }) {
 					<>
 						{(playerPrediction || loadingPrediction) ? (
 							<View style={styles.section}>
-								<Text style={styles.sectionTitle}>🔮 Predicción del ML</Text>
+								<Text style={styles.sectionTitle}>🔮 Predicción</Text>
 
 								{loadingPrediction ? (
 									<View style={styles.loadingContainer}>
-										<ActivityIndicator size="small" color="#1a5c3a" />
+										<ActivityIndicator size="small" color={colors.primaryDark} />
 										<Text style={styles.loadingText}>Generando predicción...</Text>
 									</View>
 								) : playerPrediction ? (
 									<>
-										{/* Puntos predichos - Destacado */}
 										<View style={styles.predictionCard}>
-											<Text style={styles.predictionLabel}>PUNTOS PREDICHOS PARA PRÓXIMO PARTIDO</Text>
+											<Text style={styles.predictionLabel}>PUNTOS PREDICHOS — PRÓXIMO PARTIDO</Text>
 											<Text style={styles.predictionValue}>
 												{playerPrediction.predictedPoints?.toFixed(1) || '0.0'}
 											</Text>
-											{playerPrediction.confidenceInterval && playerPrediction.confidenceInterval.length === 2 && (
+											{playerPrediction.confidenceInterval?.length === 2 && (
 												<Text style={styles.predictionRange}>
-													Intervalo de confianza: {playerPrediction.confidenceInterval[0]}-{playerPrediction.confidenceInterval[1]} puntos
+													Rango estimado: {playerPrediction.confidenceInterval[0]}–{playerPrediction.confidenceInterval[1]} pts
 												</Text>
 											)}
 										</View>
 
-										{/* Factores clave */}
 										{playerPrediction.featuresImportance && Object.keys(playerPrediction.featuresImportance).length > 0 && (
-											<View style={styles.section}>
-												<Text style={styles.sectionTitle}>⭐ Factores Más Importantes</Text>
-												<View style={styles.featuresSection}>
-													{Object.entries(playerPrediction.featuresImportance)
-														.sort((a, b) => b[1] - a[1])
-														.map(([feature, importance]) => (
-															<View key={feature} style={styles.featureRow}>
-																<Text style={styles.featureName}>
-																	{translateFeature(feature)}
-																</Text>
-																<View style={styles.importanceBarContainer}>
-																	<View
-																		style={[
-																			styles.importanceFill,
-																			{ width: `${Math.min(importance * 100, 100)}%` }
-																		]}
-																	/>
-																</View>
-																<Text style={styles.importanceValue}>
-																	{(importance * 100).toFixed(1)}%
-																</Text>
+											<View style={styles.statsSection}>
+												<Text style={styles.statsSubtitle}>⭐ Factores clave</Text>
+												{Object.entries(playerPrediction.featuresImportance)
+													.sort((a, b) => b[1] - a[1])
+													.map(([feature, importance]) => (
+														<View key={feature} style={styles.featureRow}>
+															<Text style={styles.featureName}>
+																{translateFeature(feature)}
+															</Text>
+															<View style={styles.importanceBarContainer}>
+																<View
+																	style={[
+																		styles.importanceFill,
+																		{ width: `${Math.min(importance * 100, 100)}%` }
+																	]}
+																/>
 															</View>
-														))}
-												</View>
+															<Text style={styles.importanceValue}>
+																{(importance * 100).toFixed(1)}%
+															</Text>
+														</View>
+													))}
 											</View>
 										)}
 
-										{/* Información sobre la predicción */}
-										<View style={styles.section}>
-											<View style={styles.infoBox}>
-												<Text style={styles.infoBoxTitle}>ℹ️ Acerca de esta predicción</Text>
-												<Text style={styles.infoBoxText}>
-													Esta predicción se basa en un modelo Random Forest entrenado con datos históricos del jugador. Considera métricas como rating, minutos jugados, goles, asistencias y forma reciente.
-												</Text>
-												<Text style={styles.infoBoxText}>
-													El rango de confianza (95%) indica la variabilidad esperada en la predicción.
-												</Text>
-											</View>
+										<View style={styles.infoBox}>
+											<Text style={styles.infoBoxTitle}>ℹ️ Acerca de esta predicción</Text>
+											<Text style={styles.infoBoxText}>
+												Predicción basada en la media ponderada de las últimas jornadas del jugador, dando más peso a las más recientes. Considera el factor local/visitante y la dificultad del rival.
+											</Text>
 										</View>
 									</>
 								) : null}
@@ -810,7 +841,7 @@ function PlayerStats({ navigation }) {
 								<View style={styles.warningCard}>
 									<Text style={styles.warningTitle}>⚠️ Predicción no disponible</Text>
 									<Text style={styles.warningText}>
-										Este jugador necesita al menos 3 partidos con estadísticas para generar una predicción del ML.
+										Este jugador necesita al menos 2 partidos con estadísticas para generar una predicción.
 									</Text>
 								</View>
 							</View>
@@ -825,469 +856,336 @@ function PlayerStats({ navigation }) {
 export default withAuth(PlayerStats);
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: '#ffffff'
+	container: { flex: 1, backgroundColor: colors.bgApp },
+
+	// ── Hero card ──────────────────────────────────────────────────────────────
+	heroCard: {
+		backgroundColor: colors.bgCard,
+		borderBottomWidth: 1,
+		borderBottomColor: colors.border,
+		elevation: 3,
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.08,
+		shadowRadius: 4,
 	},
-	topBar: {
+	heroPosBar: {
+		height: 4,
+		width: '100%',
+	},
+	heroInner: {
 		flexDirection: 'row',
-		justifyContent: 'space-between',
 		alignItems: 'center',
-		paddingHorizontal: 16,
+		paddingHorizontal: spacing.lg,
 		paddingVertical: 12,
-		backgroundColor: '#1a5c3a'
+		gap: 12,
 	},
-	header: {
-		color: '#fff',
-		fontWeight: '800',
-		fontSize: 18,
-		flex: 1
+	heroAvatarCol: {
+		alignItems: 'center',
+	},
+	heroMidCol: {
+		flex: 1,
+		gap: 4,
+	},
+	heroName: {
+		fontSize: fontSize.md,
+		fontWeight: fontWeight.extrabold,
+		color: colors.textPrimary,
+		lineHeight: 20,
+	},
+	heroMetaRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 6,
+		flexWrap: 'wrap',
+	},
+	heroPosBadge: {
+		paddingHorizontal: 7,
+		paddingVertical: 2,
+		borderRadius: radius.pill,
+		borderWidth: 1,
+	},
+	heroPosBadgeText: {
+		fontSize: 10,
+		fontWeight: fontWeight.extrabold,
+		letterSpacing: 0.5,
+	},
+	heroTeam: {
+		fontSize: fontSize.xs,
+		color: colors.textSecondary,
+		fontWeight: fontWeight.semibold,
+		flexShrink: 1,
+	},
+	heroValue: {
+		fontSize: fontSize.xs,
+		color: colors.textMuted,
+		fontWeight: fontWeight.semibold,
+		marginTop: 2,
+	},
+	heroRightCol: {
+		alignItems: 'flex-end',
+		gap: 8,
+	},
+	heroPtsBadge: {
+		alignItems: 'center',
+		borderWidth: 2,
+		borderRadius: 10,
+		paddingHorizontal: 10,
+		paddingVertical: 4,
+		minWidth: 56,
+	},
+	heroPtsNum: {
+		fontSize: 20,
+		fontWeight: fontWeight.black,
+		lineHeight: 24,
+	},
+	heroPtsLabel: {
+		fontSize: 9,
+		color: colors.textMuted,
+		fontWeight: fontWeight.bold,
+		letterSpacing: 0.5,
 	},
 	backBtn: {
-		backgroundColor: '#111827',
-		paddingVertical: 8,
-		paddingHorizontal: 16,
-		borderRadius: 8
+		backgroundColor: colors.bgSubtle,
+		paddingVertical: 5,
+		paddingHorizontal: 10,
+		borderRadius: radius.pill,
+		borderWidth: 1,
+		borderColor: colors.border,
 	},
-	backBtnText: {
-		color: '#fff',
-		fontWeight: '700',
-		fontSize: 14
-	},
-	// Tabs
-	tabsContainer: {
+	backBtnText: { color: colors.textSecondary, fontWeight: fontWeight.bold, fontSize: 11 },
+	compareBtn: {
 		flexDirection: 'row',
-		borderBottomWidth: 2,
-		borderBottomColor: '#e5e7eb',
-		backgroundColor: '#ffffff'
+		alignItems: 'center',
+		gap: 3,
+		backgroundColor: colors.successBg,
+		paddingVertical: 5,
+		paddingHorizontal: 10,
+		borderRadius: radius.pill,
+		borderWidth: 1,
+		borderColor: colors.primaryMuted,
+		marginTop: 4,
+	},
+	compareBtnText: { color: colors.primary, fontWeight: fontWeight.bold, fontSize: 11 },
+
+	// ── Top bar (no-player state) ──────────────────────────────────────────────
+	topBar: {
+		paddingHorizontal: spacing.lg,
+		paddingVertical: spacing.md,
+		backgroundColor: colors.primaryDeep,
+	},
+	topBarTitle: { color: colors.textInverse, fontWeight: fontWeight.extrabold, fontSize: fontSize.lg },
+
+	// ── Tab bar ───────────────────────────────────────────────────────────────
+	tabsBar: {
+		flexDirection: 'row',
+		backgroundColor: colors.bgCard,
+		paddingHorizontal: 12,
+		paddingVertical: 8,
+		gap: 6,
+		borderBottomWidth: 1,
+		borderBottomColor: colors.border,
 	},
 	tab: {
 		flex: 1,
-		paddingVertical: 16,
-		paddingHorizontal: 12,
 		alignItems: 'center',
-		borderBottomWidth: 3,
-		borderBottomColor: 'transparent'
+		paddingVertical: 7,
+		borderRadius: radius.pill,
+		backgroundColor: colors.bgSubtle,
 	},
 	tabActive: {
-		borderBottomColor: '#1a5c3a'
+		backgroundColor: colors.primaryDeep,
 	},
 	tabText: {
-		fontSize: 14,
-		fontWeight: '600',
-		color: '#9ca3af'
+		fontSize: 12,
+		fontWeight: fontWeight.semibold,
+		color: colors.textMuted,
 	},
 	tabTextActive: {
-		color: '#1a5c3a',
-		fontWeight: '700'
+		color: '#fff',
+		fontWeight: fontWeight.bold,
 	},
-	content: {
-		flex: 1
-	},
-	section: {
-		padding: 16,
-		borderBottomWidth: 1,
-		borderBottomColor: '#e5e7eb'
-	},
-	sectionTitle: {
-		fontSize: 16,
-		fontWeight: '800',
-		color: '#111827',
-		marginBottom: 12
-	},
-	subsectionTitle: {
-		fontSize: 14,
-		fontWeight: '700',
-		color: '#374151',
-		marginBottom: 8,
-		marginTop: 12
-	},
-	playerInfoCard: {
-		backgroundColor: '#f9fafb',
-		borderRadius: 12,
-		padding: 16,
+
+	// ── Content & sections ────────────────────────────────────────────────────
+	content: { flex: 1 },
+	section: { padding: spacing.lg, borderBottomWidth: 1, borderBottomColor: colors.border },
+	sectionTitle: { fontSize: fontSize.sm, fontWeight: fontWeight.extrabold, color: colors.textPrimary, marginBottom: spacing.md },
+	loadingContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: spacing.xl },
+	loadingText: { marginLeft: spacing.md, fontSize: fontSize.sm, color: colors.textMuted, fontWeight: fontWeight.semibold },
+	pickerContainer: { borderRadius: radius.md, borderWidth: 1, borderColor: colors.border, overflow: 'hidden', backgroundColor: colors.bgSubtle },
+	picker: { height: 50, color: colors.textPrimary },
+
+	// ── Match summary card ────────────────────────────────────────────────────
+	matchSummaryCard: {
+		backgroundColor: colors.bgSubtle,
+		borderRadius: radius.lg,
 		borderWidth: 1,
-		borderColor: '#e5e7eb'
-	},
-	infoRow: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		paddingVertical: 8,
-		borderBottomWidth: 1,
-		borderBottomColor: '#e5e7eb'
-	},
-	infoLabel: {
-		fontSize: 14,
-		color: '#6b7280',
-		fontWeight: '600'
-	},
-	infoValue: {
-		fontSize: 14,
-		color: '#111827',
-		fontWeight: '700'
-	},
-	loadingContainer: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'center',
-		padding: 20
-	},
-	loadingText: {
-		marginLeft: 12,
-		fontSize: 13,
-		color: '#6b7280',
-		fontWeight: '600'
-	},
-	// ESTADÍSTICAS TAB
-	statsContainer: {
-		gap: 8
-	},
-	pickerContainer: {
-		borderRadius: 8,
-		borderWidth: 1,
-		borderColor: '#e5e7eb',
+		borderColor: colors.border,
 		overflow: 'hidden',
-		backgroundColor: '#f9fafb'
+		marginBottom: spacing.lg,
 	},
-	picker: {
-		height: 50,
-		color: '#111827'
-	},
-	detailCard: {
-		backgroundColor: '#f9fafb',
-		borderRadius: 8,
-		padding: 12,
-		borderWidth: 1,
-		borderColor: '#e5e7eb',
-		marginBottom: 16
-	},
-	detailRow: {
+	matchSummaryTop: {
 		flexDirection: 'row',
-		justifyContent: 'space-between',
-		paddingVertical: 8,
-		borderBottomWidth: 1,
-		borderBottomColor: '#e5e7eb'
 	},
-	detailLabel: {
-		fontSize: 13,
-		fontWeight: '600',
-		color: '#6b7280'
-	},
-	detailValue: {
-		fontSize: 13,
-		fontWeight: '700',
-		color: '#111827'
-	},
-	pointsHighlight: {
-		color: '#1a5c3a',
-		fontSize: 16
-	},
-	// Breakdown de puntos
-	breakdownContainer: {
-		backgroundColor: '#f9fafb',
-		borderRadius: 8,
-		padding: 12,
-		borderWidth: 1,
-		borderColor: '#e5e7eb'
-	},
-	breakdownRow: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
+	matchStat: {
+		flex: 1,
 		alignItems: 'center',
-		paddingVertical: 6,
-		borderBottomWidth: 1,
-		borderBottomColor: '#f3f4f6'
+		paddingVertical: 14,
+		borderRightWidth: 1,
+		borderRightColor: colors.border,
 	},
-	breakdownLabel: {
-		fontSize: 13,
-		fontWeight: '600',
-		color: '#374151'
+	matchStatPts: {
+		backgroundColor: '#F0FDF4',
 	},
-	breakdownValue: {
-		fontSize: 14,
-		fontWeight: '700'
-	},
-	breakdownPositive: {
-		color: '#16a34a'
-	},
-	breakdownNegative: {
-		color: '#dc2626'
-	},
-	breakdownTotalRow: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		paddingTop: 10,
-		marginTop: 4
-	},
-	breakdownTotalLabel: {
-		fontSize: 14,
-		fontWeight: '800',
-		color: '#111827'
-	},
-	breakdownTotalValue: {
+	matchStatNum: {
 		fontSize: 18,
-		fontWeight: '900',
-		color: '#1a5c3a'
+		fontWeight: fontWeight.extrabold,
+		color: colors.textPrimary,
 	},
-	statsSection: {
-		marginBottom: 16
+	matchStatLabel: {
+		fontSize: 10,
+		color: colors.textMuted,
+		fontWeight: fontWeight.semibold,
+		marginTop: 2,
 	},
+
+	// ── Stat grid ─────────────────────────────────────────────────────────────
+	statsSection: { marginBottom: spacing.lg },
 	statsSubtitle: {
-		fontSize: 13,
-		fontWeight: '700',
-		color: '#374151',
-		marginBottom: 10,
-		paddingHorizontal: 4
+		fontSize: fontSize.xs,
+		fontWeight: fontWeight.bold,
+		color: colors.textSecondary,
+		marginBottom: spacing.sm,
+		textTransform: 'uppercase',
+		letterSpacing: 0.5,
 	},
-	statGrid2Col: {
-		flexDirection: 'row',
-		flexWrap: 'wrap',
-		gap: 8
-	},
+	statGrid2Col: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
 	statItem2Col: {
 		width: '48%',
-		backgroundColor: '#f9fafb',
-		borderRadius: 6,
-		padding: 10,
+		backgroundColor: colors.bgSubtle,
+		borderRadius: radius.md,
+		padding: spacing.md,
 		borderWidth: 1,
-		borderColor: '#e5e7eb',
-		alignItems: 'center'
-	},
-	statLabel: {
-		fontSize: 10,
-		color: '#6b7280',
-		fontWeight: '600',
-		marginBottom: 6
-	},
-	statValue: {
-		fontSize: 16,
-		fontWeight: '700',
-		color: '#1a5c3a'
-	},
-	statCard: {
-		backgroundColor: '#f9fafb',
-		borderRadius: 8,
-		padding: 12,
-		borderWidth: 1,
-		borderColor: '#e5e7eb'
-	},
-	statHeader: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
+		borderColor: colors.border,
 		alignItems: 'center',
-		marginBottom: 12
 	},
-	statMatchInfo: {
-		fontSize: 12,
-		fontWeight: '700',
-		color: '#374151'
-	},
-	statPoints: {
-		fontSize: 14,
-		fontWeight: '800',
-		color: '#1a5c3a'
-	},
-	statGrid: {
+	statValue: { fontSize: fontSize.lg, fontWeight: fontWeight.extrabold, color: colors.primaryDark },
+	statLabel: { fontSize: fontSize.xs, color: colors.textMuted, fontWeight: fontWeight.semibold, marginTop: 2 },
+
+	// ── Season grid ───────────────────────────────────────────────────────────
+	seasonGrid: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
-		gap: 8
+		gap: spacing.sm,
 	},
-	statGridItem: {
+	seasonStatBox: {
 		width: '48%',
-		backgroundColor: '#ffffff',
-		borderRadius: 6,
-		padding: 8,
+		backgroundColor: colors.bgSubtle,
+		borderRadius: radius.md,
+		padding: 14,
 		borderWidth: 1,
-		borderColor: '#e5e7eb',
-		alignItems: 'center'
+		borderColor: colors.border,
+		alignItems: 'center',
 	},
-	statGridLabel: {
+	seasonStatNum: {
+		fontSize: 22,
+		fontWeight: fontWeight.black,
+		color: colors.textPrimary,
+	},
+	seasonStatLabel: {
+		fontSize: fontSize.xs,
+		color: colors.textMuted,
+		fontWeight: fontWeight.semibold,
+		marginTop: 3,
+	},
+
+	// ── Points breakdown ──────────────────────────────────────────────────────
+	chipBanner: { backgroundColor: '#d97706', borderRadius: radius.sm, paddingHorizontal: spacing.sm, paddingVertical: 5, marginBottom: spacing.sm, alignSelf: 'flex-start' },
+	chipBannerText: { fontSize: fontSize.xs, fontWeight: fontWeight.bold, color: '#fff' },
+	breakdownContainer: { backgroundColor: colors.bgSubtle, borderRadius: radius.md, padding: spacing.md, borderWidth: 1, borderColor: colors.border },
+	breakdownRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colors.border },
+	breakdownLabel: { fontSize: fontSize.sm, fontWeight: fontWeight.semibold, color: colors.textSecondary },
+	breakdownValue: { fontSize: fontSize.sm, fontWeight: fontWeight.bold },
+	breakdownPositive: { color: colors.primary },
+	breakdownNegative: { color: colors.danger },
+	breakdownTotalRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 10, marginTop: 4 },
+	breakdownTotalLabel: { fontSize: fontSize.sm, fontWeight: fontWeight.extrabold, color: colors.textPrimary },
+	breakdownTotalValue: { fontSize: fontSize.lg, fontWeight: fontWeight.black, color: colors.primaryDark },
+
+	// ── Market value tab ──────────────────────────────────────────────────────
+	mvSummaryRow: {
+		flexDirection: 'row',
+		gap: spacing.sm,
+	},
+	mvSummaryBox: {
+		flex: 1,
+		backgroundColor: colors.bgSubtle,
+		borderRadius: radius.md,
+		padding: 12,
+		alignItems: 'center',
+		borderWidth: 1,
+		borderColor: colors.border,
+	},
+	mvSummaryNum: {
+		fontSize: 15,
+		fontWeight: fontWeight.extrabold,
+		color: colors.textPrimary,
+	},
+	mvSummaryLabel: {
 		fontSize: 10,
-		color: '#6b7280',
-		fontWeight: '600',
-		marginBottom: 4
+		color: colors.textMuted,
+		fontWeight: fontWeight.semibold,
+		marginTop: 3,
 	},
-	statGridValue: {
-		fontSize: 16,
-		fontWeight: '700',
-		color: '#1a5c3a'
-	},
-	// RESUMEN
-	summaryCard: {
-		backgroundColor: '#f9fafb',
-		borderRadius: 12,
-		padding: 16,
+	chartContainer: {
+		backgroundColor: colors.bgSubtle,
+		borderRadius: radius.lg,
+		padding: 12,
 		borderWidth: 1,
-		borderColor: '#e5e7eb'
+		borderColor: colors.border,
 	},
-	summaryRow: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		paddingVertical: 10,
-		borderBottomWidth: 1,
-		borderBottomColor: '#e5e7eb'
+	chartLegend: {
+		fontSize: 10,
+		color: colors.textMuted,
+		textAlign: 'center',
+		marginTop: 4,
 	},
-	summaryLabel: {
-		fontSize: 13,
-		fontWeight: '600',
-		color: '#6b7280'
-	},
-	summaryValue: {
-		fontSize: 14,
-		fontWeight: '700',
-		color: '#111827'
-	},
-	summaryValueBold: {
-		color: '#1a5c3a',
-		fontSize: 16
-	},
-	// PREDICCIÓN TAB
+	mvHistoryRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: spacing.sm, borderBottomWidth: 1, borderBottomColor: colors.border },
+	mvHistoryGameweek: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, color: colors.textSecondary, flex: 1 },
+	mvHistoryValue: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, color: colors.textPrimary, width: 80, textAlign: 'right' },
+	mvHistoryDelta: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, width: 100, textAlign: 'right' },
+	mvPositive: { color: '#16A34A' },
+	mvNegative: { color: '#EF4444' },
+
+	// ── Prediction tab ────────────────────────────────────────────────────────
 	predictionCard: {
-		backgroundColor: '#f0fdf4',
-		borderRadius: 12,
-		padding: 20,
+		backgroundColor: '#F0FDF4',
+		borderRadius: radius.lg,
+		padding: spacing.xl,
 		alignItems: 'center',
-		borderWidth: 2,
-		borderColor: '#1a5c3a',
-		marginBottom: 16
+		borderWidth: 1.5,
+		borderColor: '#BBF7D0',
+		marginBottom: spacing.lg,
 	},
-	predictionLabel: {
-		fontSize: 11,
-		color: '#6b7280',
-		fontWeight: '700',
-		letterSpacing: 1,
-		marginBottom: 8
-	},
-	predictionValue: {
-		fontSize: 56,
-		fontWeight: '900',
-		color: '#1a5c3a',
-		marginVertical: 8
-	},
-	predictionRange: {
-		fontSize: 12,
-		color: '#6b7280',
-		marginTop: 8,
-		fontWeight: '500'
-	},
-	featuresSection: {
-		marginTop: 12
-	},
-	featureRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		paddingVertical: 10,
-		borderBottomWidth: 1,
-		borderBottomColor: '#f3f4f6'
-	},
-	featureName: {
-		width: 120,
-		fontSize: 12,
-		fontWeight: '600',
-		color: '#374151'
-	},
-	importanceBarContainer: {
-		flex: 1,
-		height: 10,
-		backgroundColor: '#e5e7eb',
-		borderRadius: 5,
-		overflow: 'hidden',
-		marginHorizontal: 8
-	},
-	importanceFill: {
-		height: '100%',
-		backgroundColor: '#1a5c3a',
-		borderRadius: 5
-	},
-	importanceValue: {
-		fontSize: 11,
-		fontWeight: '700',
-		color: '#1a5c3a',
-		width: 45,
-		textAlign: 'right'
-	},
-	infoBox: {
-		backgroundColor: '#eff6ff',
-		borderRadius: 12,
-		padding: 16,
-		borderWidth: 1,
-		borderColor: '#bfdbfe'
-	},
-	infoBoxTitle: {
-		fontSize: 14,
-		fontWeight: '700',
-		color: '#1e40af',
-		marginBottom: 8
-	},
-	infoBoxText: {
-		fontSize: 12,
-		color: '#1e3a8a',
-		lineHeight: 18,
-		marginBottom: 6
-	},
-	warningCard: {
-		backgroundColor: '#fef3c7',
-		borderRadius: 12,
-		padding: 16,
-		borderWidth: 1,
-		borderColor: '#fbbf24'
-	},
-	warningTitle: {
-		fontSize: 14,
-		fontWeight: '700',
-		color: '#92400e',
-		marginBottom: 4
-	},
-	warningText: {
-		fontSize: 12,
-		color: '#78350f',
-		lineHeight: 18
-	},
-	emptyState: {
-		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
-		padding: 32
-	},
-	emptyText: {
-		fontSize: 14,
-		color: '#6b7280',
-		textAlign: 'center'
-	},
-	// Market value history
-	mvHistoryRow: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		paddingVertical: 10,
-		paddingHorizontal: 4,
-		borderBottomWidth: 1,
-		borderBottomColor: '#e5e7eb'
-	},
-	mvHistoryGameweek: {
-		fontSize: 13,
-		fontWeight: '700',
-		color: '#374151',
-		flex: 1
-	},
-	mvHistoryValue: {
-		fontSize: 13,
-		fontWeight: '700',
-		color: '#111827',
-		width: 80,
-		textAlign: 'right'
-	},
-	mvHistoryDelta: {
-		fontSize: 13,
-		fontWeight: '700',
-		width: 110,
-		textAlign: 'right'
-	},
-	mvPositive: {
-		color: '#16a34a'
-	},
-	mvNegative: {
-		color: '#dc2626'
-	}
+	predictionLabel: { fontSize: fontSize.xs, color: colors.textMuted, fontWeight: fontWeight.bold, letterSpacing: 1, marginBottom: spacing.sm, textAlign: 'center' },
+	predictionValue: { fontSize: 56, fontWeight: fontWeight.black, color: colors.primaryDark, marginVertical: spacing.sm },
+	predictionRange: { fontSize: fontSize.sm, color: colors.textMuted, marginTop: spacing.sm, fontWeight: fontWeight.medium },
+	featureRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: spacing.sm, borderBottomWidth: 1, borderBottomColor: colors.bgSubtle },
+	featureName: { width: 120, fontSize: fontSize.sm, fontWeight: fontWeight.semibold, color: colors.textSecondary },
+	importanceBarContainer: { flex: 1, height: 8, backgroundColor: colors.border, borderRadius: 4, overflow: 'hidden', marginHorizontal: spacing.sm },
+	importanceFill: { height: '100%', backgroundColor: colors.primaryDark, borderRadius: 4 },
+	importanceValue: { fontSize: fontSize.xs, fontWeight: fontWeight.bold, color: colors.primaryDark, width: 45, textAlign: 'right' },
+
+	// ── Info & warning cards ──────────────────────────────────────────────────
+	infoBox: { backgroundColor: '#EFF6FF', borderRadius: radius.lg, padding: spacing.lg, borderWidth: 1, borderColor: '#BFDBFE', marginTop: spacing.lg },
+	infoBoxTitle: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, color: '#1E40AF', marginBottom: spacing.sm },
+	infoBoxText: { fontSize: fontSize.sm, color: '#1E3A8A', lineHeight: 18 },
+	warningCard: { backgroundColor: colors.warningBg ?? '#FEF3C7', borderRadius: radius.lg, padding: spacing.lg, borderWidth: 1, borderColor: colors.warning ?? '#F59E0B' },
+	warningTitle: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, color: '#92400E', marginBottom: 4 },
+	warningText: { fontSize: fontSize.sm, color: '#78350F', lineHeight: 18 },
+
+	// ── Empty state ───────────────────────────────────────────────────────────
+	emptyState: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 32 },
+	emptyIcon: { fontSize: 48, marginBottom: 12 },
+	emptyText: { fontSize: fontSize.sm, color: colors.textMuted, textAlign: 'center', lineHeight: 20 },
 });

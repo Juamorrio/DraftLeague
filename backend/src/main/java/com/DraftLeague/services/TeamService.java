@@ -9,33 +9,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import jakarta.validation.Valid;
 
-import com.DraftLeague.services.NotificationService;
 import com.DraftLeague.models.Player.Player;
 import com.DraftLeague.repositories.PlayerRepository;
-import com.DraftLeague.services.PlayerService;
 import com.DraftLeague.models.Player.PlayerTeam;
 import com.DraftLeague.repositories.PlayerTeamRepository;
 import com.DraftLeague.dto.UpdateTeamPlayersRequest;
+import com.DraftLeague.dto.CreateTeamRequest;
+import com.DraftLeague.dto.UpdateTeamRequest;
 import com.DraftLeague.models.user.User;
 import com.DraftLeague.repositories.UserRepository;
 import com.DraftLeague.models.League.League;
 import com.DraftLeague.repositories.LeagueRepository;
-import com.DraftLeague.models.user.User;
-import com.DraftLeague.models.Player.Player;
 import com.DraftLeague.models.Team.Team;
-import com.DraftLeague.models.League.League;
-import com.DraftLeague.models.Player.PlayerTeam;
-import com.DraftLeague.repositories.UserRepository;
-import com.DraftLeague.repositories.PlayerRepository;
 import com.DraftLeague.repositories.TeamRepository;
-import com.DraftLeague.repositories.LeagueRepository;
-import com.DraftLeague.repositories.PlayerTeamRepository;
-import com.DraftLeague.services.PlayerService;
 import com.DraftLeague.services.TeamService;
-import com.DraftLeague.services.NotificationService;
-import com.DraftLeague.services.GameweekStateService;
 import com.DraftLeague.models.Team.ChipType;
 
 @Service
@@ -62,21 +50,30 @@ public class TeamService {
     }
 
     @Transactional
-    public Team postTeam(@Valid Team team) {
-        this.teamRepository.save(team);
-        return team;
+    public Team postTeam(CreateTeamRequest request) {
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        League league = leagueRepository.findById(request.getLeagueId())
+                .orElseThrow(() -> new RuntimeException("League not found"));
+
+        Team team = new Team();
+        team.setBudget(request.getBudget());
+        team.setWildcardUsed(request.getWildcardUsed());
+        team.setCreatedAt(new java.util.Date());
+        team.setUser(user);
+        team.setLeague(league);
+        return this.teamRepository.save(team);
     }
 
     @Transactional
-    public Team updateTeam(@Valid Team team, Integer teamId) {
+    public Team updateTeam(UpdateTeamRequest request, Integer teamId) {
         Team existingTeam = teamRepository.findById(teamId)
                 .orElseThrow(() -> new RuntimeException("Team not found"));
 
-        existingTeam.setBudget(team.getBudget());
-        existingTeam.setGameweekPoints(team.getGameweekPoints());
-        existingTeam.setTotalPoints(team.getTotalPoints());
-        existingTeam.setCaptainId(team.getCaptainId());
-        existingTeam.setPlayerTeams(team.getPlayerTeams());
+        if (request.getBudget() != null)         existingTeam.setBudget(request.getBudget());
+        if (request.getGameweekPoints() != null) existingTeam.setGameweekPoints(request.getGameweekPoints());
+        if (request.getTotalPoints() != null)    existingTeam.setTotalPoints(request.getTotalPoints());
+        if (request.getCaptainId() != null)      existingTeam.setCaptainId(request.getCaptainId());
         return this.teamRepository.save(existingTeam);
     }
 
@@ -124,7 +121,6 @@ public class TeamService {
         League league = leagueRepository.findById(leagueId.longValue())
             .orElseThrow(() -> new RuntimeException("Liga no encontrada"));
         
-        // Usar el mÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©todo del repository que ya existe y hace el JOIN correctamente
         Team team = teamRepository.findByLeagueAndUser(league, user);
         
         if (team == null) {
@@ -164,6 +160,19 @@ public class TeamService {
             }
         }
         team.setActiveChip(chip);
+        return teamRepository.save(team);
+    }
+
+    @Transactional
+    public Team cancelChip(Integer leagueId, Integer userId) {
+        if (gameweekStateService.isTeamsLocked()) {
+            throw new RuntimeException("No se puede cancelar un chip mientras los equipos están bloqueados");
+        }
+        Team team = getTeamByUserAndLeague(leagueId, userId);
+        if (team.getActiveChip() == null) {
+            throw new RuntimeException("No hay ningún chip activo para cancelar");
+        }
+        team.setActiveChip(null);
         return teamRepository.save(team);
     }
 

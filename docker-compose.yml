@@ -45,7 +45,6 @@ services:
       JWT_SECRET: ${JWT_SECRET:-supersecretjwtkey512bitslong_pleasechangeme}
       ML_XGBOOST_URL: http://ml-service:8000
       INTERNAL_API_KEY: ${INTERNAL_API_KEY:-changeme-internal}
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
     ports:
       - "9090:9090"
     healthcheck:

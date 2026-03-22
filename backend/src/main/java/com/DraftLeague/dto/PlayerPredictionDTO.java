@@ -40,7 +40,5 @@ public class PlayerPredictionDTO {
     private Boolean isHomeTeam;
     private String opponent;
 
-    // AI enrichment (nullable — omitted from JSON when null)
-    private String aiAnalysis;   // narrative text from Claude API
-    private String modelSource;  // "XGBOOST" | "HEURISTIC" | "XGBOOST+CLAUDE" | "HEURISTIC+CLAUDE"
+    private String modelSource;  // "XGBOOST" | "HEURISTIC"
 }

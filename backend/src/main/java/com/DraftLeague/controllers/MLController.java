@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/ml")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class MLController {
 
     private final PlayerPredictionService playerPredictionService;

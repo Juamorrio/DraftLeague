@@ -44,7 +44,49 @@ public class PlayerStatisticService {
     private final TeamPlayerGameweekPointsRepository tpgwPointsRepository;
 
     @Transactional
-    public PlayerStatistic saveStatistic(PlayerStatistic statistic) {
+    public PlayerStatistic saveStatistic(CreatePlayerStatisticRequest request) {
+        PlayerStatistic statistic = new PlayerStatistic();
+        statistic.setPlayerId(request.getPlayerId());
+        statistic.setMatchId(request.getMatchId());
+        statistic.setIsHomeTeam(request.getIsHomeTeam());
+        statistic.setPlayerType(request.getPlayerType());
+        statistic.setRole(request.getRole());
+        statistic.setRating(request.getRating());
+        statistic.setMinutesPlayed(request.getMinutesPlayed());
+        statistic.setGoals(request.getGoals());
+        statistic.setAssists(request.getAssists());
+        statistic.setTotalShots(request.getTotalShots());
+        statistic.setShotsOnTarget(request.getShotsOnTarget());
+        statistic.setAccuratePasses(request.getAccuratePasses());
+        statistic.setTotalPasses(request.getTotalPasses());
+        statistic.setChancesCreated(request.getChancesCreated());
+        statistic.setSuccessfulDribbles(request.getSuccessfulDribbles());
+        statistic.setTotalDribbles(request.getTotalDribbles());
+        statistic.setDribbledPast(request.getDribbledPast());
+        statistic.setOffsides(request.getOffsides());
+        statistic.setAccurateCrosses(request.getAccurateCrosses());
+        statistic.setTotalCrosses(request.getTotalCrosses());
+        statistic.setTackles(request.getTackles());
+        statistic.setBlocks(request.getBlocks());
+        statistic.setInterceptions(request.getInterceptions());
+        statistic.setDuelsWon(request.getDuelsWon());
+        statistic.setDuelsLost(request.getDuelsLost());
+        statistic.setWasFouled(request.getWasFouled());
+        statistic.setFoulsCommitted(request.getFoulsCommitted());
+        statistic.setYellowCards(request.getYellowCards());
+        statistic.setRedCards(request.getRedCards());
+        statistic.setPenaltiesWon(request.getPenaltiesWon());
+        statistic.setPenaltyScored(request.getPenaltyScored());
+        statistic.setPenaltyMissed(request.getPenaltyMissed());
+        statistic.setPenaltyCommitted(request.getPenaltyCommitted());
+        statistic.setSaves(request.getSaves());
+        statistic.setPenaltiesSaved(request.getPenaltiesSaved());
+        statistic.setCleanSheet(request.getCleanSheet());
+        statistic.setGoalsConceded(request.getGoalsConceded());
+        statistic.setIsSubstitute(request.getIsSubstitute());
+        statistic.setIsCaptain(request.getIsCaptain());
+        statistic.setShirtNumber(request.getShirtNumber());
+        statistic.setTotalFantasyPoints(request.getTotalFantasyPoints());
         return playerStatisticRepository.save(statistic);
     }
 

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import com.DraftLeague.dto.CreateLeagueRequest;
+import com.DraftLeague.dto.UpdateLeagueRequest;
 import com.DraftLeague.models.League.League;
 import com.DraftLeague.services.LeagueService;
 
@@ -46,8 +47,8 @@ public class LeagueController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<League> updateLeague(@PathVariable Long id, @RequestBody League league) {
-        League updatedLeague = leagueService.updateLeague(id, league);
+    public ResponseEntity<League> updateLeague(@PathVariable Long id, @Valid @RequestBody UpdateLeagueRequest request) {
+        League updatedLeague = leagueService.updateLeague(id, request);
         return ResponseEntity.ok(updatedLeague);
     }
 

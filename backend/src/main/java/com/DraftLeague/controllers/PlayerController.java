@@ -16,10 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.DraftLeague.dto.CreatePlayerRequest;
+import com.DraftLeague.models.Player.Player;
 import com.DraftLeague.models.Player.PlayerMarketValueHistory;
 import com.DraftLeague.models.user.User;
 import com.DraftLeague.repositories.UserRepository;
-import com.DraftLeague.models.Player.Player;
 import com.DraftLeague.services.PlayerService;
 
 @RestController
@@ -59,8 +60,8 @@ public class PlayerController {
     }
 
     @PostMapping
-    public ResponseEntity<Player> createPlayer(@RequestBody Player player) {
-        Player createdPlayer = playerService.createPlayer(player);
+    public ResponseEntity<Player> createPlayer(@RequestBody CreatePlayerRequest request) {
+        Player createdPlayer = playerService.createPlayer(request);
         return ResponseEntity.ok(createdPlayer);
     }
 

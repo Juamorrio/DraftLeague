@@ -11,13 +11,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.DraftLeague.dto.CreateTeamRequest;
 import com.DraftLeague.dto.UpdateTeamPlayersRequest;
-
-import jakarta.validation.Valid;
-import com.DraftLeague.models.Player.Player;
+import com.DraftLeague.dto.UpdateTeamRequest;
 import com.DraftLeague.models.Team.Team;
-import com.DraftLeague.models.League.League;
 import com.DraftLeague.services.TeamService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/teams")
@@ -46,13 +45,13 @@ public class TeamController {
     }
 
     @PostMapping
-    public Team createTeam(@RequestBody Team team) {
-        return teamService.postTeam(team);
+    public Team createTeam(@Valid @RequestBody CreateTeamRequest request) {
+        return teamService.postTeam(request);
     }
 
     @PostMapping("/{id}/update")
-    public Team updateTeam(@PathVariable Integer id, @RequestBody Team team) {
-        return teamService.updateTeam(team, id);
+    public Team updateTeam(@PathVariable Integer id, @RequestBody UpdateTeamRequest request) {
+        return teamService.updateTeam(request, id);
     }
 
     @PutMapping("/league/{leagueId}/{userId}/players")

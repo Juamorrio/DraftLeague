@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 @Service
 public class FixtureSyncService {
 
-    private static final Pattern ROUND_PATTERN = Pattern.compile("(\\d+)$");
+    private static final Pattern ROUND_PATTERN = Pattern.compile("(\\d++)$");
 
     private final ApiFootballClient apiClient;
 

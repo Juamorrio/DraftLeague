@@ -36,10 +36,11 @@ function Admin() {
 		calculatingPoints: false,
 		unlockingTeams: false,
 		recalculatingPrices: false,
+		trainingML: false,
 	});
 	const setOp = (key, value) => setOps(prev => ({ ...prev, [key]: value }));
 	// Destructure for drop-in compatibility with existing JSX references
-	const { syncingMatches, syncingPlayers, activatingGameweek, calculatingPoints, unlockingTeams, recalculatingPrices } = ops;
+	const { syncingMatches, syncingPlayers, activatingGameweek, calculatingPoints, unlockingTeams, recalculatingPrices, trainingML } = ops;
 	const { loadMatches } = useMatches();
 
 	useEffect(() => {
@@ -370,6 +371,39 @@ function Admin() {
 							Alert.alert('Error', 'Error al calcular puntos: ' + e.message);
 						} finally {
 							setOp('calculatingPoints', false);
+						}
+					}
+				}
+			]
+		);
+	};
+
+	const trainMLModel = async () => {
+		Alert.alert(
+			'Entrenar Modelo IA',
+			'¿Reentrenar el modelo XGBoost con los datos actuales? La caché de predicciones se invalidará automáticamente.',
+			[
+				{ text: 'Cancelar', style: 'cancel' },
+				{
+					text: 'Entrenar',
+					onPress: async () => {
+						setOp('trainingML', true);
+						try {
+							const res = await authenticatedFetch('/api/ml/train', {
+								method: 'POST',
+								headers: { 'Content-Type': 'application/json' },
+								body: JSON.stringify({ gameweek: gameweekStatus.activeGameweek ?? 0 })
+							});
+							if (res.ok) {
+								Alert.alert('✅ Entrenamiento iniciado', 'El modelo se está reentrenando en segundo plano. Las predicciones se actualizarán en unos minutos.');
+							} else {
+								const error = await res.json().catch(() => ({}));
+								Alert.alert('Error', error.error || 'No se pudo iniciar el entrenamiento');
+							}
+						} catch (e) {
+							Alert.alert('Error', 'Error al entrenar el modelo: ' + e.message);
+						} finally {
+							setOp('trainingML', false);
 						}
 					}
 				}
@@ -738,6 +772,26 @@ function Admin() {
 									</>
 								) : (
 									<Text style={styles.btnImportText}>📈 Recalcular Valores de Mercado</Text>
+								)}
+							</TouchableOpacity>
+
+							<View style={{ height: 12 }} />
+							<TouchableOpacity
+								style={[
+									styles.btnImport,
+									{ backgroundColor: colors.primary },
+									trainingML && styles.btnImportDisabled
+								]}
+								onPress={trainMLModel}
+								disabled={trainingML}
+							>
+								{trainingML ? (
+									<>
+										<ActivityIndicator size="small" color={colors.textInverse} />
+										<Text style={styles.btnImportText}>Entrenando modelo...</Text>
+									</>
+								) : (
+									<Text style={styles.btnImportText}>🤖 Entrenar Modelo IA</Text>
 								)}
 							</TouchableOpacity>
 

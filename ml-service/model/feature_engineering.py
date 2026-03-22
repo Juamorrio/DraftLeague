@@ -100,6 +100,13 @@ def compute_opponent_strength(stats_df: pd.DataFrame, matches_df: pd.DataFrame) 
     return merged.apply(lookup_strength, axis=1).fillna(1.0)
 
 
+def _to_int(val) -> int:
+    """Convert MariaDB BIT/BOOLEAN bytes (b'\\x01') or plain booleans to int."""
+    if isinstance(val, (bytes, bytearray)):
+        return int.from_bytes(val, "big")
+    return int(val) if val is not None else 0
+
+
 def build_feature_matrix(stats_df: pd.DataFrame, matches_df: pd.DataFrame) -> pd.DataFrame:
     """
     Build the full 16-feature DataFrame from raw DB tables.
@@ -109,8 +116,8 @@ def build_feature_matrix(stats_df: pd.DataFrame, matches_df: pd.DataFrame) -> pd
     df = df.sort_values(["player_id", "match_id"]).reset_index(drop=True)
 
     df["position_encoded"] = df["player_type"].apply(encode_position)
-    df["is_home_team"] = df["is_home_team"].astype(int)
-    df["clean_sheet"] = df["clean_sheet"].fillna(False).astype(int)
+    df["is_home_team"] = df["is_home_team"].apply(_to_int)
+    df["clean_sheet"] = df["clean_sheet"].fillna(0).apply(_to_int)
     df["rating"] = df["rating"].fillna(6.0)
     df["recent_form_last3"] = compute_recent_form(df)
     df["opponent_strength"] = compute_opponent_strength(df, matches_df).values

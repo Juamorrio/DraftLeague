@@ -46,6 +46,7 @@ function AIInsights() {
 	const [teamError, setTeamError] = useState(null);
 	const [marketError, setMarketError] = useState(null);
 	const [lastUpdatedAt, setLastUpdatedAt] = useState(null);
+	const [expandedPlayer, setExpandedPlayer] = useState(null);
 
 	const loadData = async () => {
 		if (!selectedLeague?.id) {
@@ -292,7 +293,11 @@ function AIInsights() {
 						<Text style={s.sectionTitle}>Tu Equipo</Text>
 						{loadingPlayerPredictions && <ActivityIndicator size="small" color={colors.primary} />}
 					</View>
-					<Text style={s.sectionSub}>Media ponderada de las últimas 5 jornadas · más peso a las más recientes</Text>
+					<Text style={s.sectionSub}>
+					{Object.values(playerPredictions).some(p => p?.modelSource?.includes('XGBOOST'))
+						? 'Predicción XGBoost · enriquecida con IA'
+						: 'Media ponderada de las últimas 5 jornadas'}
+				</Text>
 
 					{teamError ? (
 						<View style={s.errorCard}>
@@ -346,6 +351,25 @@ function AIInsights() {
 														</Text>
 													)}
 													{pred && <PtsBar pts={pts} color={pc2.bar} />}
+												{pred?.aiAnalysis && (
+													<TouchableOpacity
+														onPress={() => setExpandedPlayer(expandedPlayer === player.id ? null : player.id)}
+														style={s.claudeToggleBtn}
+													>
+														<Text style={s.claudeToggleTxt}>
+															{expandedPlayer === player.id ? '▲ Ocultar análisis IA' : '▼ Ver análisis IA'}
+														</Text>
+													</TouchableOpacity>
+												)}
+												{expandedPlayer === player.id && pred?.aiAnalysis && (
+													<View style={s.claudeCard}>
+														<Text style={s.claudeLabel}>ANÁLISIS IA</Text>
+														<Text style={s.claudeTxt}>{pred.aiAnalysis}</Text>
+														{pred.modelSource && (
+															<Text style={s.modelSourceBadge}>{pred.modelSource}</Text>
+														)}
+													</View>
+												)}
 												</View>
 												<View style={s.playerRight}>
 													{pred ? (
@@ -589,6 +613,37 @@ const s = StyleSheet.create({
 	marketPtsCol: { alignItems: 'flex-end', minWidth: 48 },
 	marketPts: { fontSize: fontSize.xl, fontWeight: fontWeight.black },
 	marketPtsLabel: { fontSize: fontSize.xs, color: colors.textMuted },
+
+	// Claude AI analysis accordion
+	claudeToggleBtn: { marginTop: spacing.xs, alignSelf: 'flex-start' },
+	claudeToggleTxt: { fontSize: fontSize.xs, color: colors.primary, fontWeight: fontWeight.semibold },
+	claudeCard: {
+		marginTop: spacing.sm,
+		padding: spacing.sm,
+		backgroundColor: colors.bgSubtle,
+		borderRadius: radius.md,
+		borderWidth: 1,
+		borderColor: colors.primaryMuted,
+	},
+	claudeLabel: {
+		fontSize: 9,
+		color: colors.primary,
+		fontWeight: fontWeight.extrabold,
+		letterSpacing: 0.8,
+		marginBottom: 4,
+	},
+	claudeTxt: {
+		fontSize: fontSize.xs,
+		color: colors.textSecondary,
+		lineHeight: 16,
+		fontWeight: fontWeight.medium,
+	},
+	modelSourceBadge: {
+		fontSize: 9,
+		color: colors.textMuted,
+		marginTop: 4,
+		fontStyle: 'italic',
+	},
 
 	// Misc
 	errorCard: {

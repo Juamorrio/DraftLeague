@@ -2,6 +2,7 @@ package com.DraftLeague.services;
 
 import com.DraftLeague.dto.PlayerPredictionDTO;
 import com.DraftLeague.dto.TeamPredictionDTO;
+import com.DraftLeague.dto.XGBoostPredictionResult;
 import com.DraftLeague.models.Match.Match;
 import com.DraftLeague.models.Match.MatchStatus;
 import com.DraftLeague.models.Player.Player;
@@ -34,6 +35,8 @@ public class PlayerPredictionService {
     private final PlayerRepository playerRepository;
     private final PlayerTeamRepository playerTeamRepository;
     private final TeamRepository teamRepository;
+    private final XGBoostClient xgBoostClient;
+    private final ClaudeAnalysisService claudeAnalysisService;
 
     private static final int MIN_STATS_FOR_PREDICTION = 2;
 
@@ -51,9 +54,10 @@ public class PlayerPredictionService {
 
     /**
      * Returns the cached prediction for a player, computing it on first access.
+     * Claude enrichment is enabled for on-demand requests.
      */
     public PlayerPredictionDTO predictForPlayer(String playerId) {
-        return predictionCache.computeIfAbsent(playerId, this::buildPlayerPrediction);
+        return predictionCache.computeIfAbsent(playerId, id -> buildPlayerPrediction(id, true));
     }
 
     /**
@@ -73,7 +77,8 @@ public class PlayerPredictionService {
                         .limit(MIN_STATS_FOR_PREDICTION)
                         .count();
                 if (statCount >= MIN_STATS_FOR_PREDICTION) {
-                    predictionCache.put(player.getId(), buildPlayerPrediction(player.getId()));
+                    // enrichWithClaude=false during warm-up to avoid mass API calls
+                    predictionCache.put(player.getId(), buildPlayerPrediction(player.getId(), false));
                     warmed++;
                 }
             } catch (Exception e) {
@@ -85,7 +90,7 @@ public class PlayerPredictionService {
     }
 
     @Transactional(readOnly = true)
-    protected PlayerPredictionDTO buildPlayerPrediction(String playerId) {
+    protected PlayerPredictionDTO buildPlayerPrediction(String playerId, boolean enrichWithClaude) {
         Player player = playerRepository.findById(playerId).orElse(null);
 
         // Load last 5 stats ordered by most recent match first
@@ -166,58 +171,9 @@ public class PlayerPredictionService {
             predictedPoints *= Boolean.TRUE.equals(isHomeTeam) ? HOME_MULTIPLIER : AWAY_MULTIPLIER;
         }
 
-        // --- Improvement 3: Rival difficulty adjustment ---
-        // Derive opponentClubId from the next match and the player's own club
-        if (player != null && opponent != null) {
-            Integer opponentClubId = null;
-            List<Match> upcomingForPlayer = matchRepository
-                    .findByStatusOrderByRoundAsc(MatchStatus.UPCOMING)
-                    .stream()
-                    .filter(m -> player.getClubId().equals(m.getHomeTeamId())
-                              || player.getClubId().equals(m.getAwayTeamId()))
-                    .limit(1)
-                    .collect(Collectors.toList());
-            if (!upcomingForPlayer.isEmpty()) {
-                Match nm = upcomingForPlayer.get(0);
-                opponentClubId = player.getClubId().equals(nm.getHomeTeamId())
-                        ? nm.getAwayTeamId()
-                        : nm.getHomeTeamId();
-            }
-
-            if (opponentClubId != null) {
-                List<Match> finishedMatches = matchRepository.findByStatus(MatchStatus.FINISHED);
-
-                // Goals conceded by the opponent in their last RIVAL_DIFFICULTY_LOOKBACK matches
-                final Integer oppId = opponentClubId;
-                List<Integer> opponentGoalsConceded = finishedMatches.stream()
-                        .filter(m -> oppId.equals(m.getHomeTeamId()) || oppId.equals(m.getAwayTeamId()))
-                        .filter(m -> m.getHomeGoals() != null && m.getAwayGoals() != null)
-                        .sorted(Comparator.comparingInt(Match::getRound).reversed())
-                        .limit(RIVAL_DIFFICULTY_LOOKBACK)
-                        .map(m -> oppId.equals(m.getHomeTeamId()) ? m.getAwayGoals() : m.getHomeGoals())
-                        .collect(Collectors.toList());
-
-                // League-wide average goals scored per team per finished match
-                double leagueAvgGoals = finishedMatches.stream()
-                        .filter(m -> m.getHomeGoals() != null && m.getAwayGoals() != null)
-                        .mapToInt(m -> m.getHomeGoals() + m.getAwayGoals())
-                        .average()
-                        .orElse(2.6) / 2.0; // divide by 2: each match contributes goals to both sides
-
-                if (!opponentGoalsConceded.isEmpty() && leagueAvgGoals > 0) {
-                    double opponentAvgConceded = opponentGoalsConceded.stream()
-                            .mapToInt(Integer::intValue)
-                            .average()
-                            .orElse(leagueAvgGoals);
-                    // Ratio > 1 means opponent concedes more than average → easier matchup
-                    // Ratio < 1 means opponent concedes less than average → harder matchup
-                    double rivalMultiplier = opponentAvgConceded / leagueAvgGoals;
-                    // Clamp to [0.80, 1.20] to avoid outliers dominating
-                    rivalMultiplier = Math.max(0.80, Math.min(1.20, rivalMultiplier));
-                    predictedPoints *= rivalMultiplier;
-                }
-            }
-        }
+        // --- Rival difficulty adjustment ---
+        double rivalStrength = computeOpponentStrength(player, opponent);
+        predictedPoints *= Math.max(0.80, Math.min(1.20, rivalStrength));
 
         // --- Improvement 2: Real standard-deviation confidence interval ---
         // Collect the raw fantasy points for the last N matches
@@ -237,39 +193,162 @@ public class PlayerPredictionService {
             stdDev = predictedPoints * 0.30;
         }
 
-        int confidenceLow  = (int) Math.max(0, Math.floor(predictedPoints - stdDev));
-        int confidenceHigh = (int) Math.ceil(predictedPoints + stdDev);
+        // ── Step 2: attempt XGBoost prediction (overrides heuristic if available) ──
+        String modelSource = "HEURISTIC";
+        Map<String, Double> featuresImportance;
+        double finalPredictedPoints = predictedPoints;
 
-        // Feature-importance map: values in [0, 1] so the frontend bar renders
-        // importance * 100 as a percentage width.
-        Map<String, Double> features = new LinkedHashMap<>();
-        double ratingImp  = Math.min(avgRating  / 10.0, 1.0);
-        double minutesImp = Math.min(avgMinutes / 90.0, 1.0);
-        double goalsImp   = Math.min(avgGoals   /  3.0, 1.0);
-        double assistsImp = Math.min(avgAssists /  3.0, 1.0);
-        double formImp    = Math.min(predictedPoints / 15.0, 1.0);
-        double matchesImp = stats.size() / 5.0;
+        Optional<XGBoostPredictionResult> xgResult = xgBoostClient.predict(
+                playerId, buildFeatureMap(stats, isHomeTeam, computeOpponentStrength(player, opponent)));
 
-        if (ratingImp  > 0) features.put("avgRatingLast5",  round2(ratingImp));
-        if (minutesImp > 0) features.put("avgMinutesLast5", round2(minutesImp));
-        if (goalsImp   > 0) features.put("avgGoalsLast5",   round2(goalsImp));
-        if (assistsImp > 0) features.put("avgAssistsLast5", round2(assistsImp));
-        if (formImp    > 0) features.put("recentFormPoints",round2(formImp));
-        features.put("matchesPlayed", round2(matchesImp));
+        if (xgResult.isPresent()) {
+            finalPredictedPoints = xgResult.get().predictedPoints();
+            featuresImportance = xgResult.get().featuresImportance();
+            modelSource = "XGBOOST";
+        } else {
+            // Heuristic feature-importance map (cosmetic, normalized to [0,1])
+            Map<String, Double> heuristicFeatures = new LinkedHashMap<>();
+            double ratingImp  = Math.min(avgRating  / 10.0, 1.0);
+            double minutesImp = Math.min(avgMinutes / 90.0, 1.0);
+            double goalsImp   = Math.min(avgGoals   /  3.0, 1.0);
+            double assistsImp = Math.min(avgAssists /  3.0, 1.0);
+            double formImp    = Math.min(predictedPoints / 15.0, 1.0);
+            double matchesImp = stats.size() / 5.0;
+            if (ratingImp  > 0) heuristicFeatures.put("avgRatingLast5",  round2(ratingImp));
+            if (minutesImp > 0) heuristicFeatures.put("avgMinutesLast5", round2(minutesImp));
+            if (goalsImp   > 0) heuristicFeatures.put("avgGoalsLast5",   round2(goalsImp));
+            if (assistsImp > 0) heuristicFeatures.put("avgAssistsLast5", round2(assistsImp));
+            if (formImp    > 0) heuristicFeatures.put("recentFormPoints",round2(formImp));
+            heuristicFeatures.put("matchesPlayed", round2(matchesImp));
+            featuresImportance = heuristicFeatures;
+        }
+
+        // Recompute confidence interval using the final predicted points
+        int confidenceLowFinal  = (int) Math.max(0, Math.floor(finalPredictedPoints - stdDev));
+        int confidenceHighFinal = (int) Math.ceil(finalPredictedPoints + stdDev);
+
+        // ── Step 3: Claude narrative analysis (optional, skipped during cache warm-up) ──
+        String aiAnalysis = null;
+        if (enrichWithClaude) {
+            Optional<String> claudeResult = claudeAnalysisService.generateAnalysis(
+                    playerName,
+                    position,
+                    opponent != null ? opponent : "desconocido",
+                    Boolean.TRUE.equals(isHomeTeam),
+                    stats,
+                    finalPredictedPoints,
+                    modelSource
+            );
+            if (claudeResult.isPresent()) {
+                aiAnalysis = claudeResult.get();
+                modelSource = modelSource + "+CLAUDE";
+            }
+        }
 
         return PlayerPredictionDTO.builder()
                 .playerId(playerId)
                 .playerName(playerName)
                 .position(position)
                 .playerType(playerType)
-                .predictedPoints(round2(predictedPoints))
-                .confidenceInterval(List.of(confidenceLow, confidenceHigh))
-                .featuresImportance(features)
+                .predictedPoints(round2(finalPredictedPoints))
+                .confidenceInterval(List.of(confidenceLowFinal, confidenceHighFinal))
+                .featuresImportance(featuresImportance)
                 .nextMatchId(nextMatchId)
                 .round(round)
                 .isHomeTeam(isHomeTeam)
                 .opponent(opponent)
+                .aiAnalysis(aiAnalysis)
+                .modelSource(modelSource)
                 .build();
+    }
+
+    /**
+     * Builds the 16-feature map expected by the XGBoost microservice from recent player statistics.
+     */
+    private Map<String, Object> buildFeatureMap(List<PlayerStatistic> stats, Boolean isHome, double opponentStrength) {
+        if (stats.isEmpty()) return Collections.emptyMap();
+
+        PlayerStatistic latest = stats.get(0);
+
+        // Averages over last 3 matches for form
+        double recentFormLast3 = stats.stream()
+                .limit(3)
+                .mapToDouble(s -> (double) s.calculateFantasyPoints())
+                .average()
+                .orElse(0.0);
+
+        Map<String, Object> features = new LinkedHashMap<>();
+        features.put("rating",             latest.getRating() != null ? latest.getRating() : 6.0);
+        features.put("minutes_played",     latest.getMinutesPlayed() != null ? latest.getMinutesPlayed() : 0);
+        features.put("goals",              latest.getGoals() != null ? latest.getGoals() : 0);
+        features.put("assists",            latest.getAssists() != null ? latest.getAssists() : 0);
+        features.put("shots_on_target",    latest.getShotsOnTarget() != null ? latest.getShotsOnTarget() : 0);
+        features.put("tackles",            latest.getTackles() != null ? latest.getTackles() : 0);
+        features.put("blocks",             latest.getBlocks() != null ? latest.getBlocks() : 0);
+        features.put("saves",              latest.getSaves() != null ? latest.getSaves() : 0);
+        features.put("goals_conceded",     latest.getGoalsConceded() != null ? latest.getGoalsConceded() : 0);
+        features.put("clean_sheet",        Boolean.TRUE.equals(latest.getCleanSheet()) ? 1 : 0);
+        features.put("yellow_cards",       latest.getYellowCards() != null ? latest.getYellowCards() : 0);
+        features.put("red_cards",          latest.getRedCards() != null ? latest.getRedCards() : 0);
+        features.put("position_encoded",   encodePosition(latest.getPlayerType()));
+        features.put("is_home_team",       Boolean.TRUE.equals(isHome) ? 1 : 0);
+        features.put("recent_form_last3",  round2(recentFormLast3));
+        features.put("opponent_strength",  round2(opponentStrength));
+        return features;
+    }
+
+    /**
+     * Computes opponent strength (ratio of opponent's avg goals conceded vs league average).
+     * Returns 1.0 (neutral) if data is unavailable.
+     */
+    private double computeOpponentStrength(Player player, String opponentName) {
+        if (player == null || opponentName == null) return 1.0;
+        try {
+            List<Match> upcomingForPlayer = matchRepository
+                    .findByStatusOrderByRoundAsc(MatchStatus.UPCOMING)
+                    .stream()
+                    .filter(m -> player.getClubId().equals(m.getHomeTeamId())
+                              || player.getClubId().equals(m.getAwayTeamId()))
+                    .limit(1)
+                    .collect(Collectors.toList());
+            if (upcomingForPlayer.isEmpty()) return 1.0;
+
+            Match nm = upcomingForPlayer.get(0);
+            Integer opponentClubId = player.getClubId().equals(nm.getHomeTeamId())
+                    ? nm.getAwayTeamId() : nm.getHomeTeamId();
+
+            List<Match> finished = matchRepository.findByStatus(MatchStatus.FINISHED);
+            final Integer oppId = opponentClubId;
+
+            List<Integer> conceded = finished.stream()
+                    .filter(m -> oppId.equals(m.getHomeTeamId()) || oppId.equals(m.getAwayTeamId()))
+                    .filter(m -> m.getHomeGoals() != null && m.getAwayGoals() != null)
+                    .sorted(Comparator.comparingInt(Match::getRound).reversed())
+                    .limit(RIVAL_DIFFICULTY_LOOKBACK)
+                    .map(m -> oppId.equals(m.getHomeTeamId()) ? m.getAwayGoals() : m.getHomeGoals())
+                    .collect(Collectors.toList());
+
+            double leagueAvg = finished.stream()
+                    .filter(m -> m.getHomeGoals() != null && m.getAwayGoals() != null)
+                    .mapToInt(m -> m.getHomeGoals() + m.getAwayGoals())
+                    .average().orElse(2.6) / 2.0;
+
+            if (conceded.isEmpty() || leagueAvg == 0) return 1.0;
+            double avgConceded = conceded.stream().mapToInt(Integer::intValue).average().orElse(leagueAvg);
+            return Math.max(0.5, Math.min(2.0, avgConceded / leagueAvg));
+        } catch (Exception e) {
+            return 1.0;
+        }
+    }
+
+    private int encodePosition(PlayerStatistic.PlayerType playerType) {
+        if (playerType == null) return 2;
+        return switch (playerType) {
+            case GOALKEEPER -> 0;
+            case DEFENDER   -> 1;
+            case MIDFIELDER -> 2;
+            case FORWARD    -> 3;
+        };
     }
 
     /**

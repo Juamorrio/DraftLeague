@@ -36,7 +36,6 @@ public class PlayerPredictionService {
     private final PlayerTeamRepository playerTeamRepository;
     private final TeamRepository teamRepository;
     private final XGBoostClient xgBoostClient;
-    private final ClaudeAnalysisService claudeAnalysisService;
 
     private static final int MIN_STATS_FOR_PREDICTION = 2;
 
@@ -52,12 +51,8 @@ public class PlayerPredictionService {
 
     private final Map<String, PlayerPredictionDTO> predictionCache = new ConcurrentHashMap<>();
 
-    /**
-     * Returns the cached prediction for a player, computing it on first access.
-     * Claude enrichment is enabled for on-demand requests.
-     */
     public PlayerPredictionDTO predictForPlayer(String playerId) {
-        return predictionCache.computeIfAbsent(playerId, id -> buildPlayerPrediction(id, true));
+        return predictionCache.computeIfAbsent(playerId, id -> buildPlayerPrediction(id));
     }
 
     /**
@@ -77,8 +72,7 @@ public class PlayerPredictionService {
                         .limit(MIN_STATS_FOR_PREDICTION)
                         .count();
                 if (statCount >= MIN_STATS_FOR_PREDICTION) {
-                    // enrichWithClaude=false during warm-up to avoid mass API calls
-                    predictionCache.put(player.getId(), buildPlayerPrediction(player.getId(), false));
+                    predictionCache.put(player.getId(), buildPlayerPrediction(player.getId()));
                     warmed++;
                 }
             } catch (Exception e) {
@@ -90,7 +84,7 @@ public class PlayerPredictionService {
     }
 
     @Transactional(readOnly = true)
-    protected PlayerPredictionDTO buildPlayerPrediction(String playerId, boolean enrichWithClaude) {
+    protected PlayerPredictionDTO buildPlayerPrediction(String playerId) {
         Player player = playerRepository.findById(playerId).orElse(null);
 
         // Load last 5 stats ordered by most recent match first
@@ -227,24 +221,6 @@ public class PlayerPredictionService {
         int confidenceLowFinal  = (int) Math.max(0, Math.floor(finalPredictedPoints - stdDev));
         int confidenceHighFinal = (int) Math.ceil(finalPredictedPoints + stdDev);
 
-        // ── Step 3: Claude narrative analysis (optional, skipped during cache warm-up) ──
-        String aiAnalysis = null;
-        if (enrichWithClaude) {
-            Optional<String> claudeResult = claudeAnalysisService.generateAnalysis(
-                    playerName,
-                    position,
-                    opponent != null ? opponent : "desconocido",
-                    Boolean.TRUE.equals(isHomeTeam),
-                    stats,
-                    finalPredictedPoints,
-                    modelSource
-            );
-            if (claudeResult.isPresent()) {
-                aiAnalysis = claudeResult.get();
-                modelSource = modelSource + "+CLAUDE";
-            }
-        }
-
         return PlayerPredictionDTO.builder()
                 .playerId(playerId)
                 .playerName(playerName)
@@ -257,7 +233,6 @@ public class PlayerPredictionService {
                 .round(round)
                 .isHomeTeam(isHomeTeam)
                 .opponent(opponent)
-                .aiAnalysis(aiAnalysis)
                 .modelSource(modelSource)
                 .build();
     }

@@ -38,7 +38,7 @@ public class MarketScheduler {
 
             for (League league : leagues) {
                 try {
-                    marketService.refreshMarket(league.getId().intValue());
+                    marketService.refreshMarket(league.getId());
                 } catch (Exception e) {
                     logger.error("Error al refrescar mercado para la liga {}: {}", league.getId(), e.getMessage(), e);
                 }

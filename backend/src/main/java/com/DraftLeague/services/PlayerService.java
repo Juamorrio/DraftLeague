@@ -129,24 +129,26 @@ public class PlayerService {
     }
 
     public byte[] fetchPlayerTeamImage(String teamId) {
-    String url = "https://media.api-sports.io/football/teams/" + teamId + ".png";
-    
-    HttpClient client = HttpClient.newHttpClient();
-    HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(url))
-            .GET()
-            .build();
-    
-    try {
-        HttpResponse<byte[]> response = client.send(request, HttpResponse.BodyHandlers.ofByteArray());
-        if (response.statusCode() == 200) {
-            return response.body();
-        } else {
-            throw new RuntimeException("Error: HTTP " + response.statusCode());
+        String url = "https://media.api-sports.io/football/teams/" + teamId + ".png";
+
+        try (HttpClient client = HttpClient.newHttpClient()) {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .GET()
+                    .build();
+
+            HttpResponse<byte[]> response = client.send(request, HttpResponse.BodyHandlers.ofByteArray());
+            if (response.statusCode() == 200) {
+                return response.body();
+            } else {
+                throw new RuntimeException("Error: HTTP " + response.statusCode());
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Error fetching player image", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching player image", e);
         }
-    } catch (Exception e) {
-        throw new RuntimeException("Error fetching player image", e);
     }
-}
 
 }

@@ -40,7 +40,6 @@ class TradeOfferServiceTest {
     @InjectMocks
     private TradeOfferService tradeOfferService;
 
-    // ─── createOffer ─────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("createOffer: oferta válida → persiste con estado PENDING")
@@ -127,7 +126,6 @@ class TradeOfferServiceTest {
                 .hasMessageContaining("bloqueadas");
     }
 
-    // ─── acceptOffer ─────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("acceptOffer: oferta PENDING → cambia estado a ACCEPTED")
@@ -184,7 +182,6 @@ class TradeOfferServiceTest {
                 .hasMessageContaining("no está pendiente");
     }
 
-    // ─── rejectOffer ─────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("rejectOffer: oferta PENDING → cambia estado a REJECTED")
@@ -209,7 +206,6 @@ class TradeOfferServiceTest {
         assertThat(result.getStatus()).isEqualTo(TradeOfferStatus.REJECTED);
     }
 
-    // ─── helpers ─────────────────────────────────────────────────────────────────
 
     private User buildUser(int id, String username) {
         User u = new User();

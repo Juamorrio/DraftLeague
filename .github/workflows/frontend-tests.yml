@@ -1,0 +1,53 @@
+name: Frontend Tests
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  test:
+    name: Jest Unit Tests + Coverage
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Jest with coverage
+        run: npm run test:ci
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jest-coverage-report
+          path: frontend/coverage/
+          retention-days: 7
+
+      - name: Test summary
+        if: always()
+        run: |
+          echo "## Frontend Test Run Summary" >> $GITHUB_STEP_SUMMARY
+          if [ -f coverage/coverage-summary.json ]; then
+            LINES=$(node -e "const c=require('./coverage/coverage-summary.json');console.log(c.total.lines.pct+'%')" 2>/dev/null || echo "N/A")
+            STMTS=$(node -e "const c=require('./coverage/coverage-summary.json');console.log(c.total.statements.pct+'%')" 2>/dev/null || echo "N/A")
+            echo "- Line coverage: $LINES" >> $GITHUB_STEP_SUMMARY
+            echo "- Statement coverage: $STMTS" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No coverage report found." >> $GITHUB_STEP_SUMMARY
+          fi

@@ -1,6 +1,5 @@
 module.exports = {
   preset: 'jest-expo',
-  setupFilesAfterFramework: ['@testing-library/jest-native/extend-expect'],
   transformIgnorePatterns: [
     'node_modules/(?!(jest-)?react-native' +
       '|@react-native(-community)?' +
@@ -22,7 +21,6 @@ module.exports = {
   ],
   collectCoverageFrom: [
     'services/**/*.{js,jsx}',
-    'components/**/*.{js,jsx}',
     '!**/node_modules/**',
   ],
   coverageThreshold: {

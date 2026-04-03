@@ -160,16 +160,13 @@ public class PlayerPredictionService {
         double avgAssists       = wAssists / sumWeights;
         double avgMinutes       = wMinutes / sumWeights;
 
-        // --- Improvement 1: Home / away factor ---
         if (isHomeTeam != null) {
             predictedPoints *= Boolean.TRUE.equals(isHomeTeam) ? HOME_MULTIPLIER : AWAY_MULTIPLIER;
         }
 
-        // --- Rival difficulty adjustment ---
         double rivalStrength = computeOpponentStrength(player, opponent);
         predictedPoints *= Math.max(0.80, Math.min(1.20, rivalStrength));
 
-        // --- Improvement 2: Real standard-deviation confidence interval ---
         // Collect the raw fantasy points for the last N matches
         List<Double> rawPoints = stats.stream()
                 .map(s -> (double) s.calculateFantasyPoints())
@@ -187,7 +184,6 @@ public class PlayerPredictionService {
             stdDev = predictedPoints * 0.30;
         }
 
-        // ── Step 2: attempt XGBoost prediction (overrides heuristic if available) ──
         String modelSource = "HEURISTIC";
         Map<String, Double> featuresImportance;
         double finalPredictedPoints = predictedPoints;

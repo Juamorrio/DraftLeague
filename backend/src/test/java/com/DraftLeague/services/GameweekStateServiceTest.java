@@ -24,7 +24,6 @@ class GameweekStateServiceTest {
     @InjectMocks
     private GameweekStateService gameweekStateService;
 
-    // ─── isTeamsLocked ────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("isTeamsLocked: estado con teamsLocked=true → devuelve true")
@@ -58,7 +57,6 @@ class GameweekStateServiceTest {
         assertThat(result).isFalse();
     }
 
-    // ─── getActiveGameweek ────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("getActiveGameweek: jornada activa configurada → devuelve el número correcto")
@@ -81,7 +79,6 @@ class GameweekStateServiceTest {
         assertThat(result).isNull();
     }
 
-    // ─── activateGameweek ─────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("activateGameweek: activa jornada → bloquea equipos y guarda estado")
@@ -99,7 +96,6 @@ class GameweekStateServiceTest {
         assertThat(result.getActiveGameweek()).isEqualTo(8);
     }
 
-    // ─── helpers ─────────────────────────────────────────────────────────────────
 
     private GameweekState buildState(Integer activeGameweek, boolean locked) {
         GameweekState state = new GameweekState();

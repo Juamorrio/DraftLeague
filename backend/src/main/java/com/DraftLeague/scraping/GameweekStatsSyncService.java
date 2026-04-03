@@ -86,7 +86,6 @@ public class GameweekStatsSyncService {
         return allStats;
     }
 
-    // ── private helpers ──────────────────────────────────────────────────────
 
     private List<Map<String, Object>> processFixture(int fixtureId) {
         List<Map<String, Object>> response = apiClient.fetchFixturePlayers(fixtureId);
@@ -190,7 +189,6 @@ public class GameweekStatsSyncService {
         return stat;
     }
 
-    // ── type helpers ─────────────────────────────────────────────────────────
 
     @SuppressWarnings("unchecked")
     private Map<String, Object> getMap(Map<String, Object> parent, String key) {

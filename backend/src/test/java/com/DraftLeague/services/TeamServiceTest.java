@@ -39,7 +39,6 @@ class TeamServiceTest {
     @InjectMocks
     private TeamService teamService;
 
-    // ─── getTeamByUserAndLeague ───────────────────────────────────────────────────
 
     @Test
     @DisplayName("getTeamByUserAndLeague: equipo existente → devuelve el equipo")
@@ -71,7 +70,6 @@ class TeamServiceTest {
                 .isInstanceOf(RuntimeException.class);
     }
 
-    // ─── updateTeamPlayers ───────────────────────────────────────────────────────
 
     @Test
     @DisplayName("updateTeamPlayers: equipos bloqueados → RuntimeException")
@@ -113,7 +111,6 @@ class TeamServiceTest {
         verify(teamRepository).save(team);
     }
 
-    // ─── getTeamById ─────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("getTeamById: id existente → devuelve el equipo")
@@ -135,7 +132,6 @@ class TeamServiceTest {
                 .isInstanceOf(RuntimeException.class);
     }
 
-    // ─── helpers ─────────────────────────────────────────────────────────────────
 
     private User buildUser(int id, String username) {
         User u = new User();

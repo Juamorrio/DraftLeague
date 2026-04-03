@@ -100,7 +100,6 @@ public class FixtureSyncService {
         return result;
     }
 
-    // ── helpers ─────────────────────────────────────────────────────────────
 
     /** Returns [homeXg, awayXg]; negative value means unavailable. */
     private double[] fetchXg(Integer fixtureId) {

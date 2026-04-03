@@ -41,7 +41,6 @@ class MarketServiceTest {
     @InjectMocks
     private MarketService marketService;
 
-    // ─── getAvailableMarketPlayers ────────────────────────────────────────────────
 
     @Test
     @DisplayName("getAvailableMarketPlayers: mercado con jugadores disponibles → devuelve lista")
@@ -59,7 +58,6 @@ class MarketServiceTest {
         assertThat(result.get(0).getId()).isEqualTo(1);
     }
 
-    // ─── placeBid ─────────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("placeBid: mercado bloqueado durante jornada → IllegalStateException")
@@ -133,7 +131,6 @@ class MarketServiceTest {
         assertThat(team.getBudget()).isEqualTo(5_000_000 - 1_500_000);
     }
 
-    // ─── initializeMarket ─────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("initializeMarket: liga válida → crea MarketPlayer para cada jugador libre")
@@ -153,7 +150,6 @@ class MarketServiceTest {
         verify(marketPlayerRepository).saveAll(any());
     }
 
-    // ─── helpers ─────────────────────────────────────────────────────────────────
 
     private User buildUser(int id, String username) {
         User u = new User();

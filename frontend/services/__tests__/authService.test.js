@@ -1,13 +1,3 @@
-/**
- * Tests for authService.js
- *
- * Strategy:
- * - AsyncStorage is auto-mocked via __mocks__/@react-native-async-storage/async-storage.js
- * - expo-constants is auto-mocked via __mocks__/expo-constants.js
- * - global.fetch is replaced per test with jest.fn()
- * - Each test resets all mocks so state doesn't leak between tests
- */
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   getAccessToken,
@@ -17,25 +7,18 @@ import {
   clearTokens,
 } from '../authService';
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-/** Builds a base64-encoded JWT string with the given payload. */
 function buildJwt(payload) {
   const header  = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
   const body    = btoa(JSON.stringify(payload));
   return `${header}.${body}.fakesig`;
 }
 
-/** Returns a timestamp (seconds) N seconds from now. */
 const inSeconds = (n) => Math.floor(Date.now() / 1000) + n;
 
 beforeEach(() => {
   jest.clearAllMocks();
-  // Reset fetch mock
   global.fetch = undefined;
 });
-
-// ─── getAccessToken ───────────────────────────────────────────────────────────
 
 describe('getAccessToken', () => {
   test('devuelve el token almacenado en AsyncStorage', async () => {
@@ -55,8 +38,6 @@ describe('getAccessToken', () => {
     expect(token).toBeNull();
   });
 });
-
-// ─── decodeAccessToken ────────────────────────────────────────────────────────
 
 describe('decodeAccessToken', () => {
   test('JWT válido → devuelve el payload decodificado', async () => {
@@ -85,8 +66,6 @@ describe('decodeAccessToken', () => {
     expect(result).toBeNull();
   });
 });
-
-// ─── tryRefreshOnLaunch ───────────────────────────────────────────────────────
 
 describe('tryRefreshOnLaunch', () => {
   test('sin token → devuelve false', async () => {
@@ -117,10 +96,8 @@ describe('tryRefreshOnLaunch', () => {
   });
 });
 
-// ─── authenticatedFetch ───────────────────────────────────────────────────────
-
 describe('authenticatedFetch', () => {
-  test('adjunta el header Authorization: Bearer <token> en la petición', async () => {
+  test('adjunta el header Authorization con el token JWT en la petición', async () => {
     const token = buildJwt({ uid: 1, sub: 'alice', exp: inSeconds(3600) });
     AsyncStorage.getItem.mockResolvedValue(token);
     global.fetch = jest.fn().mockResolvedValue({ status: 200, ok: true });
@@ -140,7 +117,7 @@ describe('authenticatedFetch', () => {
   });
 
   test('respuesta 200 → devuelve el objeto Response', async () => {
-    AsyncStorage.getItem.mockResolvedValue(null); // no token
+    AsyncStorage.getItem.mockResolvedValue(null);
     const fakeResponse = { status: 200, ok: true };
     global.fetch = jest.fn().mockResolvedValue(fakeResponse);
 
@@ -149,8 +126,6 @@ describe('authenticatedFetch', () => {
     expect(result).toBe(fakeResponse);
   });
 });
-
-// ─── clearTokens ─────────────────────────────────────────────────────────────
 
 describe('clearTokens', () => {
   test('elimina el token de AsyncStorage', async () => {

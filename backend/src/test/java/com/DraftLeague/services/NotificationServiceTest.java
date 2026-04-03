@@ -33,7 +33,6 @@ class NotificationServiceTest {
     @InjectMocks
     private NotificationService notificationService;
 
-    // ─── getNotificationsByLeague ─────────────────────────────────────────────────
 
     @Test
     @DisplayName("getNotificationsByLeague: devuelve todas las notificaciones de la liga ordenadas")
@@ -61,7 +60,6 @@ class NotificationServiceTest {
         assertThat(result).isEmpty();
     }
 
-    // ─── getNewNotifications ─────────────────────────────────────────────────────
 
     @Test
     @DisplayName("getNewNotifications: con lastId → devuelve solo notificaciones más nuevas")
@@ -89,7 +87,6 @@ class NotificationServiceTest {
         verify(notificationRepository).findNewNotificationsByLeagueId(1, null);
     }
 
-    // ─── createClauseNotification ────────────────────────────────────────────────
 
     @Test
     @DisplayName("createClauseNotification: crea una notificación de tipo CLAUSE y la persiste")
@@ -109,7 +106,6 @@ class NotificationServiceTest {
         verify(notificationRepository).save(any(Notification.class));
     }
 
-    // ─── helpers ─────────────────────────────────────────────────────────────────
 
     private Notification buildNotification(int id) {
         Notification n = new Notification();

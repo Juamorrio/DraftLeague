@@ -50,7 +50,6 @@ public class MarketValueScheduler {
         runUpdate("post-matchday-23:30");
     }
 
-    // ── private ────────────────────────────────────────────────────────────────
 
     private void runUpdate(String label) {
         try {

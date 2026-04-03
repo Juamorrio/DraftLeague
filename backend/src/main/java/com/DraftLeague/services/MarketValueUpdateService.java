@@ -43,34 +43,20 @@ import java.util.*;
 @RequiredArgsConstructor
 public class MarketValueUpdateService {
 
-    // ── Tunable constants ──────────────────────────────────────────────────────
 
-    /** Number of recent matches used to assess a player's current form. */
     private static final int FORM_WINDOW = 5;
-
-    /** Number of recent matches inspected for discipline (cards). */
     private static final int DISCIPLINE_WINDOW = 5;
-
-    /** Maximum price movement (as a fraction) allowed in a single update cycle. */
     private static final double MAX_CHANGE_FRACTION = 0.20; // ±20 %
-
-    /** Absolute minimum market value (3 M). */
     private static final int MIN_VALUE = 3_000_000;
-
-    /** Absolute maximum market value (50 M). */
     private static final int MAX_VALUE = 50_000_000;
-
-    /** Prices are rounded to the nearest multiple of this value. */
     private static final int ROUND_TO = 50_000;
 
-    // ── Expected fantasy-point benchmarks per position ─────────────────────────
 
     private static final double GK_EXPECTED_PTS  = 5.0;
     private static final double DEF_EXPECTED_PTS = 6.0;
     private static final double MID_EXPECTED_PTS = 7.0;
     private static final double FWD_EXPECTED_PTS = 8.0;
 
-    // ── Dependencies ──────────────────────────────────────────────────────────
 
     private final PlayerRepository playerRepository;
     private final PlayerStatisticRepository playerStatisticRepository;
@@ -79,7 +65,6 @@ public class MarketValueUpdateService {
 
     @Autowired @Lazy private MarketValueUpdateService self;
 
-    // ── Lightweight projection used by the bulk recalculation path ────────────
 
     /**
      * Holds only the fields needed by the computation helpers when data is loaded
@@ -137,7 +122,6 @@ public class MarketValueUpdateService {
         }
     }
 
-    // ── Public API ────────────────────────────────────────────────────────────
 
     public Map<String, Integer> recalculateAllMarketValues() {
         return recalculateAllMarketValuesForGameweek(null);
@@ -173,7 +157,6 @@ public class MarketValueUpdateService {
                      "Realiza primero una sincronización de stats exitosa para activar la recalculación completa.", gameweek);
         }
 
-        // ── 2. Per-player computation (writes only, no reads) ─────────────────
         List<Player> players = playerRepository.findAll();
         int updated = 0, skipped = 0, errors = 0;
 
@@ -237,7 +220,6 @@ public class MarketValueUpdateService {
             ? player.getMarketValue()
             : computeBaseValue(player, season);
 
-        // ── 1. Form factor ──────────────────────────────────────────────────────
         List<PlayerStatistic> recentStats = playerStatisticRepository
                 .findRecentStatsByPlayerId(player.getId(), PageRequest.of(0, FORM_WINDOW));
 
@@ -330,12 +312,10 @@ public class MarketValueUpdateService {
 
         double expectedPoints = getExpectedPoints(player.getPosition());
 
-        // ── Fallback: no recent stats ──────────────────────────────────────────
         if (recentStats.isEmpty()) {
             return applySeasonFallbackBulk(player, baseValue, season, expectedPoints, gameweek, existingHistory);
         }
 
-        // ── Form factors (in-memory, no DB) ───────────────────────────────────
         double avgFantasyPoints = recentStats.stream()
                 .mapToInt(PlayerStatLite::totalFantasyPoints)
                 .average().orElse(0.0);
@@ -391,7 +371,6 @@ public class MarketValueUpdateService {
         return true;
     }
 
-    // ── Pre-load helpers (build Maps from bulk query results) ─────────────────
 
     private Map<String, Map<String, Object>> buildSeasonDataMap(List<Map<String, Object>> rows) {
         Map<String, Map<String, Object>> result = new HashMap<>(rows.size() * 2);
@@ -438,7 +417,6 @@ public class MarketValueUpdateService {
         return result;
     }
 
-    // ── Shared persist helper ─────────────────────────────────────────────────
 
     /**
      * Persists the new player price, updates all sell prices in PlayerTeam rows,
@@ -489,7 +467,6 @@ public class MarketValueUpdateService {
         marketValueHistoryRepository.save(history);
     }
 
-    // ── Season-fallback helpers ───────────────────────────────────────────────
 
     /** Single-player path: season-only drift when no recent matches exist. */
     private boolean applySeasonFallback(Player player, int baseValue,
@@ -543,7 +520,6 @@ public class MarketValueUpdateService {
         return true;
     }
 
-    // ── Private helpers ───────────────────────────────────────────────────────
 
     /**
      * Computes a discipline multiplier (≤ 1.0) based on cards received in the
@@ -638,7 +614,6 @@ public class MarketValueUpdateService {
         };
     }
 
-    // ── Computation helpers — PlayerStatistic (single-player path) ────────────
 
     private int safeFantasyPoints(PlayerStatistic ps) {
         if (ps.getTotalFantasyPoints() != null) return ps.getTotalFantasyPoints();
@@ -682,7 +657,6 @@ public class MarketValueUpdateService {
                 avgTackles, avgInter, avgBlocks, avgSaves, avgConceded, cleanRate), 0.88, 1.12);
     }
 
-    // ── Computation helpers — PlayerStatLite (bulk path) ──────────────────────
 
     private double computeConsistencyFactorLite(List<PlayerStatLite> stats) {
         if (stats.isEmpty()) return 1.0;
@@ -744,7 +718,6 @@ public class MarketValueUpdateService {
         return clamp(avgFantasy / expectedPoints, 0.90, 1.15) * ratingBoost;
     }
 
-    // ── Logging helper ────────────────────────────────────────────────────────
 
     private void logFactors(Player player, int baseValue, int newValue,
                             double form, double season, double minutes, double rating,
@@ -759,7 +732,6 @@ public class MarketValueUpdateService {
                 String.format("%.3f", demand), activity);
     }
 
-    // ── Numeric conversion utilities ──────────────────────────────────────────
 
     private int clampInt(int value, int min, int max) { return Math.max(min, Math.min(max, value)); }
 

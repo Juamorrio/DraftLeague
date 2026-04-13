@@ -35,7 +35,6 @@ class PlayerServiceTest {
     @InjectMocks
     private PlayerService playerService;
 
-    // ─── purchasePlayer ───────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("purchasePlayer: jugador disponible con presupuesto suficiente → crea PlayerTeam")
@@ -74,7 +73,6 @@ class PlayerServiceTest {
                 .hasMessageContaining("Ya posees este jugador");
     }
 
-    // ─── getAvailablePlayersForUserInLeague ───────────────────────────────────────
 
     // @Test
     // @DisplayName("getAvailablePlayersForUserInLeague: excluye jugadores ya en posesión")
@@ -98,7 +96,6 @@ class PlayerServiceTest {
     //     assertThat(result.get(0).getId()).isEqualTo("P2");
     // }
 
-    // ─── getPlayerById ────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("getPlayerById: id inexistente → RuntimeException")
@@ -110,7 +107,6 @@ class PlayerServiceTest {
                 .hasMessageContaining("not found");
     }
 
-    // ─── helpers ─────────────────────────────────────────────────────────────────
 
     private User buildUser(int id, String username) {
         User u = new User();

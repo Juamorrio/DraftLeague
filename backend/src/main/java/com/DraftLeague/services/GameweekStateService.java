@@ -57,6 +57,7 @@ public class GameweekStateService {
     /**
      * Convenience method used by TeamService / MarketService to enforce the lock.
      */
+    @Transactional(readOnly = true)
     public boolean isTeamsLocked() {
         return Boolean.TRUE.equals(getState().getTeamsLocked());
     }
@@ -64,6 +65,7 @@ public class GameweekStateService {
     /**
      * Returns the active gameweek or null if none has been activated.
      */
+    @Transactional(readOnly = true)
     public Integer getActiveGameweek() {
         return getState().getActiveGameweek();
     }

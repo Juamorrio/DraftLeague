@@ -39,7 +39,6 @@ import com.DraftLeague.repositories.TeamPlayerGameweekPointsRepository;
 @RestController
 @RequestMapping("/api/v1/fantasy-points")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class FantasyPointsController {
 
     private final FantasyPointsService fantasyPointsService;

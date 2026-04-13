@@ -42,7 +42,6 @@ class AuthServiceTest {
     @InjectMocks
     private AuthService authService;
 
-    // ─── login ───────────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("login: credenciales válidas → devuelve token JWT")
@@ -85,7 +84,6 @@ class AuthServiceTest {
                 .hasMessageContaining("no encontrado");
     }
 
-    // ─── register ────────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("register: request válida → guarda usuario y devuelve token")
@@ -131,7 +129,6 @@ class AuthServiceTest {
                 .hasMessageContaining("email ya está registrado");
     }
 
-    // ─── helpers ─────────────────────────────────────────────────────────────────
 
     private User buildUser(int id, String username, String email) {
         User u = new User();

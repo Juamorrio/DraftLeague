@@ -69,6 +69,7 @@ public class MatchService {
         }
     }
 
+    @Transactional
     public String syncMatches() throws Exception {
         Map<String, List<MatchDTO>> played = fixtureSyncService.fetchPlayedMatches();
         Map<String, List<UpcomingMatchDTO>> upcoming = fixtureSyncService.fetchUpcomingMatches();
@@ -138,6 +139,7 @@ public class MatchService {
         }
     }
 
+    @Transactional
     public String importMatchesFromJson() {
         try {
             Map<String, List<MatchDTO>> played = getPlayedMatches();

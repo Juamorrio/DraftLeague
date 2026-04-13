@@ -290,7 +290,6 @@ public class AdminController {
         }
     }
 
-    // ─── Gameweek State Management ────────────────────────────────────────────────
 
     /**
      * Returns the current global gameweek state (active gameweek and lock status).

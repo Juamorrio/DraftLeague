@@ -57,7 +57,6 @@ class LeagueServiceTest {
         SecurityContextHolder.clearContext();
     }
 
-    // ─── createLeague ────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("createLeague: request válida → persiste liga con código generado")
@@ -81,7 +80,6 @@ class LeagueServiceTest {
         verify(leagueRepository).save(any(League.class));
     }
 
-    // ─── getLeagueById ───────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("getLeagueById: id existente → devuelve la liga")
@@ -103,7 +101,6 @@ class LeagueServiceTest {
                 .isInstanceOf(RuntimeException.class);
     }
 
-    // ─── getRanking ──────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("getRanking: devuelve equipos ordenados por puntos descendente")
@@ -124,7 +121,6 @@ class LeagueServiceTest {
         assertThat(ranking.get(1).get("position")).isEqualTo(2);
     }
 
-    // ─── joinLeagueByCode ────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("joinLeagueByCode: código inválido → RuntimeException")
@@ -169,7 +165,6 @@ class LeagueServiceTest {
                 .hasMessageContaining("en esta liga");
     }
 
-    // ─── helpers ─────────────────────────────────────────────────────────────────
 
     private CreateLeagueRequest buildRequest(String name, int maxTeams, int budget) {
         CreateLeagueRequest r = new CreateLeagueRequest();

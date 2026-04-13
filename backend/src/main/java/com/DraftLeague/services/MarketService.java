@@ -86,6 +86,7 @@ public class MarketService {
         logger.info("Mercado inicializado con {} jugadores", newMarketPlayers.size());
     }
 
+    @Transactional
     public List<MarketPlayer> getAvailableMarketPlayers(Integer leagueId) {
         logger.info("Obteniendo jugadores del mercado para liga {}", leagueId);
         

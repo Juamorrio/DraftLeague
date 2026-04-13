@@ -36,7 +36,6 @@ public class NotificationService {
         this.objectMapper = objectMapper;
     }
 
-    // ─── Helper ──────────────────────────────────────────────────────────────────
 
     private NotificationLeague findOrCreateNotificationLeague(Integer leagueId) {
         return notificationLeagueRepository.findByLeagueId(leagueId)
@@ -67,7 +66,6 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
-    // ─── Create methods ───────────────────────────────────────────────────────────
 
     @Transactional
     public void createClauseNotification(Integer leagueId, User buyer, User seller, Player player, int price) {
@@ -132,7 +130,6 @@ public class NotificationService {
         saveNotification(leagueId, NotificationType.SELL, payload);
     }
 
-    // ─── Query methods ────────────────────────────────────────────────────────────
 
     public List<Notification> getNotificationsByLeague(Integer leagueId) {
         return notificationRepository.findByLeagueIdOrderByCreatedAtDesc(leagueId);

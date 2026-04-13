@@ -78,7 +78,7 @@ public class PlayerStatisticController {
             if (statistic != null) {
                 return ResponseEntity.ok(statistic);
             }
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -91,7 +91,7 @@ public class PlayerStatisticController {
             if (summary != null) {
                 return ResponseEntity.ok(summary);
             }
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             log.error("Error getting player statistics summary for player {}", playerId, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

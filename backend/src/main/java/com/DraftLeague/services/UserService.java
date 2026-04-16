@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -29,12 +30,17 @@ public class UserService {
     private final UserRepository userRepository;
     private final TeamRepository teamRepository;
     private final LeagueRepository leagueRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, TeamRepository teamRepository, LeagueRepository leagueRepository) {
+    public UserService(UserRepository userRepository,
+                       TeamRepository teamRepository,
+                       LeagueRepository leagueRepository,
+                       PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.teamRepository = teamRepository;
         this.leagueRepository = leagueRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -42,7 +48,8 @@ public class UserService {
         User user = new User();
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
+        // Always store a BCrypt-encoded hash, never the raw password.
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setDisplayName(request.getDisplayName());
         user.setRole("USER");
         this.userRepository.save(user);
@@ -54,7 +61,7 @@ public class UserService {
         User userToUpdate = userRepository.findById(userId)
                 .orElseThrow(() -> new DataRetrievalFailureException("User not found"));
         if (request.getDisplayName() != null) userToUpdate.setDisplayName(request.getDisplayName());
-        if (request.getPassword() != null)    userToUpdate.setPassword(request.getPassword());
+        if (request.getPassword() != null)    userToUpdate.setPassword(passwordEncoder.encode(request.getPassword()));
         if (request.getUsername() != null)    userToUpdate.setUsername(request.getUsername());
         if (request.getEmail() != null)       userToUpdate.setEmail(request.getEmail());
         return this.userRepository.save(userToUpdate);

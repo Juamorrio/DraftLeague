@@ -42,7 +42,9 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mariadb://db:3306/${DB_NAME:-draftleague}?tinyInt1isBit=false
       SPRING_DATASOURCE_USERNAME: ${DB_USER:-draftuser}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-draftpass}
-      JWT_SECRET: ${JWT_SECRET:-supersecretjwtkey512bitslong_pleasechangeme}
+      # JWT_SECRET must be provided via .env. No fallback — the backend refuses
+      # to start without a real secret (see SecurityConfig / JwtService).
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set in .env (use `openssl rand -base64 64`)}
       ML_XGBOOST_URL: http://ml-service:8000
       INTERNAL_API_KEY: ${INTERNAL_API_KEY:-changeme-internal}
     ports:

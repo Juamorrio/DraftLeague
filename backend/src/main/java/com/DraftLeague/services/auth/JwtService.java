@@ -26,7 +26,6 @@ public class JwtService {
     @Value("${jwt.secret:}")
     private String jwtSecretProperty;
 
-    private static final String DEFAULT_DEV_SECRET = "dev-secret-key-change-me-32-bytes-minimum-2025";
     private static final long TOKEN_EXPIRATION_MS = 10L * 60 * 60 * 1000;
 
     public String getToken(User user) {
@@ -78,7 +77,12 @@ public class JwtService {
         if (env != null && !env.isBlank()) {
             return env;
         }
-        return DEFAULT_DEV_SECRET;
+        // Fail fast: refuse to sign / verify tokens with a hardcoded fallback.
+        // This is intentional — see security audit C8.
+        throw new IllegalStateException(
+            "JWT secret is not configured. Set the `jwt.secret` property or the "
+            + "JWT_SECRET environment variable to a strong random value "
+            + "(>= 32 bytes) before starting the application.");
     }
 
     public String extractUsername(String token) {

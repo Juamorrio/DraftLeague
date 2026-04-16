@@ -16,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +24,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,20 +40,26 @@ class UserServiceTest {
     @Mock
     private LeagueRepository leagueRepository;
 
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @InjectMocks
     private UserService userService;
 
 
     @Test
-    @DisplayName("postUser: petición válida → guarda usuario con rol 'USER'")
+    @DisplayName("postUser: petición válida → guarda usuario con rol 'USER' y hash BCrypt")
     void postUser_validRequest_savesUserWithRoleUser() {
         CreateUserRequest req = buildCreateRequest("alice", "alice@mail.com", "pass12345", "Alice");
+        when(passwordEncoder.encode(anyString())).thenReturn("ENCODED");
         when(userRepository.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
 
         User result = userService.postUser(req);
 
         assertThat(result.getRole()).isEqualTo("USER");
         assertThat(result.getUsername()).isEqualTo("alice");
+        assertThat(result.getPassword()).isEqualTo("ENCODED");
+        verify(passwordEncoder).encode("pass12345");
         verify(userRepository).save(any(User.class));
     }
 
@@ -70,6 +78,25 @@ class UserServiceTest {
 
         assertThat(result.getDisplayName()).isEqualTo("NewName");
         assertThat(result.getEmail()).isEqualTo("alice@mail.com"); // sin cambios
+        verify(passwordEncoder, never()).encode(anyString());
+    }
+
+    @Test
+    @DisplayName("updateUser: password no nulo → se almacena hash BCrypt, no cleartext")
+    void updateUser_withPassword_encodesBeforeStoring() {
+        User existing = buildUser(1, "alice", "alice@mail.com", "Alice");
+        existing.setPassword("OLD_HASH");
+        when(userRepository.findById(1)).thenReturn(Optional.of(existing));
+        when(userRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(passwordEncoder.encode("newpassword")).thenReturn("NEW_HASH");
+
+        UpdateUserRequest req = new UpdateUserRequest();
+        req.setPassword("newpassword");
+
+        User result = userService.updateUser(req, 1);
+
+        assertThat(result.getPassword()).isEqualTo("NEW_HASH");
+        verify(passwordEncoder).encode("newpassword");
     }
 
     @Test

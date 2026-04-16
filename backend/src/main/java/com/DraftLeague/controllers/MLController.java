@@ -106,6 +106,7 @@ public class MLController {
      * the prediction cache so the next GET returns fresh predictions.
      */
     @PostMapping("/recalculate-fantasy-points")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, String>> recalculateFantasyPoints() {
         fantasyPointsService.updateAllPlayerPoints();
         playerPredictionService.invalidateCache();

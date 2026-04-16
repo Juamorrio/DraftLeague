@@ -15,10 +15,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -68,9 +70,11 @@ class UserRestControllerTest {
 
 
     @Test
-    @DisplayName("PUT /api/v1/users/1 — petición válida → 200 con usuario actualizado")
-    void updateUser_validRequest_returns200() throws Exception {
+    @DisplayName("PUT /api/v1/users/1 — self → 200 con usuario actualizado")
+    @WithMockUser(username = "alice", roles = "USER")
+    void updateUser_self_returns200() throws Exception {
         User user = buildUser(1, "alice", "alice@mail.com", "NewName");
+        when(userRepository.findUserByUsername("alice")).thenReturn(Optional.of(user));
         when(userService.updateUser(any(), eq(1))).thenReturn(user);
 
         UpdateUserRequest req = new UpdateUserRequest();
@@ -83,13 +87,53 @@ class UserRestControllerTest {
                 .andExpect(jsonPath("$.displayName").value("NewName"));
     }
 
+    @Test
+    @DisplayName("PUT /api/v1/users/2 — usuario distinto → 403 Forbidden")
+    @WithMockUser(username = "alice", roles = "USER")
+    void updateUser_otherUser_returns403() throws Exception {
+        User alice = buildUser(1, "alice", "alice@mail.com", "Alice");
+        when(userRepository.findUserByUsername("alice")).thenReturn(Optional.of(alice));
+
+        UpdateUserRequest req = new UpdateUserRequest();
+        req.setDisplayName("Hacked");
+
+        mockMvc.perform(put("/api/v1/users/2")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isForbidden());
+    }
+
 
     @Test
-    @DisplayName("DELETE /api/v1/users/1 → 204 sin contenido")
-    void deleteUser_returns204() throws Exception {
+    @DisplayName("DELETE /api/v1/users/1 — self → 204")
+    @WithMockUser(username = "alice", roles = "USER")
+    void deleteUser_self_returns204() throws Exception {
+        User user = buildUser(1, "alice", "alice@mail.com", "Alice");
+        when(userRepository.findUserByUsername("alice")).thenReturn(Optional.of(user));
         doNothing().when(userService).deleteUser(1);
 
         mockMvc.perform(delete("/api/v1/users/1"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("DELETE /api/v1/users/2 — usuario distinto → 403 Forbidden")
+    @WithMockUser(username = "alice", roles = "USER")
+    void deleteUser_otherUser_returns403() throws Exception {
+        User alice = buildUser(1, "alice", "alice@mail.com", "Alice");
+        when(userRepository.findUserByUsername("alice")).thenReturn(Optional.of(alice));
+
+        mockMvc.perform(delete("/api/v1/users/2"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("DELETE /api/v1/users/7 — ADMIN → 204")
+    @WithMockUser(username = "root", roles = "ADMIN")
+    void deleteUser_admin_returns204() throws Exception {
+        doNothing().when(userService).deleteUser(7);
+
+        mockMvc.perform(delete("/api/v1/users/7"))
                 .andExpect(status().isNoContent());
     }
 

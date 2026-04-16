@@ -1,3 +1,4 @@
+import os
 import sys
 
 try:
@@ -12,22 +13,35 @@ except ImportError:
         print("Install with: pip install pymysql")
         sys.exit(1)
 
+# Credentials come from environment variables. No defaults — the script fails
+# fast if they are missing instead of trying a hardcoded password.
+DB_USER = os.environ.get("DB_USERNAME") or os.environ.get("DB_USER")
+DB_PASSWORD = os.environ.get("DB_PASSWORD")
+DB_HOST = os.environ.get("DB_HOST", "localhost")
+DB_PORT = int(os.environ.get("DB_PORT", "3306"))
+DB_NAME = os.environ.get("DB_NAME", "draftleague")
+
+if not DB_USER or DB_PASSWORD is None:
+    print("Error: DB_USERNAME and DB_PASSWORD environment variables must be set.")
+    sys.exit(1)
+
 try:
+    # Connect to MariaDB/MySQL
     if conn_module == pymysql:
         conn = pymysql.connect(
-            user="root",
-            password="juan",
-            host="localhost",
-            port=3306,
-            database="draftleague"
+            user=DB_USER,
+            password=DB_PASSWORD,
+            host=DB_HOST,
+            port=DB_PORT,
+            database=DB_NAME,
         )
     else:
         conn = conn_module.connect(
-            user="root",
-            password="juan",
-            host="localhost",
-            port=3306,
-            database="draftleague"
+            user=DB_USER,
+            password=DB_PASSWORD,
+            host=DB_HOST,
+            port=DB_PORT,
+            database=DB_NAME,
         )
 
     cursor = conn.cursor()

@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class PlayerStatisticController {
     private final PlayerStatisticService playerStatisticService;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PlayerStatistic> createStatistic(@RequestBody CreatePlayerStatisticRequest request) {
         try {
             PlayerStatistic saved = playerStatisticService.saveStatistic(request);
@@ -34,6 +36,7 @@ public class PlayerStatisticController {
     }
 
     @PostMapping("/bulk")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, Object>> createBulkStatistics(@RequestBody List<Map<String, Object>> statisticsData) {
         try {
             List<PlayerStatistic> saved = playerStatisticService.saveBulkFromJson(statisticsData);

@@ -1,0 +1,35 @@
+name: Dockerfile Frontend – Regression Test
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "Dockerfile.frontend"
+      - "frontend/package.json"
+      - "frontend/package-lock.json"
+      - "scripts/regression/test_dockerfile_frontend_npm.sh"
+      - ".github/workflows/dockerfile-frontend-regression.yml"
+  pull_request:
+    branches: ["**"]
+    paths:
+      - "Dockerfile.frontend"
+      - "frontend/package.json"
+      - "frontend/package-lock.json"
+      - "scripts/regression/test_dockerfile_frontend_npm.sh"
+      - ".github/workflows/dockerfile-frontend-regression.yml"
+
+jobs:
+  regression:
+    name: npm install fails, npm ci succeeds
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker
+
+      - name: Run Dockerfile.frontend regression test
+        run: ./scripts/regression/test_dockerfile_frontend_npm.sh

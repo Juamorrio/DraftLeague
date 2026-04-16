@@ -27,7 +27,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        # Pinned to the v3 tag's commit SHA per Codacy's third-party action
+        # pinning rule. Refresh this SHA when bumping to a new major/minor.
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
         with:
           driver: docker
 

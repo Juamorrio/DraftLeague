@@ -6,7 +6,7 @@ import Player from '../../components/player';
 import authService, { authenticatedFetch } from '../../services/authService';
 import withAuth from '../../components/withAuth';
 import { createOffer, getIncomingOffers, getOutgoingOffers } from '../../services/tradeOfferService';
-import { buyoutPlayer as buyoutPlayerService } from '../../services/buyoutService';
+import { buyoutPlayer } from '../../services/buyoutService';
 import ChipSelectorModal from '../../components/Team/ChipSelectorModal';
 import TradeOfferPriceModal from '../../components/Team/TradeOfferPriceModal';
 import TradesSection from '../../components/Team/TradesSection';
@@ -548,7 +548,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 	const buyout = async (pt) => {
 		if (!selectedLeague?.id || !viewUser?.id || !pt?.player?.id) return;
 		try {
-			const data = await buyoutPlayerService(selectedLeague.id, viewUser.id, pt.player.id);
+			const data = await buyoutPlayer(selectedLeague.id, viewUser.id, pt.player.id);
 			if (typeof data.budget === 'number') setMyBudget(data.budget);
 			Alert.alert('Clausulazo realizado', 'El jugador ha sido transferido a tu equipo.');
 			setViewUser(null);

@@ -6,6 +6,7 @@ import Player from '../../components/player';
 import authService, { authenticatedFetch } from '../../services/authService';
 import withAuth from '../../components/withAuth';
 import { createOffer, getIncomingOffers, getOutgoingOffers } from '../../services/tradeOfferService';
+import { buyoutPlayer as buyoutPlayerService } from '../../services/buyoutService';
 import ChipSelectorModal from '../../components/Team/ChipSelectorModal';
 import TradeOfferPriceModal from '../../components/Team/TradeOfferPriceModal';
 import TradesSection from '../../components/Team/TradesSection';
@@ -547,24 +548,14 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 	const buyout = async (pt) => {
 		if (!selectedLeague?.id || !viewUser?.id || !pt?.player?.id) return;
 		try {
-			const res = await authenticatedFetch(`/api/v1/teams/league/${selectedLeague.id}/buyout`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ sellerUserId: viewUser.id, playerId: String(pt.player.id) })
-			});
-			if (res.ok) {
-				let data = null; try { data = await res.json(); } catch {}
-				if (data && typeof data.budget === 'number') setMyBudget(data.budget);
-				Alert.alert('Clausulazo realizado', 'El jugador ha sido transferido a tu equipo.');
-				setViewUser(null);
-				const currentUser = await authService.getCurrentUser();
-				if (currentUser?.id) {
-					await loadTeam({ overrideUserId: currentUser.id });
-					await loadOwnedPlayers({ force: true });
-				}
-			} else {
-				const data = await res.json().catch(() => ({}));
-				Alert.alert('Error', data?.message || data?.error || 'No se pudo realizar el clausulazo');
+			const data = await buyoutPlayerService(selectedLeague.id, viewUser.id, pt.player.id);
+			if (typeof data.budget === 'number') setMyBudget(data.budget);
+			Alert.alert('Clausulazo realizado', 'El jugador ha sido transferido a tu equipo.');
+			setViewUser(null);
+			const currentUser = await authService.getCurrentUser();
+			if (currentUser?.id) {
+				await loadTeam({ overrideUserId: currentUser.id });
+				await loadOwnedPlayers({ force: true });
 			}
 		} catch (e) {
 			Alert.alert('Error', e?.message || 'Fallo al ejecutar clausulazo');

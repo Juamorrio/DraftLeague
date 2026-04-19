@@ -23,7 +23,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -600,6 +600,197 @@ class TeamServiceTest {
     }
 
     // -------------------------------------------------------------------------
+    // buyoutPlayer
+    // -------------------------------------------------------------------------
+
+    @Test
+    @DisplayName("buyoutPlayer: equipos bloqueados → RuntimeException")
+    void buyoutPlayer_teamsLocked_throwsException() {
+        when(gameweekStateService.isTeamsLocked()).thenReturn(true);
+
+        assertThatThrownBy(() -> teamService.buyoutPlayer(1, 2, "P1"))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("bloqueadas");
+    }
+
+    @Test
+    @DisplayName("buyoutPlayer: comprador y vendedor son el mismo usuario → RuntimeException")
+    void buyoutPlayer_selfBuyout_throwsException() {
+        User buyer = buildUser(1, "alice");
+
+        when(gameweekStateService.isTeamsLocked()).thenReturn(false);
+        setupSecurityContext("alice");
+        when(userRepository.findUserByUsername("alice")).thenReturn(java.util.Optional.of(buyer));
+
+        try {
+            assertThatThrownBy(() -> teamService.buyoutPlayer(1, 1, "P1"))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessageContaining("ti mismo");
+        } finally {
+            org.springframework.security.core.context.SecurityContextHolder.clearContext();
+        }
+    }
+
+    @Test
+    @DisplayName("buyoutPlayer: jugador no pertenece al equipo vendedor → RuntimeException")
+    void buyoutPlayer_playerNotInSellerTeam_throwsException() {
+        User buyer = buildUser(1, "alice");
+        User seller = buildUser(2, "bob");
+        League league = buildLeague(1);
+        Team buyerTeam = buildTeam(1, buyer, league);
+        Team sellerTeam = buildTeam(2, seller, league);
+        sellerTeam.setPlayerTeams(new java.util.ArrayList<>());
+
+        when(gameweekStateService.isTeamsLocked()).thenReturn(false);
+        setupSecurityContext("alice");
+        when(userRepository.findUserByUsername("alice")).thenReturn(java.util.Optional.of(buyer));
+        when(userRepository.findById(1)).thenReturn(java.util.Optional.of(buyer));
+        when(userRepository.findById(2)).thenReturn(java.util.Optional.of(seller));
+        when(leagueRepository.findById(1L)).thenReturn(java.util.Optional.of(league));
+        when(teamRepository.findByLeagueAndUser(league, buyer)).thenReturn(buyerTeam);
+        when(teamRepository.findByLeagueAndUser(league, seller)).thenReturn(sellerTeam);
+
+        try {
+            assertThatThrownBy(() -> teamService.buyoutPlayer(1, 2, "P1"))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessageContaining("no pertenece al equipo");
+        } finally {
+            org.springframework.security.core.context.SecurityContextHolder.clearContext();
+        }
+    }
+
+    @Test
+    @DisplayName("buyoutPlayer: presupuesto insuficiente → RuntimeException")
+    void buyoutPlayer_insufficientBudget_throwsException() {
+        User buyer = buildUser(1, "alice");
+        User seller = buildUser(2, "bob");
+        League league = buildLeague(1);
+        // buyer has only 100_000 budget
+        Team buyerTeam = buildTeam(1, buyer, league);
+        buyerTeam.setBudget(100_000);
+        Team sellerTeam = buildTeam(2, seller, league);
+
+        Player player = buildPlayer("P1", Position.DEL, 2_000_000);
+        PlayerTeam playerTeam = new PlayerTeam();
+        playerTeam.setPlayer(player);
+        playerTeam.setTeam(sellerTeam);
+        playerTeam.setBuyPrice(2_000_000);
+        playerTeam.setSellPrice(2_000_000);
+        playerTeam.setIsCaptain(false);
+        playerTeam.setLined(false);
+        sellerTeam.setPlayerTeams(new java.util.ArrayList<>(List.of(playerTeam)));
+
+        when(gameweekStateService.isTeamsLocked()).thenReturn(false);
+        setupSecurityContext("alice");
+        when(userRepository.findUserByUsername("alice")).thenReturn(java.util.Optional.of(buyer));
+        when(userRepository.findById(1)).thenReturn(java.util.Optional.of(buyer));
+        when(userRepository.findById(2)).thenReturn(java.util.Optional.of(seller));
+        when(leagueRepository.findById(1L)).thenReturn(java.util.Optional.of(league));
+        when(teamRepository.findByLeagueAndUser(league, buyer)).thenReturn(buyerTeam);
+        when(teamRepository.findByLeagueAndUser(league, seller)).thenReturn(sellerTeam);
+
+        try {
+            assertThatThrownBy(() -> teamService.buyoutPlayer(1, 2, "P1"))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessageContaining("insuficiente");
+        } finally {
+            org.springframework.security.core.context.SecurityContextHolder.clearContext();
+        }
+    }
+
+    @Test
+    @DisplayName("buyoutPlayer: parámetros válidos → transfiere jugador y actualiza presupuestos")
+    void buyoutPlayer_valid_transfersPlayerAndUpdatesBudgets() {
+        User buyer = buildUser(1, "alice");
+        User seller = buildUser(2, "bob");
+        League league = buildLeague(1);
+        Team buyerTeam = buildTeam(1, buyer, league);
+        buyerTeam.setBudget(10_000_000);
+        Team sellerTeam = buildTeam(2, seller, league);
+        sellerTeam.setBudget(5_000_000);
+
+        Player player = buildPlayer("P1", Position.DEL, 3_000_000);
+        PlayerTeam playerTeam = new PlayerTeam();
+        playerTeam.setPlayer(player);
+        playerTeam.setTeam(sellerTeam);
+        playerTeam.setBuyPrice(3_000_000);
+        playerTeam.setSellPrice(3_000_000);
+        playerTeam.setIsCaptain(false);
+        playerTeam.setLined(false);
+        sellerTeam.setPlayerTeams(new java.util.ArrayList<>(List.of(playerTeam)));
+
+        when(gameweekStateService.isTeamsLocked()).thenReturn(false);
+        setupSecurityContext("alice");
+        when(userRepository.findUserByUsername("alice")).thenReturn(java.util.Optional.of(buyer));
+        when(userRepository.findById(1)).thenReturn(java.util.Optional.of(buyer));
+        when(userRepository.findById(2)).thenReturn(java.util.Optional.of(seller));
+        when(leagueRepository.findById(1L)).thenReturn(java.util.Optional.of(league));
+        when(teamRepository.findByLeagueAndUser(league, buyer)).thenReturn(buyerTeam);
+        when(teamRepository.findByLeagueAndUser(league, seller)).thenReturn(sellerTeam);
+        when(playerTeamRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(teamRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        doNothing().when(notificationService).createClauseNotification(anyInt(), any(), any(), any(), anyInt());
+
+        try {
+            Team result = teamService.buyoutPlayer(1, 2, "P1");
+
+            assertThat(result.getBudget()).isEqualTo(10_000_000 - 3_000_000);
+            assertThat(sellerTeam.getBudget()).isEqualTo(5_000_000 + 3_000_000);
+            assertThat(playerTeam.getTeam()).isEqualTo(buyerTeam);
+            assertThat(playerTeam.getIsCaptain()).isFalse();
+            assertThat(playerTeam.getLined()).isFalse();
+            verify(playerTeamRepository).save(playerTeam);
+            verify(teamRepository, times(2)).save(any());
+            verify(notificationService).createClauseNotification(eq(1), eq(buyer), eq(seller), eq(player), eq(3_000_000));
+        } finally {
+            org.springframework.security.core.context.SecurityContextHolder.clearContext();
+        }
+    }
+
+    @Test
+    @DisplayName("buyoutPlayer: usa marketValue cuando buyPrice y sellPrice son nulos")
+    void buyoutPlayer_fallsBackToMarketValue_whenNoPriceSet() {
+        User buyer = buildUser(1, "alice");
+        User seller = buildUser(2, "bob");
+        League league = buildLeague(1);
+        Team buyerTeam = buildTeam(1, buyer, league);
+        buyerTeam.setBudget(10_000_000);
+        Team sellerTeam = buildTeam(2, seller, league);
+        sellerTeam.setBudget(1_000_000);
+
+        Player player = buildPlayer("P1", Position.MID, 2_500_000);
+        PlayerTeam playerTeam = new PlayerTeam();
+        playerTeam.setPlayer(player);
+        playerTeam.setTeam(sellerTeam);
+        playerTeam.setBuyPrice(null);
+        playerTeam.setSellPrice(null);
+        playerTeam.setIsCaptain(false);
+        playerTeam.setLined(false);
+        sellerTeam.setPlayerTeams(new java.util.ArrayList<>(List.of(playerTeam)));
+
+        when(gameweekStateService.isTeamsLocked()).thenReturn(false);
+        setupSecurityContext("alice");
+        when(userRepository.findUserByUsername("alice")).thenReturn(java.util.Optional.of(buyer));
+        when(userRepository.findById(1)).thenReturn(java.util.Optional.of(buyer));
+        when(userRepository.findById(2)).thenReturn(java.util.Optional.of(seller));
+        when(leagueRepository.findById(1L)).thenReturn(java.util.Optional.of(league));
+        when(teamRepository.findByLeagueAndUser(league, buyer)).thenReturn(buyerTeam);
+        when(teamRepository.findByLeagueAndUser(league, seller)).thenReturn(sellerTeam);
+        when(playerTeamRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(teamRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        doNothing().when(notificationService).createClauseNotification(anyInt(), any(), any(), any(), anyInt());
+
+        try {
+            Team result = teamService.buyoutPlayer(1, 2, "P1");
+
+            // Falls back to marketValue = 2_500_000
+            assertThat(result.getBudget()).isEqualTo(10_000_000 - 2_500_000);
+        } finally {
+            org.springframework.security.core.context.SecurityContextHolder.clearContext();
+        }
+    }
+
+    // -------------------------------------------------------------------------
     // getTeamByUserAndLeague — user not found
     // -------------------------------------------------------------------------
 
@@ -669,5 +860,16 @@ class TeamServiceTest {
         p.setPosition(position);
         p.setMarketValue(marketValue);
         return p;
+    }
+
+    private void setupSecurityContext(String username) {
+        org.springframework.security.core.Authentication mockAuth =
+                mock(org.springframework.security.core.Authentication.class);
+        org.springframework.security.core.context.SecurityContext mockSecCtx =
+                mock(org.springframework.security.core.context.SecurityContext.class);
+        when(mockAuth.getName()).thenReturn(username);
+        when(mockAuth.isAuthenticated()).thenReturn(true);
+        when(mockSecCtx.getAuthentication()).thenReturn(mockAuth);
+        org.springframework.security.core.context.SecurityContextHolder.setContext(mockSecCtx);
     }
 }

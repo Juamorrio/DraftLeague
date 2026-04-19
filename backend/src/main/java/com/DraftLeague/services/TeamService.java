@@ -220,6 +220,10 @@ public class TeamService {
         User buyer = userRepository.findUserByUsername(buyerUsername)
             .orElseThrow(() -> new RuntimeException("Usuario comprador no encontrado"));
 
+        if (buyer.getId().equals(sellerUserId)) {
+            throw new RuntimeException("No puedes clausularte a ti mismo");
+        }
+
         Team buyerTeam = getTeamByUserAndLeague(leagueId, buyer.getId());
         Team sellerTeam = getTeamByUserAndLeague(leagueId, sellerUserId);
 

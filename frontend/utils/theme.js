@@ -25,13 +25,21 @@ export const colors = {
   dangerDark:     '#DC2626', // red-600 — pressed danger
   dangerBg:       '#FEF2F2', // red-50
   warning:        '#F59E0B', // amber-500 — captain badge / warnings
+  warningMid:     '#D97706', // amber-600 — chip status / banners
   warningDark:    '#B45309', // amber-700 — active bid label / pressed warning
   warningDeep:    '#92400E', // amber-800 — active bid amount
   warningBg:      '#FFFBEB', // amber-50
+  warningBgSoft:  '#FEF3C7', // amber-100 — chip card active background
   success:        '#16A34A', // same as primary — points / success states
   successBg:      '#F0FDF4', // green-50
   purple:         '#8B5CF6', // violet-500 — trade offers
+  purpleDark:     '#7C3AED', // violet-600 — trade offer CTA
   purpleBg:       '#F5F3FF', // violet-50
+
+  // Info blues (loading, secondary actions, historical banners)
+  info:           '#0369A1', // sky-700 — "saving" / progress indicators
+  infoBlue:       '#2563EB', // blue-600 — secondary action buttons
+  infoDeep:       '#1E3A8A', // blue-900 — historical banners
 
   // Neutrals
   bgApp:          '#F8FAFC', // slate-50 — screen background

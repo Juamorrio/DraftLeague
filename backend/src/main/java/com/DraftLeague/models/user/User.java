@@ -1,6 +1,5 @@
 package com.DraftLeague.models.user;
 
-import com.DraftLeague.models.Chat.Message;
 import com.DraftLeague.models.Notification.Notification;
 
 import jakarta.persistence.Column;
@@ -17,9 +16,6 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import com.DraftLeague.models.user.User;
-import com.DraftLeague.models.Notification.Notification;
-
 @Getter
 @Setter
 @Entity
@@ -57,11 +53,5 @@ public class User  {
 	@ManyToOne
 	@JoinColumn(name = "notification_id", nullable = true)
 	private Notification notification;
-
-	@ManyToOne
-	@JoinColumn(name = "message_id", nullable = true)
-	private Message message; 
-
-	
 
 }

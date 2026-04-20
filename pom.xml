@@ -84,11 +84,6 @@
 			<version>3.3.3</version>
 		</dependency>
 		<dependency>
-			<groupId>com.mysql</groupId>
-			<artifactId>mysql-connector-j</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>test</scope>
@@ -121,13 +116,6 @@
 		<resources>
 			<resource>
 				<directory>backend/src/main/resources</directory>
-			</resource>
-			<resource>
-				<directory>backend/src/main/java/com/DraftLeague/scrapping</directory>
-				<includes>
-					<include>**/*.json</include>
-				</includes>
-				<targetPath>scrapping</targetPath>
 			</resource>
 		</resources>
 		<testResources>

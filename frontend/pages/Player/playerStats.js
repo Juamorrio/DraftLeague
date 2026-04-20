@@ -117,7 +117,7 @@ function PlayerStats({ navigation }) {
 				setPlayerPrediction(prediction);
 			}
 		} catch (e) {
-			console.log('Error al cargar prediccion de jugador:', e);
+			console.error('Error al cargar prediccion de jugador:', e);
 		} finally {
 			setLoadingPrediction(false);
 		}

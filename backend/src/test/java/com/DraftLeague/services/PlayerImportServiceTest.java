@@ -1,6 +1,6 @@
 package com.DraftLeague.services;
 
-import com.DraftLeague.dto.PlayerImportDto;
+import com.DraftLeague.dto.PlayerImportDTO;
 import com.DraftLeague.models.Player.Player;
 import com.DraftLeague.repositories.PlayerRepository;
 import com.DraftLeague.scraping.GameweekStatsSyncService;
@@ -11,14 +11,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.io.File;
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -35,9 +32,6 @@ class PlayerImportServiceTest {
     private PlayerRepository playerRepository;
 
     @Mock
-    private ObjectMapper objectMapper;
-
-    @Mock
     private PlayerStatisticService playerStatisticService;
 
     @Mock
@@ -49,14 +43,17 @@ class PlayerImportServiceTest {
     @Mock
     private EntityManager entityManager;
 
-    @InjectMocks
     private PlayerImportService playerImportService;
 
     @BeforeEach
     void setUp() {
+        // Use a real ObjectMapper so ClassPathResource JSON is deserialized properly
+        ObjectMapper realMapper = new ObjectMapper();
+        playerImportService = new PlayerImportService(
+                playerRepository, realMapper, playerStatisticService,
+                playerSquadSyncService, gameweekStatsSyncService);
         ReflectionTestUtils.setField(playerImportService, "entityManager", entityManager);
     }
-
 
     @Test
     @DisplayName("syncGameweekStats: delega en gameweekStatsSyncService y luego en playerStatisticService")
@@ -87,27 +84,14 @@ class PlayerImportServiceTest {
         assertThat(result).isEqualTo(0);
     }
 
-
     @Test
     @DisplayName("importNewPlayersOnly: jugadores existentes → no se crean (devuelve 0)")
-    void importNewPlayersOnly_allPlayersExist_returnsZero(@TempDir Path tempDir) throws Exception {
-        PlayerImportDto dto = buildDto("P1", "Alice", "GK");
-        List<PlayerImportDto> dtos = List.of(dto);
-
-        ObjectMapper realMapper = new ObjectMapper();
-        File jsonFile = tempDir.resolve("players_data.json").toFile();
-        realMapper.writeValue(jsonFile, dtos);
-
-        // Usar ObjectMapper real para leer el archivo
-        PlayerImportService realService = new PlayerImportService(
-                playerRepository, realMapper, playerStatisticService,
-                playerSquadSyncService, gameweekStatsSyncService);
-        ReflectionTestUtils.setField(realService, "scriptsPath", tempDir.toString());
-        ReflectionTestUtils.setField(realService, "entityManager", entityManager);
-
+    void importNewPlayersOnly_allPlayersExist_returnsZero() throws Exception {
+        // Test JSON at src/test/resources/data/players_data.json contains P1 and P2
         when(playerRepository.existsById("P1")).thenReturn(true);
+        when(playerRepository.existsById("P2")).thenReturn(true);
 
-        int result = realService.importNewPlayersOnly();
+        int result = playerImportService.importNewPlayersOnly();
 
         assertThat(result).isEqualTo(0);
         verify(playerRepository, never()).saveAll(argThat(list -> !((List<?>) list).isEmpty()));
@@ -115,38 +99,15 @@ class PlayerImportServiceTest {
 
     @Test
     @DisplayName("importNewPlayersOnly: jugadores nuevos → se crean y se guardan")
-    void importNewPlayersOnly_newPlayers_savesAll(@TempDir Path tempDir) throws Exception {
-        PlayerImportDto dto = buildDto("P2", "Bob", "ST");
-        List<PlayerImportDto> dtos = List.of(dto);
-
-        ObjectMapper realMapper = new ObjectMapper();
-        File jsonFile = tempDir.resolve("players_data.json").toFile();
-        realMapper.writeValue(jsonFile, dtos);
-
-        PlayerImportService realService = new PlayerImportService(
-                playerRepository, realMapper, playerStatisticService,
-                playerSquadSyncService, gameweekStatsSyncService);
-        ReflectionTestUtils.setField(realService, "scriptsPath", tempDir.toString());
-        ReflectionTestUtils.setField(realService, "entityManager", entityManager);
-
+    void importNewPlayersOnly_newPlayers_savesAll() throws Exception {
+        // P1 exists, P2 is new
+        when(playerRepository.existsById("P1")).thenReturn(true);
         when(playerRepository.existsById("P2")).thenReturn(false);
         when(playerRepository.saveAll(anyList())).thenReturn(List.of(new Player()));
 
-        int result = realService.importNewPlayersOnly();
+        int result = playerImportService.importNewPlayersOnly();
 
         assertThat(result).isEqualTo(1);
         verify(playerRepository).saveAll(argThat(list -> ((List<?>) list).size() == 1));
-    }
-
-
-    private PlayerImportDto buildDto(String id, String name, String position) {
-        PlayerImportDto dto = new PlayerImportDto();
-        dto.setId(id);
-        dto.setFullName(name);
-        dto.setPosition(position);
-        dto.setTeamId(541);
-        dto.setMarketValue(6_000_000);
-        dto.setAvatarUrl("http://example.com/img.png");
-        return dto;
     }
 }

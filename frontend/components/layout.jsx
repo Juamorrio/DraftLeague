@@ -5,12 +5,12 @@ import footballPidge from '../assets/layout/football-field.png'
 import trophy from '../assets/layout/trophy.png'
 import cart from '../assets/layout/cart.png'
 import robot from '../assets/layout/robot.png'
-import footballPidge2 from '../assets/layout/football-field white.png'
-import trophy2 from '../assets/layout/trophy white.png'
-import cart2 from '../assets/layout/cart white.png'
-import robot2 from '../assets/layout/robot white.png'
+import footballPidge2 from '../assets/layout/football-field-white.png'
+import trophy2 from '../assets/layout/trophy-white.png'
+import cart2 from '../assets/layout/cart-white.png'
+import robot2 from '../assets/layout/robot-white.png'
 import home from '../assets/layout/home.png'
-import home2 from '../assets/layout/home white.png'
+import home2 from '../assets/layout/home-white.png'
 import { useLeague } from '../context/LeagueContext';
 import { colors, fontSize, fontWeight, radius, spacing } from '../utils/theme';
 

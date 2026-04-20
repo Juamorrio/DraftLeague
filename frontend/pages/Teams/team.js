@@ -322,7 +322,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 				setActiveGameweek(data.activeGameweek ?? null);
 			}
 		} catch (e) {
-			console.log('Error cargando estado de jornada:', e);
+			console.error('Error cargando estado de jornada:', e);
 		}
 	};
 
@@ -446,13 +446,10 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 				const response = await authenticatedFetch(`/api/ml/predict/team/${teamId}`);
 				if (response.ok) {
 					const prediction = await response.json();
-					console.log('Prediccion de equipo cargada:', prediction);
 					setTeamPrediction(prediction);
-				} else {
-					console.log('No se pudo cargar la prediccion del equipo');
 				}
 			} catch (e) {
-				console.log('Error al cargar prediccion de equipo:', e);
+				console.error('Error al cargar prediccion de equipo:', e);
 			} finally {
 				setLoadingPrediction(false);
 			}
@@ -767,10 +764,10 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 							<Text style={styles.autoSaveTxt}>Guardando...</Text>
 						)}
 						{autoSaveStatus === 'saved' && (
-							<Text style={[styles.autoSaveTxt, { color: '#16a34a' }]}>✓ Guardado</Text>
+							<Text style={[styles.autoSaveTxt, { color: colors.primary }]}>✓ Guardado</Text>
 						)}
 						{autoSaveStatus === 'error' && (
-							<Text style={[styles.autoSaveTxt, { color: '#dc2626' }]}>Error al guardar</Text>
+							<Text style={[styles.autoSaveTxt, { color: colors.dangerDark }]}>Error al guardar</Text>
 						)}
 						<TouchableOpacity
 							style={[styles.saveBtn, (saving || teamsLocked) && styles.saveBtnDisabled]}
@@ -780,14 +777,14 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 							<Text style={styles.saveBtnText}>{saving ? 'Guardando...' : teamsLocked ? '🔒 Bloqueado' : 'Guardar'}</Text>
 						</TouchableOpacity>
 						{activeChip ? (
-							<View style={[styles.saveBtn, { backgroundColor: '#d97706' }]}>
+							<View style={[styles.saveBtn, { backgroundColor: colors.warningMid }]}>
 								<Text style={styles.saveBtnText}>
 									{CHIPS.find(c => c.id === activeChip)?.icon ?? '🎰'} {CHIPS.find(c => c.id === activeChip)?.name ?? activeChip}
 								</Text>
 							</View>
 						) : !teamsLocked && (
 							<TouchableOpacity
-								style={[styles.saveBtn, { backgroundColor: '#0369a1' }]}
+								style={[styles.saveBtn, { backgroundColor: colors.info }]}
 								onPress={() => setChipModalVisible(true)}
 							>
 								<Text style={styles.saveBtnText}>🎰 Chips ({usedChips.length}/10)</Text>
@@ -972,7 +969,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 					<View style={styles.predictionSection}>
 						{loadingPrediction ? (
 							<View style={styles.loadingContainer}>
-								<ActivityIndicator size="small" color="#1a5c3a" />
+								<ActivityIndicator size="small" color={colors.primaryDark} />
 								<Text style={styles.loadingText}>Cargando predicción...</Text>
 							</View>
 						) : (
@@ -1055,14 +1052,14 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 						{selectedPT && (
 							<View style={{ gap: 8 }}>
 								<TouchableOpacity 
-									style={[styles.saveBtn, { backgroundColor: '#2563eb' }]} 
+									style={[styles.saveBtn, { backgroundColor: colors.infoBlue }]}
 									onPress={() => goToPlayerStats(selectedPT.player)}
 								>
 									<Text style={styles.saveBtnText}>Ver Estadísticas</Text>
 								</TouchableOpacity>
 								{!readOnly && selectedPlayerSlot && !teamsLocked && (
 									<TouchableOpacity
-										style={[styles.saveBtn, { backgroundColor: '#16a34a' }]}
+										style={[styles.saveBtn, { backgroundColor: colors.primary }]}
 										onPress={() => {
 											setOptionsVisible(false);
 											openPicker(selectedPlayerSlot);
@@ -1080,16 +1077,16 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 										const isCaptain = captainPlayerId === player.id;
 										return (
 											<View style={{ gap: 8 }}>
-												<View style={{ backgroundColor: '#f3f4f6', padding: 8, borderRadius: 8 }}>
-													<Text style={{ fontSize: 12, color: '#374151', fontWeight: '600' }}>
+												<View style={{ backgroundColor: colors.bgSubtle, padding: 8, borderRadius: 8 }}>
+													<Text style={{ fontSize: 12, color: colors.textSecondary, fontWeight: '600' }}>
 														Valor de mercado: {marketValue.toLocaleString('es-ES')}
 													</Text>
-													<Text style={{ fontSize: 11, color: '#6b7280' }}>
+													<Text style={{ fontSize: 11, color: colors.textMuted }}>
 														Precio de venta: entre {minPrice.toLocaleString('es-ES')} y {maxPrice.toLocaleString('es-ES')}
 													</Text>
 												</View>
 												<TouchableOpacity
-													style={[styles.saveBtn, { backgroundColor: '#dc2626' }]}
+													style={[styles.saveBtn, { backgroundColor: colors.dangerDark }]}
 													onPress={() => {
 														Alert.alert(
 															'Vender jugador',
@@ -1104,7 +1101,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 													<Text style={styles.saveBtnText}>Vender al Mercado</Text>
 												</TouchableOpacity>
 												<TouchableOpacity
-													style={[styles.saveBtn, { backgroundColor: isCaptain ? '#9ca3af' : '#f59e0b' }]}
+													style={[styles.saveBtn, { backgroundColor: isCaptain ? colors.textMuted : colors.warning }]}
 													onPress={() => {
 														if (isCaptain) {
 															setCaptainPlayerId(null);
@@ -1160,7 +1157,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 													<Text style={styles.saveBtnText}>Clausulazo</Text>
 												</TouchableOpacity>
 												<TouchableOpacity
-													style={[styles.saveBtn, { backgroundColor: '#7c3aed' }]}
+													style={[styles.saveBtn, { backgroundColor: colors.purpleDark }]}
 													onPress={() => {
 														setOfferPlayer(selectedPT.player);
 														setOfferPriceText(String(selectedPT.player?.marketValue || ''));
@@ -1424,7 +1421,7 @@ const styles = StyleSheet.create({
 	closeText: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, color: colors.textSecondary },
 	buyBtn: { marginTop: 4, backgroundColor: colors.primary, paddingHorizontal: spacing.sm, paddingVertical: 4, borderRadius: radius.pill },
 	buyTxt: { color: colors.textInverse, fontSize: fontSize.xs, fontWeight: fontWeight.bold },
-	lockBanner: { backgroundColor: '#92400e', paddingVertical: 8, paddingHorizontal: spacing.lg, alignItems: 'center' },
+	lockBanner: { backgroundColor: colors.warningDeep, paddingVertical: 8, paddingHorizontal: spacing.lg, alignItems: 'center' },
 	lockBannerText: { color: colors.textInverse, fontWeight: fontWeight.bold, fontSize: fontSize.sm },
 	predictionSection: {
 		backgroundColor: colors.bgCard, paddingVertical: spacing.md, paddingHorizontal: spacing.md,
@@ -1522,7 +1519,7 @@ const styles = StyleSheet.create({
 		fontWeight: fontWeight.bold,
 	},
 	historicalBanner: {
-		backgroundColor: '#1E3A8A', paddingVertical: 10, paddingHorizontal: spacing.lg,
+		backgroundColor: colors.infoDeep, paddingVertical: 10, paddingHorizontal: spacing.lg,
 		marginHorizontal: spacing.lg, borderRadius: radius.md, marginBottom: spacing.sm, alignItems: 'center',
 	},
 	historicalBannerText: { color: colors.textInverse, fontSize: fontSize.sm, fontWeight: fontWeight.bold },
@@ -1629,8 +1626,8 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.bgCard, borderRadius: radius.lg, borderWidth: 1,
 		borderColor: colors.border, padding: spacing.md, ...shadow.sm,
 	},
-	gwChipBanner: { backgroundColor: '#d97706', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5, marginBottom: 8, alignSelf: 'flex-start' },
-	gwChipBannerText: { fontSize: 11, fontWeight: '700', color: '#fff' },
+	gwChipBanner: { backgroundColor: colors.warningMid, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5, marginBottom: 8, alignSelf: 'flex-start' },
+	gwChipBannerText: { fontSize: 11, fontWeight: '700', color: colors.textInverse },
 	summaryRow: { flexDirection: 'row', justifyContent: 'space-around' },
 	summaryPosBlock: { alignItems: 'center', gap: 4 },
 	summaryPosLabel: { fontSize: fontSize.xs, fontWeight: fontWeight.bold, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.5 },
@@ -1652,7 +1649,7 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.bgSubtle, marginBottom: 8,
 	},
 	chipCardActive: {
-		borderColor: '#d97706', backgroundColor: '#fef3c7',
+		borderColor: colors.warningMid, backgroundColor: colors.warningBgSoft,
 	},
 	chipCardUsed: {
 		opacity: 0.4, backgroundColor: colors.bgApp,

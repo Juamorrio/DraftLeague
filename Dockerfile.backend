@@ -25,7 +25,6 @@ RUN apk add --no-cache curl \
  && addgroup -S draftleague && adduser -S draftleague -G draftleague
 
 # Copiamos los JSON estáticos (fallback para importación manual)
-COPY --chown=draftleague:draftleague scripts/*.json /app/scripts/
 
 USER draftleague
 

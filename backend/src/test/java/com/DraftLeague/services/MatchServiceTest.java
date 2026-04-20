@@ -45,7 +45,6 @@ class MatchServiceTest {
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(matchService, "scriptsPath", "/tmp");
     }
 
 
@@ -477,11 +476,10 @@ class MatchServiceTest {
     // -------------------------------------------------------------------------
 
     @Test
-    @DisplayName("importMatchesFromJson: JSON no accesible → RuntimeException")
-    void importMatchesFromJson_ioError_throwsRuntimeException() {
-        // scriptsPath points to /tmp where matches.json does not exist
-        // getPlayedMatches catches IOException and returns empty map,
-        // so importMatchesFromJson delegates to importMatchesFromData which succeeds
+    @DisplayName("importMatchesFromJson: JSON desde classpath → importa correctamente")
+    void importMatchesFromJson_classpathResource() {
+        // getPlayedMatches reads from classpath data/matches.json (test resources)
+        // which may not exist — returns empty map, importMatchesFromData succeeds with 0
         when(matchRepository.saveAll(any())).thenAnswer(inv -> inv.getArgument(0));
 
         String result = matchService.importMatchesFromJson();

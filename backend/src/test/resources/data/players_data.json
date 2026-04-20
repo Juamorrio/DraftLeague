@@ -1,0 +1,4 @@
+[
+  {"id": "P1", "fullName": "Alice", "position": "GK", "teamId": 541, "marketValue": 6000000, "avatarUrl": "http://example.com/img.png"},
+  {"id": "P2", "fullName": "Bob", "position": "ST", "teamId": 529, "marketValue": 8000000, "avatarUrl": "http://example.com/img2.png"}
+]

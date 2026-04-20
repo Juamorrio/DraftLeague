@@ -1,6 +1,6 @@
 package com.DraftLeague.scraping;
 
-import com.DraftLeague.dto.PlayerImportDto;
+import com.DraftLeague.dto.PlayerImportDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -32,11 +32,11 @@ public class PlayerSquadSyncService {
     }
 
     /**
-     * Fetches all squads for every La Liga team and returns them as a flat list of PlayerImportDto.
+     * Fetches all squads for every La Liga team and returns them as a flat list of PlayerImportDTO.
      * Equivalent to running players.py and reading the resulting players_data.json.
      */
-    public List<PlayerImportDto> fetchAllSquads() {
-        List<PlayerImportDto> all = new ArrayList<>();
+    public List<PlayerImportDTO> fetchAllSquads() {
+        List<PlayerImportDTO> all = new ArrayList<>();
 
         for (Integer teamId : ApiFootballClient.TEAM_IDS) {
             try {
@@ -56,7 +56,7 @@ public class PlayerSquadSyncService {
                     String apiPosition = (String) playerData.getOrDefault("position", "Midfielder");
                     String position = POSITION_MAP.getOrDefault(apiPosition, "CM");
 
-                    PlayerImportDto dto = new PlayerImportDto();
+                    PlayerImportDTO dto = new PlayerImportDTO();
                     dto.setId(id.toString());
                     dto.setFullName((String) playerData.getOrDefault("name", "Desconocido"));
                     dto.setPosition(position);

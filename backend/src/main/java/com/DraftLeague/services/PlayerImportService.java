@@ -1,22 +1,19 @@
 package com.DraftLeague.services;
 
-import com.DraftLeague.dto.PlayerImportDto;
+import com.DraftLeague.dto.PlayerImportDTO;
 import com.DraftLeague.scraping.GameweekStatsSyncService;
 import com.DraftLeague.scraping.PlayerSquadSyncService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,9 +34,6 @@ public class PlayerImportService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Value("${scripts.path}")
-    private String scriptsPath;
-
     public PlayerImportService(PlayerRepository repo, ObjectMapper objectMapper,
                                PlayerStatisticService playerStatisticService,
                                PlayerSquadSyncService playerSquadSyncService,
@@ -53,14 +47,12 @@ public class PlayerImportService {
 
     @Transactional
     public int importFromJsonResource() throws Exception {
-        Path path = Paths.get(scriptsPath, "players_data.json");
-
-        try (InputStream is = Files.newInputStream(path)) {
-            List<PlayerImportDto> dtos = objectMapper.readValue(is, new TypeReference<>() {});
+        try (InputStream is = new ClassPathResource("data/players_data.json").getInputStream()) {
+            List<PlayerImportDTO> dtos = objectMapper.readValue(is, new TypeReference<>() {});
             int updated = 0;
             int created = 0;
 
-            for (PlayerImportDto dto : dtos) {
+            for (PlayerImportDTO dto : dtos) {
                 try {
                     boolean isNew = !repo.existsById(dto.getId());
                     Player p = isNew ? new Player() : repo.findById(dto.getId()).get();
@@ -77,7 +69,7 @@ public class PlayerImportService {
         }
     }
 
-    private void buildOrUpdatePlayer(PlayerImportDto dto, Player p, boolean isNew) {
+    private void buildOrUpdatePlayer(PlayerImportDTO dto, Player p, boolean isNew) {
         if (isNew) {
             p.setId(dto.getId());
             p.setActive(Boolean.TRUE);
@@ -120,13 +112,11 @@ public class PlayerImportService {
 
     @Transactional
     public int importNewPlayersOnly() throws Exception {
-        Path path = Paths.get(scriptsPath, "players_data.json");
-
-        try (InputStream is = Files.newInputStream(path)) {
-            List<PlayerImportDto> dtos = objectMapper.readValue(is, new TypeReference<>() {});
+        try (InputStream is = new ClassPathResource("data/players_data.json").getInputStream()) {
+            List<PlayerImportDTO> dtos = objectMapper.readValue(is, new TypeReference<>() {});
 
             List<Player> newPlayers = new ArrayList<>();
-            for (PlayerImportDto dto : dtos) {
+            for (PlayerImportDTO dto : dtos) {
                 if (repo.existsById(dto.getId())) continue;
                 Player p = new Player();
                 buildOrUpdatePlayer(dto, p, true);
@@ -141,11 +131,11 @@ public class PlayerImportService {
     /** Fetches all La Liga squads from API-Football and upserts players into the DB. */
     @Transactional
     public String syncPlayers() throws Exception {
-        List<PlayerImportDto> dtos = playerSquadSyncService.fetchAllSquads();
+        List<PlayerImportDTO> dtos = playerSquadSyncService.fetchAllSquads();
         int created = 0, updated = 0;
 
         List<Player> toSave = new ArrayList<>(dtos.size());
-        for (PlayerImportDto dto : dtos) {
+        for (PlayerImportDTO dto : dtos) {
             boolean isNew = !repo.existsById(dto.getId());
             Player p = isNew ? new Player() : repo.findById(dto.getId()).get();
             buildOrUpdatePlayer(dto, p, isNew);

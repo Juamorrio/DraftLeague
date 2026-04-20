@@ -1,5 +1,4 @@
 package com.DraftLeague.models.League;
-import com.DraftLeague.models.Notification.NotificationLeague;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,10 +13,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
-import com.DraftLeague.models.user.User;
-import com.DraftLeague.models.Team.Team;
-import com.DraftLeague.models.League.League;
-import com.DraftLeague.models.Market.MarketPlayer;
 
 @Getter
 @Setter
@@ -80,12 +75,4 @@ public class League {
 
     @OneToMany(mappedBy = "league", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MarketPlayer> marketPlayers = new ArrayList<>();
-
-    //@ManyToOne(optional = true)
-    //@Valid
-    //private Chat chat;
-
-    //@ManyToOne(optional = true)
-    //@Valid
-    //private NotificationLeague notificationLeague;
 }

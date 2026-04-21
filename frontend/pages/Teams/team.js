@@ -53,7 +53,6 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 	const [teamsLocked, setTeamsLocked] = useState(false);
 	const [formationOpen, setFormationOpen] = useState(false);
 	const [activeGameweek, setActiveGameweek] = useState(null);
-	const [wildcardUsed, setWildcardUsed] = useState(false);
 
 	// Compare state
 	const [compareVisible, setCompareVisible] = useState(false);
@@ -256,7 +255,6 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 				const team = await res.json();
 				if (team?.id) {
 					teamIdRef.current = team.id;
-					setWildcardUsed(!!team.wildcardUsed);
 					setActiveChip(team.activeChip ?? null);
 					setUsedChips(
 						team.usedChips && team.usedChips.length > 0
@@ -324,7 +322,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 				setActiveGameweek(data.activeGameweek ?? null);
 			}
 		} catch (e) {
-			console.log('Error cargando estado de jornada:', e);
+			console.error('Error cargando estado de jornada:', e);
 		}
 	};
 
@@ -448,13 +446,10 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 				const response = await authenticatedFetch(`/api/ml/predict/team/${teamId}`);
 				if (response.ok) {
 					const prediction = await response.json();
-					console.log('Prediccion de equipo cargada:', prediction);
 					setTeamPrediction(prediction);
-				} else {
-					console.log('No se pudo cargar la prediccion del equipo');
 				}
 			} catch (e) {
-				console.log('Error al cargar prediccion de equipo:', e);
+				console.error('Error al cargar prediccion de equipo:', e);
 			} finally {
 				setLoadingPrediction(false);
 			}
@@ -683,56 +678,6 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 		return () => clearTimeout(autoSaveTimer.current);
 	}, [assigned, captainPlayerId]);
 
-	const saveWildcard = async () => {
-		if (!selectedLeague?.id) return;
-		const playersList = Object.entries(assigned)
-			.map(([position, slotValue]) => {
-				const p = getAssignedPlayer(slotValue);
-				if (!p?.id) return null;
-				return { playerId: p.id, position, lined: true, isCaptain: p.id === captainPlayerId };
-			})
-			.filter(Boolean);
-		if (playersList.length === 0) {
-			Alert.alert('Error', 'Debes tener jugadores en el equipo');
-			return;
-		}
-		const assignedIds = new Set(playersList.map(p => p.playerId));
-		const benchList = players
-			.filter(p => p?.id && !assignedIds.has(p.id))
-			.map(p => ({ playerId: p.id, position: p.position, lined: false, isCaptain: false }));
-		const fullList = [...playersList, ...benchList];
-		Alert.alert(
-			'🃏 Usar Comodín',
-			'Podrás cambiar tu alineación durante la jornada activa. Solo puedes usarlo UNA VEZ por temporada.',
-			[
-				{ text: 'Cancelar', style: 'cancel' },
-				{ text: 'Usar Comodín', style: 'destructive', onPress: async () => {
-					setSaving(true);
-					try {
-						const user = await authService.getCurrentUser();
-						if (!user?.id) return;
-						const res = await authenticatedFetch(
-							`/api/v1/teams/league/${selectedLeague.id}/${user.id}/wildcard`,
-							{ method: 'POST', headers: { 'Content-Type': 'application/json' },
-							  body: JSON.stringify({ players: fullList }) }
-						);
-						if (res.ok) {
-							setWildcardUsed(true);
-							Alert.alert('✅ Comodín activado', 'Tu alineación ha sido guardada para esta jornada.');
-						} else {
-							const data = await res.json();
-							Alert.alert('Error', data?.error || 'No se pudo usar el comodín');
-						}
-					} catch (e) {
-						Alert.alert('Error', e?.message || 'Error desconocido');
-					} finally {
-						setSaving(false);
-					}
-				}},
-			]
-		);
-	};
-
 	const activateChip = async (chipId) => {
 		if (!selectedLeague?.id) return;
 		const chipDef = CHIPS.find(c => c.id === chipId);
@@ -819,10 +764,10 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 							<Text style={styles.autoSaveTxt}>Guardando...</Text>
 						)}
 						{autoSaveStatus === 'saved' && (
-							<Text style={[styles.autoSaveTxt, { color: '#16a34a' }]}>✓ Guardado</Text>
+							<Text style={[styles.autoSaveTxt, { color: colors.primary }]}>✓ Guardado</Text>
 						)}
 						{autoSaveStatus === 'error' && (
-							<Text style={[styles.autoSaveTxt, { color: '#dc2626' }]}>Error al guardar</Text>
+							<Text style={[styles.autoSaveTxt, { color: colors.dangerDark }]}>Error al guardar</Text>
 						)}
 						<TouchableOpacity
 							style={[styles.saveBtn, (saving || teamsLocked) && styles.saveBtnDisabled]}
@@ -831,29 +776,15 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 						>
 							<Text style={styles.saveBtnText}>{saving ? 'Guardando...' : teamsLocked ? '🔒 Bloqueado' : 'Guardar'}</Text>
 						</TouchableOpacity>
-						{teamsLocked && !wildcardUsed && (
-							<TouchableOpacity
-								style={[styles.saveBtn, { backgroundColor: '#7c3aed' }]}
-								onPress={saveWildcard}
-								disabled={saving}
-							>
-								<Text style={styles.saveBtnText}>🃏 Comodín</Text>
-							</TouchableOpacity>
-						)}
-						{teamsLocked && wildcardUsed && (
-							<View style={[styles.saveBtn, styles.saveBtnDisabled]}>
-								<Text style={styles.saveBtnText}>🃏 Usado</Text>
-							</View>
-						)}
 						{activeChip ? (
-							<View style={[styles.saveBtn, { backgroundColor: '#d97706' }]}>
+							<View style={[styles.saveBtn, { backgroundColor: colors.warningMid }]}>
 								<Text style={styles.saveBtnText}>
 									{CHIPS.find(c => c.id === activeChip)?.icon ?? '🎰'} {CHIPS.find(c => c.id === activeChip)?.name ?? activeChip}
 								</Text>
 							</View>
 						) : !teamsLocked && (
 							<TouchableOpacity
-								style={[styles.saveBtn, { backgroundColor: '#0369a1' }]}
+								style={[styles.saveBtn, { backgroundColor: colors.info }]}
 								onPress={() => setChipModalVisible(true)}
 							>
 								<Text style={styles.saveBtnText}>🎰 Chips ({usedChips.length}/10)</Text>
@@ -903,7 +834,6 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 
 			{!readOnly && (
 				<View style={styles.gwSelectorWrap}>
-					<Text style={styles.gwSelectorTitle}>Ver puntos por jornada</Text>
 					<ScrollView
 						horizontal
 						showsHorizontalScrollIndicator={false}
@@ -1039,26 +969,21 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 					<View style={styles.predictionSection}>
 						{loadingPrediction ? (
 							<View style={styles.loadingContainer}>
-								<ActivityIndicator size="small" color="#1a5c3a" />
-								<Text style={styles.loadingText}>Cargando predicción del equipo...</Text>
+								<ActivityIndicator size="small" color={colors.primaryDark} />
+								<Text style={styles.loadingText}>Cargando predicción...</Text>
 							</View>
 						) : (
-							<ScrollView horizontal showsHorizontalScrollIndicator={false}>
-								<View style={styles.predictionContent}>
-									{/* Total Predicho */}
-									<View style={styles.totalPredictionCard}>
-										<Text style={styles.predictionCardTitle}>🔮 Predicción Próxima J.</Text>
-										<Text style={styles.totalPredictionValue}>
-											{teamPrediction.totalPredictedPoints?.toFixed(1) || '0.0'}
-										</Text>
-										<Text style={styles.predictionLabel}>PUNTOS ESPERADOS</Text>
-									</View>
+							<View style={styles.predictionContent}>
+								<View style={styles.predictionHeaderRow}>
+									<Text style={styles.predictionCardTitle}>🔮 Próxima jornada</Text>
+									<Text style={styles.totalPredictionValue}>
+										{teamPrediction.totalPredictedPoints?.toFixed(1) || '0.0'}<Text style={styles.predictionLabel}> pts</Text>
+									</Text>
+								</View>
 
-									{/* Top 3 Jugadores */}
-									{teamPrediction.players && teamPrediction.players.length > 0 && (
-										<View style={styles.topPlayersCard}>
-											<Text style={styles.predictionCardTitle}>⭐ Top Rendimiento</Text>
-											{teamPrediction.players
+								{teamPrediction.players && teamPrediction.players.length > 0 && (
+									<View style={styles.predictionPlayersList}>
+										{teamPrediction.players
 												.sort((a, b) => (b.predictedPoints || 0) - (a.predictedPoints || 0))
 												.slice(0, 3)
 												.map((player, index) => (
@@ -1072,18 +997,12 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 															</Text>
 															<Text style={styles.playerPosition}>{player.position}</Text>
 														</View>
-														<View style={styles.playerPredictionPoints}>
-															<Text style={styles.pointsValue}>
-																{player.predictedPoints?.toFixed(1) || '0.0'}
-															</Text>
-															<Text style={styles.pointsLabel}>pts</Text>
-														</View>
+														<Text style={styles.pointsValue}>{player.predictedPoints?.toFixed(1) || '0.0'} pts</Text>
 													</View>
 												))}
 										</View>
 									)}
 								</View>
-							</ScrollView>
 						)}
 					</View>
 				)}
@@ -1133,14 +1052,14 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 						{selectedPT && (
 							<View style={{ gap: 8 }}>
 								<TouchableOpacity 
-									style={[styles.saveBtn, { backgroundColor: '#2563eb' }]} 
+									style={[styles.saveBtn, { backgroundColor: colors.infoBlue }]}
 									onPress={() => goToPlayerStats(selectedPT.player)}
 								>
 									<Text style={styles.saveBtnText}>Ver Estadísticas</Text>
 								</TouchableOpacity>
 								{!readOnly && selectedPlayerSlot && !teamsLocked && (
 									<TouchableOpacity
-										style={[styles.saveBtn, { backgroundColor: '#16a34a' }]}
+										style={[styles.saveBtn, { backgroundColor: colors.primary }]}
 										onPress={() => {
 											setOptionsVisible(false);
 											openPicker(selectedPlayerSlot);
@@ -1158,16 +1077,16 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 										const isCaptain = captainPlayerId === player.id;
 										return (
 											<View style={{ gap: 8 }}>
-												<View style={{ backgroundColor: '#f3f4f6', padding: 8, borderRadius: 8 }}>
-													<Text style={{ fontSize: 12, color: '#374151', fontWeight: '600' }}>
+												<View style={{ backgroundColor: colors.bgSubtle, padding: 8, borderRadius: 8 }}>
+													<Text style={{ fontSize: 12, color: colors.textSecondary, fontWeight: '600' }}>
 														Valor de mercado: {marketValue.toLocaleString('es-ES')}
 													</Text>
-													<Text style={{ fontSize: 11, color: '#6b7280' }}>
+													<Text style={{ fontSize: 11, color: colors.textMuted }}>
 														Precio de venta: entre {minPrice.toLocaleString('es-ES')} y {maxPrice.toLocaleString('es-ES')}
 													</Text>
 												</View>
 												<TouchableOpacity
-													style={[styles.saveBtn, { backgroundColor: '#dc2626' }]}
+													style={[styles.saveBtn, { backgroundColor: colors.dangerDark }]}
 													onPress={() => {
 														Alert.alert(
 															'Vender jugador',
@@ -1182,7 +1101,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 													<Text style={styles.saveBtnText}>Vender al Mercado</Text>
 												</TouchableOpacity>
 												<TouchableOpacity
-													style={[styles.saveBtn, { backgroundColor: isCaptain ? '#9ca3af' : '#f59e0b' }]}
+													style={[styles.saveBtn, { backgroundColor: isCaptain ? colors.textMuted : colors.warning }]}
 													onPress={() => {
 														if (isCaptain) {
 															setCaptainPlayerId(null);
@@ -1238,7 +1157,7 @@ function Team({ navigation, userId: viewUserId = null, readOnly = false }) {
 													<Text style={styles.saveBtnText}>Clausulazo</Text>
 												</TouchableOpacity>
 												<TouchableOpacity
-													style={[styles.saveBtn, { backgroundColor: '#7c3aed' }]}
+													style={[styles.saveBtn, { backgroundColor: colors.purpleDark }]}
 													onPress={() => {
 														setOfferPlayer(selectedPT.player);
 														setOfferPriceText(String(selectedPT.player?.marketValue || ''));
@@ -1502,28 +1421,30 @@ const styles = StyleSheet.create({
 	closeText: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, color: colors.textSecondary },
 	buyBtn: { marginTop: 4, backgroundColor: colors.primary, paddingHorizontal: spacing.sm, paddingVertical: 4, borderRadius: radius.pill },
 	buyTxt: { color: colors.textInverse, fontSize: fontSize.xs, fontWeight: fontWeight.bold },
-	lockBanner: { backgroundColor: colors.danger, paddingVertical: 10, paddingHorizontal: spacing.lg, alignItems: 'center' },
+	lockBanner: { backgroundColor: colors.warningDeep, paddingVertical: 8, paddingHorizontal: spacing.lg, alignItems: 'center' },
 	lockBannerText: { color: colors.textInverse, fontWeight: fontWeight.bold, fontSize: fontSize.sm },
 	predictionSection: {
-		backgroundColor: colors.bgApp, paddingVertical: spacing.md, paddingHorizontal: spacing.sm,
-		borderTopWidth: 1, borderTopColor: colors.border, maxHeight: 180,
+		backgroundColor: colors.bgCard, paddingVertical: spacing.md, paddingHorizontal: spacing.md,
+		marginHorizontal: spacing.lg, marginTop: spacing.sm, marginBottom: spacing.sm,
+		borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, ...shadow.sm,
 	},
 	loadingContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: spacing.xl },
 	loadingText: { marginLeft: spacing.md, fontSize: fontSize.sm, color: colors.textMuted, fontWeight: fontWeight.semibold },
-	predictionContent: { flexDirection: 'row', gap: spacing.md },
-	totalPredictionCard: {
-		backgroundColor: colors.successBg, padding: spacing.lg, borderRadius: radius.lg,
-		borderWidth: 1.5, borderColor: colors.primaryMuted, alignItems: 'center', minWidth: 140,
+	predictionContent: { gap: spacing.sm },
+	predictionHeaderRow: {
+		flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+		paddingBottom: spacing.sm, borderBottomWidth: 1, borderBottomColor: colors.border,
 	},
+	predictionPlayersList: { gap: 2 },
 	predictionCardTitle: {
 		fontSize: fontSize.xs, fontWeight: fontWeight.bold, color: colors.textSecondary,
-		marginBottom: spacing.sm, textAlign: 'center',
+		textTransform: 'uppercase', letterSpacing: 0.5,
 	},
 	totalPredictionValue: {
-		fontSize: fontSize['3xl'], fontWeight: fontWeight.black,
-		color: colors.primaryDark, marginVertical: 4,
+		fontSize: fontSize['2xl'], fontWeight: fontWeight.black,
+		color: colors.primaryDark,
 	},
-	predictionLabel: { fontSize: fontSize.xs, color: colors.textMuted, fontWeight: fontWeight.semibold, letterSpacing: 1 },
+	predictionLabel: { fontSize: fontSize.xs, color: colors.textMuted, fontWeight: fontWeight.semibold },
 	rangeText: { fontSize: fontSize.xs, color: colors.textMuted, marginTop: 4, fontWeight: fontWeight.medium },
 	topPlayersCard: {
 		backgroundColor: colors.bgCard, padding: spacing.md, borderRadius: radius.lg,
@@ -1598,15 +1519,15 @@ const styles = StyleSheet.create({
 		fontWeight: fontWeight.bold,
 	},
 	historicalBanner: {
-		backgroundColor: '#1E3A8A', paddingVertical: 10, paddingHorizontal: spacing.lg,
+		backgroundColor: colors.infoDeep, paddingVertical: 10, paddingHorizontal: spacing.lg,
 		marginHorizontal: spacing.lg, borderRadius: radius.md, marginBottom: spacing.sm, alignItems: 'center',
 	},
 	historicalBannerText: { color: colors.textInverse, fontSize: fontSize.sm, fontWeight: fontWeight.bold },
 	formationWrap: {
 		backgroundColor: colors.bgCard,
 		marginHorizontal: spacing.md,
-		marginTop: spacing.sm,
-		marginBottom: spacing.sm,
+		marginTop: spacing.xs,
+		marginBottom: spacing.xs,
 		borderRadius: radius.lg,
 		borderWidth: 1,
 		borderColor: colors.border,
@@ -1705,8 +1626,8 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.bgCard, borderRadius: radius.lg, borderWidth: 1,
 		borderColor: colors.border, padding: spacing.md, ...shadow.sm,
 	},
-	gwChipBanner: { backgroundColor: '#d97706', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5, marginBottom: 8, alignSelf: 'flex-start' },
-	gwChipBannerText: { fontSize: 11, fontWeight: '700', color: '#fff' },
+	gwChipBanner: { backgroundColor: colors.warningMid, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5, marginBottom: 8, alignSelf: 'flex-start' },
+	gwChipBannerText: { fontSize: 11, fontWeight: '700', color: colors.textInverse },
 	summaryRow: { flexDirection: 'row', justifyContent: 'space-around' },
 	summaryPosBlock: { alignItems: 'center', gap: 4 },
 	summaryPosLabel: { fontSize: fontSize.xs, fontWeight: fontWeight.bold, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.5 },
@@ -1728,7 +1649,7 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.bgSubtle, marginBottom: 8,
 	},
 	chipCardActive: {
-		borderColor: '#d97706', backgroundColor: '#fef3c7',
+		borderColor: colors.warningMid, backgroundColor: colors.warningBgSoft,
 	},
 	chipCardUsed: {
 		opacity: 0.4, backgroundColor: colors.bgApp,

@@ -3,7 +3,7 @@ package com.DraftLeague.services;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
+import java.security.SecureRandom;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -196,7 +196,7 @@ public class LeagueService {
 
     private String generateUniqueCode() {
         final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        Random rnd = new Random();
+        SecureRandom rnd = new SecureRandom();
         for (int attempts = 0; attempts < 20; attempts++) {
             StringBuilder sb = new StringBuilder(6);
             for (int i = 0; i < 6; i++) sb.append(chars.charAt(rnd.nextInt(chars.length())));

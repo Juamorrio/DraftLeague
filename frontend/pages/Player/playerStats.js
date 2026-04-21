@@ -12,11 +12,13 @@ function MarketValueChart({ data }) {
 	const CHART_HEIGHT = 150;
 	const BAR_MIN_HEIGHT = 6;
 
-	// Prepend an "Inicio" bar with the previousValue of the first entry so the
-	// chart shows where the player started (before any recorded change).
+	// Primera barra: valor justo antes de la primera jornada registrada.
+	// Etiquetada como "J<N-1>" para que la escala sea siempre jornada a jornada.
+	const firstGw = data.length > 0 ? data[0].gameweek : 1;
+	const startLabel = firstGw > 1 ? `J${firstGw - 1}` : 'J0';
 	const chartPoints = data.length > 0
 		? [
-			{ label: 'Inicio', value: data[0].previousValue ?? 0, change: null },
+			{ label: startLabel, value: data[0].previousValue ?? 0, change: null },
 			...data.map(d => ({ label: `J${d.gameweek}`, value: d.newValue ?? 0, change: d.changeAmount ?? 0 })),
 		  ]
 		: [];
@@ -115,7 +117,7 @@ function PlayerStats({ navigation }) {
 				setPlayerPrediction(prediction);
 			}
 		} catch (e) {
-			console.log('Error al cargar prediccion de jugador:', e);
+			console.error('Error al cargar prediccion de jugador:', e);
 		} finally {
 			setLoadingPrediction(false);
 		}
@@ -187,33 +189,51 @@ function PlayerStats({ navigation }) {
 
 	const translateFeature = (featureName) => {
 		const translations = {
-			avgRatingLast3: 'Rating ultimos 3',
-			avgMinutesLast3: 'Minutos ultimos 3',
-			avgGoalsLast3: 'Goles ultimos 3',
-			avgAssistsLast3: 'Asistencias ultimos 3',
-			avgShotsOnTargetLast3: 'Tiros a puerta ultimos 3',
-			avgKeyPassesLast3: 'Pases clave ultimos 3',
-			avgPassAccuracyLast3: 'Precision pases ultimos 3',
-			avgDuelsWonLast3: 'Duelos ganados ultimos 3',
-			avgRatingLast5: 'Rating ultimos 5',
-			avgMinutesLast5: 'Minutos ultimos 5',
-			avgGoalsLast5: 'Goles ultimos 5',
-			avgAssistsLast5: 'Asistencias ultimos 5',
-			avgShotsOnTargetLast5: 'Tiros a puerta ultimos 5',
-			avgKeyPassesLast5: 'Pases clave ultimos 5',
-			avgRatingLast10: 'Rating ultimos 10',
-			avgMinutesLast10: 'Minutos ultimos 10',
-			ratingTrend: 'Tendencia rating',
-			minutesTrend: 'Tendencia minutos',
-			ratingStdDev: 'Consistencia rating',
-			pointsStdDev: 'Consistencia puntos',
-			recentFormPoints: 'Forma reciente',
-			avgRatingHome: 'Rating local',
-			avgRatingAway: 'Rating visitante',
-			homeAdvantage: 'Ventaja local',
-			matchesPlayed: 'Partidos jugados',
-			seasonAvgRating: 'Rating temporada',
-			totalSeasonPoints: 'Puntos temporada'
+			// XGBoost model features (snake_case del ML service)
+			rating:                'Valoración',
+			minutes_played:        'Minutos jugados',
+			goals:                 'Goles',
+			assists:               'Asistencias',
+			shots_on_target:       'Tiros a puerta',
+			tackles:               'Entradas',
+			blocks:                'Bloqueos',
+			saves:                 'Paradas',
+			goals_conceded:        'Goles encajados',
+			clean_sheet:           'Portería a cero',
+			yellow_cards:          'Tarjetas amarillas',
+			red_cards:             'Tarjetas rojas',
+			position_encoded:      'Posición',
+			is_home_team:          'Factor local',
+			recent_form_last3:     'Forma reciente (últ. 3)',
+			opponent_strength:     'Fuerza del rival',
+			// Heuristic fallback features (camelCase)
+			avgRatingLast3:        'Rating últimos 3',
+			avgMinutesLast3:       'Minutos últimos 3',
+			avgGoalsLast3:         'Goles últimos 3',
+			avgAssistsLast3:       'Asistencias últimos 3',
+			avgShotsOnTargetLast3: 'Tiros a puerta últimos 3',
+			avgKeyPassesLast3:     'Pases clave últimos 3',
+			avgPassAccuracyLast3:  'Precisión pases últimos 3',
+			avgDuelsWonLast3:      'Duelos ganados últimos 3',
+			avgRatingLast5:        'Rating últimos 5',
+			avgMinutesLast5:       'Minutos últimos 5',
+			avgGoalsLast5:         'Goles últimos 5',
+			avgAssistsLast5:       'Asistencias últimos 5',
+			avgShotsOnTargetLast5: 'Tiros a puerta últimos 5',
+			avgKeyPassesLast5:     'Pases clave últimos 5',
+			avgRatingLast10:       'Rating últimos 10',
+			avgMinutesLast10:      'Minutos últimos 10',
+			ratingTrend:           'Tendencia valoración',
+			minutesTrend:          'Tendencia minutos',
+			ratingStdDev:          'Consistencia valoración',
+			pointsStdDev:          'Consistencia puntos',
+			recentFormPoints:      'Forma reciente',
+			avgRatingHome:         'Valoración en casa',
+			avgRatingAway:         'Valoración fuera',
+			homeAdvantage:         'Ventaja local',
+			matchesPlayed:         'Partidos jugados',
+			seasonAvgRating:       'Valoración media temporada',
+			totalSeasonPoints:     'Puntos totales temporada',
 		};
 		return translations[featureName] || featureName;
 	};
@@ -747,11 +767,13 @@ function PlayerStats({ navigation }) {
 									{[...marketValueHistory].reverse().map(h => {
 										const changeAmount = h.changeAmount ?? 0;
 										const isPositive = changeAmount >= 0;
+										const prevM = ((h.previousValue ?? 0) / 1_000_000).toFixed(2);
+										const newM  = ((h.newValue ?? 0) / 1_000_000).toFixed(2);
 										return (
 											<View key={h.gameweek} style={styles.mvHistoryRow}>
 												<Text style={styles.mvHistoryGameweek}>J{h.gameweek}</Text>
 												<Text style={styles.mvHistoryValue}>
-													€{((h.newValue ?? 0) / 1_000_000).toFixed(2)}M
+													€{prevM}M → €{newM}M
 												</Text>
 												<Text style={[styles.mvHistoryDelta, isPositive ? styles.mvPositive : styles.mvNegative]}>
 													{isPositive ? '▲ +' : '▼ '}{(changeAmount / 1_000_000).toFixed(2)}M
@@ -830,7 +852,9 @@ function PlayerStats({ navigation }) {
 										<View style={styles.infoBox}>
 											<Text style={styles.infoBoxTitle}>ℹ️ Acerca de esta predicción</Text>
 											<Text style={styles.infoBoxText}>
-												Predicción basada en la media ponderada de las últimas jornadas del jugador, dando más peso a las más recientes. Considera el factor local/visitante y la dificultad del rival.
+												{playerPrediction.modelSource === 'XGBOOST'
+													? 'Predicción generada por un modelo XGBoost entrenado con estadísticas reales de La Liga. Analiza 16 variables (valoración, minutos, goles, paradas...) junto a la forma reciente y la fortaleza del rival.'
+													: 'Predicción basada en la media ponderada de las últimas jornadas del jugador, dando más peso a las más recientes. Considera el factor local/visitante y la dificultad del rival.'}
 											</Text>
 										</View>
 									</>
@@ -1152,7 +1176,7 @@ const styles = StyleSheet.create({
 	},
 	mvHistoryRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: spacing.sm, borderBottomWidth: 1, borderBottomColor: colors.border },
 	mvHistoryGameweek: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, color: colors.textSecondary, flex: 1 },
-	mvHistoryValue: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, color: colors.textPrimary, width: 80, textAlign: 'right' },
+	mvHistoryValue: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, color: colors.textPrimary, flex: 2, textAlign: 'center' },
 	mvHistoryDelta: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, width: 100, textAlign: 'right' },
 	mvPositive: { color: '#16A34A' },
 	mvNegative: { color: '#EF4444' },

@@ -167,10 +167,6 @@ function Admin() {
 	};
 
 	const refreshMarket = async (leagueId) => {
-		console.log('=== Refrescando mercado ===');
-		console.log('League ID:', leagueId);
-		console.log('Tipo de leagueId:', typeof leagueId);
-		
 		try {
 			const res = await authenticatedFetch(`/api/v1/admin/market/${leagueId}/refresh`, {
 				method: 'POST'

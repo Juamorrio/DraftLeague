@@ -20,7 +20,7 @@ import Register from '../pages/auth/register';
 
 // Context
 import { useLeague } from '../context/LeagueContext';
-import { fontFamily } from '../utils/theme';
+import { colors, fontFamily } from '../utils/theme';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -73,7 +73,7 @@ function CustomTabBar({ state, descriptors, navigation, isAdmin }) {
                             <Ionicons
                                 name={isFocused ? item.icon : item.iconOut}
                                 size={24}
-                                color={isFocused ? '#14B8A6' : 'rgba(255,255,255,0.45)'}
+                                color={isFocused ? colors.accent : 'rgba(255,255,255,0.45)'}
                             />
                             <Text style={[styles.label, isFocused && styles.labelActive]}>{item.label}</Text>
                         </TouchableOpacity>
@@ -135,17 +135,17 @@ const styles = StyleSheet.create({
     footerWrap: {
         paddingHorizontal: 12,
         paddingTop: 8,
-        backgroundColor: '#F8FAFC',
+        backgroundColor: colors.bgApp,
     },
     footer: {
         height: 68,
-        backgroundColor: '#052E16',
+        backgroundColor: colors.primaryDeep,
         borderRadius: 20,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-around',
         paddingHorizontal: 8,
-        shadowColor: '#052E16',
+        shadowColor: colors.primaryDeep,
         shadowOffset: { width: 0, height: 8 },
         shadowOpacity: 0.30,
         shadowRadius: 16,
@@ -166,11 +166,11 @@ const styles = StyleSheet.create({
     label: {
         color: 'rgba(255,255,255,0.45)',
         fontSize: 10,
-        fontFamily: 'Barlow_600SemiBold',
+        fontFamily: fontFamily.bodySemibold,
         letterSpacing: 0.3,
     },
     labelActive: {
-        color: '#14B8A6',
-        fontFamily: 'Barlow_700Bold',
+        color: colors.accent,
+        fontFamily: fontFamily.bodyBold,
     },
 });

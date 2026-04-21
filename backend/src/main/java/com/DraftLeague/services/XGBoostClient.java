@@ -73,6 +73,10 @@ public class XGBoostClient {
 
             return Optional.of(new XGBoostPredictionResult(predictedPoints, importance, modelSource));
 
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.warn("XGBoost predict interrupted for player {}: {}", playerId, e.getMessage());
+            return Optional.empty();
         } catch (Exception e) {
             log.warn("XGBoost predict failed for player {}: {}", playerId, e.getMessage());
             return Optional.empty();
@@ -125,6 +129,9 @@ public class XGBoostClient {
                     .build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             return response.statusCode() == 200;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return false;
         } catch (Exception e) {
             return false;
         }

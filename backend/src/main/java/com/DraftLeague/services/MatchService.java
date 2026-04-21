@@ -7,15 +7,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,9 +30,6 @@ public class MatchService {
     private final MatchRepository matchRepository;
     private final FixtureSyncService fixtureSyncService;
 
-    @Value("${scripts.path}")
-    private String scriptsPath;
-
     public MatchService(ObjectMapper objectMapper, MatchRepository matchRepository,
                         FixtureSyncService fixtureSyncService) {
         this.objectMapper = objectMapper;
@@ -44,12 +38,10 @@ public class MatchService {
     }
 
     public Map<String, List<MatchDTO>> getPlayedMatches() {
-        try {
-            Path path = Paths.get(scriptsPath, "matches.json");
-            try (InputStream inputStream = Files.newInputStream(path)) {
-                TypeReference<Map<String, List<MatchDTO>>> typeRef = new TypeReference<>() {};
-                return objectMapper.readValue(inputStream, typeRef);
-            }
+        try (InputStream is = new ClassPathResource("data/matches.json").getInputStream()) {
+            TypeReference<Map<String, List<MatchDTO>>> typeRef = new TypeReference<>() {};
+            Map<String, List<MatchDTO>> result = objectMapper.readValue(is, typeRef);
+            return result != null ? result : new HashMap<>();
         } catch (IOException e) {
             logger.error("Error leyendo matches.json: {}", e.getMessage(), e);
             return new HashMap<>();
@@ -57,18 +49,17 @@ public class MatchService {
     }
 
     public Map<String, List<UpcomingMatchDTO>> getUpcomingMatches() {
-        try {
-            Path path = Paths.get(scriptsPath, "upcoming_matches.json");
-            try (InputStream inputStream = Files.newInputStream(path)) {
-                TypeReference<Map<String, List<UpcomingMatchDTO>>> typeRef = new TypeReference<>() {};
-                return objectMapper.readValue(inputStream, typeRef);
-            }
+        try (InputStream is = new ClassPathResource("data/upcoming_matches.json").getInputStream()) {
+            TypeReference<Map<String, List<UpcomingMatchDTO>>> typeRef = new TypeReference<>() {};
+            Map<String, List<UpcomingMatchDTO>> result = objectMapper.readValue(is, typeRef);
+            return result != null ? result : new HashMap<>();
         } catch (IOException e) {
             logger.error("Error leyendo upcoming_matches.json: {}", e.getMessage(), e);
             return new HashMap<>();
         }
     }
 
+    @Transactional
     public String syncMatches() throws Exception {
         Map<String, List<MatchDTO>> played = fixtureSyncService.fetchPlayedMatches();
         Map<String, List<UpcomingMatchDTO>> upcoming = fixtureSyncService.fetchUpcomingMatches();
@@ -138,6 +129,7 @@ public class MatchService {
         }
     }
 
+    @Transactional
     public String importMatchesFromJson() {
         try {
             Map<String, List<MatchDTO>> played = getPlayedMatches();

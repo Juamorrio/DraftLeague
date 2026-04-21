@@ -5,9 +5,10 @@ WORKDIR /app
 
 # Copiamos dependencias primero para aprovechar caché de capas
 COPY frontend/package.json ./package.json
+COPY frontend/package-lock.json ./package-lock.json
 
-# npm install (no frozen-lockfile, compatible con npm sin package-lock)
-RUN npm install
+# npm ci usa el lock file exacto — evita conflictos de peer deps y es más rápido
+RUN npm ci
 
 # Copiamos el resto del código fuente
 COPY frontend/ .

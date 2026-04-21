@@ -47,7 +47,7 @@ Los datos de jugadores, partidos y estadísticas se sincronizan automáticamente
 | **ML Service** | Python · FastAPI · XGBoost |
 | **Infraestructura** | Docker · Docker Compose |
 | **Testing** | JUnit 5 · Mockito · Spring Security Test · Jest · JaCoCo |
-| **CI/CD** | GitHub Actions · Codacy · SonarQube |
+| **CI/CD** | GitHub Actions · Codacy |
 
 ---
 

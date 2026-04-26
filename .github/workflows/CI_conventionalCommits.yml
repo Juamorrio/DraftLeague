@@ -3,7 +3,8 @@ name: Conventiional Commits Validation
 on:
   push:
     branches:
-      - '**'
+      - 'trunk'
+      - 'develop'
 
 jobs:
   validate-commits:

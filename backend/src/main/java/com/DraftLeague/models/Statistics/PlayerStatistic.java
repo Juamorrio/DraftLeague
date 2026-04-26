@@ -90,8 +90,16 @@ public class PlayerStatistic {
 
     @Embedded
     private GoalkeeperStats goalkeeper = new GoalkeeperStats();
-
-
+    
+    @PostLoad
+    private void initEmbeddables() {
+        if (shooting   == null) shooting   = new ShootingStats();
+        if (passing    == null) passing    = new PassingStats();
+        if (dribbling  == null) dribbling  = new DribblingStats();
+        if (defensive  == null) defensive  = new DefensiveStats();
+        if (discipline == null) discipline = new DisciplineStats();
+        if (goalkeeper == null) goalkeeper = new GoalkeeperStats();
+    }
     public int calculateFantasyPoints() {
         int points = 0;
 

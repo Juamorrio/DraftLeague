@@ -67,7 +67,7 @@ class PlayerStatisticsServiceTest {
         PlayerStatistic stat = buildStat(1, PlayerStatistic.PlayerType.GOALKEEPER);
         stat.setMatchId(1);
         stat.setIsHomeTeam(true);
-        stat.setCleanSheet(null);
+        stat.getGoalkeeper().setCleanSheet(null);
 
         when(playerStatisticRepository.findAll()).thenReturn(List.of(stat));
         when(matchRepository.findAll()).thenReturn(List.of(match));
@@ -75,7 +75,7 @@ class PlayerStatisticsServiceTest {
 
         playerStatisticsService.recalculateCleanSheets();
 
-        assertThat(stat.getCleanSheet()).isTrue();
+        assertThat(stat.getGoalkeeper().getCleanSheet()).isTrue();
     }
 
     @Test
@@ -85,7 +85,7 @@ class PlayerStatisticsServiceTest {
         PlayerStatistic stat = buildStat(1, PlayerStatistic.PlayerType.FORWARD);
         stat.setMatchId(1);
         stat.setIsHomeTeam(true);
-        stat.setCleanSheet(null);
+        stat.getGoalkeeper().setCleanSheet(null);
 
         when(playerStatisticRepository.findAll()).thenReturn(List.of(stat));
         when(matchRepository.findAll()).thenReturn(List.of(match));
@@ -93,7 +93,7 @@ class PlayerStatisticsServiceTest {
 
         playerStatisticsService.recalculateCleanSheets();
 
-        assertThat(stat.getCleanSheet()).isNull();
+        assertThat(stat.getGoalkeeper().getCleanSheet()).isNull();
     }
 
     @Test
@@ -118,8 +118,8 @@ class PlayerStatisticsServiceTest {
         PlayerStatistic stat = buildStat(1, PlayerStatistic.PlayerType.DEFENDER);
         stat.setMatchId(1);
         stat.setIsHomeTeam(false); 
-        stat.setGoalsConceded(null);
-        stat.setCleanSheet(null);
+        stat.getGoalkeeper().setGoalsConceded(null);
+        stat.getGoalkeeper().setCleanSheet(null);
 
         when(playerStatisticRepository.findAll()).thenReturn(List.of(stat));
         when(matchRepository.findAll()).thenReturn(List.of(match));
@@ -127,7 +127,7 @@ class PlayerStatisticsServiceTest {
 
         playerStatisticsService.recalculateCleanSheets();
 
-        assertThat(stat.getGoalsConceded()).isEqualTo(2);
+        assertThat(stat.getGoalkeeper().getGoalsConceded()).isEqualTo(2);
     }
 
 
@@ -136,10 +136,10 @@ class PlayerStatisticsServiceTest {
         s.setId(id);
         s.setPlayerType(type);
         s.setMinutesPlayed(90);
-        s.setGoals(0);
-        s.setAssists(0);
-        s.setYellowCards(0);
-        s.setRedCards(0);
+        s.getShooting().setGoals(0);
+        s.getPassing().setAssists(0);
+        s.getDiscipline().setYellowCards(0);
+        s.getDiscipline().setRedCards(0);
         return s;
     }
 
@@ -176,8 +176,8 @@ class PlayerStatisticsServiceTest {
     @DisplayName("recalculateAllFantasyPoints: totalFantasyPoints actualizado en cada stat")
     void recalculateAllFantasyPoints_updatesFantasyPoints() {
         PlayerStatistic stat = buildStat(1, PlayerStatistic.PlayerType.MIDFIELDER);
-        stat.setGoals(2);
-        stat.setAssists(1);
+        stat.getShooting().setGoals(2);
+        stat.getPassing().setAssists(1);
 
         when(playerStatisticRepository.findAll()).thenReturn(List.of(stat));
         when(playerStatisticRepository.saveAll(anyList())).thenAnswer(inv -> inv.getArgument(0));
@@ -206,7 +206,7 @@ class PlayerStatisticsServiceTest {
         int result = playerStatisticsService.recalculateCleanSheets();
 
         assertThat(result).isEqualTo(0);
-        assertThat(stat.getCleanSheet()).isNull();
+        assertThat(stat.getGoalkeeper().getCleanSheet()).isNull();
     }
 
     @Test
@@ -216,7 +216,7 @@ class PlayerStatisticsServiceTest {
         PlayerStatistic stat = buildStat(1, PlayerStatistic.PlayerType.GOALKEEPER);
         stat.setMatchId(1);
         stat.setIsHomeTeam(false); 
-        stat.setCleanSheet(null);
+        stat.getGoalkeeper().setCleanSheet(null);
 
         when(playerStatisticRepository.findAll()).thenReturn(List.of(stat));
         when(matchRepository.findAll()).thenReturn(List.of(match));
@@ -224,7 +224,7 @@ class PlayerStatisticsServiceTest {
 
         playerStatisticsService.recalculateCleanSheets();
 
-        assertThat(stat.getCleanSheet()).isFalse();
+        assertThat(stat.getGoalkeeper().getCleanSheet()).isFalse();
     }
 
     @Test
@@ -234,7 +234,7 @@ class PlayerStatisticsServiceTest {
         PlayerStatistic stat = buildStat(1, PlayerStatistic.PlayerType.GOALKEEPER);
         stat.setMatchId(1);
         stat.setIsHomeTeam(true);
-        stat.setCleanSheet(false); 
+        stat.getGoalkeeper().setCleanSheet(false);
 
         when(playerStatisticRepository.findAll()).thenReturn(List.of(stat));
         when(matchRepository.findAll()).thenReturn(List.of(match));
@@ -242,7 +242,7 @@ class PlayerStatisticsServiceTest {
 
         playerStatisticsService.recalculateCleanSheets();
 
-        assertThat(stat.getCleanSheet()).isFalse();
+        assertThat(stat.getGoalkeeper().getCleanSheet()).isFalse();
     }
 
     @Test
@@ -252,7 +252,7 @@ class PlayerStatisticsServiceTest {
         PlayerStatistic stat = buildStat(1, PlayerStatistic.PlayerType.MIDFIELDER);
         stat.setMatchId(1);
         stat.setIsHomeTeam(true);
-        stat.setGoalsConceded(null);
+        stat.getGoalkeeper().setGoalsConceded(null);
 
         when(playerStatisticRepository.findAll()).thenReturn(List.of(stat));
         when(matchRepository.findAll()).thenReturn(List.of(match));
@@ -260,7 +260,7 @@ class PlayerStatisticsServiceTest {
 
         playerStatisticsService.recalculateCleanSheets();
 
-        assertThat(stat.getGoalsConceded()).isNull();
+        assertThat(stat.getGoalkeeper().getGoalsConceded()).isNull();
     }
 
     @Test
@@ -275,7 +275,7 @@ class PlayerStatisticsServiceTest {
         PlayerStatistic stat = buildStat(1, PlayerStatistic.PlayerType.GOALKEEPER);
         stat.setMatchId(1);
         stat.setIsHomeTeam(true);
-        stat.setCleanSheet(null);
+        stat.getGoalkeeper().setCleanSheet(null);
 
         when(playerStatisticRepository.findAll()).thenReturn(List.of(stat));
         when(matchRepository.findAll()).thenReturn(List.of(match));
@@ -284,7 +284,7 @@ class PlayerStatisticsServiceTest {
         int result = playerStatisticsService.recalculateCleanSheets();
 
         assertThat(result).isEqualTo(0);
-        assertThat(stat.getCleanSheet()).isNull();
+        assertThat(stat.getGoalkeeper().getCleanSheet()).isNull();
     }
 
     @Test
@@ -310,8 +310,8 @@ class PlayerStatisticsServiceTest {
         PlayerStatistic stat = buildStat(1, PlayerStatistic.PlayerType.GOALKEEPER);
         stat.setMatchId(1);
         stat.setIsHomeTeam(false); 
-        stat.setGoalsConceded(1); 
-        stat.setCleanSheet(null);
+        stat.getGoalkeeper().setGoalsConceded(1);
+        stat.getGoalkeeper().setCleanSheet(null);
 
         when(playerStatisticRepository.findAll()).thenReturn(List.of(stat));
         when(matchRepository.findAll()).thenReturn(List.of(match));
@@ -320,7 +320,7 @@ class PlayerStatisticsServiceTest {
         playerStatisticsService.recalculateCleanSheets();
 
         // Existing goalsConceded=1 not overwritten (condition: getGoalsConceded() == null)
-        assertThat(stat.getGoalsConceded()).isEqualTo(1);
+        assertThat(stat.getGoalkeeper().getGoalsConceded()).isEqualTo(1);
     }
 
     // -----------------------------------------------------------------------
@@ -335,7 +335,7 @@ class PlayerStatisticsServiceTest {
         PlayerStatistic valid = buildStat(1, PlayerStatistic.PlayerType.GOALKEEPER);
         valid.setMatchId(1);
         valid.setIsHomeTeam(true);
-        valid.setCleanSheet(null);
+        valid.getGoalkeeper().setCleanSheet(null);
 
         PlayerStatistic noMatch = buildStat(2, PlayerStatistic.PlayerType.GOALKEEPER);
         noMatch.setMatchId(null); // will be skipped
@@ -372,7 +372,7 @@ class PlayerStatisticsServiceTest {
         PlayerStatistic stat = buildStat(1, PlayerStatistic.PlayerType.GOALKEEPER);
         stat.setMatchId(1);
         stat.setIsHomeTeam(true); 
-        stat.setCleanSheet(false); 
+        stat.getGoalkeeper().setCleanSheet(false);
 
         when(playerStatisticRepository.findAll()).thenReturn(List.of(stat));
         when(matchRepository.findAll()).thenReturn(List.of(match));
@@ -391,8 +391,8 @@ class PlayerStatisticsServiceTest {
         PlayerStatistic stat = buildStat(1, PlayerStatistic.PlayerType.DEFENDER);
         stat.setMatchId(1);
         stat.setIsHomeTeam(true);
-        stat.setCleanSheet(null);
-        stat.setGoalsConceded(null);
+        stat.getGoalkeeper().setCleanSheet(null);
+        stat.getGoalkeeper().setGoalsConceded(null);
 
         when(playerStatisticRepository.findAll()).thenReturn(List.of(stat));
         when(matchRepository.findAll()).thenReturn(List.of(match));
@@ -400,7 +400,7 @@ class PlayerStatisticsServiceTest {
 
         playerStatisticsService.recalculateCleanSheets();
 
-        assertThat(stat.getGoalsConceded()).isEqualTo(3);
-        assertThat(stat.getCleanSheet()).isFalse(); 
+        assertThat(stat.getGoalkeeper().getGoalsConceded()).isEqualTo(3);
+        assertThat(stat.getGoalkeeper().getCleanSheet()).isFalse(); 
     }
 }

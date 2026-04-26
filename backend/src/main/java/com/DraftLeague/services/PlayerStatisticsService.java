@@ -77,15 +77,15 @@ public class PlayerStatisticsService {
                         || type == PlayerStatistic.PlayerType.DEFENDER
                         || type == PlayerStatistic.PlayerType.MIDFIELDER;
 
-                if (relevant && stat.getCleanSheet() == null) {
-                    stat.setCleanSheet(conceded == 0);
+                if (relevant && stat.getGoalkeeper().getCleanSheet() == null) {
+                    stat.getGoalkeeper().setCleanSheet(conceded == 0);
                     updated++;
                 }
 
-                if (stat.getGoalsConceded() == null &&
+                if (stat.getGoalkeeper().getGoalsConceded() == null &&
                         (type == PlayerStatistic.PlayerType.GOALKEEPER
                                 || type == PlayerStatistic.PlayerType.DEFENDER)) {
-                    stat.setGoalsConceded(conceded);
+                    stat.getGoalkeeper().setGoalsConceded(conceded);
                     updated++;
                 }
 

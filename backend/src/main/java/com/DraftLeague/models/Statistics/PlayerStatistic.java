@@ -12,7 +12,6 @@ import lombok.Setter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import com.DraftLeague.models.Statistics.PlayerStatistic;
 
 @Getter
 @Setter
@@ -61,122 +60,6 @@ public class PlayerStatistic {
     @Column(name = "minutes_played", nullable = false)
     private Integer minutesPlayed;
 
-    @Min(0)
-    @Column(name = "goals")
-    private Integer goals = 0;
-
-    @Min(0)
-    @Column(name = "assists")
-    private Integer assists = 0;
-
-    @Min(0)
-    @Column(name = "total_shots")
-    private Integer totalShots = 0;
-
-    @Min(0)
-    @Column(name = "shots_on_target")
-    private Integer shotsOnTarget = 0;
-
-    @Min(0)
-    @Column(name = "accurate_passes")
-    private Integer accuratePasses = 0;
-
-    @Min(0)
-    @Column(name = "total_passes")
-    private Integer totalPasses = 0;
-
-    @Min(0)
-    @Column(name = "chances_created")
-    private Integer chancesCreated = 0;
-
-    @Min(0)
-    @Column(name = "successful_dribbles")
-    private Integer successfulDribbles = 0;
-
-    @Min(0)
-    @Column(name = "total_dribbles")
-    private Integer totalDribbles = 0;
-
-    @Min(0)
-    @Column(name = "dribbled_past")
-    private Integer dribbledPast = 0;
-
-    @Min(0)
-    @Column(name = "offsides")
-    private Integer offsides = 0;
-
-    @Min(0)
-    @Column(name = "accurate_crosses")
-    private Integer accurateCrosses = 0;
-
-    @Min(0)
-    @Column(name = "total_crosses")
-    private Integer totalCrosses = 0;
-
-    @Min(0)
-    @Column(name = "tackles")
-    private Integer tackles = 0;
-
-    @Min(0)
-    @Column(name = "blocks")
-    private Integer blocks = 0;
-
-    @Min(0)
-    @Column(name = "interceptions")
-    private Integer interceptions = 0;
-
-    @Min(0)
-    @Column(name = "duels_won")
-    private Integer duelsWon = 0;
-
-    @Min(0)
-    @Column(name = "duels_lost")
-    private Integer duelsLost = 0;
-
-    @Min(0)
-    @Column(name = "was_fouled")
-    private Integer wasFouled = 0;
-
-    @Min(0)
-    @Column(name = "fouls_committed")
-    private Integer foulsCommitted = 0;
-
-    @Min(0)
-    @Column(name = "yellow_cards")
-    private Integer yellowCards = 0;
-
-    @Min(0)
-    @Column(name = "red_cards")
-    private Integer redCards = 0;
-
-    // Penalty stats
-    @Min(0)
-    @Column(name = "penalties_won")
-    private Integer penaltiesWon = 0;
-
-    @Min(0)
-    @Column(name = "penalty_scored")
-    private Integer penaltyScored = 0;
-
-    @Min(0)
-    @Column(name = "penalty_missed")
-    private Integer penaltyMissed = 0;
-
-    @Min(0)
-    @Column(name = "saves")
-    private Integer saves;
-
-    @Min(0)
-    @Column(name = "penalties_saved")
-    private Integer penaltiesSaved;
-
-    @Column(name = "clean_sheet")
-    private Boolean cleanSheet;
-
-    @Min(0)
-    @Column(name = "goals_conceded")
-    private Integer goalsConceded;
-
     @Column(name = "is_substitute")
     private Boolean isSubstitute = false;
 
@@ -187,14 +70,28 @@ public class PlayerStatistic {
     @Column(name = "shirt_number")
     private Integer shirtNumber;
 
-    @Min(0)
-    @Column(name = "penalty_committed")
-    private Integer penaltyCommitted = 0;
-
     @Column(name = "total_fantasy_points")
     private Integer totalFantasyPoints = 0;
 
- 
+    @Embedded
+    private ShootingStats shooting = new ShootingStats();
+
+    @Embedded
+    private PassingStats passing = new PassingStats();
+
+    @Embedded
+    private DribblingStats dribbling = new DribblingStats();
+
+    @Embedded
+    private DefensiveStats defensive = new DefensiveStats();
+
+    @Embedded
+    private DisciplineStats discipline = new DisciplineStats();
+
+    @Embedded
+    private GoalkeeperStats goalkeeper = new GoalkeeperStats();
+
+
     public int calculateFantasyPoints() {
         int points = 0;
 
@@ -206,6 +103,7 @@ public class PlayerStatistic {
             points += 1;
         }
 
+        Integer goals = shooting.getGoals();
         if (goals != null && goals > 0) {
             switch (playerType) {
                 case GOALKEEPER:
@@ -221,10 +119,12 @@ public class PlayerStatistic {
             }
         }
 
+        Integer assists = passing.getAssists();
         if (assists != null && assists > 0) {
             points += assists * 3;
         }
 
+        Integer chancesCreated = passing.getChancesCreated();
         if ((playerType == PlayerType.MIDFIELDER || playerType == PlayerType.FORWARD)
                 && chancesCreated != null && chancesCreated >= 3) {
             points += chancesCreated / 3;
@@ -242,16 +142,24 @@ public class PlayerStatistic {
             }
         }
 
+        Integer yellowCards = discipline.getYellowCards();
+        Integer redCards = discipline.getRedCards();
+        Integer foulsCommitted = discipline.getFoulsCommitted();
+
         if (yellowCards != null && yellowCards > 0) {
             points -= yellowCards;
         }
         if (redCards != null && redCards > 0) {
             points -= redCards * 3;
         }
-
         if (foulsCommitted != null && foulsCommitted >= 3) {
             points -= foulsCommitted / 3;
         }
+
+        Integer tackles = defensive.getTackles();
+        Integer interceptions = defensive.getInterceptions();
+        Integer blocks = defensive.getBlocks();
+        Integer duelsWon = defensive.getDuelsWon();
 
         if (playerType == PlayerType.DEFENDER || playerType == PlayerType.MIDFIELDER) {
             if (tackles != null) points += tackles / 3;
@@ -263,9 +171,9 @@ public class PlayerStatistic {
             points += 1;
         }
 
-        
+        Boolean cleanSheet = goalkeeper.getCleanSheet();
         if ((playerType == PlayerType.GOALKEEPER || playerType == PlayerType.DEFENDER)
-            && minutesPlayed >= 60) {
+                && minutesPlayed >= 60) {
             if (cleanSheet != null && cleanSheet) {
                 points += 4;
             }
@@ -277,6 +185,7 @@ public class PlayerStatistic {
             }
         }
 
+        Integer saves = goalkeeper.getSaves();
         if (playerType == PlayerType.GOALKEEPER && saves != null && saves >= 3) {
             points += saves / 3;
         }
@@ -285,6 +194,7 @@ public class PlayerStatistic {
             points += 5;
         }
 
+        Integer penaltiesSaved = goalkeeper.getPenaltiesSaved();
         if (playerType == PlayerType.GOALKEEPER && penaltiesSaved != null && penaltiesSaved > 0) {
             points += penaltiesSaved * 5;
         }
@@ -292,23 +202,23 @@ public class PlayerStatistic {
         if (assists != null && assists == 2) {
             points += 3;
         }
-
         if (assists != null && assists >= 3) {
             points += 8;
         }
 
+        Integer goalsConceded = goalkeeper.getGoalsConceded();
         if (playerType == PlayerType.GOALKEEPER && goalsConceded != null && goalsConceded >= 3) {
             points -= 2;
         }
-
         if (playerType == PlayerType.DEFENDER && goalsConceded != null && goalsConceded >= 3) {
             points -= 1;
         }
 
+        Integer penaltyCommitted = discipline.getPenaltyCommitted();
+        Integer penaltyMissed = discipline.getPenaltyMissed();
         if (penaltyCommitted != null && penaltyCommitted > 0) {
             points -= penaltyCommitted * 2;
         }
-
         if (penaltyMissed != null && penaltyMissed > 0) {
             points -= penaltyMissed * 2;
         }
@@ -319,7 +229,6 @@ public class PlayerStatistic {
 
     public int calculateFantasyPointsWithChip(String chipName) {
         if (chipName == null) return calculateFantasyPoints();
-        // Resolve string → ChipType once; fall back to base calculation for unknown values
         ChipType chip = ChipType.isValid(chipName) ? ChipType.valueOf(chipName) : null;
         if (chip == null) return calculateFantasyPoints();
 
@@ -333,6 +242,7 @@ public class PlayerStatistic {
             points += 1;
         }
 
+        Integer goals = shooting.getGoals();
         if (goals != null && goals > 0) {
             if (chip == ChipType.DOUBLE_GOALS) {
                 switch (playerType) {
@@ -355,10 +265,12 @@ public class PlayerStatistic {
             }
         }
 
+        Integer assists = passing.getAssists();
         if (assists != null && assists > 0) {
             points += assists * (chip == ChipType.DOUBLE_ASSISTS ? 6 : 3);
         }
 
+        Integer chancesCreated = passing.getChancesCreated();
         if ((playerType == PlayerType.MIDFIELDER || playerType == PlayerType.FORWARD)
                 && chancesCreated != null && chancesCreated > 0) {
             if (chip == ChipType.CREATIVE_MIDS) {
@@ -376,13 +288,21 @@ public class PlayerStatistic {
         }
 
         if (chip != ChipType.NO_PENALTY) {
+            Integer yellowCards = discipline.getYellowCards();
+            Integer redCards = discipline.getRedCards();
             if (yellowCards != null && yellowCards > 0) points -= yellowCards;
             if (redCards != null && redCards > 0)       points -= redCards * 3;
         }
 
+        Integer foulsCommitted = discipline.getFoulsCommitted();
         if (foulsCommitted != null && foulsCommitted >= 3) {
             points -= foulsCommitted / 3;
         }
+
+        Integer tackles = defensive.getTackles();
+        Integer interceptions = defensive.getInterceptions();
+        Integer blocks = defensive.getBlocks();
+        Integer duelsWon = defensive.getDuelsWon();
 
         if (playerType == PlayerType.DEFENDER || playerType == PlayerType.MIDFIELDER) {
             if (tackles != null)       points += tackles / 3;
@@ -394,6 +314,7 @@ public class PlayerStatistic {
             points += 1;
         }
 
+        Boolean cleanSheet = goalkeeper.getCleanSheet();
         if ((playerType == PlayerType.GOALKEEPER || playerType == PlayerType.DEFENDER)
                 && minutesPlayed >= 60 && cleanSheet != null && cleanSheet) {
             points += (chip == ChipType.DEFENSIVE_WEEK) ? 8 : 4;
@@ -403,6 +324,7 @@ public class PlayerStatistic {
             points += (chip == ChipType.DEFENSIVE_WEEK) ? 2 : 1;
         }
 
+        Integer saves = goalkeeper.getSaves();
         if (playerType == PlayerType.GOALKEEPER && saves != null) {
             if (chip == ChipType.SUPER_SAVES) {
                 if (saves >= 2) points += saves / 2;
@@ -415,6 +337,7 @@ public class PlayerStatistic {
             points += 5;
         }
 
+        Integer penaltiesSaved = goalkeeper.getPenaltiesSaved();
         if (playerType == PlayerType.GOALKEEPER && penaltiesSaved != null && penaltiesSaved > 0) {
             points += penaltiesSaved * 5;
         }
@@ -424,6 +347,7 @@ public class PlayerStatistic {
             else if (assists >= 3) points += 8;
         }
 
+        Integer goalsConceded = goalkeeper.getGoalsConceded();
         if (playerType == PlayerType.GOALKEEPER && goalsConceded != null && goalsConceded >= 3) {
             points -= 2;
         }
@@ -431,6 +355,8 @@ public class PlayerStatistic {
             points -= 1;
         }
 
+        Integer penaltyCommitted = discipline.getPenaltyCommitted();
+        Integer penaltyMissed = discipline.getPenaltyMissed();
         if (penaltyCommitted != null && penaltyCommitted > 0) points -= penaltyCommitted * 2;
         if (penaltyMissed    != null && penaltyMissed    > 0) points -= penaltyMissed    * 2;
 
@@ -452,6 +378,7 @@ public class PlayerStatistic {
             total += 1;
         }
 
+        Integer goals = shooting.getGoals();
         if (goals != null && goals > 0) {
             int goalPoints = 0;
             switch (playerType) {
@@ -472,12 +399,14 @@ public class PlayerStatistic {
             }
         }
 
+        Integer assists = passing.getAssists();
         if (assists != null && assists > 0) {
             int assistPoints = assists * 3;
             breakdown.put("assists", assistPoints);
             total += assistPoints;
         }
 
+        Integer chancesCreated = passing.getChancesCreated();
         if ((playerType == PlayerType.MIDFIELDER || playerType == PlayerType.FORWARD)
                 && chancesCreated != null && chancesCreated >= 3) {
             int chancesPoints = chancesCreated / 3;
@@ -502,6 +431,10 @@ public class PlayerStatistic {
             }
         }
 
+        Integer yellowCards = discipline.getYellowCards();
+        Integer redCards = discipline.getRedCards();
+        Integer foulsCommitted = discipline.getFoulsCommitted();
+
         if (yellowCards != null && yellowCards > 0) {
             int ycPoints = -yellowCards;
             breakdown.put("yellowCards", ycPoints);
@@ -512,12 +445,16 @@ public class PlayerStatistic {
             breakdown.put("redCards", rcPoints);
             total += rcPoints;
         }
-
         if (foulsCommitted != null && foulsCommitted >= 3) {
             int foulsPoints = -(foulsCommitted / 3);
             breakdown.put("foulsCommitted", foulsPoints);
             total += foulsPoints;
         }
+
+        Integer tackles = defensive.getTackles();
+        Integer interceptions = defensive.getInterceptions();
+        Integer blocks = defensive.getBlocks();
+        Integer duelsWon = defensive.getDuelsWon();
 
         if (playerType == PlayerType.DEFENDER || playerType == PlayerType.MIDFIELDER) {
             int defPoints = 0;
@@ -535,8 +472,9 @@ public class PlayerStatistic {
             total += 1;
         }
 
+        Boolean cleanSheet = goalkeeper.getCleanSheet();
         if ((playerType == PlayerType.GOALKEEPER || playerType == PlayerType.DEFENDER)
-            && minutesPlayed >= 60) {
+                && minutesPlayed >= 60) {
             if (cleanSheet != null && cleanSheet) {
                 breakdown.put("cleanSheet", 4);
                 total += 4;
@@ -550,6 +488,7 @@ public class PlayerStatistic {
             }
         }
 
+        Integer saves = goalkeeper.getSaves();
         if (playerType == PlayerType.GOALKEEPER && saves != null && saves >= 3) {
             int savesPoints = saves / 3;
             breakdown.put("saves", savesPoints);
@@ -561,6 +500,7 @@ public class PlayerStatistic {
             total += 5;
         }
 
+        Integer penaltiesSaved = goalkeeper.getPenaltiesSaved();
         if (playerType == PlayerType.GOALKEEPER && penaltiesSaved != null && penaltiesSaved > 0) {
             int penPoints = penaltiesSaved * 5;
             breakdown.put("penaltySaved", penPoints);
@@ -571,28 +511,28 @@ public class PlayerStatistic {
             breakdown.put("doubleAssist", 3);
             total += 3;
         }
-
         if (assists != null && assists >= 3) {
             breakdown.put("tripleAssist", 8);
             total += 8;
         }
 
+        Integer goalsConceded = goalkeeper.getGoalsConceded();
         if (playerType == PlayerType.GOALKEEPER && goalsConceded != null && goalsConceded >= 3) {
             breakdown.put("multipleGoalsConceded", -2);
             total -= 2;
         }
-
         if (playerType == PlayerType.DEFENDER && goalsConceded != null && goalsConceded >= 3) {
             breakdown.put("multipleGoalsConcededDef", -1);
             total -= 1;
         }
 
+        Integer penaltyCommitted = discipline.getPenaltyCommitted();
+        Integer penaltyMissed = discipline.getPenaltyMissed();
         if (penaltyCommitted != null && penaltyCommitted > 0) {
             int penCommittedPoints = -penaltyCommitted * 2;
             breakdown.put("penaltyCommitted", penCommittedPoints);
             total += penCommittedPoints;
         }
-
         if (penaltyMissed != null && penaltyMissed > 0) {
             int penMissedPoints = -penaltyMissed * 2;
             breakdown.put("penaltyMissed", penMissedPoints);
@@ -607,7 +547,6 @@ public class PlayerStatistic {
         if (chipName == null) return calculateFantasyPointsBreakdown();
         if (!ChipType.isValid(chipName)) return calculateFantasyPointsBreakdown();
         ChipType chip = ChipType.valueOf(chipName);
-        // Service-level chips do not affect the per-stat breakdown
         if (chip == ChipType.TRIPLE_CAP || chip == ChipType.BENCH_BOOST) {
             return calculateFantasyPointsBreakdown();
         }
@@ -615,7 +554,6 @@ public class PlayerStatistic {
         Map<String, Integer> breakdown = new LinkedHashMap<>();
         int total = 0;
 
-        // Minutes played
         if (minutesPlayed >= 60) {
             int pts = (chip == ChipType.GOLDEN_MINUTES) ? 5 : 3;
             breakdown.put("minutesPlayed", pts);
@@ -628,7 +566,7 @@ public class PlayerStatistic {
             total += 1;
         }
 
-        // Goals
+        Integer goals = shooting.getGoals();
         if (goals != null && goals > 0) {
             int goalPoints;
             if (chip == ChipType.DOUBLE_GOALS) {
@@ -659,14 +597,14 @@ public class PlayerStatistic {
             }
         }
 
-        // Assists
+        Integer assists = passing.getAssists();
         if (assists != null && assists > 0) {
             int assistPoints = assists * (chip == ChipType.DOUBLE_ASSISTS ? 6 : 3);
             breakdown.put("assists", assistPoints);
             total += assistPoints;
         }
 
-        // Chances created
+        Integer chancesCreated = passing.getChancesCreated();
         if ((playerType == PlayerType.MIDFIELDER || playerType == PlayerType.FORWARD)
                 && chancesCreated != null && chancesCreated > 0) {
             int chancesPoints;
@@ -683,7 +621,6 @@ public class PlayerStatistic {
             }
         }
 
-        // Rating bonus
         if (rating != null) {
             int ratingPoints = 0;
             if (rating >= 9.0)      ratingPoints = 5;
@@ -696,28 +633,31 @@ public class PlayerStatistic {
             }
         }
 
-        // Cards — suppressed by NO_PENALTY
         if (chip != ChipType.NO_PENALTY) {
+            Integer yellowCards = discipline.getYellowCards();
+            Integer redCards = discipline.getRedCards();
             if (yellowCards != null && yellowCards > 0) {
-                int ycPoints = -yellowCards;
-                breakdown.put("yellowCards", ycPoints);
-                total += ycPoints;
+                breakdown.put("yellowCards", -yellowCards);
+                total -= yellowCards;
             }
             if (redCards != null && redCards > 0) {
-                int rcPoints = -redCards * 3;
-                breakdown.put("redCards", rcPoints);
-                total += rcPoints;
+                breakdown.put("redCards", -redCards * 3);
+                total -= redCards * 3;
             }
         }
 
-        // Fouls
+        Integer foulsCommitted = discipline.getFoulsCommitted();
         if (foulsCommitted != null && foulsCommitted >= 3) {
             int foulsPoints = -(foulsCommitted / 3);
             breakdown.put("foulsCommitted", foulsPoints);
             total += foulsPoints;
         }
 
-        // Defensive actions
+        Integer tackles = defensive.getTackles();
+        Integer interceptions = defensive.getInterceptions();
+        Integer blocks = defensive.getBlocks();
+        Integer duelsWon = defensive.getDuelsWon();
+
         if (playerType == PlayerType.DEFENDER || playerType == PlayerType.MIDFIELDER) {
             int defPoints = 0;
             if (tackles != null)       defPoints += tackles / 3;
@@ -729,21 +669,18 @@ public class PlayerStatistic {
             }
         }
 
-        // Duels won bonus
         if (duelsWon != null && duelsWon >= 5) {
             breakdown.put("duelsBonus", 1);
             total += 1;
         }
 
-        // Clean sheet — GK / DEF
+        Boolean cleanSheet = goalkeeper.getCleanSheet();
         if ((playerType == PlayerType.GOALKEEPER || playerType == PlayerType.DEFENDER)
                 && minutesPlayed >= 60 && cleanSheet != null && cleanSheet) {
             int csPoints = (chip == ChipType.DEFENSIVE_WEEK) ? 8 : 4;
             breakdown.put("cleanSheet", csPoints);
             total += csPoints;
         }
-
-        // Clean sheet — MID
         if (playerType == PlayerType.MIDFIELDER && minutesPlayed >= 60
                 && cleanSheet != null && cleanSheet) {
             int csPoints = (chip == ChipType.DEFENSIVE_WEEK) ? 2 : 1;
@@ -751,7 +688,7 @@ public class PlayerStatistic {
             total += csPoints;
         }
 
-        // Saves
+        Integer saves = goalkeeper.getSaves();
         if (playerType == PlayerType.GOALKEEPER && saves != null) {
             int savesPoints;
             if (chip == ChipType.SUPER_SAVES) {
@@ -765,20 +702,18 @@ public class PlayerStatistic {
             }
         }
 
-        // Hat-trick bonus
         if (goals != null && goals >= 3) {
             breakdown.put("hatTrick", 5);
             total += 5;
         }
 
-        // Penalty saved
+        Integer penaltiesSaved = goalkeeper.getPenaltiesSaved();
         if (playerType == PlayerType.GOALKEEPER && penaltiesSaved != null && penaltiesSaved > 0) {
             int penPoints = penaltiesSaved * 5;
             breakdown.put("penaltySaved", penPoints);
             total += penPoints;
         }
 
-        // Double / triple assist bonus
         if (assists != null && assists == 2) {
             breakdown.put("doubleAssist", 3);
             total += 3;
@@ -788,7 +723,7 @@ public class PlayerStatistic {
             total += 8;
         }
 
-        // Goals conceded penalty
+        Integer goalsConceded = goalkeeper.getGoalsConceded();
         if (playerType == PlayerType.GOALKEEPER && goalsConceded != null && goalsConceded >= 3) {
             breakdown.put("multipleGoalsConceded", -2);
             total -= 2;
@@ -798,7 +733,8 @@ public class PlayerStatistic {
             total -= 1;
         }
 
-        // Penalty committed / missed
+        Integer penaltyCommitted = discipline.getPenaltyCommitted();
+        Integer penaltyMissed = discipline.getPenaltyMissed();
         if (penaltyCommitted != null && penaltyCommitted > 0) {
             int penCommittedPoints = -penaltyCommitted * 2;
             breakdown.put("penaltyCommitted", penCommittedPoints);

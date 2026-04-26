@@ -200,11 +200,11 @@ class PlayerPredictionServiceTest {
                     s.setMatchId(i + 1);
                     s.setPlayerType(PlayerStatistic.PlayerType.MIDFIELDER);
                     s.setMinutesPlayed(90);
-                    s.setGoals(1);
-                    s.setAssists(1);
+                    s.getShooting().setGoals(1);
+                    s.getPassing().setAssists(1);
                     s.setRating(7.5);
-                    s.setYellowCards(0);
-                    s.setRedCards(0);
+                    s.getDiscipline().setYellowCards(0);
+                    s.getDiscipline().setRedCards(0);
                     return s;
                 })
                 .collect(java.util.stream.Collectors.toList());

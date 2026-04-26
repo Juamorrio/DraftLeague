@@ -692,7 +692,7 @@ class PlayerStatisticServiceTest {
                 playerStatisticService.saveBulkFromJson(List.of(row));
 
         assertThat(result).hasSize(1);
-        assertThat(stat.getCleanSheet()).isFalse();
+        assertThat(stat.getGoalkeeper().getCleanSheet()).isFalse();
     }
 
     @Test

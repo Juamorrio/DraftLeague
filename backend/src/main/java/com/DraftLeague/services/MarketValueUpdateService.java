@@ -641,16 +641,16 @@ public class MarketValueUpdateService {
     private double computeImpactFactor(List<PlayerStatistic> recentStats, Position position) {
         if (recentStats.isEmpty()) return 1.0;
 
-        double avgGoals    = recentStats.stream().mapToInt(ps -> safeInt(ps.getGoals())).average().orElse(0.0);
-        double avgAssists  = recentStats.stream().mapToInt(ps -> safeInt(ps.getAssists())).average().orElse(0.0);
-        double avgShots    = recentStats.stream().mapToInt(ps -> safeInt(ps.getShotsOnTarget())).average().orElse(0.0);
-        double avgChances  = recentStats.stream().mapToInt(ps -> safeInt(ps.getChancesCreated())).average().orElse(0.0);
-        double avgTackles  = recentStats.stream().mapToInt(ps -> safeInt(ps.getTackles())).average().orElse(0.0);
-        double avgInter    = recentStats.stream().mapToInt(ps -> safeInt(ps.getInterceptions())).average().orElse(0.0);
-        double avgBlocks   = recentStats.stream().mapToInt(ps -> safeInt(ps.getBlocks())).average().orElse(0.0);
-        double avgSaves    = recentStats.stream().mapToInt(ps -> safeInt(ps.getSaves())).average().orElse(0.0);
-        double avgConceded = recentStats.stream().mapToInt(ps -> safeInt(ps.getGoalsConceded())).average().orElse(0.0);
-        double cleanRate   = recentStats.stream().filter(ps -> Boolean.TRUE.equals(ps.getCleanSheet())).count()
+        double avgGoals    = recentStats.stream().mapToInt(ps -> safeInt(ps.getShooting().getGoals())).average().orElse(0.0);
+        double avgAssists  = recentStats.stream().mapToInt(ps -> safeInt(ps.getPassing().getAssists())).average().orElse(0.0);
+        double avgShots    = recentStats.stream().mapToInt(ps -> safeInt(ps.getShooting().getShotsOnTarget())).average().orElse(0.0);
+        double avgChances  = recentStats.stream().mapToInt(ps -> safeInt(ps.getPassing().getChancesCreated())).average().orElse(0.0);
+        double avgTackles  = recentStats.stream().mapToInt(ps -> safeInt(ps.getDefensive().getTackles())).average().orElse(0.0);
+        double avgInter    = recentStats.stream().mapToInt(ps -> safeInt(ps.getDefensive().getInterceptions())).average().orElse(0.0);
+        double avgBlocks   = recentStats.stream().mapToInt(ps -> safeInt(ps.getDefensive().getBlocks())).average().orElse(0.0);
+        double avgSaves    = recentStats.stream().mapToInt(ps -> safeInt(ps.getGoalkeeper().getSaves())).average().orElse(0.0);
+        double avgConceded = recentStats.stream().mapToInt(ps -> safeInt(ps.getGoalkeeper().getGoalsConceded())).average().orElse(0.0);
+        double cleanRate   = recentStats.stream().filter(ps -> Boolean.TRUE.equals(ps.getGoalkeeper().getCleanSheet())).count()
                 / (double) recentStats.size();
 
         return clamp(1.0 + impactScore(position, avgGoals, avgAssists, avgShots, avgChances,

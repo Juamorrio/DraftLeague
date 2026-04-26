@@ -149,8 +149,8 @@ public class PlayerPredictionService {
             // calculateFantasyPoints() recomputes from raw stats — always accurate
             wPoints  += s.calculateFantasyPoints() * w;
             wRating  += (s.getRating()       != null ? s.getRating()       : 0.0) * w;
-            wGoals   += (s.getGoals()        != null ? s.getGoals()        : 0)   * w;
-            wAssists += (s.getAssists()      != null ? s.getAssists()      : 0)   * w;
+            wGoals   += (s.getShooting().getGoals()   != null ? s.getShooting().getGoals()   : 0) * w;
+            wAssists += (s.getPassing().getAssists() != null ? s.getPassing().getAssists() : 0) * w;
             wMinutes += (s.getMinutesPlayed()!= null ? s.getMinutesPlayed(): 0)   * w;
         }
 
@@ -251,16 +251,16 @@ public class PlayerPredictionService {
         Map<String, Object> features = new LinkedHashMap<>();
         features.put("rating",             latest.getRating() != null ? latest.getRating() : 6.0);
         features.put("minutes_played",     latest.getMinutesPlayed() != null ? latest.getMinutesPlayed() : 0);
-        features.put("goals",              latest.getGoals() != null ? latest.getGoals() : 0);
-        features.put("assists",            latest.getAssists() != null ? latest.getAssists() : 0);
-        features.put("shots_on_target",    latest.getShotsOnTarget() != null ? latest.getShotsOnTarget() : 0);
-        features.put("tackles",            latest.getTackles() != null ? latest.getTackles() : 0);
-        features.put("blocks",             latest.getBlocks() != null ? latest.getBlocks() : 0);
-        features.put("saves",              latest.getSaves() != null ? latest.getSaves() : 0);
-        features.put("goals_conceded",     latest.getGoalsConceded() != null ? latest.getGoalsConceded() : 0);
-        features.put("clean_sheet",        Boolean.TRUE.equals(latest.getCleanSheet()) ? 1 : 0);
-        features.put("yellow_cards",       latest.getYellowCards() != null ? latest.getYellowCards() : 0);
-        features.put("red_cards",          latest.getRedCards() != null ? latest.getRedCards() : 0);
+        features.put("goals",              latest.getShooting().getGoals() != null ? latest.getShooting().getGoals() : 0);
+        features.put("assists",            latest.getPassing().getAssists() != null ? latest.getPassing().getAssists() : 0);
+        features.put("shots_on_target",    latest.getShooting().getShotsOnTarget() != null ? latest.getShooting().getShotsOnTarget() : 0);
+        features.put("tackles",            latest.getDefensive().getTackles() != null ? latest.getDefensive().getTackles() : 0);
+        features.put("blocks",             latest.getDefensive().getBlocks() != null ? latest.getDefensive().getBlocks() : 0);
+        features.put("saves",              latest.getGoalkeeper().getSaves() != null ? latest.getGoalkeeper().getSaves() : 0);
+        features.put("goals_conceded",     latest.getGoalkeeper().getGoalsConceded() != null ? latest.getGoalkeeper().getGoalsConceded() : 0);
+        features.put("clean_sheet",        Boolean.TRUE.equals(latest.getGoalkeeper().getCleanSheet()) ? 1 : 0);
+        features.put("yellow_cards",       latest.getDiscipline().getYellowCards() != null ? latest.getDiscipline().getYellowCards() : 0);
+        features.put("red_cards",          latest.getDiscipline().getRedCards() != null ? latest.getDiscipline().getRedCards() : 0);
         features.put("position_encoded",   encodePosition(latest.getPlayerType()));
         features.put("is_home_team",       Boolean.TRUE.equals(isHome) ? 1 : 0);
         features.put("recent_form_last3",  round2(recentFormLast3));

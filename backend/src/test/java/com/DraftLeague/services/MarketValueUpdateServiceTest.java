@@ -328,8 +328,8 @@ class MarketValueUpdateServiceTest {
         s.setTotalFantasyPoints(totalFP);
         s.setMinutesPlayed(minutes);
         s.setRating(rating);
-        s.setGoals(goals);
-        s.setAssists(assists);
+        s.getShooting().setGoals(goals);
+        s.getPassing().setAssists(assists);
         s.setIsHomeTeam(true);
         return s;
     }
@@ -778,8 +778,8 @@ class MarketValueUpdateServiceTest {
         s.setTotalFantasyPoints(totalFP);
         s.setMinutesPlayed(minutes);
         s.setRating(rating);
-        s.setGoals(0);
-        s.setAssists(0);
+        s.getShooting().setGoals(0);
+        s.getPassing().setAssists(0);
         s.setIsHomeTeam(true);
         return Collections.nCopies(count, s);
     }

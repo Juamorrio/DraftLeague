@@ -53,40 +53,46 @@ public class PlayerStatisticService {
         statistic.setRole(request.getRole());
         statistic.setRating(request.getRating());
         statistic.setMinutesPlayed(request.getMinutesPlayed());
-        statistic.setGoals(request.getGoals());
-        statistic.setAssists(request.getAssists());
-        statistic.setTotalShots(request.getTotalShots());
-        statistic.setShotsOnTarget(request.getShotsOnTarget());
-        statistic.setAccuratePasses(request.getAccuratePasses());
-        statistic.setTotalPasses(request.getTotalPasses());
-        statistic.setChancesCreated(request.getChancesCreated());
-        statistic.setSuccessfulDribbles(request.getSuccessfulDribbles());
-        statistic.setTotalDribbles(request.getTotalDribbles());
-        statistic.setDribbledPast(request.getDribbledPast());
-        statistic.setOffsides(request.getOffsides());
-        statistic.setAccurateCrosses(request.getAccurateCrosses());
-        statistic.setTotalCrosses(request.getTotalCrosses());
-        statistic.setTackles(request.getTackles());
-        statistic.setBlocks(request.getBlocks());
-        statistic.setInterceptions(request.getInterceptions());
-        statistic.setDuelsWon(request.getDuelsWon());
-        statistic.setDuelsLost(request.getDuelsLost());
-        statistic.setWasFouled(request.getWasFouled());
-        statistic.setFoulsCommitted(request.getFoulsCommitted());
-        statistic.setYellowCards(request.getYellowCards());
-        statistic.setRedCards(request.getRedCards());
-        statistic.setPenaltiesWon(request.getPenaltiesWon());
-        statistic.setPenaltyScored(request.getPenaltyScored());
-        statistic.setPenaltyMissed(request.getPenaltyMissed());
-        statistic.setPenaltyCommitted(request.getPenaltyCommitted());
-        statistic.setSaves(request.getSaves());
-        statistic.setPenaltiesSaved(request.getPenaltiesSaved());
-        statistic.setCleanSheet(request.getCleanSheet());
-        statistic.setGoalsConceded(request.getGoalsConceded());
         statistic.setIsSubstitute(request.getIsSubstitute());
         statistic.setIsCaptain(request.getIsCaptain());
         statistic.setShirtNumber(request.getShirtNumber());
         statistic.setTotalFantasyPoints(request.getTotalFantasyPoints());
+
+        statistic.getShooting().setGoals(request.getGoals());
+        statistic.getShooting().setTotalShots(request.getTotalShots());
+        statistic.getShooting().setShotsOnTarget(request.getShotsOnTarget());
+
+        statistic.getPassing().setAssists(request.getAssists());
+        statistic.getPassing().setAccuratePasses(request.getAccuratePasses());
+        statistic.getPassing().setTotalPasses(request.getTotalPasses());
+        statistic.getPassing().setChancesCreated(request.getChancesCreated());
+        statistic.getPassing().setAccurateCrosses(request.getAccurateCrosses());
+        statistic.getPassing().setTotalCrosses(request.getTotalCrosses());
+
+        statistic.getDribbling().setSuccessfulDribbles(request.getSuccessfulDribbles());
+        statistic.getDribbling().setTotalDribbles(request.getTotalDribbles());
+        statistic.getDribbling().setDribbledPast(request.getDribbledPast());
+        statistic.getDribbling().setOffsides(request.getOffsides());
+
+        statistic.getDefensive().setTackles(request.getTackles());
+        statistic.getDefensive().setBlocks(request.getBlocks());
+        statistic.getDefensive().setInterceptions(request.getInterceptions());
+        statistic.getDefensive().setDuelsWon(request.getDuelsWon());
+        statistic.getDefensive().setDuelsLost(request.getDuelsLost());
+
+        statistic.getDiscipline().setYellowCards(request.getYellowCards());
+        statistic.getDiscipline().setRedCards(request.getRedCards());
+        statistic.getDiscipline().setFoulsCommitted(request.getFoulsCommitted());
+        statistic.getDiscipline().setWasFouled(request.getWasFouled());
+        statistic.getDiscipline().setPenaltiesWon(request.getPenaltiesWon());
+        statistic.getDiscipline().setPenaltyScored(request.getPenaltyScored());
+        statistic.getDiscipline().setPenaltyMissed(request.getPenaltyMissed());
+        statistic.getDiscipline().setPenaltyCommitted(request.getPenaltyCommitted());
+
+        statistic.getGoalkeeper().setSaves(request.getSaves());
+        statistic.getGoalkeeper().setPenaltiesSaved(request.getPenaltiesSaved());
+        statistic.getGoalkeeper().setCleanSheet(request.getCleanSheet());
+        statistic.getGoalkeeper().setGoalsConceded(request.getGoalsConceded());
         return playerStatisticRepository.save(statistic);
     }
 
@@ -125,35 +131,40 @@ public class PlayerStatisticService {
         statistic.setRole((String) data.get("role"));
         statistic.setRating(getDoubleOrNull(data, "rating"));
         statistic.setMinutesPlayed(getIntegerValue(data, "minutesPlayed"));
-        statistic.setGoals(getIntegerValue(data, "goals"));
-        statistic.setAssists(getIntegerValue(data, "assists"));
-        statistic.setTotalShots(getIntegerValue(data, "totalShots"));
-        statistic.setShotsOnTarget(getIntegerValue(data, "shotsOnTarget"));
-        statistic.setAccuratePasses(getIntegerValue(data, "accuratePasses"));
-        statistic.setTotalPasses(getIntegerValue(data, "totalPasses"));
-        statistic.setChancesCreated(getIntegerValue(data, "chancesCreated"));
-        statistic.setSuccessfulDribbles(getIntegerValue(data, "successfulDribbles"));
-        statistic.setTotalDribbles(getIntegerValue(data, "totalDribbles"));
-        statistic.setDribbledPast(getIntegerValue(data, "dribbledPast"));
-        statistic.setOffsides(getIntegerValue(data, "offsides"));
-        statistic.setAccurateCrosses(getIntegerValue(data, "accurateCrosses"));
-        statistic.setTotalCrosses(getIntegerValue(data, "totalCrosses"));
-        statistic.setTackles(getIntegerValue(data, "tackles"));
-        statistic.setBlocks(getIntegerValue(data, "blocks"));
-        statistic.setInterceptions(getIntegerValue(data, "interceptions"));
-        statistic.setDuelsWon(getIntegerValue(data, "duelsWon"));
-        statistic.setDuelsLost(getIntegerValue(data, "duelsLost"));
-        statistic.setWasFouled(getIntegerValue(data, "wasFouled"));
-        statistic.setFoulsCommitted(getIntegerValue(data, "foulsCommitted"));
-        statistic.setYellowCards(getIntegerValue(data, "yellowCards"));
-        statistic.setRedCards(getIntegerValue(data, "redCards"));
-        statistic.setPenaltiesWon(getIntegerValue(data, "penaltiesWon"));
-        statistic.setPenaltyScored(getIntegerValue(data, "penaltyScored"));
-        statistic.setPenaltyMissed(getIntegerValue(data, "penaltyMissed"));
         statistic.setIsSubstitute(getBooleanValue(data, "isSubstitute"));
         statistic.setIsCaptain(getBooleanValue(data, "isCaptain"));
         statistic.setShirtNumber(getIntegerValue(data, "shirtNumber"));
-        statistic.setPenaltyCommitted(getIntegerValue(data, "penaltyCommitted"));
+
+        statistic.getShooting().setGoals(getIntegerValue(data, "goals"));
+        statistic.getShooting().setTotalShots(getIntegerValue(data, "totalShots"));
+        statistic.getShooting().setShotsOnTarget(getIntegerValue(data, "shotsOnTarget"));
+
+        statistic.getPassing().setAssists(getIntegerValue(data, "assists"));
+        statistic.getPassing().setAccuratePasses(getIntegerValue(data, "accuratePasses"));
+        statistic.getPassing().setTotalPasses(getIntegerValue(data, "totalPasses"));
+        statistic.getPassing().setChancesCreated(getIntegerValue(data, "chancesCreated"));
+        statistic.getPassing().setAccurateCrosses(getIntegerValue(data, "accurateCrosses"));
+        statistic.getPassing().setTotalCrosses(getIntegerValue(data, "totalCrosses"));
+
+        statistic.getDribbling().setSuccessfulDribbles(getIntegerValue(data, "successfulDribbles"));
+        statistic.getDribbling().setTotalDribbles(getIntegerValue(data, "totalDribbles"));
+        statistic.getDribbling().setDribbledPast(getIntegerValue(data, "dribbledPast"));
+        statistic.getDribbling().setOffsides(getIntegerValue(data, "offsides"));
+
+        statistic.getDefensive().setTackles(getIntegerValue(data, "tackles"));
+        statistic.getDefensive().setBlocks(getIntegerValue(data, "blocks"));
+        statistic.getDefensive().setInterceptions(getIntegerValue(data, "interceptions"));
+        statistic.getDefensive().setDuelsWon(getIntegerValue(data, "duelsWon"));
+        statistic.getDefensive().setDuelsLost(getIntegerValue(data, "duelsLost"));
+
+        statistic.getDiscipline().setYellowCards(getIntegerValue(data, "yellowCards"));
+        statistic.getDiscipline().setRedCards(getIntegerValue(data, "redCards"));
+        statistic.getDiscipline().setFoulsCommitted(getIntegerValue(data, "foulsCommitted"));
+        statistic.getDiscipline().setWasFouled(getIntegerValue(data, "wasFouled"));
+        statistic.getDiscipline().setPenaltiesWon(getIntegerValue(data, "penaltiesWon"));
+        statistic.getDiscipline().setPenaltyScored(getIntegerValue(data, "penaltyScored"));
+        statistic.getDiscipline().setPenaltyMissed(getIntegerValue(data, "penaltyMissed"));
+        statistic.getDiscipline().setPenaltyCommitted(getIntegerValue(data, "penaltyCommitted"));
 
         Integer fixtureId = getIntegerValue(data, "fixtureId");
         Match match = null;
@@ -167,9 +178,9 @@ public class PlayerStatisticService {
         }
 
         if (statistic.getPlayerType() == PlayerStatistic.PlayerType.GOALKEEPER) {
-            statistic.setSaves(getIntegerValue(data, "saves"));
-            statistic.setGoalsConceded(getIntegerValue(data, "goalsConceded"));
-            statistic.setPenaltiesSaved(getIntegerValue(data, "penaltiesSaved"));
+            statistic.getGoalkeeper().setSaves(getIntegerValue(data, "saves"));
+            statistic.getGoalkeeper().setGoalsConceded(getIntegerValue(data, "goalsConceded"));
+            statistic.getGoalkeeper().setPenaltiesSaved(getIntegerValue(data, "penaltiesSaved"));
         }
 
         if (match != null) {
@@ -182,12 +193,12 @@ public class PlayerStatisticService {
                             || type == PlayerStatistic.PlayerType.DEFENDER
                             || type == PlayerStatistic.PlayerType.MIDFIELDER;
                     if (isFieldPlayerOrGk) {
-                        statistic.setCleanSheet(conceded == 0);
+                        statistic.getGoalkeeper().setCleanSheet(conceded == 0);
                     }
-                    if (statistic.getGoalsConceded() == null &&
+                    if (statistic.getGoalkeeper().getGoalsConceded() == null &&
                             (type == PlayerStatistic.PlayerType.GOALKEEPER
                                     || type == PlayerStatistic.PlayerType.DEFENDER)) {
-                        statistic.setGoalsConceded(conceded);
+                        statistic.getGoalkeeper().setGoalsConceded(conceded);
                     }
                 }
             }

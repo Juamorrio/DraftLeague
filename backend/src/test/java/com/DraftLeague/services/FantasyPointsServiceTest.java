@@ -54,8 +54,8 @@ class FantasyPointsServiceTest {
         // 3 (≥60 min) + 4 (clean sheet GK) + 2 (6 saves / 3) = 9
         Player gk = buildPlayer("GK1", Position.POR);
         PlayerStatistic stat = buildStat("GK1", 101, PlayerStatistic.PlayerType.GOALKEEPER, 90, 0, 0);
-        stat.setCleanSheet(true);
-        stat.setSaves(6);
+        stat.getGoalkeeper().setCleanSheet(true);
+        stat.getGoalkeeper().setSaves(6);
 
         Team team = buildTeam(1);
         team.setPlayerTeams(List.of(buildPT(gk, team, false, true)));
@@ -73,7 +73,7 @@ class FantasyPointsServiceTest {
         // 3 (min) + 6 (goal DEF) + 4 (clean sheet DEF) = 13
         Player def = buildPlayer("DEF1", Position.DEF);
         PlayerStatistic stat = buildStat("DEF1", 101, PlayerStatistic.PlayerType.DEFENDER, 90, 1, 0);
-        stat.setCleanSheet(true);
+        stat.getGoalkeeper().setCleanSheet(true);
 
         Team team = buildTeam(1);
         team.setPlayerTeams(List.of(buildPT(def, team, false, true)));
@@ -124,7 +124,7 @@ class FantasyPointsServiceTest {
     void calculateTeam_yellowCard_subtractsOnePoint() {
         Player mid = buildPlayer("MID1", Position.MID);
         PlayerStatistic stat = buildStat("MID1", 101, PlayerStatistic.PlayerType.MIDFIELDER, 90, 0, 0);
-        stat.setYellowCards(1);
+        stat.getDiscipline().setYellowCards(1);
 
         Team team = buildTeam(1);
         team.setPlayerTeams(List.of(buildPT(mid, team, false, true)));
@@ -140,7 +140,7 @@ class FantasyPointsServiceTest {
     void calculateTeam_redCard_pointsClampedToZero() {
         Player mid = buildPlayer("MID1", Position.MID);
         PlayerStatistic stat = buildStat("MID1", 101, PlayerStatistic.PlayerType.MIDFIELDER, 90, 0, 0);
-        stat.setRedCards(1);
+        stat.getDiscipline().setRedCards(1);
 
         Team team = buildTeam(1);
         team.setPlayerTeams(List.of(buildPT(mid, team, false, true)));
@@ -386,10 +386,10 @@ class FantasyPointsServiceTest {
         s.setMatchId(matchId);
         s.setPlayerType(type);
         s.setMinutesPlayed(minutes);
-        s.setGoals(goals);
-        s.setAssists(assists);
-        s.setYellowCards(0);
-        s.setRedCards(0);
+        s.getShooting().setGoals(goals);
+        s.getPassing().setAssists(assists);
+        s.getDiscipline().setYellowCards(0);
+        s.getDiscipline().setRedCards(0);
         s.setIsHomeTeam(true);
         s.setTotalFantasyPoints(null); // force calculateFantasyPoints() path (field defaults to 0)
         return s;

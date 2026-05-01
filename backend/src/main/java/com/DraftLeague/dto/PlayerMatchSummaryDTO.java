@@ -50,6 +50,12 @@ public class PlayerMatchSummaryDTO {
     private Integer duelsWon;
     private Integer duelsLost;
 
+    // Dribbling stats
+    private Integer successfulDribbles;
+    private Integer totalDribbles;
+    private Integer dribbledPast;
+    private Integer offsides;
+
     // Cards
     private Integer yellowCards;
     private Integer redCards;

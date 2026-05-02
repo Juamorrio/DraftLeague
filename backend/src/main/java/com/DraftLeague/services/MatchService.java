@@ -2,7 +2,7 @@ package com.DraftLeague.services;
 
 import com.DraftLeague.dto.MatchDTO;
 import com.DraftLeague.dto.UpcomingMatchDTO;
-import com.DraftLeague.scraping.FixtureSyncService;
+import com.DraftLeague.api.FixtureSyncService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;

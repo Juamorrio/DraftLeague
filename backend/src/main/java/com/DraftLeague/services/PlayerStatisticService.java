@@ -516,6 +516,11 @@ public class PlayerStatisticService {
                 dto.setDuelsWon(getIntegerValue(data, "duelsWon"));
                 dto.setDuelsLost(getIntegerValue(data, "duelsLost"));
 
+                dto.setSuccessfulDribbles(getIntegerValue(data, "successfulDribbles"));
+                dto.setTotalDribbles(getIntegerValue(data, "totalDribbles"));
+                dto.setDribbledPast(getIntegerValue(data, "dribbledPast"));
+                dto.setOffsides(getIntegerValue(data, "offsides"));
+
                 dto.setYellowCards(getIntegerValue(data, "yellowCards"));
                 dto.setRedCards(getIntegerValue(data, "redCards"));
 

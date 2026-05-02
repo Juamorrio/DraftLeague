@@ -1,8 +1,8 @@
 package com.DraftLeague.services;
 
 import com.DraftLeague.dto.PlayerImportDTO;
-import com.DraftLeague.scraping.GameweekStatsSyncService;
-import com.DraftLeague.scraping.PlayerSquadSyncService;
+import com.DraftLeague.api.GameweekStatsSyncService;
+import com.DraftLeague.api.PlayerSquadSyncService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

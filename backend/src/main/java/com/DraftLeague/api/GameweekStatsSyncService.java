@@ -1,4 +1,4 @@
-package com.DraftLeague.scraping;
+package com.DraftLeague.api;
 
 import com.DraftLeague.models.Match.Match;
 import com.DraftLeague.repositories.MatchRepository;

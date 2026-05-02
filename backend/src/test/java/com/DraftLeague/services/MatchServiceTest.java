@@ -5,7 +5,7 @@ import com.DraftLeague.dto.UpcomingMatchDTO;
 import com.DraftLeague.models.Match.Match;
 import com.DraftLeague.models.Match.MatchStatus;
 import com.DraftLeague.repositories.MatchRepository;
-import com.DraftLeague.scraping.FixtureSyncService;
+import com.DraftLeague.api.FixtureSyncService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

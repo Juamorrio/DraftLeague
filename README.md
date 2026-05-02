@@ -89,7 +89,7 @@ DraftLeague/
 │       │   ├── repositories/ # Spring Data JPA
 │       │   ├── models/       # Entidades JPA
 │       │   ├── dto/          # DTOs de request/response
-│       │   ├── scraping/     # Cliente API-Football
+│       │   ├── api/          # Cliente API-Football
 │       │   └── config/       # Security, JWT
 │       └── test/             # Tests unitarios y de integración
 ├── frontend/                 # React Native / Expo

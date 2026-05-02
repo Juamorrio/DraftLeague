@@ -50,8 +50,4 @@ public class User  {
 	@Column(name = "role", nullable = false)
 	private String role = "USER";
 
-	@ManyToOne
-	@JoinColumn(name = "notification_id", nullable = true)
-	private Notification notification;
-
 }

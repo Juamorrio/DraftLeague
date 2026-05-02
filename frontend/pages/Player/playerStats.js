@@ -603,6 +603,47 @@ function PlayerStats({ navigation }) {
 												</View>
 											)}
 
+											{/* Regates */}
+											{(selectedStat.successfulDribbles > 0 || selectedStat.totalDribbles > 0 || selectedStat.dribbledPast > 0 || selectedStat.offsides > 0) && (
+												<View style={styles.statsSection}>
+													<Text style={styles.statsSubtitle}>🏃 Regates</Text>
+													<View style={styles.statGrid2Col}>
+														{selectedStat.successfulDribbles > 0 && (
+															<View style={styles.statItem2Col}>
+																<Text style={styles.statValue}>{selectedStat.successfulDribbles}</Text>
+																<Text style={styles.statLabel}>Regates exitosos</Text>
+															</View>
+														)}
+														{selectedStat.totalDribbles > 0 && (
+															<View style={styles.statItem2Col}>
+																<Text style={styles.statValue}>{selectedStat.totalDribbles}</Text>
+																<Text style={styles.statLabel}>Regates intentados</Text>
+															</View>
+														)}
+														{selectedStat.totalDribbles > 0 && selectedStat.successfulDribbles != null && (
+															<View style={styles.statItem2Col}>
+																<Text style={styles.statValue}>
+																	{((selectedStat.successfulDribbles / selectedStat.totalDribbles) * 100).toFixed(0)}%
+																</Text>
+																<Text style={styles.statLabel}>% Éxito</Text>
+															</View>
+														)}
+														{selectedStat.dribbledPast > 0 && (
+															<View style={styles.statItem2Col}>
+																<Text style={styles.statValue}>{selectedStat.dribbledPast}</Text>
+																<Text style={styles.statLabel}>Regateado</Text>
+															</View>
+														)}
+														{selectedStat.offsides > 0 && (
+															<View style={styles.statItem2Col}>
+																<Text style={styles.statValue}>{selectedStat.offsides}</Text>
+																<Text style={styles.statLabel}>Fueras de juego</Text>
+															</View>
+														)}
+													</View>
+												</View>
+											)}
+
 											{/* Portero */}
 											{selectedStat.saves != null && (
 												<View style={styles.statsSection}>

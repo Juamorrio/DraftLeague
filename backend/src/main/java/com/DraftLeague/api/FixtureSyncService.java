@@ -1,4 +1,4 @@
-package com.DraftLeague.scraping;
+package com.DraftLeague.api;
 
 import com.DraftLeague.dto.MatchDTO;
 import com.DraftLeague.dto.UpcomingMatchDTO;

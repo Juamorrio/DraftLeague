@@ -1,4 +1,4 @@
-package com.DraftLeague.scraping;
+package com.DraftLeague.api;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

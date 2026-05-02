@@ -1,4 +1,4 @@
-package com.DraftLeague.scraping;
+package com.DraftLeague.api;
 
 import com.DraftLeague.dto.PlayerImportDTO;
 import org.slf4j.Logger;
